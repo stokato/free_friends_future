@@ -1,3 +1,3 @@
-var init = require('./core/lib/serverInit');
+var init = require('./core/kernel/serverInit');
 
 init.initWeb();

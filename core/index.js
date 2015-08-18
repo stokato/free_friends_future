@@ -1,13 +1,15 @@
-var kernel = require('./kernel');
-var config = require('./config');
-var data   = require('./data');
-var games  = require('./games');
-var routes = require('./routes');
+var config = require('./config'),
+    data   = require('./data'),
+    games  = require('./games'),
+    routes = require('./routes'),
+    socNet = require('./socNet');
 
-module.exports = {
-    kernel: kernel,
+var core = {
     config: config,
     data: data,
     games: games,
-    routes: routes
+    routes: routes,
+    socNet: socNet
 };
+
+module.exports = core;

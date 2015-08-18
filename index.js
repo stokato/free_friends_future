@@ -3,12 +3,9 @@ var core = require('./core');
 
 var routes = core.routes,
     cfg    = core.config;
-    
-var WebPort = cfg.WebServer.port,
-    WebHost = cfg.WebServer.host;
 
 var server = new Hapi.Server();
-    server.connection({port: WebPort, host: WebHost});
+    server.connection({port: cfg.WebPort, host: cfg.WebHost});
 
 server.route(routes);
 

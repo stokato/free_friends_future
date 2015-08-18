@@ -1,11 +1,8 @@
 var Cassandra = require('cassandra-driver');
+
 var cfg  = require('../config');
 
-var DataHost = cfg.DataBaseServer.host,
-    DataPort = cfg.DataBaseServer.port,
-    DataKeys = cfg.DataBaseServer.keyspace;
-
-var client = new Cassandra.Client({contactPoints: [DataHost,DataPort], keyspace: DataKeys});
+var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
 
 var data = {
     insertID: function insertID(request) {

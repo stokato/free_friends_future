@@ -3,12 +3,10 @@ var Hapi = require('hapi');
 var cfg  = require('../config'),
     data = require('../data'),
     user = require('../socNet/vk/user');
-    
-var WebPort  = cfg.WebServer.port,
-    WebHost  = cfg.WebServer.host;
+
 
 var server = new Hapi.Server();
-    server.connection({port: WebPort, host: WebHost});
+    server.connection({port: cfg.WebPort, host: cfg.WebHost});
     
 var routes = [
     {method: 'GET', path: '/{user_id}', handler: data.insertID},

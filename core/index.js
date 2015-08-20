@@ -1,15 +1,17 @@
-var config = require('./config'),
-    data   = require('./data'),
+var chat   = require('./chat'),
+    config = require('./config'),
     games  = require('./games'),
-    routes = require('./routes'),
-    socNet = require('./socNet');
+    player = require('./player'),
+    query  = require('./query'),
+    routes = require('./routes');
 
 var core = {
+    chat: chat,
     config: config,
-    data: data,
     games: games,
-    routes: routes,
-    socNet: socNet
+    player: player,
+    query: query,
+    routes: routes    
 };
 
 module.exports = core;

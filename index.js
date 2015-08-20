@@ -1,5 +1,6 @@
 var Hapi = require('hapi');
-var core = require('./core');
+
+var core  = require('./core');
 
 var routes = core.routes,
     cfg    = core.config;
@@ -14,6 +15,6 @@ server.start(function(err) {
         console.log(err);
     }
     else{
-        console.log('Demon is run');
+        console.log('Hapi server started @ '  + server.info.uri);
     }
 });

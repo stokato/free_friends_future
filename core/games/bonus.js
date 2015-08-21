@@ -13,8 +13,9 @@ var max = 99,
 var temp  = 0, //Хранит максимальное значение массива
     index = 0; //Хранит индекс максимального значения массива
     
-function generatePot() {
+var bonus =  {
     
+generatePot: function generatePot() {
     for(i = 0; i < cards.length; i++) {
      cards[i] = (Math.random() * (max - min) + min).toFixed(0);
     }
@@ -31,5 +32,6 @@ function generatePot() {
     
     return index;
 }
+};
 
-module.exports = generatePot;
+module.exports = bonus;

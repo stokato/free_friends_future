@@ -37,9 +37,11 @@ generatePot: function generatePot() {
 },
 
 checkTimeInterval: function checkTimeInterval () {
-    setTimeout(Flag = true, 15000);
+    Flag = true;
     return Flag;
 }
 };
+
+setTimeout(function() {console.log('Check time interval - complete');}, 15000);
 
 module.exports = bonus;

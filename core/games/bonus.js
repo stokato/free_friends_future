@@ -12,6 +12,9 @@ var max = 99,
   
 var temp  = 0, //Хранит максимальное значение массива
     index = 0; //Хранит индекс максимального значения массива
+ 
+//Флаг для проверки истечения таймера   
+var Flag = false;
     
 var bonus =  {
     
@@ -31,6 +34,11 @@ generatePot: function generatePot() {
     }
     
     return index;
+},
+
+checkTimeInterval: function checkTimeInterval () {
+    setTimeout(Flag = true, 15000);
+    return Flag;
 }
 };
 

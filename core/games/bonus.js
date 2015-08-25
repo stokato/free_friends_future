@@ -36,12 +36,15 @@ generatePot: function generatePot() {
     return index;
 },
 
-checkTimeInterval: function checkTimeInterval () {
+returnFlag: function returnFlag() {
     Flag = true;
     return Flag;
-}
-};
+},
 
-setTimeout(function() {console.log('Check time interval - complete');}, 15000);
+checkTimeInterval: function checkTimeInterval () {
+    setTimeout(bonus.returnFlag, 15000);
+}
+
+};
 
 module.exports = bonus;

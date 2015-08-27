@@ -4,54 +4,37 @@ var players = require('../player'),
 var Cassandra = require('cassandra-driver'),
        client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
 
-var rooms = [],
-         i = 0,
-         j = 0,
-        id = 0;
-         
-function callback(err, result) {
+var id = null;
+
+function callback(err, res) {
+    var count = 0;
     if(err) {
-        console.log('Error message: ' + err);
+        console.log("Message error: ", err);
     }
     else {
-        //Перебираем в цикле массив result и результат сохраняем в массиве rooms
-        //Чет мне кажется это какое-то лишнее действие, ну да ладно, пусть пока что будет
-        for(i = 0; i < result.rows[0].seats.length; i++) {
-            rooms[i] = result.rows[0].seats[i];
+        for(var i = 0; i < res.rows.length; i++) {
+            count++;
         }
-    }
-    //Если за столом есть места, выводим в консоли мессадж о кол-ве свободных мест
-    //Надо будет доработать функцию, чтобы добавлялись новые IDшники игроков если есть места
-    if(12 > rooms.length) {
-        console.log('За столом еще есть: %d мест', 12 - rooms.length);
-    }
-    else {
-        console.log('Данный стол полный, идет создание нового стола. Ждите...');
-        //Получаем ID текущего стола, и инкриментим его
-        id = result.rows[0].id;
-        id++;
-        //Вызываем функцию создания нового стола
-        tables.addNewTable();
     }
 }
          
 var tables = {
-//Проверить столы на заполненность 
-checkTables: function checkTables(id) {
-   client.execute("select * from rooms where id = ?", [id], {prepare: true}, callback);
+//Выбирает все столы с флагом: true (со свободными местами)
+//Флаг: false - означает, что свободных мест за столом нет
+checkTables: function checkTables() {
+    client.execute("select id from rooms where flag = 1", {prepare: true}, callback);
 },
+
+//Создает новый стол, если не был найден не один стол с флагом: true
+createNewTable: function createNewTable() {
     
-//Функция создает новый стол, если за другими столами нет свободных мест
-addNewTable: function addNewTable() {
-    client.execute("insert into rooms (id, seats) values (?,?)",[id,['id_013']], {prepare: true}, function(err, result) {
-            if(err) {
-                console.log(err);
-            }
-            else {
-                console.log('Стол #%d успешно создан', id);
-            }
-    });
+},
+
+//Посадить игрока за первый попавшийся стол с флагом: true
+seatPlayer: function seatPlayer() {
+    
 }
 };
 
 module.exports = tables;
+tables.checkTables();

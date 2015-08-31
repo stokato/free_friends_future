@@ -1,160 +1,198 @@
-var players = require('../player'),
-        cfg = require('../config');
+//Подключение конфига
+var cfg = require('../config');
 
-var Cassandra = require('cassandra-driver'),
-       client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
+//Подключение драйвера Кассандры
+var Cassandra = require('cassandra-driver');
 
-var id      = null,
-    user_id = 'id_003'; 
+//Инициализация Кассандры
+var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
 
-//Калбэк для функции checkAll()
-function callback_checkAll(err, res) {
-    var count = 0;
-    var rooms = [];
-    if(err) {
-        console.log("Message (checkAll) error: ", err);
+//ID пользователя входящего в игру
+var user_id = 'id_001';
+
+/* ========== Блок калбэков ========== */
+
+function callback_createNewTable(error, result) {
+  if(error) {
+      console.log("Error (createNewTable) message: ", error);
+  }
+  else {
+      console.log("The table creating sucess");
+  }
+};
+
+function callback_Counter(error, result) {
+   if(error) {
+        console.log("Error (Counter) message: ", error);
     }
     else {
-        for(var i = 0; i < res.rows.length; i++) {
+        var count =  +(result.rows[0].count);
+        
+        if(count == 0) {
+            var ID = count++;
+            rooms.createNewTable(ID);
+        }
+        
+        else {
+            rooms.checkTrueTables();
+        }
+    }
+        
+};
+
+function callback_checkTrueTables(error, result) {
+    var count = 0;
+    if(error) {
+        console.log("Error (checkTrueTables) message: ", error);
+    }
+    else {
+        for(var i = 0; i < result.rows.length; i++) {
             count++;
         }
         if(count == 0) {
-            tables.createNewTable();
+            rooms.createID();
         }
         else {
-            for(var i = 0; i < count; i++) {
-                rooms[i] = res.rows[i].id;
+            rooms.selectTrueTable();
+        }
+    }
+};
+
+function callback_createID(error, result) {
+    if(error) {
+        console.log("Error (createID) message: ", error);
+    }
+    else {
+       var ID =  +(result.rows[0].count);
+       rooms.createNewTable(ID);
+    }
+};
+
+function callback_selectTrueTable(error, result) {
+    var IDs = [];
+    var min = 0,
+        max = result.rows.length - 1;
+    if(error) {
+        console.log("Error (selectTrueTable) message: ", error);
+    }
+    else {
+        for(var i = 0; i < result.rows.length; i++) {
+            IDs[i] = result.rows[i].id;
+        }
+           var Index = +((Math.random() * (max - min) + min).toFixed(0));
+           ID = IDs[Index];
+           rooms.seatPlayer(ID, user_id);
+    }
+};
+
+function callback_seatPlayer(error, result) {
+    if(error) {
+        console.log("Error (seatPlayer) message: ", error);
+    }
+    else {
+        rooms.checkSeats(ID);
+    }
+};
+
+function callback_checkSeats(error, result) {
+    if(error) {
+        console.log("Error (checkSeats) message: ", error);
+    }
+    else {
+            if(result.rows[0].seats.length == 12) {
+                    rooms.checkFlag(ID);
             }
-            tables.seatPlayer(rooms[0]);
-        }
     }
 };
 
-//Калбэк для функции returnMaxID()
-function callback_returnMaxID (err, res) {
-    var max = 0;
-    if(err) {
-        console.log("Message (returnMaxID) error: ", err);
+function callback_checkFlag(error, result) {
+    if(error) {
+        console.log("Error (checkFlag) message: ", error);
     }
     else {
-        for(var i = 0; i < res.rows.length; i++) {
-            if(res.rows[i].id > max) {
-                max = res.rows[i].id;
-            }
-        }
-        tables.createNewTable(max);
+          if(result.rows[0].flag) {
+              rooms.setFalse(ID);
+          }
     }
 };
 
-//Калбэк фунцкии createNewTable()
-function callback_createNewTable(err, res) {
-    if(err) {
-        console.log("Message (createNewTable) error: ", err);
+function callback_setFalse(error, result) {
+    if(error) {
+        console.log("Error (setFalse) message: ", error);
     }
     else {
-        var id = 0;
-        user_id = 'id_001';
-        tables.seatPlayer(user_id, id);
+        console.log("Флаг изменен на false");
     }
 };
 
-//Калбэк функции seatPlayer
-function callback_seatPlayer(err, res) {
-    console.log("Результатик наш: ", res);
-    if(err) {
-        console.log("Message (seatPlayer) error: ", err);
+
+function callback_setTrue(error, result) {
+    if(error) {
+        console.log("Error (setFalse) message: ", error);
     }
     else {
-        tables.checkTable();
+        console.log("Флаг изменен на true");
     }
 };
+/* ============== END ================ */
 
-//Калбэк функции checkSeats
-function callback_checkSeats(err, res) {
-    if(err) {
-        console.log("Message (checkSeats) error: ", err);
-    }
-    else {
-        if(res.rows.length == 12) {
-            tables.checkFlag();
-        }
-    }
-};
-
-//Калбэк для функции checkFlag
-function callback_checkFlag(err, res) {
-        if(err) {
-            console.log("Message (checkFlag) error: ", err);
-        }
-        else {
-            if(res.row.flag == true) {
-                tables.setFalse();
-            }
-        }
-};
-
-//Калбэк для функции setFalse
-function callback_setFalse (err) {
-        if(err) {
-            console.log("Message (setFalse) error: ", err);
-        }
-        else {
-            console.log("Flag updated");
-        }
-};
-
-//Калбэк ждя функции setTrue
-function callback_setTrue(err, res) {
-        if(err) {
-            console.log("Message (setTrue) error: ", err);
-        }
-        else {
-            console.log("Flag updated");
-        }
-};
-       
-var tables = {
-//Проверяет есть ли столы с флагом: true
-checkAll: function checkAll() {
-    client.execute("select id from rooms where flag = true", {prepare: true}, callback_checkAll);
+//Основной блок модуля Rooms
+var rooms = {
+initGame: function initGame () {
+   this.Counter();
 },
 
-//Создает новый стол, если не был найден не один стол с флагом: true
-createNewTable: function createNewTable(id) {
-    id++;
-    client.execute("insert into rooms (id, flag) values (?,?)", [id, true], {prepare: true}, callback_createNewTable)
+//Функция создает новый ID для стола
+createID: function createID() {
+    client.execute("select count(*) from rooms", {prepare: true}, callback_createID);
 },
 
-//Посадить игрока за первый попавшийся стол с флагом: true
-seatPlayer: function seatPlayer(user_id, id) {
-    client.execute("update rooms set seats = seats + ?, flag = true where id = ?",[[user_id], id], {prepare: true}, callback_seatPlayer)
+//Функция проверяет общее кол-во столов
+Counter: function Counter() {
+    client.execute("select count(*) from rooms", {prepare: true}, callback_Counter);
+},
+
+//Функция создает новый стол
+createNewTable: function createNewTable(ID) {
+    client.execute("insert into rooms (id, flag) values (?,?)", [ID, true], {prepare: true}, callback_createNewTable);
+},
+
+//Проверяет есть ли столы с флагом: true.
+//Подсчитывает их количество
+checkTrueTables: function checkTrueTables() {
+    client.execute("select id from rooms where flag = true", {prepare: true}, callback_checkTrueTables);
+},
+
+//Функция рандомно выбирает стол с флагом: true
+selectTrueTable: function selectTrueTable() {
+    client.execute("select id from rooms where flag = true", {prepare: true}, callback_selectTrueTable);
+},
+
+//Посадить пользователя за стол
+seatPlayer: function seatPlayer(ID, user_id) {
+    client.execute("update rooms set seats = seats + ?, flag = true where id = ?",[[user_id], ID], {prepare: true}, callback_seatPlayer);
 },
 
 //Проверить сколько за столом осталось мест
-checkSeats: function checkSeats() {
-    client.execute("select seats from room where id = ?", [max], {prepare: true}, callback_checkSeats)
-},
-
-//Вернуть наибольший ID стола
-returnMaxID: function returnMaxID() {
-    client.execute("select id from rooms", {prepare: true}, callback_returnMaxID);
+checkSeats: function checkSeats(ID) {
+    client.execute("select seats from rooms where id = ?", [ID], {prepare: true}, callback_checkSeats)
 },
 
 //Проверяет флаг стола
-checkFlag: function checkFlag(id) {
-    client.execute("select flag where id = ?",[id], {prepare: true}, callback_checkFlag);
-},
-
-//Сменить флаг стола на true
-setTrue: function setTrue() {
-    client.execute("update rooms set flag = true where id = ?", [id], {prepare: true}, callback_setTrue);
+checkFlag: function checkFlag(ID) {
+    client.execute("select flag from rooms where id = ?", [ID], {prepare: true}, callback_checkFlag);
 },
 
 //Сменить флаг стола на false 
-setFalse: function setFalse(id) {
-    client.execute("update rooms set flag = false where id = ?", [id], {prepare: true}, callback_setFalse);
-}};
+setFalse: function setFalse(ID) {
+    client.execute("update rooms set flag = false where id = ?", [ID], {prepare: true}, callback_setFalse);
+},
 
-module.exports = tables;
-//tables.checkAll();
-tables.createNewTable(0);
+//Сменить флаг стола на true 
+setFalse: function setTrue(ID) {
+    client.execute("update rooms set flag = true where id = ?", [ID], {prepare: true}, callback_setTrue);
+}
+
+};
+
+module.exports = rooms;

@@ -9,6 +9,7 @@ var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], k
 
 //ID пользователя входящего в игру
 var user_id = 'id_001';
+var ID = 0;
 
 /* ========== Блок калбэков ========== */
 
@@ -134,6 +135,32 @@ function callback_setTrue(error, result) {
         console.log("Флаг изменен на true");
     }
 };
+
+function callback_getSeatNumber (error, result) {
+  var indx = 0;
+  if(error) {
+    console.log("Error (getSeatNumber) message: ", error);
+  }
+  else {
+      for(var i = 0; i < result.rows[0].seats.length; i++) {
+        if(result.rows[0].seats[i] == user_id) {
+            indx = i;
+        }
+      }
+      
+      rooms.deletePlayer(ID, indx);
+  }
+};
+
+
+function callback_deletePlayer(error, result) {
+  if(error) {
+    console.log("Error (deletePlayer) message: ", error);
+  }
+  else {
+      console.log("Пользователь удален из-за стола");
+  }
+};
 /* ============== END ================ */
 
 //Основной блок модуля Rooms
@@ -191,8 +218,19 @@ setFalse: function setFalse(ID) {
 //Сменить флаг стола на true 
 setFalse: function setTrue(ID) {
     client.execute("update rooms set flag = true where id = ?", [ID], {prepare: true}, callback_setTrue);
+},
+
+//Получить номер места пользователя за столом
+getSeatNumber: function getSeatNumber(ID, user_id) {
+    client.execute("select seats from rooms where id = ?", [ID], {prepare: true}, callback_getSeatNumber);
+},
+
+//Удалить пользователя из-за стола
+deletePlayer: function deletePlayer(ID, seatNum) {
+   client.execute("delete seats[?] from rooms where id = ?", [seatNum, ID], {prepare: true}, callback_deletePlayer);
 }
 
 };
 
 module.exports = rooms;
+rooms.getSeatNumber(0, user_id);

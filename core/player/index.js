@@ -14,7 +14,7 @@ var player = {
     
     addPlayer: function addPlayer(request){
         client.execute(query.addPlayer, 
-        [request.params.user_id, request.params.first_name, request.params.last_name, request.params.login, request.params.password, request.params.city, request.params.date, request.params.sex, request.params.relation, request.params.avatar, points], 
+        [request.payload.ID, request.payload.first_name, request.payload.last_name, request.payload.login, request.payload.pass, request.payload.city, request.payload.born_date, request.payload.sex, request.payload.relation, request.params.avatar, points], 
         {prepare: true}, function(err, result) {
             if(err) {
                 console.log(err);

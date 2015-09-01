@@ -39,12 +39,12 @@
                 <input class="logForm" type="password" name="re_pass" placeholder="Пароль еще раз"><br /><br />
                 <input class="logForm" type="text" name="city" placeholder="Город"><br /><br />
                 <input class="logForm" type="date" name="born_date" placeholder="Дата рождения (дд.мм.гггг)"><br /><br />
-                <select>
+                <select name="sex">
                     <option value="0">Не указан</option>
                     <option value="1">Женщина</option>
                     <option value="2">Мужчина</option>
                 </select><br /><br />
-                 <select>
+                 <select name="relation">
                     <option value="0">Не указано</option>
                     <option value="1">Не женат / Не замужем</option>
                     <option value="2">Есть друг / Есть подруга</option>
@@ -54,7 +54,7 @@
                     <option value="6">В активном поиске</option>
                     <option value="7">Влюблен / Влюблена</option>
                 </select><br /><br />
-                <input type="file" name="Photo"><br /><br />
+                <input type="file" name="Photo" accept="image/jpeg,image/gif,image/x-png"><br /><br />
                 <input class="logButt" type="submit" value="Зарегистрироваться">
                 <input class="logButt" type="reset" value="Сброс">
             </form>

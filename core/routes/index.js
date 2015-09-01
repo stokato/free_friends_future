@@ -8,7 +8,11 @@ var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
     
 var routes = [
-    {method: 'GET', path: '/{user_id},{age},{city},{relation},{sex},{status}', handler: player.addPlayer},
+    {method: 'POST', path:'/registration', handler:  player.addPlayer}, 
+    
+    //Вьюшки
+    {method: 'GET', path:'/', handler: { view: 'index.html'}},
+    {method: 'GET', path:'/registration', handler: { view: 'reg.html'}},
 ];
 
 module.exports = routes;

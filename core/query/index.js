@@ -1,4 +1,4 @@
-var addPlayer = "INSERT INTO players (id, user_id, age, city, relation, sex, status, points) VALUES (?,?,?,?,?,?,?,?)";
+var addPlayer = "INSERT INTO users (user_id, first_name, last_name, login, password, city, date, sex, relation, avatar, points) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 var query = {
     addPlayer: addPlayer

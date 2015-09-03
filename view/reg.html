@@ -30,7 +30,7 @@
     </head>
     <body>
         <fieldset>
-            <form method="POST" action="registration" enctype="multipart/form-data">
+            <form method="POST" action="registration" enctype="multipart/form-data" id="forma">
                 <input class="logForm" type="text" name="ID" placeholder="ID"> <br /><br />
                 <input class="logForm" type="text" name="first_name" placeholder="Имя"> <br /><br />
                 <input class="logForm" type="text" name="last_name" placeholder="Фамилия"> <br /><br />
@@ -54,7 +54,6 @@
                     <option value="6">В активном поиске</option>
                     <option value="7">Влюблен / Влюблена</option>
                 </select><br /><br />
-                <input type="file" name="Photo" accept="image/jpeg,image/gif,image/x-png"><br /><br />
                 <input class="logButt" type="submit" value="Зарегистрироваться">
                 <input class="logButt" type="reset" value="Сброс">
             </form>

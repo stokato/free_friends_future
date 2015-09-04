@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>Игра "Знакомства" | Игровой стол</title>
+    </head>
+    <style>
+        body {
+            margin: 0; /* Обнуляем значение отступов */
+        }
+        nav {
+            padding: 1px; /* Значение полей */
+            background-color: #000080;
+            color: #FFF;
+        }
+        nav li {
+            display: inline; /* Отображать как строчный элемент */
+            margin-right: 5px; /* Отступ слева */
+            padding: 3px; /* Поля вокруг текста */
+        }
+        .left_bar {
+            text-align: left;
+            float: left;
+        }
+        .right_bar {
+            text-align: right;
+        }
+        
+        article {
+            width: 82%;
+            height: 90%;
+            background-color: #EEE;
+            float: left;
+        }
+        
+        .field_photo td {
+            background-color: #DDD;
+            width: 16%;
+            height: 150px;
+        }
+        
+        .field_name td {
+            background-color: #AAA;
+            width: 16%;
+            height: 10px;
+        }
+        
+         .field_games td {
+            background-color: #FFF;
+            width: 100%;
+            height: 500px;
+        }
+        
+        table {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+        textarea {
+            width: 17%; 
+            height: 100px; 
+            resize: none;
+            position: absolute;
+            bottom: 7px;
+        }
+    </style>
+    <body>
+        <header>
+            <nav>
+                <ul class="left_bar">
+                    <li>Игра</li>
+                    <li>Профиль</li>
+                    <li>Топ</li>
+                </ul>
+                <ul class="right_bar">
+                    <li>Вкл/Выкл звук</li>
+                    <li>Заработать</li>
+                    <li>24 124</li>
+                    <li>Пополнить</li>
+                </ul>
+            </nav>
+        </header>
+        <article>
+           <table>
+                <tr class="field_photo">
+                    <td><img src="ree_seat.jpg"></img></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="ree_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                </tr>
+                <tr class="field_name">
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                </tr>
+                <tr class="field_games">
+                    <td colspan="6">
+
+                    </td>
+                </tr>
+                <tr class="field_photo">
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                    <td><img src="free_seat.jpg"></td>
+                </tr>
+                <tr class="field_name">
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                    <td>Занять место</td>
+                </tr>
+            </table>
+        </article>
+        <aside>
+             <form action="" method="post">
+                <textarea name="chat" placeholder="Введите свое сообщение и нажмите Enter"></textarea>
+            </form>
+        </aside>
+    </body>
+</html>

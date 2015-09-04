@@ -15,7 +15,6 @@ server.views({
     },
     relativeTo: __dirname,
     path: './view',
-
 });
 //=====================================================
 server.route(routes);

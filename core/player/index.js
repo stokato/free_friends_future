@@ -12,7 +12,7 @@ var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], k
     
 var player = {
     
-    addPlayer: function addPlayer(request, reply){
+addPlayer: function addPlayer(request, reply){
         
         //Задаем значение поинтов
         var points = 0;
@@ -42,11 +42,43 @@ var player = {
                 console.log(err);
             }
         });
+            reply.redirect('/');
         }
         else {
             reply.redirect('/registration');
         }
-    }
+    },
+
+logon: function logon(request, reply) {
+    var login = request.payload.login,
+        pass  = request.payload.pass;
+        
+    client.execute(query.logon, [login], {prepare: true}, function(error, response) {
+            if(error) {
+                console.log(error)
+            }
+            else {
+                if(response.rows[0].password == pass) {
+                    player.getID(login);
+                    reply.redirect('/table');
+                }
+                else {
+                    reply.redirect('/');
+                }
+            }
+    });
+},
+
+getID: function getID(login) {
+    client.execute(query.getID, [login], {prepare: true}, function(error, response) {
+            if(error) {
+                console.log(error);
+            }
+            else {
+                 return response.rows[0].user_id;
+            }
+    });
+}
 };
 
 module.exports = player;

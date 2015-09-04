@@ -3,7 +3,9 @@ var Hapi      = require('hapi'),
 
 var cfg   = require('../config'),
     query = require('../query'),
-    OS    = require('os');
+    table = require('../tables');
+    
+var OS    = require('os');
 
 var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
@@ -75,7 +77,7 @@ getID: function getID(login) {
                 console.log(error);
             }
             else {
-                 return response.rows[0].user_id;
+                var user = response.rows[0].user_id;
             }
     });
 }

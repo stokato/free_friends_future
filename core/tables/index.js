@@ -1,5 +1,7 @@
 //Подключение конфига
-var cfg = require('../config');
+var cfg    = require('../config'),
+    player = require('../player');
+    
 
 //Подключение драйвера Кассандры
 var Cassandra = require('cassandra-driver');
@@ -8,7 +10,7 @@ var Cassandra = require('cassandra-driver');
 var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
 
 //ID пользователя входящего в игру
-var user_id = 'id_001';
+var user_id = null;
 var ID = 0;
 
 /* ========== Блок калбэков ========== */
@@ -233,4 +235,3 @@ deletePlayer: function deletePlayer(ID, seatNum) {
 };
 
 module.exports = rooms;
-rooms.getSeatNumber(0, user_id);

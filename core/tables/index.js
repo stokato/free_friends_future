@@ -9,10 +9,6 @@ var Cassandra = require('cassandra-driver');
 //Инициализация Кассандры
 var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
 
-//ID пользователя входящего в игру
-var user_id = null;
-var ID = 0;
-
 /* ========== Блок калбэков ========== */
 
 function callback_createNewTable(error, result) {
@@ -40,7 +36,6 @@ function callback_Counter(error, result) {
             rooms.checkTrueTables();
         }
     }
-        
 };
 
 function callback_checkTrueTables(error, result) {
@@ -84,6 +79,7 @@ function callback_selectTrueTable(error, result) {
         }
            var Index = +((Math.random() * (max - min) + min).toFixed(0));
            ID = IDs[Index];
+           user_id = player.getID;
            rooms.seatPlayer(ID, user_id);
     }
 };

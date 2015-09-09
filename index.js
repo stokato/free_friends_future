@@ -1,9 +1,9 @@
 var Hapi = require('hapi');
 
-var core  = require('./core');
+var core = require('./core');
 
-var routes = core.routes,
-    cfg    = core.config;
+var routes   = core.routes,
+    cfg      = core.config;
 
 var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
@@ -15,6 +15,7 @@ server.views({
     },
     relativeTo: __dirname,
     path: './view',
+    context: cfg
 });
 //=====================================================
 server.route(routes);

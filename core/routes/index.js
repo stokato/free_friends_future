@@ -4,7 +4,7 @@ var fs = require('fs');
 var cfg    = require('../config'),
     player = require('../player');
     
-var server = new Hapi.Server();
+var server = new Hapi.Server(); 
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
     
 var routes = [

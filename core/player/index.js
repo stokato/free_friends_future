@@ -11,7 +11,7 @@ var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
     
 var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
-    
+
 var player = {
     
 addPlayer: function addPlayer(request, reply){
@@ -49,7 +49,7 @@ addPlayer: function addPlayer(request, reply){
         else {
             reply.redirect('/registration');
         }
-    },
+},
 
 logon: function logon(request, reply) {
     var login = request.payload.login,
@@ -77,7 +77,8 @@ getID: function getID(login) {
                 console.log(error);
             }
             else {
-                var user = response.rows[0].user_id;
+                return response.rows[0].user_id;
+                table.seatPlayer(response.rows[0].user_id);
             }
     });
 }

@@ -1,5 +1,7 @@
 var template = {
     
+	titleName: 'Игра "Знакомства"',
+	
     index: {
         title: "Главная страница"
     },

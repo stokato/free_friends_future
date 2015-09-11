@@ -12,7 +12,10 @@ var DataHost = server_cfg.DataBaseServer.host,
     
 /* Templates variables: BEGIN*/
 
-//Main page
+//Main configuration
+var titleName = template.titleName;
+
+//Index page
 var indexTitle = template.index.title;
 
 //Registration page
@@ -29,6 +32,8 @@ var config = {
     DataHost: DataHost,
     DataPort: DataPort,
     DataKeys: DataKeys,
+	
+	titleName: titleName,
     
     indexTitle: indexTitle,
     regTitle: regTitle,

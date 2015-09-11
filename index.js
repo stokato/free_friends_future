@@ -17,7 +17,7 @@ server.views({
     path: './view',
     context: cfg
 });
-//=====================================================
+//===============================================
 server.route(routes);
 
 server.start(function(err) {

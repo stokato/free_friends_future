@@ -1,11 +1,9 @@
-var addPlayer = "INSERT INTO users (user_id, first_name, last_name, login, password, city, date, sex, relation, avatar, points) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    logon     = "SELECT password FROM users WHERE login = ?",
-    getID     = "SELECT user_id FROM users WHERE login = ?";
+var addPlayer = "INSERT INTO users (user_id, country, city, date, sex, coins, points) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    logon     = "SELECT user_id FROM users WHERE user_id = ?";
 
 var query = {
     addPlayer: addPlayer,
-    logon: logon,
-    getID: getID
+    logon: logon
 };
 
 module.exports = query;

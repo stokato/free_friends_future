@@ -4,8 +4,6 @@ var Hapi      = require('hapi'),
 var cfg   = require('../config'),
     query = require('../query'),
     table = require('../tables');
-    
-var OS    = require('os');
 
 var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
@@ -16,16 +14,9 @@ var player = {
     
 addPlayer: function addPlayer(request, reply){
         
-        //Задаем значение поинтов
-        var points = 0;
-        
-        //Путь к каталогу с фотками/авами
-        avatar = OS.tmpdir() + '\\img\\noavatar.jpg';
-        
-        //Сохраняем в переменные пароли из полей
-        //для последующей проверки на совпадение
-        var passwd    = request.payload.pass;
-        var re_passwd = request.payload.re_pass;
+        //Задаем начальное значение поинтов и монеток
+        var points = 0,
+            coins  = 0; 
         
         //Разбиваем строку с датой рождения в массив
         var data = request.payload.born_date;
@@ -36,49 +27,29 @@ addPlayer: function addPlayer(request, reply){
             M = data[1], //Месяц
             Y = data[2]; //Год
         
-        if(passwd == re_passwd) {
         client.execute(query.addPlayer, 
-        [request.payload.ID, request.payload.first_name, request.payload.last_name, request.payload.login, request.payload.pass, request.payload.city, new Date(Y, M, D), request.payload.sex, request.payload.relation, avatar, points], 
+        [request.payload.ID, request.payload.country, request.payload.city, new Date(Y, M, D), request.payload.sex, coins, points], 
         {prepare: true}, function(err) {
             if(err) {
                 console.log(err);
             }
+            else {
+                reply.redirect('/');
+            }
         });
-            reply.redirect('/');
-        }
-        else {
-            reply.redirect('/registration');
-        }
+            
 },
 
 logon: function logon(request, reply) {
-    var login = request.payload.login,
-        pass  = request.payload.pass;
+    var auth_id = request.payload.user_id;
         
-    client.execute(query.logon, [login], {prepare: true}, function(error, response) {
-            if(error) {
-                console.log(error)
-            }
-            else {
-                if(response.rows[0].password == pass) {
-                    player.getID(login);
-                    reply.redirect('/table');
-                }
-                else {
-                    reply.redirect('/');
-                }
-            }
-    });
-},
-
-getID: function getID(login) {
-    client.execute(query.getID, [login], {prepare: true}, function(error, response) {
+    client.execute(query.logon, [auth_id], {prepare: true}, function(error, response) {
             if(error) {
                 console.log(error);
+                reply.redirect('/');
             }
             else {
-                return response.rows[0].user_id;
-                table.seatPlayer(response.rows[0].user_id);
+                reply.redirect('/table');
             }
     });
 }

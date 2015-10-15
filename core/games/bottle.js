@@ -24,7 +24,7 @@ spinBottle: function spinBottle(gender) {
 	switch(gender) {
 		case 1: //сохраняем парней в массив и крутим генератор
 		case 2: //сохраняем девушек в массив и крутим генератор
-		default:
+		default: //Крутим всех подряд
 	}
 	
 	for(i = 0; i < users.length; i++) {

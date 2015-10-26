@@ -2,28 +2,45 @@
  * Playing bottle
  */
  
- var Cassandra = require('cassandra-driver'),
-       query         = require('../query'),
-	   cfg             = require('../config');
+/*var users = [];
  
- var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
+ users[0] = {
+     id: "",
+     name: "",
+     sex: ""
+ }*/
+ 
+var Cassandra = require('cassandra-driver'),
+         query = require('../query'),
+	       cfg = require('../config');
+ 
+var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
  
 //Массив пользователей
-var users = new Array(12); 
+var users = new Array(12),
+    target = new Array(6);
 
 //Максимум м минимум для генератора случайных чисел
 var max = 11,
-	  min = 0;
+    min = 0;
 	  
 var temp  = 0, //Хранит максимальное значение массива
-	  index = 0; //Хранит индекс максимального значения массива
+    index = 0; //Хранит индекс максимального значения массива
 
 var bottle = {
 spinBottle: function spinBottle(gender) {
 	
 	switch(gender) {
-		case 1: //сохраняем парней в массив и крутим генератор
-		case 2: //сохраняем девушек в массив и крутим генератор
+        //Сохраняем парней в массив и крутим генератор
+		case 1: 
+            for(int i = 0; i < users.length; i++) {
+                client.execute("select sex from users where sex = ?", [2], {prepare: true}, function(error, response) {
+                    
+                });
+            }
+        //Сохраняем девушек в массив и крутим генератор
+		case 2:
+        //Сохраняем всех в массив и крутим генератор
 		default:
 	}
 	

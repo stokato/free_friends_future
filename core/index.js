@@ -3,7 +3,8 @@ var chat   = require('./chat'),
     games  = require('./games'),
     player = require('./player'),
     query  = require('./query'),
-    routes = require('./routes');
+    routes = require('./routes'),
+    tables = require('./tables');
 
 var core = {
     chat: chat,
@@ -11,7 +12,8 @@ var core = {
     games: games,
     player: player,
     query: query,
-    routes: routes    
+    routes: routes,
+    tables: tables
 };
 
 module.exports = core;

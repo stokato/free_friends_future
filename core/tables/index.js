@@ -29,11 +29,11 @@ function callback_Counter(error, result) {
         
         if(count == 0) {
             var ID = count++;
-            rooms.createNewTable(ID);
+            tables.createNewTable(ID);
         }
         
         else {
-            rooms.checkTrueTables();
+            tables.checkTrueTables();
         }
     }
 };
@@ -48,10 +48,10 @@ function callback_checkTrueTables(error, result) {
             count++;
         }
         if(count == 0) {
-            rooms.createID();
+            tables.createID();
         }
         else {
-            rooms.selectTrueTable();
+            tables.selectTrueTable();
         }
     }
 };
@@ -62,7 +62,7 @@ function callback_createID(error, result) {
     }
     else {
        var ID =  +(result.rows[0].count);
-       rooms.createNewTable(ID);
+       tables.createNewTable(ID);
     }
 };
 
@@ -80,7 +80,7 @@ function callback_selectTrueTable(error, result) {
            var Index = +((Math.random() * (max - min) + min).toFixed(0));
            ID = IDs[Index];
            user_id = player.getID;
-           rooms.seatPlayer(ID, user_id);
+           tables.seatPlayer(ID, user_id);
     }
 };
 
@@ -89,7 +89,7 @@ function callback_seatPlayer(error, result) {
         console.log("Error (seatPlayer) message: ", error);
     }
     else {
-        rooms.checkSeats(ID);
+        tables.checkSeats(ID);
     }
 };
 
@@ -99,7 +99,7 @@ function callback_checkSeats(error, result) {
     }
     else {
             if(result.rows[0].seats.length == 12) {
-                    rooms.checkFlag(ID);
+                    tables.checkFlag(ID);
             }
     }
 };
@@ -110,7 +110,7 @@ function callback_checkFlag(error, result) {
     }
     else {
           if(result.rows[0].flag) {
-              rooms.setFalse(ID);
+              tables.setFalse(ID);
           }
     }
 };
@@ -146,7 +146,7 @@ function callback_getSeatNumber (error, result) {
         }
       }
       
-      rooms.deletePlayer(ID, indx);
+      tables.deletePlayer(ID, indx);
   }
 };
 
@@ -161,73 +161,73 @@ function callback_deletePlayer(error, result) {
 };
 /* ============== END ================ */
 
-//Основной блок модуля Rooms
-var rooms = {
+//Основной блок модуля Tables
+var tables = {
 initGame: function initGame () {
    this.Counter();
 },
 
 //Функция создает новый ID для стола
 createID: function createID() {
-    client.execute("select count(*) from rooms", {prepare: true}, callback_createID);
+    client.execute("select count(*) from tables", {prepare: true}, callback_createID);
 },
 
 //Функция проверяет общее кол-во столов
 Counter: function Counter() {
-    client.execute("select count(*) from rooms", {prepare: true}, callback_Counter);
+    client.execute("select count(*) from tables", {prepare: true}, callback_Counter);
 },
 
 //Функция создает новый стол
 createNewTable: function createNewTable(ID) {
-    client.execute("insert into rooms (id, flag) values (?,?)", [ID, true], {prepare: true}, callback_createNewTable);
+    client.execute("insert into tables (id, flag) values (?,?)", [ID, true], {prepare: true}, callback_createNewTable);
 },
 
 //Проверяет есть ли столы с флагом: true.
 //Подсчитывает их количество
 checkTrueTables: function checkTrueTables() {
-    client.execute("select id from rooms where flag = true", {prepare: true}, callback_checkTrueTables);
+    client.execute("select id from tables where flag = true", {prepare: true}, callback_checkTrueTables);
 },
 
 //Функция рандомно выбирает стол с флагом: true
 selectTrueTable: function selectTrueTable() {
-    client.execute("select id from rooms where flag = true", {prepare: true}, callback_selectTrueTable);
+    client.execute("select id from tables where flag = true", {prepare: true}, callback_selectTrueTable);
 },
 
 //Посадить пользователя за стол
 seatPlayer: function seatPlayer(ID, user_id) {
-    client.execute("update rooms set seats = seats + ?, flag = true where id = ?",[[user_id], ID], {prepare: true}, callback_seatPlayer);
+    client.execute("update tables set seats = seats + ?, flag = true where id = ?",[[user_id], ID], {prepare: true}, callback_seatPlayer);
 },
 
 //Проверить сколько за столом осталось мест
 checkSeats: function checkSeats(ID) {
-    client.execute("select seats from rooms where id = ?", [ID], {prepare: true}, callback_checkSeats)
+    client.execute("select seats from tables where id = ?", [ID], {prepare: true}, callback_checkSeats)
 },
 
 //Проверяет флаг стола
 checkFlag: function checkFlag(ID) {
-    client.execute("select flag from rooms where id = ?", [ID], {prepare: true}, callback_checkFlag);
+    client.execute("select flag from tables where id = ?", [ID], {prepare: true}, callback_checkFlag);
 },
 
 //Сменить флаг стола на false 
 setFalse: function setFalse(ID) {
-    client.execute("update rooms set flag = false where id = ?", [ID], {prepare: true}, callback_setFalse);
+    client.execute("update tables set flag = false where id = ?", [ID], {prepare: true}, callback_setFalse);
 },
 
 //Сменить флаг стола на true 
 setFalse: function setTrue(ID) {
-    client.execute("update rooms set flag = true where id = ?", [ID], {prepare: true}, callback_setTrue);
+    client.execute("update tables set flag = true where id = ?", [ID], {prepare: true}, callback_setTrue);
 },
 
 //Получить номер места пользователя за столом
 getSeatNumber: function getSeatNumber(ID, user_id) {
-    client.execute("select seats from rooms where id = ?", [ID], {prepare: true}, callback_getSeatNumber);
+    client.execute("select seats from tables where id = ?", [ID], {prepare: true}, callback_getSeatNumber);
 },
 
 //Удалить пользователя из-за стола
 deletePlayer: function deletePlayer(ID, seatNum) {
-   client.execute("delete seats[?] from rooms where id = ?", [seatNum, ID], {prepare: true}, callback_deletePlayer);
+   client.execute("delete seats[?] from tables where id = ?", [seatNum, ID], {prepare: true}, callback_deletePlayer);
 }
 
 };
 
-module.exports = rooms;
+module.exports = tables;

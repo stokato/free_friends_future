@@ -1,30 +1,64 @@
-/*
- * Playing bottle
- */
+//Игра бутылочка
  
- var Cassandra = require('cassandra-driver'),
-       query         = require('../query'),
-	   cfg             = require('../config');
+var Cassandra = require('cassandra-driver'),
+              query = require('../query'),
+	              cfg = require('../config');
  
- var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
+var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
  
 //Массив пользователей
-var users = new Array(12); 
+var users = new Array(12),
+    target = new Array(6);
 
 //Максимум м минимум для генератора случайных чисел
 var max = 11,
-	  min = 0;
+    min = 0;
 	  
 var temp  = 0, //Хранит максимальное значение массива
-	  index = 0; //Хранит индекс максимального значения массива
+    index = 0; //Хранит индекс максимального значения массива
 
 var bottle = {
 spinBottle: function spinBottle(gender) {
 	
 	switch(gender) {
-		case 1: //сохраняем парней в массив и крутим генератор
-		case 2: //сохраняем девушек в массив и крутим генератор
-		default: //Крутим всех подряд
+        //Крутим парней
+		case 1: 
+          for(int i = 0; i < users.length; i++) {
+                client.execute("select user_id from users where sex = ?", [gender], {prepare: true}, function(error, response) {
+                    if(error) {
+						console.log(error);
+					}
+					else {
+						users [i] = response.rows[0].user_id;
+					}
+                });
+            } break;
+			
+		//Крутим девушек
+		case 2: 
+		  for(int i = 0; i < users.length; i++) {
+                client.execute("select user_id from users where sex = ?", [gender], {prepare: true}, function(error, response) {
+                    if(error) {
+						console.log(error);
+					}
+					else {
+						users [i] = response.rows[0].user_id;
+					}
+                });
+            } break;
+			
+        //Сохраняем всех в массив и крутим генератор
+		default:
+			for(int i = 0; i < users.length; i++) {
+                client.execute("select user_id from users", {prepare: true}, function(error, response) {
+                    if(error) {
+						console.log(error);
+					}
+					else {
+						users [i] = response.rows[0].user_id;
+					}
+                });
+            } break;
 	}
 	
 	for(i = 0; i < users.length; i++) {

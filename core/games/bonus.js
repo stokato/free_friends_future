@@ -1,7 +1,4 @@
-/*
- * The game "Bonus level"
- * Guess the card, win gold
- */
+// Бонусная игра. Выбери карточку, чтобы выиграть золото
  
 //Массив карточек
 var cards = new Array(7); 

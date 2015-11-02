@@ -1,3 +1,1 @@
-/*
- * The game "Questions"
- */
+//Игра вопросы

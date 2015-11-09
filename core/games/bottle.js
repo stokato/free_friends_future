@@ -23,7 +23,7 @@ spinBottle: function spinBottle(gender) {
 	switch(gender) {
         //Крутим парней
 		case 1: 
-          for(int i = 0; i < users.length; i++) {
+          for(i = 0; i < users.length; i++) {
                 client.execute("select user_id from users where sex = ?", [gender], {prepare: true}, function(error, response) {
                     if(error) {
 						console.log(error);
@@ -36,7 +36,7 @@ spinBottle: function spinBottle(gender) {
 			
 		//Крутим девушек
 		case 2: 
-		  for(int i = 0; i < users.length; i++) {
+		  for(i = 0; i < users.length; i++) {
                 client.execute("select user_id from users where sex = ?", [gender], {prepare: true}, function(error, response) {
                     if(error) {
 						console.log(error);
@@ -49,7 +49,7 @@ spinBottle: function spinBottle(gender) {
 			
         //Сохраняем всех в массив и крутим генератор
 		default:
-			for(int i = 0; i < users.length; i++) {
+			for(i = 0; i < users.length; i++) {
                 client.execute("select user_id from users", {prepare: true}, function(error, response) {
                     if(error) {
 						console.log(error);

@@ -1,14 +1,20 @@
-var Hapi = require('hapi');
+var Hapi = require('hapi'),
+    Hoek = require('hoek');
 
 var core = require('./core');
 
-var routes   = core.routes,
-    cfg      = core.config;
+
+var routes = core.routes,
+    cfg    = core.config;
 
 var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
    
-//================== Вьюха для клиента ================
+//================== Вьюха для клиента ==========
+server.register(require('vision'), function (err) {
+	
+Hoek.assert(!err, err);
+	
 server.views({
     engines: {
         html: require('handlebars')
@@ -16,6 +22,7 @@ server.views({
     relativeTo: __dirname,
     path: './view',
     context: cfg
+});
 });
 //===============================================
 server.route(routes);

@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>{{titleName}} | {{tableTitle}}</title>
+		<script type="text/javascript" src="/jQuery/jquery-2.1.4.min.js"></script>
     </head>
     <style>
         body {
@@ -122,8 +123,10 @@
             </table>
         </article>
         <aside>
+			 <script type="text/javascript" src="/js/client.js"></script>
+			 <div id="chat"></div>
              <form action="" method="post">
-                <textarea name="chat" placeholder="Введите свое сообщение и нажмите Enter"></textarea>
+                <textarea id="message" placeholder="Введите свое сообщение и нажмите Enter"></textarea>
             </form>
         </aside>
     </body>

@@ -1,13 +1,8 @@
-var io = require('socket.io').listen(8080); 
-
-var min = 1,
-    max = 999;
+var io = require('socket.io').listen(8080);
     
 var date = new Date();
 
 module.exports = io.sockets.on('connection', function (socket) {
-    //В качестве ника пока используем случайное число от 1 до 999
-    var nickName = Math.random() * (max - min) + min;
     var time = date.toLocaleTimeString();
     // Посылаем клиенту сообщение о том, что он успешно подключился и его имя
     socket.json.send({'event': 'connected', 'name': nickName, 'time': time});

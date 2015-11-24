@@ -3,7 +3,10 @@
     <head>
         <meta charset="utf-8">
         <title>{{titleName}} | {{tableTitle}}</title>
-		<script type="text/javascript" src="/jQuery/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="/Frameworks/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="/Frameworks/socket.io-1.3.7.js"></script>
+		<script type="text/javascript" src="/Frameworks/cookies-1.2.2.js"></script>
+		<script type="text/javascript" src="/js/client.js"></script>
     </head>
     <style>
         body {
@@ -57,13 +60,24 @@
             height: 100%;
             text-align: center;
         }
-        textarea {
-            width: 17%; 
+		
+        form {
+            width: 100%; 
             height: 100px; 
             resize: none;
-            position: absolute;
-            bottom: 7px;
+            position: fixed;
+			margin-left: 82%;
+			margin-top: 38%;
         }
+		
+		input {
+			border-color: gray;
+			border-style: solid;
+			font-size: 14px;
+			height: 25%;
+			width: 17%;
+			padding:0px;
+		}
     </style>
     <body>
         <header>
@@ -123,11 +137,13 @@
             </table>
         </article>
         <aside>
-			 <script type="text/javascript" src="/js/client.js"></script>
+			 
 			 <div id="chat"></div>
+			 
              <form action="" method="post">
-                <textarea id="message" placeholder="Введите свое сообщение и нажмите Enter"></textarea>
+                <input id="message" autocomplete="off" placeholder="Введите свое сообщение" />
             </form>
+			
         </aside>
     </body>
 </html>

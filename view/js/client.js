@@ -46,7 +46,7 @@ $( document ).ready(function() {
 		html += "<span class='name'>" + msg.n + ": </span>";
 		html += "<span class='msg'>"  + msg.m + "</span>";
 		html += "</li>";
-		$('#messages').append(html);  
+		$('#chat').append(html);  
 	    return;
     }
 	
@@ -74,7 +74,38 @@ $( document ).ready(function() {
       return false;
     }
   });
-		
-	
-	
+  
+  //Сортирует сообщения. Все новые добавляются вниз чата
+  function scrollToBottom () {
+    $(window).scrollTop($('#chat').height());
+  }
+  
+  window.onresize = function(){
+    scrollToBottom();
+  }
+  
+  socket.on('chat:chat:latest', function(msg) {
+    console.log(">> " + msg);
+    renderMessage(msg);
+    scrollToBottom();
+  });
+  
+   socket.on('chat:people:new', function(name) {
+    $('#joiners').show();
+    $('#joined').text(name)
+    $('#joiners').fadeOut(5000);
+  });
+
+  getName();
+
+  function loadMessages() {
+    $.get('/load', function(data){
+      console.log(data);
+      data.map(function(msg){
+        renderMessage(msg);
+      })
+        scrollToBottom();
+    })
+  }
+  loadMessages();
 });

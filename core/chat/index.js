@@ -1,19 +1,70 @@
-var io = require('socket.io').listen(8080);
+var SocketIO = require('socket.io');
+var io;
     
-var date = new Date();
+sanitise: function sanitise(txt) {
+  if(txt.indexOf("<") > -1 || txt.indexOf(">") > -1) {
+    txt = txt.replace(/</g, "&lt").replace(/>/g, "&gt");
+  }
+  return txt;
+}
 
-module.exports = io.sockets.on('connection', function (socket) {
-    var time = date.toLocaleTimeString();
-    // Посылаем клиенту сообщение о том, что он успешно подключился и его имя
-    socket.json.send({'event': 'connected', 'name': nickName, 'time': time});
-    // Посылаем всем остальным пользователям, что подключился новый клиент и его имя
-    socket.broadcast.json.send({'event': 'userJoined', 'name': nickName, 'time': time});
-    // Навешиваем обработчик на входящее сообщение
-    socket.on('message', function (msg) {
-    time = date.toLocaleTimeString();
-    // Уведомляем клиента, что его сообщение успешно дошло до сервера
-    socket.json.send({'event': 'messageSent', 'name': nickName, 'text': msg, 'time': time});
-    // Отсылаем сообщение остальным участникам чата
-    socket.broadcast.json.send({'event': 'messageReceived', 'name': nickName, 'text': msg, 'time': time})
+chatHandler: function chatHandler (socket) {
+
+  socket.emit('Добро пожаловать!');
+
+  socket.on('io:name', function (name) {
+    pub.HSET("people", socket.client.conn.id, name);
+    pub.publish("chat:people:new", name);
+  });
+
+  socket.on('io:message', function (msg) {
+    console.log("msg:", msg);
+    msg = sanitise(msg);
+    pub.HGET("people", socket.client.conn.id, function (err, name) {
+        
+    var str = JSON.stringify({
+	message: msg,
+	Time: new Date().getTime(),
+	Name: name
     });
-});
+    
+    console.log(str);
+    //История чата
+    pub.RPUSH("chat:messages", str); 
+    //Последнее сообщение  
+    pub.publish("chat:messages:latest", str);  
+    })
+  });
+
+  socket.on('error', function (err) { console.error(err.stack) })
+}
+    
+/**
+ * chat is our Public interface
+ * @param {object} (http) listener [required]
+ */
+ 
+function init (listener, callback) {
+  // setup redis pub/sub independently of any socket.io connections
+  pub.on("ready", function () {
+    // console.log("PUB Ready!");
+    sub.on("ready", function () {
+      sub.subscribe("chat:messages:latest", "chat:people:new");
+      // now start the socket.io
+      io = SocketIO.listen(listener);
+      io.on('connection', chatHandler);
+      // Here's where all Redis messages get relayed to Socket.io clients
+      sub.on("message", function (channel, message) {
+	console.log(channel + " : " + message);
+	io.emit(channel, message); // relay to all connected socket.io clients
+      });
+      setTimeout(function(){ callback() }, 300); // wait for socket to boot
+    });
+  });
+}
+
+module.exports = {
+  init: init,
+  pub: pub,
+  sub: sub
+};

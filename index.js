@@ -3,14 +3,15 @@ var Hapi = require('hapi'),
 
 var core = require('./core');
 
-
 var routes = core.routes,
+    chat   = core.chat;
     cfg    = core.config;
 
 var server = new Hapi.Server();
     server.connection({port: cfg.WebPort, host: cfg.WebHost});
    
 //================== Вьюха для клиента ==========
+
 server.register(require('vision'), function (err) {
 	
 Hoek.assert(!err, err);
@@ -24,14 +25,22 @@ server.views({
     context: cfg
 });
 });
-//===============================================
-server.route(routes);
 
-server.start(function(err) {
+//===============================================
+
+server.register(require('inert'), function () {
+    
+ server.route(routes); 
+
+ server.start(function(err) {
     if(err){
         console.log(err);
     }
     else{
-        console.log('Hapi server started @ '  + server.info.uri);
+        //require(chat).init(server.listener, function(){
+			console.log('Hapi server started @ '  + server.info.uri);
+		//});
     }
+});
+
 });

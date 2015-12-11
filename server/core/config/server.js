@@ -1,8 +1,8 @@
-//The configuration of the Web server and database server
+//Конфигурация веб-сервера и сервера баз данных
 var server_cfg = {
     WebServer: {
          host: 'localhost',
-         port: '80'
+         port: '3000'
     },
     
     DataBaseServer: {

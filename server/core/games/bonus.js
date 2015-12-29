@@ -1,6 +1,6 @@
 // Бонусная игра. Выбери карточку, чтобы выиграть золото
 
-var io = require('socket.io')(3001);
+var io = require('socket.io')(3010);
 var sockets = io.listen;
 
 //Массив карточек

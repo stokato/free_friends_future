@@ -4,7 +4,7 @@ var Cassandra = require('cassandra-driver'),
 		query = require('../query'),
 		  cfg = require('../config');
 		  
-var io = require('socket.io')(3001);
+var io = require('socket.io')(3011);
 var sockets = io.listen;
  
 var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});

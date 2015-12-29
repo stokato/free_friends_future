@@ -1,8 +1,11 @@
 //Игра бутылочка
  
 var Cassandra = require('cassandra-driver'),
-              query = require('../query'),
-	              cfg = require('../config');
+		query = require('../query'),
+		  cfg = require('../config');
+		  
+var io = require('socket.io')(3001);
+var sockets = io.listen;
  
 var client = new Cassandra.Client({contactPoints: [cfg.DataHost,cfg.DataPort], keyspace: cfg.DataKeys});
  
@@ -16,9 +19,11 @@ var max = 11,
 	  
 var temp  = 0, //Хранит максимальное значение массива
     index = 0; //Хранит индекс максимального значения массива
-
-var bottle = {
-spinBottle: function spinBottle(gender) {
+	
+//Крутим бутылочку исходя из текущего пола пользователя
+//Девушки крутят парней, парни девушек
+//Если пол не указан, крутит всех	
+function spinBottle(gender) {
 	
 	switch(gender) {
         //Крутим парней
@@ -79,9 +84,10 @@ spinBottle: function spinBottle(gender) {
     else continue;
     }
     return index;
-},
+}
 
-getGender: function getGender(user_id) {
+//Получаем пол пользователя по его идентификатору
+function getGender(user_id) {
 	client.execute("select sex from users where user_id = ?", [user_id], {prepare: true}, function(error, response) {
 		if(error) {
 			console.log(error);
@@ -97,7 +103,22 @@ getGender: function getGender(user_id) {
 				}
 		}
 	});
-}
-};
+}	
 
-module.exports = bottle;
+io.on('bottle', function(socket) {
+
+//Получаем id текущего пользователя	
+socket.on('getID', function(user_id) {
+    socket.emit('id', getGender(user_id));  
+});
+
+//Крутим бутылочку
+socket.on('Spin', function(gender) {
+	spinBottle(gender);
+});
+
+//Возвращаем результат
+socket.on('Cross', function(user_id) {
+    socket.broadcast.emit('spinResult', {user_id:user_id.id}); 
+});
+});

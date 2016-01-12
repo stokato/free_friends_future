@@ -26,3 +26,18 @@ User.prototype.setProfile = function( settings ) {
 	
 	return this;
 };
+
+//Получение параметров профиля пользователя
+User.prototype.getProfile = function() {
+	var settings = this.profile;
+	return {
+		uid: settings.uid, //id пользователя
+		status: settings.status, //статус пользователя
+		name: settings.name, //имя пользователя
+		city: settings.city, //город пользователя
+		age: settings.age, //возраст пользователя
+		relation: settings.relation, //семейное положение пользователя
+		avatar: settings.avatar, //аватар пользователя
+		coins: settings.coins //монеты пользователя
+	};
+};

@@ -41,3 +41,47 @@ User.prototype.getProfile = function() {
 		coins: settings.coins //монеты пользователя
 	};
 };
+
+//Вернуть имя пользователя
+User.prototype.getName = function() {
+	return {
+		uid: this.uid,
+		name: this.profile.name
+	};
+};
+
+//Установка ссылки на соедниение
+User.prototype.setLink = function(server, socket, pin) {
+	var user = this;
+	var uid = user.uid;
+	
+	if(user.socket) {
+		user.removeLink();
+	}
+	
+	user.server = server;
+	user.socket = socket;
+	user.pin = pin;
+	
+	socket.user[ uid ] = user;
+	socket.users_count ++;
+	
+	return this;
+};
+
+//Удаление ссылки
+User.prototype.removeLink = function() {
+	var user = this;
+	
+	var socket = user.socket;
+	if(socket) {
+		delete socket.users[ user.uid ];
+		socket.users_count --;
+	}
+	
+	user.socket = null;
+	user.server = null;
+	user.pin = null;
+	
+	return this;
+};

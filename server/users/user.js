@@ -1,3 +1,12 @@
+var Cassandra = require('cassandra-driver'),
+          cfg = require('../config/configuration.js');
+
+var Host     = cfg.cassandra.host,
+	Port     = cfg.cassandra.port,
+	Keyspace = cfg.cassandra.keyspace; 
+
+var client = new Cassandra.Client({contactPoints: [Host, Port], keyspace: Keyspace});
+
 exports = module.exports = User;
 
 //Инициализация пользователя
@@ -21,7 +30,8 @@ User.prototype.setProfile = function( settings ) {
 		age: settings.age, //возраст пользователя
 		relation: settings.relation, //семейное положение пользователя
 		avatar: settings.avatar, //аватар пользователя
-		coins: settings.coins //монеты пользователя
+		coins: settings.coins, //монеты пользователя
+		points: settings.points //поинты пользователя
 	};
 	
 	return this;
@@ -38,7 +48,8 @@ User.prototype.getProfile = function() {
 		age: settings.age, //возраст пользователя
 		relation: settings.relation, //семейное положение пользователя
 		avatar: settings.avatar, //аватар пользователя
-		coins: settings.coins //монеты пользователя
+		coins: settings.coins, //монеты пользователя
+		points: settings.points //поинты пользователя
 	};
 };
 
@@ -47,6 +58,22 @@ User.prototype.getName = function() {
 	return {
 		uid: this.uid,
 		name: this.profile.name
+	};
+};
+
+//Вернуть монеты пользователя
+User.prototype.getCoins = function() {
+	return {
+		uid: this.uid,
+		coins: this.profile.coins
+	};
+};
+
+//Вернуть поинты пользователя
+User.prototype.getPoints = function() {
+	return {
+		uid: this.uid,
+		points: this.profile.points
 	};
 };
 
@@ -84,4 +111,40 @@ User.prototype.removeLink = function() {
 	user.pin = null;
 	
 	return this;
+};
+
+//Сохранение данных
+User.prototype.saveData = function ( reply ) {
+  var user = this;
+  var info = user.profile;
+  var set_coins = info.coins;
+  var set_points = info.points;
+  var user_id = info.uid;
+  var query = "UPDATE users SET points = ? coins = ? WHERE UID = ?";
+  client.execute(query, [set_points, set_coins, user_id], {prepare: true}, function(error, response) {
+  	if(error) {
+  		console.log(error);
+  	}
+  	else {
+  		console.log("Save data for " + user_id + " complete !");
+  	}
+  });
+};
+
+
+//Загрузка данных
+User.prototype.loadData = function() {
+  var user = this;
+  var info = user.profile;
+  var UID = info.uid;
+  var query = "SELECT coins, points FROM users WHERE UID = ?";
+  client.execute(query, [UID], {prepare: true}, function(error, response) {
+  	if(error) {
+  		console.log(error);
+  	}
+  	else {
+  		console.log("Data loadig for " + UID + " is done !");
+  	}
+  });
+  return this;
 };

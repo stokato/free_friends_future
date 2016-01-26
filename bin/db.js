@@ -56,15 +56,26 @@ DBManager.prototype.addUser = function(usr, callback) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Найти пользователя по внешнему ид - если нашли - возвращаем его в объекте
-DBManager.prototype.findUser = function(vid, callback) {
-  if (!vid) {
-    var error = new Error("Задан пустой Id");
+DBManager.prototype.findUser = function(id, vid, callback) {
+  if (!vid && !id) {
+    var error = new Error("Ошибка при поиске пользователя: Не задан ID или VID");
     return callback(error, null);
   }
+  var field = '';
+  param = [];
+
+  if(id) {
+    field = "id";
+    param.push(id);
+  }
+  else {
+    field = "vid";
+    param.push(vid);
+  }
+
+  var query = "select id, vid, age, location, status, gender, points, money FROM users where " + field +" = ?";
   
-  var query = "select id, vid, age, location, status, gender, points, money FROM users where vid = ?";
-  
-  client.execute(query,[vid], {prepare: true }, function(err, result) {
+  client.execute(query,param, {prepare: true }, function(err, result) {
     if (err) {
       return callback(err, null);
     }

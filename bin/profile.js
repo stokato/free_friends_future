@@ -1,6 +1,6 @@
 var db        = require('./db.js');
 var dbManager = new db();
-var waterfall = require('async-waterfall');
+//var waterfall = require('async-waterfall');
 var async     = require('async');
 
 /**
@@ -13,47 +13,60 @@ var async     = require('async');
  *         сохранить текущий профиль в базу
  *         удалить текущий профиль из базы и очистить все свойства
  */
-function Profile(socketid, opt, callback) {
-  var options = opt || {};
-
-  var pSocket   = socketid;
+function Profile() {
+  var pSocket   = null;
 
   var pID       = null;
-  var pVID      = options.vid;
+  var pVID      = null;
   
-  var pName     = options.name;
-  var pAvatar   = options.avatar;
-  var pAge      = options.age;
-  var pLocation = options.location;
-  var pGender   = options.gender;
+  var pName     = null;
+  var pAvatar   = null;
+  var pAge      = null;
+  var pLocation = null;
+  var pGender   = null;
 
   var pStatus   = null;
   var pPoints   = null;
   var pMoney    = null;
 
+  var gift_1   = null;
+  var gift_2   = null;
   
   var pHistory  = [];
   var pGifts    = [];
   var pFriends  = [];
   var pGuests   = [];
-
-  if (!pSocket) { callback(new Error("Не задан Socke Id"), null); }
-  if (!pVID || !pName || !pAvatar || !pAge || !pLocation || !pGender) {
-    callback(new Error("На задана одна из опций"), null);
-  }
-
-  callback(null, socketid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Строим профиль пользователя из информации, хранящейся в базе или полученной извне
 // Если раньше в базе такого небыло - добавляем
-Profile.prototype.build = function(callback) {
+Profile.prototype.init = function(soketid, opt, callback) {
   var self = this;
-  waterfall([
+  async.waterfall([
   //////////////////////////////////////////////////////////////////////////
-    function (cb) {  // Ищем пользователя в базе
-      dbManager.findUser(self.pVID, function(err, foundUser) {
+    function (cb) {  // Устанавливаем свойства
+      var options = opt || {};
+
+      self.pSocket   = socketid;
+
+      self.pVID      = options.vid;
+
+      self.pName     = options.name;
+      self.pAvatar   = options.avatar;
+      self.pAge      = options.age;
+      self.pLocation = options.location;
+      self.pGender   = options.gender;
+
+      if (!pSocket) { return cb(new Error("Не задан Socket Id"), null); }
+      if (!pVID || !pName || !pAvatar || !pAge || !pLocation || !pGender) {
+        return cb(new Error("На задана одна из опций"), null);
+      }
+
+      cb(null, null);
+    },
+    function (res, cb) {  // Ищем пользователя в базе
+      dbManager.findUser(null, self.pVID, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
           self.pID     = foundUser.pId;
@@ -67,7 +80,7 @@ Profile.prototype.build = function(callback) {
   ///////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // Если такой есть в базе, получаем его подарки
       if(foundUser) {
-        dbManager.findGifts(self.pVID, function(err, gifts) {
+        dbManager.findGifts(foundUser.id, function(err, gifts) {
           if (err) { cb(err, null); }
 
           self.pGifts = gifts || [];
@@ -79,7 +92,7 @@ Profile.prototype.build = function(callback) {
   ///////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // и историю сообщений
       if(foundUser) {
-        dbManager.findMessages(self.pVID, function(err, messages) {
+        dbManager.findMessages(foundUser.id, function(err, messages) {
           if (err) { cb(err, null); }
 
           self.pHistory = messages || [];
@@ -91,7 +104,7 @@ Profile.prototype.build = function(callback) {
     ///////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // и друзей
       if(foundUser) {
-        dbManager.findFriends(self.pVID, function(err, friends) {
+        dbManager.findFriends(foundUser.id, function(err, friends) {
           if (err) { cb(err, null); }
 
           self.pFriends = friends || [];
@@ -103,7 +116,7 @@ Profile.prototype.build = function(callback) {
     ///////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // и гостей
       if(foundUser) {
-        dbManager.findGuests(self.pVID, function(err, guests) {
+        dbManager.findGuests(foundUser.id, function(err, guests) {
           if (err) { cb(err, null); }
 
           self.pGuests = guests || [];
@@ -168,8 +181,8 @@ Profile.prototype.setSocket = function(socket, callback) {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Получить текущий сокет
-Profile.prototype.getSocket = function(callback) {
-  callback(null, this.pSocket);
+Profile.prototype.getSocket = function() {
+  return this.pSocket;
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Установить сведения о пользователе
@@ -180,12 +193,13 @@ Profile.prototype.setInfo = function(options, callback) {
   this.pLocation   = (options.location)? options.location : this.pLocation;
   this.pStatus     = (options.status)?   options.status : this.pStatus;
   this.pGender     = (options.gender)?   options.gender : this.pGender;
+
   
   callback(null, options);
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Получить сведения о пользователе
-Profile.prototype.getInfo = function(callback) {
+Profile.prototype.getInfo = function() {
   var options = {
     id       : this.pId,
     vid      : this.pVID,
@@ -196,9 +210,10 @@ Profile.prototype.getInfo = function(callback) {
     gender   : this.pGender,
     status   : this.pStatus,
     points   : this.pPoints,
-    money    : this.pMoney
+    money    : this.pMoney,
+    socket   : this.pSocket
   };
-  callback(null, options);
+  return options;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Добавить подарок 
@@ -209,8 +224,8 @@ Profile.prototype.addGift = function(gift, callback) {
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // Получить все подарки
-Profile.prototype.getGifts = function(callback) {
-  callback(null, this.pGifts);
+Profile.prototype.getGifts = function() {
+  return this.pGifts;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Добавить сообщение в историю
@@ -227,21 +242,20 @@ Profile.prototype.addMessage = function(message, callback) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Получить историю сообщений, если задан параметр count - указанное количество с конца
 // Если задан position - count с указанной позиции
-Profile.prototype.getHistory = function(count, position, callback) {
+Profile.prototype.getHistory = function(count, position) {
   if (!count) {
-    callback(null, this.pHistory);
+    return this.pHistory;
   } else {
-    try {
-      var history = [];
-      var first = (position)? position : this.pHistory.length-1 - count;
-      var last  = (position && (position + count) < this.pHistory.length-1)? position + count
+
+  var history = [];
+  var first = (position)? position : this.pHistory.length-1 - count;
+  var last  = (position && (position + count) < this.pHistory.length-1)? position + count
                                                                       : this.pHistory.length-1;
 
-      for (var i = first; i <= last; i++) {
-        history.push(this.pHistory[i]);
-      }
-    } catch(err) { return callback(err.message); }    
-    callback(null, history);
+  for (var i = first; i <= last; i++) {
+    history.push(this.pHistory[i]);
+  }
+  return history;
   }
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,37 +270,77 @@ Profile.prototype.addPoints = function(num, callback) {
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Добавить пользователя в друзья
-Profile.prototype.addToFriends = function(id, callback) {  // ???????????????????????
+Profile.prototype.addToFriends = function(friend, callback) {
   var self = this;
-  waterfall([
+  async.waterfall([
     //////////////////////////////////////////////////////////////////////////
     function(cb) {
       for(var i = 0; i < self.pFriends.length; i++) {
-        if(self.pFriends[i].id == id) { return cb(new Error("Этот пользователь уже в списке ваших друзей")); }
+        if(self.pFriends[i].id == friend.id) { return cb(new Error("Этот пользователь уже в списке ваших друзей")); }
       }
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      dbManager.findUser(id, function(err, foundUser) {
+      dbManager.findUser(friend.id, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
-          self.pFriends.push(foundUser);
-          cb(null, foundUser);
+          self.pFriends.push(friend);
+          cb(null, friend);
         } else {
           cb(new Error("Такого пользователя нет в базе данных"));
         }
       });
     }
-      ], function(err, foundUser) {
+      ], function(err, friend) {
     if(err) { return callback(err, null); }
 
-    callback(null, foundUser);
+    callback(null, friend);
   })
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Получить список друзей
-Profile.prototype.getFriends = function(callback) {
-  callback(null, this.pFriends);
+Profile.prototype.getFriends = function() {
+  return this.friends;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Добавить гостя в список гостей
+Profile.prototype.addToGuests = function(guest, callback) {
+  var self = this;
+  async.waterfall([
+    //////////////////////////////////////////////////////////////////////////
+    function(cb) {
+      for(var i = 0; i < self.pGuests.length; i++) {
+        if(self.pGuests[i].id == guest.id) { // Если уже есть, перезаписываем
+          self.pGuests = guest;
+          return cb(null, true)
+        }
+      }
+      cb(null, false);
+    },
+    function (isGuest, cb) {  // Ищем пользователя в базе
+      if(!isGuest) {
+        dbManager.findUser(guest.id, function(err, foundUser) {
+          if (err) { return cb(err); }
+          if (foundUser) {
+            self.pFriends.push(guest);
+            cb(null, guest);
+          } else {
+            cb(new Error("Такого пользователя нет в базе данных"));
+          }
+        });
+      } else cb(null, guest);
+
+    }
+  ], function(err, guest) {
+    if(err) { return callback(err, null); }
+
+    callback(null, guest);
+  })
+};
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Получить список друзей
+Profile.prototype.getGuests = function(callback) {
+  return this.pGuests;
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Сохранить профиль в базу данных
@@ -303,7 +357,7 @@ Profile.prototype.save = function(callback) {
     money    : self.money
   };
 
-  waterfall([
+  async.waterfall([
       function(cb) { // Сохраняем данные пользователя
         dbManager.updateUser(options, function(err, id) {
           if (err) {return cb(err, null); }

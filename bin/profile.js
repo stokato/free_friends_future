@@ -5,50 +5,53 @@ var async     = require('async');
 
 /**
  * Класс профиль пользователя, хранит, обменивается с базой и обрабатывает данные о пользователе
- * Свойства: ИД, имя, аватар, возраст, местоположение, статус, история сообщений (массив), подарки (коллекция)
- * Методы: построить - ищет данные о пользователе в базе (если нет - на стороне) и заполняет профиль
+ * Свойства: ИД, имя, аватар, возраст, местоположение, статус, пол, очки, деньги (подарки, которы висят на столе ???)
+ * Методы: инициализировать - ищет данные о пользователе в базе, если нет - создает новый и заполняет профиль
  *         установить статус, получить статус, установить инф. (прочие свойства), получить инф.,
  *         добавить подарок, получить все подарки,
- *         добавить сообщиение в историю, получить все (или n) сообщений из истории
- *         сохранить текущий профиль в базу
+ *         добавить сообщиение в историю, получить все (или n) сообщений из истории,
+ *         добавить друга, получить друзей,
+ *         добавить гостя, получить госте,
+ *         сохранить текущий профиль в базу,
  *         удалить текущий профиль из базы и очистить все свойства
  */
 function Profile() {
-  var pSocket   = null;
+  var pSocket   = null;   // Сокет
 
-  var pID       = null;
-  var pVID      = null;
+  var pID       = null;   // Внутренний ИД
+  var pVID      = null;   // Внешний
   
-  var pName     = null;
-  var pAvatar   = null;
-  var pAge      = null;
-  var pLocation = null;
-  var pGender   = null;
+  var pName     = null;   // ???
+  var pAvatar   = null;   // ???
+  var pAge      = null;   // ???
+  var pLocation = null;   // ???
 
-  var pStatus   = null;
-  var pPoints   = null;
-  var pMoney    = null;
+  var pGender   = null;   // пол игрока
+  var pStatus   = null;   // статус (заводит игрок)
+  var pPoints   = null;   // очки
+  var pMoney    = null;   // деньги
 
-  var gift_1   = null;
+  var gift_1   = null;    // На игрвом столе на аватарах игроков весят подарки, по ним не ясно
   var gift_2   = null;
-  
-  var pHistory  = [];
-  var pGifts    = [];
-  var pFriends  = [];
-  var pGuests   = [];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Строим профиль пользователя из информации, хранящейся в базе или полученной извне
-// Если раньше в базе такого небыло - добавляем
-Profile.prototype.init = function(soketid, opt, callback) {
+/*
+Инициализируем профиль
+- Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
+- Что-то проверяем
+- Ищем пользователя в БД и заполняем оставшиеся свойства
+- Если нет - добавляем
+- Возвращаем все свойсва (или не все ???)
+ */
+Profile.prototype.init = function(socket, opt, callback) {
   var self = this;
   async.waterfall([
   //////////////////////////////////////////////////////////////////////////
     function (cb) {  // Устанавливаем свойства
       var options = opt || {};
 
-      self.pSocket   = socketid;
+      self.pSocket   = socket;
 
       self.pVID      = options.vid;
 
@@ -76,54 +79,6 @@ Profile.prototype.init = function(soketid, opt, callback) {
         }
         cb(null, foundUser);
       });
-    },
-  ///////////////////////////////////////////////////////////////////////////
-    function (foundUser, cb) { // Если такой есть в базе, получаем его подарки
-      if(foundUser) {
-        dbManager.findGifts(foundUser.id, function(err, gifts) {
-          if (err) { cb(err, null); }
-
-          self.pGifts = gifts || [];
-
-          cb(null, foundUser);
-        });
-      } else cb(null, foundUser);
-    },
-  ///////////////////////////////////////////////////////////////////////////
-    function (foundUser, cb) { // и историю сообщений
-      if(foundUser) {
-        dbManager.findMessages(foundUser.id, function(err, messages) {
-          if (err) { cb(err, null); }
-
-          self.pHistory = messages || [];
-
-          cb(null, foundUser);
-        });
-      } else cb(null, foundUser);
-    },
-    ///////////////////////////////////////////////////////////////////////////
-    function (foundUser, cb) { // и друзей
-      if(foundUser) {
-        dbManager.findFriends(foundUser.id, function(err, friends) {
-          if (err) { cb(err, null); }
-
-          self.pFriends = friends || [];
-
-          cb(null, foundUser);
-        });
-      } else cb(null, foundUser);
-    },
-    ///////////////////////////////////////////////////////////////////////////
-    function (foundUser, cb) { // и гостей
-      if(foundUser) {
-        dbManager.findGuests(foundUser.id, function(err, guests) {
-          if (err) { cb(err, null); }
-
-          self.pGuests = guests || [];
-
-          cb(null, foundUser);
-        });
-      } else cb(null, foundUser);
     },
   ////////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // Если в базе такого нет, добавляем
@@ -174,18 +129,31 @@ Profile.prototype.init = function(soketid, opt, callback) {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// Установить новый сокет
+/*
+ Устанавливаем новый сокет
+ */
 Profile.prototype.setSocket = function(socket, callback) {
   this.pSocket = socket;
   callback(null, this.pSocket);
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Получить текущий сокет
+/*
+Получаем сокет
+ */
 Profile.prototype.getSocket = function() {
   return this.pSocket;
 };
+
+/*
+Получаем деньги
+ */
+Profile.prototype.getMoney = function() {
+  return this.pMoney;
+};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Установить сведения о пользователе
+/*
+Устанавливаем свойста (пока не используется) Стату и пол ???
+ */
 Profile.prototype.setInfo = function(options, callback) {
   this.pName       = (options.name)?     options.name : this.pName;
   this.pAvatar     = (options.avatar)?   options.avatar : this.pAvatar;
@@ -193,157 +161,173 @@ Profile.prototype.setInfo = function(options, callback) {
   this.pLocation   = (options.location)? options.location : this.pLocation;
   this.pStatus     = (options.status)?   options.status : this.pStatus;
   this.pGender     = (options.gender)?   options.gender : this.pGender;
-
   
   callback(null, options);
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Получить сведения о пользователе
+/*
+Поулчаем сведения по пользователе
+- Или последние 4 каждый раз берутся из соц сетей (а может и пол) ???
+ */
 Profile.prototype.getInfo = function() {
   var options = {
     id       : this.pId,
     vid      : this.pVID,
-    name     : this.pName,
-    avatar   : this.pAvatar,
-    age      : this.pAge,
-    location : this.pLocation,
     gender   : this.pGender,
     status   : this.pStatus,
     points   : this.pPoints,
-    money    : this.pMoney,
-    socket   : this.pSocket
+
+    name     : this.pName,
+    avatar   : this.pAvatar,
+    age      : this.pAge,
+    location : this.pLocation
   };
   return options;
 };
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить подарок 
-Profile.prototype.addGift = function(gift, callback) {
-  this.pGifts.push(gift);
 
-  callback(null, gift);
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+Добавляем подарок в БД
+ */
+Profile.prototype.addGift = function(gift, callback) {
+  self = this;
+  dbManager.addGift(self.pID, gift, function(err, res) {
+    if (err) { return callback(err, null); }
+
+    callback(null, gift);
+  });
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-// Получить все подарки
-Profile.prototype.getGifts = function() {
-  return this.pGifts;
+/*
+Получаем из БД все подарки
+ */
+Profile.prototype.getGifts = function(callback) {
+  var self = this;
+  dbManager.findGifts(self.pID, function(err, gifts) {
+    if (err) { callback(err, null); }
+
+    callback(null, gifts);
+  });
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить сообщение в историю
-// Сообщение должно иметь поля: собеседник, входящее/true, текст, дата, и подарок (если есть)
+/*
+Сохраняем личное сообщение в БД
+- Сообщение должно иметь поля: собеседник, входящее/bool, текст, дата
+ */
 Profile.prototype.addMessage = function(message, callback) {
   if (!message.companion || !message.text || !message.date || !message.date) { // incom?
     return callback(new Error("Ошибка при добавлении сообщения в историю: заданы не все аргументы"));
   }
-  
-  this.pHistory.push(message);
+  var self = this;
+  dbManager.addMessage(self.pID, message, function(err, res) {
+    if (err) { return callback(err, null); }
 
-  callback(null, message);
+    callback(null, null);
+  });
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Получить историю сообщений, если задан параметр count - указанное количество с конца
-// Если задан position - count с указанной позиции
-Profile.prototype.getHistory = function(count, position) {
-  if (!count) {
-    return this.pHistory;
-  } else {
+/*
+Получаем историю сообщений:
+- Читаем из БД
+- Если задан параметр count - указанное количество с конца
+- Если задан position - count с указанной позиции
+ */
+Profile.prototype.getHistory = function(count, position, callback) {
+  var self = this;
+  dbManager.findMessages(self.pID, function(err, messages) {
+    if (err) { return callback(err, null); }
 
-  var history = [];
-  var first = (position)? position : this.pHistory.length-1 - count;
-  var last  = (position && (position + count) < this.pHistory.length-1)? position + count
-                                                                      : this.pHistory.length-1;
+    if (!count) {
+      callback(null, messages);
+    } else {
+      var history = [];
+      var first = (position)? position : messages.length-1 - count;
+      var last  = (position && (position + count) < messages.length-1)? position + count
+          : messages.length-1;
 
-  for (var i = first; i <= last; i++) {
-    history.push(this.pHistory[i]);
-  }
-  return history;
-  }
+      for (var i = first; i <= last; i++) {
+        history.push(messages[i]);
+      }
+      callback(null, history);
+    }
+  });
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить очки пользователю
+/*
+Добавляем очки пользователю
+- Сначала в БД и если успешно
+- В ОЗУ
+- Возвращаем
+ */
 Profile.prototype.addPoints = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Ошибка при добавлении очков пользователю, количество очков задано некорректно"));
   }
-  this.pPoints = this.pPoints + num;
+  self = this;
+  var options = {
+    id : self.pID,
+    vid : self.pVID,
+    points : self.pPoints + num
+  };
 
-  callback(null, this.pPoints);
+  dbManager.updateUser(options, function(err, id) {
+    if (err) {return callback(err, null); }
+
+    self.pPoints = options.points;
+    callback(null, self.pPoints);
+  });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить пользователя в друзья
+/*
+ Добавляем друга в БД
+ */
 Profile.prototype.addToFriends = function(friend, callback) {
   var self = this;
-  async.waterfall([
-    //////////////////////////////////////////////////////////////////////////
-    function(cb) {
-      for(var i = 0; i < self.pFriends.length; i++) {
-        if(self.pFriends[i].id == friend.id) { return cb(new Error("Этот пользователь уже в списке ваших друзей")); }
-      }
-      cb(null, null);
-    },
-    function (res, cb) {  // Ищем пользователя в базе
-      dbManager.findUser(friend.id, function(err, foundUser) {
-        if (err) { return cb(err); }
-        if (foundUser) {
-          self.pFriends.push(friend);
-          cb(null, friend);
-        } else {
-          cb(new Error("Такого пользователя нет в базе данных"));
-        }
-      });
-    }
-      ], function(err, friend) {
-    if(err) { return callback(err, null); }
-
+  dbManager.addFriend(self.pID, friend, function (err, res) {
+    if (err) { return callback(err, null); }
     callback(null, friend);
-  })
+  });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Получить список друзей
-Profile.prototype.getFriends = function() {
-  return this.friends;
+/*
+Получаем всех друзей из БД
+ */
+Profile.prototype.getFriends = function(callback) {
+  var self = this;
+  dbManager.findFriends(self.pID, function(err, friends) {
+    if (err) { return callback(err, null); }
+
+    callback(null, friends);
+  });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить гостя в список гостей
+/*
+Добавляем гостя в БД
+ */
 Profile.prototype.addToGuests = function(guest, callback) {
   var self = this;
-  async.waterfall([
-    //////////////////////////////////////////////////////////////////////////
-    function(cb) {
-      for(var i = 0; i < self.pGuests.length; i++) {
-        if(self.pGuests[i].id == guest.id) { // Если уже есть, перезаписываем
-          self.pGuests = guest;
-          return cb(null, true)
-        }
-      }
-      cb(null, false);
-    },
-    function (isGuest, cb) {  // Ищем пользователя в базе
-      if(!isGuest) {
-        dbManager.findUser(guest.id, function(err, foundUser) {
-          if (err) { return cb(err); }
-          if (foundUser) {
-            self.pFriends.push(guest);
-            cb(null, guest);
-          } else {
-            cb(new Error("Такого пользователя нет в базе данных"));
-          }
-        });
-      } else cb(null, guest);
+  dbManager.addGuest(self.pID, guest, function(err, res) {
+    if (err) { return callback(err, null); }
 
-    }
-  ], function(err, guest) {
-    if(err) { return callback(err, null); }
-
-    callback(null, guest);
+    callback(null, res);
   })
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Получить список друзей
+/*
+Получаме гостей из БД
+ */
 Profile.prototype.getGuests = function(callback) {
-  return this.pGuests;
+  var self = this;
+  dbManager.findGuests(self.pID, function(err, guests) {
+    if (err) { return callback(err, null); }
+
+    callback(null, guests);
+  });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Сохранить профиль в базу данных
+/*
+Сохраняем профиль в БД
+ */
 Profile.prototype.save = function(callback) {
   var self = this;
   var options = {
@@ -357,76 +341,23 @@ Profile.prototype.save = function(callback) {
     money    : self.money
   };
 
-  async.waterfall([
-      function(cb) { // Сохраняем данные пользователя
-        dbManager.updateUser(options, function(err, id) {
-          if (err) {return cb(err, null); }
-          cb(null, id);
-        });
-      },
-      function(id, cb) { // Удаляем устаревший список подарков
-        dbManager.deleteGifts(id, function(err, id) {
-          if(err) { return cb(err, null); }
-          cb(null, id);
-        })
-      },
-      function(id, cb) { // Добавляем обновленный список подароков
-        async.map(self.pGifts, function(gift, cb_inmap) {
-          dbManager.addGift(id, gift, function(err, res) {
-            if (err) { return cb_inmap(err, null); }
-            cb_inmap(null, null);
-          });
-        }, function(err, results){
-          if (err)  { return cb(err, null); }
-          cb(null, id);
-        });
-      },
-      function(id, cb) { // Удаляем старую историю сообщений
-        dbManager.deleteMessages(id, function(err, id) {
-          if(err) { return cb(err, null) }
-          cb(null, id);
-        })
-      },
-      function(id, cb) { // Добавляем обновленную историю сообщений
-        async.map(self.pHistory, function(msg, cb_inmap) {
-          dbManager.addMessage(id, msg, function(err, res) {
-            if (err) { return cb_inmap(err, null); }
-            cb_inmap(null, null);
-          });
-        }, function(err, results){
-          if (err)  { return cb(err, null); }
-          cb(null, id);
-        });
-      },
-    function(id, cb) { // Удаляем старый список друзей
-      dbManager.deleteFriends(id, function(err, id) {
-        if(err) { return cb(err, null) }
-        cb(null, id);
-      })
-    },
-    function(id, cb) { // Добавляем обновленный список друзей
-      async.map(self.pFriends, function (friend, cb_inmap) {
-        dbManager.addFriend(id, friend, function (err, res) {
-          if (err) {
-            return cb_inmap(err, null);
-          }
-          cb_inmap(null, null);
-        });
-      }, function (err, results) {
-        if (err) {
-          return cb(err, null);
-        }
-        cb(null, id);
-      });
-    }
-  ], function(err, id) { // Вызывается последней или в случае ошибки
-      if(err) { return callback(err)}
-      callback(null, id);
+  dbManager.updateUser(options, function(err, id) {
+    if (err) {return callback(err, null); }
+
+    callback(null, id);
   });
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Удаляем пользователя из базы
+/*
+Удаляем польлзователя из БД
+- Очищаем свойста
+- Удаляем подарки
+- личные сообщения
+- друзей
+- гостей
+- самого поьзователя
+ */
 Profile.prototype.remove = function(callback) {
 
   this.pSocket   = null;
@@ -438,25 +369,20 @@ Profile.prototype.remove = function(callback) {
   this.pLocation = null;
   this.pStatus   = null;
 
-  this.pHistory  = null;
-  this.pGifts    = null;
-  this.pFriends  = null;
-
   this.pPoints   = null;
   this.pGender   = null;
   this.pMoney    = null;
 
-  dbManager.deleteUser(this.pId, function(err, id) {
-    if (err) { callback(err, null); }
-    dbManager.deleteGifts(id, function(err, id) {  // Удаляем подарки
-      if(err) { return callback(err, null); }
-      dbManager.deleteMessages(id, function(err, id) { // и историю
+  dbManager.deleteGifts(this.pId, function(err, id) {  // Удаляем подарки
+    if(err) { return callback(err, null); }
+    dbManager.deleteMessages(id, function(err, id) { // и историю
+      if(err) { return callback(err, null) }
+      dbManager.deleteFriends(id, function(err, id) { // и друзей
         if(err) { return callback(err, null) }
-
-        dbManager.deleteFriends(id, function(err, id) { // и друзей
+        dbManager.deleteGuests(id, function(err, id) { // и гостей
           if(err) { return callback(err, null) }
 
-          dbManager.deleteGuests(id, function(err, id) { // и гостей
+          dbManager.deleteUser(id, function(err, id) { // и самого пользователя
             if(err) { return callback(err, null) }
 
             callback(null, id);
@@ -470,7 +396,6 @@ Profile.prototype.remove = function(callback) {
 
 module.exports = Profile;
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
 function isNumeric(n) { // Проверка - явлеется ли аргумент числом
   return !isNaN(parseFloat(n)) && isFinite(n);
 }

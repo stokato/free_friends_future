@@ -1,25 +1,36 @@
 var cassandra = require('cassandra-driver');
 var genId = require('uid');
 var async = require('async');
-var Config = require('../config.json').cassandra;
-
+var Config = require('../config.json').cassandra; // Настойки доступа к БД
+                                                  // Клиент Кассанда
 var client = new cassandra.Client({contactPoints: [Config.host],
                                   keyspace: Config.keyspace});
-var ID_LEN = 10;
+var ID_LEN = 10;                                  // Длина ИД (ключевое поле)
 /**
  * Класс, обеспечивающий работу с БД Кассандра
  * содержит методы - добавить пользователя (обязательные поля - ид и имя) - возвращает добавленного
  *                 - найти пользователя (ид) - возвращает найденного
  *                 - изменить пользователя (ид, имя) - возвращает ид
- *                 - удалит пользователя (ид) - возвращает ид
+ *                 - удалить пользователя (ид) - возвращает ид
+ *                 - добавить, найти, удалить подарки
+ *                 - добавить, найти, удалить историю сообщений
+ *                 - добавить, найти, найти одного, удалить друзей
+ *                 - добавить, найти, удалить гостей
+ *                 - добавить, найти, удалить товар (магазин)
  */
 var DBManager = function(client) {
   
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить пользователя - проверки на пустое имя и ид
-// Если удачно, возвращаем добавленного 
+/*
+ Добавляем пользователя в БД: объект с данными пользователя из соц. сетей
+ - Проверка (ВИД обязателен)
+ - Генерируем внутренний ИД
+ - Строим запрос
+ - Выполняем запрос
+ - Возвращаем объект обратно
+  */
 DBManager.prototype.addUser = function(usr, callback) {
   var user = usr || {};
   var vid = user.vid || '';
@@ -55,41 +66,54 @@ DBManager.prototype.addUser = function(usr, callback) {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Найти пользователя по внешнему ид - если нашли - возвращаем его в объекте
-DBManager.prototype.findUser = function(id, vid, callback) {
+/*
+ Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, списко искомых полей
+ - Проверка
+ - Определяем - по чему будем искать
+ - Строим запрос
+ - Обращаемся к БД и обрабатываем рузультат
+ - Возвращаем объект с данными игрока (если нет такого - NULL)
+ */
+DBManager.prototype.findUser = function(id, vid, f_list, callback) {
   if (!vid && !id) {
     var error = new Error("Ошибка при поиске пользователя: Не задан ID или VID");
     return callback(error, null);
   }
-  var field = '';
-  param = [];
+  var search = '';
+  var param = [];
 
   if(id) {
-    field = "id";
+    search = "id";
     param.push(id);
   }
   else {
-    field = "vid";
+    search = "vid";
     param.push(vid);
   }
 
-  var query = "select id, vid, age, location, status, gender, points, money FROM users where " + field +" = ?";
+  var fields = [];
+  for(var i = 0; i < f_list.length; i++) {
+    if(f_list == "age")      fields += ", age";
+    if(f_list == "location") fields += ", location";
+    if(f_list == "status")   fields += ", status";
+    if(f_list == "gender")   fields += ", gender";
+    if(f_list == "points")   fields += ", points";
+    if(f_list == "money")    fields += ", money";
+  }
+
+
+  var query = "select id, vid " + fields + " FROM users where " + search +" = ?";
   
   client.execute(query,param, {prepare: true }, function(err, result) {
-    if (err) {
-      return callback(err, null);
-    }
+    if (err) { return callback(err, null); }
       
     var user = '';
                     
     if(result.rows.length > 0) {
       user = result.rows[0];
-      
       callback(null, {
                       id : user.id,
-                      //name : user.name,
                       age : user.age,
-                      //avatar : user.avatar,
                       location : user.location,
                       gender   : user.gender,
                       points   : user.points,
@@ -97,7 +121,6 @@ DBManager.prototype.findUser = function(id, vid, callback) {
                       money : user.money,
                       vid : user.vid
                     });
-                      
     } else {
       callback(null, null);
     }
@@ -105,10 +128,25 @@ DBManager.prototype.findUser = function(id, vid, callback) {
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Получить список всех пользователей
-DBManager.prototype.findAllUsers = function(callback) {
+/*
+Получаем список всех пользователей: список искомых полей
+- Строим и выполняем запрос
+- Создаем массив и заполняем его данными
+- Возвращяем массив (если никого нет - NULL)
+ */
+DBManager.prototype.findAllUsers = function(f_list, callback) {
 
-  var query = "select id, age, location, status, gender, points FROM users";
+  var fields = [];
+  for(var i = 0; i < f_list.length; i++) {
+    if(f_list == "age") fields += ", age";
+    if(f_list == "location") fields += ", location";
+    if(f_list == "status") fields += ", status";
+    if(f_list == "gender") fields += ", gender";
+    if(f_list == "points") fields += ", points";
+    if(f_list == "money") fields += ", money";
+  }
+
+  var query = "select id" + fields + " FROM users";
 
   client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) {
@@ -143,7 +181,12 @@ DBManager.prototype.findAllUsers = function(callback) {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Изменяем данные пользователя, если успешно, возвращаяем его pid
+/*
+Изменяем данные пользователя: объек с данными
+- Проверка: поле ИД обязательные
+- Строим и выполняем запрос
+- Возвращаем объект обратно
+ */
 DBManager.prototype.updateUser = function(usr, callback) {
   var user = usr || {};
   var id = user.id || '';
@@ -158,9 +201,7 @@ DBManager.prototype.updateUser = function(usr, callback) {
   var fields = "";
   var params = [];
   if (user.vid)       { fields = fields + ", vid = ? ";      params.push(user.vid); }
-  //if (user.name)      { fields = fields + ", name = ? ";      params.push(user.name); }
   if (user.age)       { fields = fields + ", age = ? ";      params.push(user.age); }
-  //if (user.avatar)    { fields = fields + ", avatar = ? ";   params.push(user.avatar); }
   if (user.location)  { fields = fields + ", location = ? "; params.push(user.location); }
   if (user.status)    { fields = fields + ", status = ? ";   params.push(user.status); }
   if (user.money)     { fields = fields + ", money = ? ";    params.push(user.money); }
@@ -173,12 +214,16 @@ DBManager.prototype.updateUser = function(usr, callback) {
   client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
       
-      callback(null, pid);
+      callback(null, user);
   });
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////
-// Удаляем пользователя, если успешно - возвращаем его pid
+/*
+ Удаляем пользователя: ИД
+ - Проверка на ИД
+ - Возвращаем ИД
+ */
 DBManager.prototype.deleteUser = function(id, callback) {
 
   if (!id) { callback(new Error("Задан пустой Id")); }
@@ -188,27 +233,32 @@ DBManager.prototype.deleteUser = function(id, callback) {
   client.execute(query, [id], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
       
-      callback(null, pid);
+      callback(null, id);
   });
 };
 /////////////////////////////////////////////////////////////////////////////////////////
-// Добавить подарок, сначала проверяем на правильность параметры, затем - есть ли пользователь с
-// таким id в базе. Добавляем подарок в таблицу user_gifts
+/*
+Добавить подарок: ИД игрока и объект с данными о подарке
+- Провека: все поля
+- Генерируем ИД подарка
+- Строим и выполняем запрос
+- Возвращаем объект подарка
+ */
 DBManager.prototype.addGift = function(uid, gft, callback) {
   var gift = gft           || {};
-  var user = uid           || '';
+  var user = uid;
 
-  var giftId   = gift.id   || '';
-  var type = gift.type     || '';
-  var data = gift.data     || '';
-  var date = gift.date     || '';
-  var from = gift.from     || '';
+  var giftId = gift.id;
+  var type = gift.type;
+  var data = gift.data;
+  var date = gift.date;
+  var from = gift.from;
 
   if (!user) {
     return callback(new Error("Не указан Id пользователя"), null);
   }
 
-  if (type == '' || data == '' || date == '' || from == '') {
+  if (!type || !data || !date || !from) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
@@ -236,10 +286,15 @@ DBManager.prototype.addGift = function(uid, gft, callback) {
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// Найти все подарки пользователя и вернуть их в массиве
+/*
+Найти все подарки игрока: ИД игрока
+- Проверка на ИД
+- Строим и выполняем запрос (все поля)
+- Возвращаем массив с подарками (если ничего нет NULL)
+ */
 DBManager.prototype.findGifts = function(uid, callback) {
-  var user = uid || '';
-  if (user == '') {
+  var user = uid;
+  if (!user) {
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
 
@@ -271,8 +326,15 @@ DBManager.prototype.findGifts = function(uid, callback) {
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+Удалить все подарки игрока: ИД
+- Проверка на ИД
+- Строим и выполняем запрос на поиск всех подарков игрока (нужны их ИД для удаления)
+- По каждому найденному подарку выполняем запрос на его удаления (параллельно)
+- Возвращаем ИД игрока
+ */
 DBManager.prototype.deleteGifts = function(uid, callback) {
-  var user = uid || '';
+  var user = uid;
   if (!user) { return callback(new Error("Задан пустой Id пользователя")); }
 
   var query = "select id, user FROM user_gifts where user = ?";
@@ -290,14 +352,20 @@ DBManager.prototype.deleteGifts = function(uid, callback) {
       if (err) {
         return callback(err, null);
       }
-      callback(null, pid);
+      callback(null, user);
     });
   });
 
 
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Сохранить в истории сообщение пользователя
+/*
+Добавить сообщение в БД: ИД, объект сообщения
+- Проверка (все поля обязательны)
+- Генерируем ИД
+- Строим и выполняем запрос
+- Возвращаем объект сообщения
+ */
 DBManager.prototype.addMessage = function(uid, msg, callback) {
   var message = msg                 || {};
   var user = uid;
@@ -305,40 +373,32 @@ DBManager.prototype.addMessage = function(uid, msg, callback) {
   var companion = message.companion;
   var incoming  = message.incoming;
   var text      = message.text;
-  var gift      = message.gift;
 
-  if (!date || !user || !companion || !text || !gift || !incoming) {
+  if (!date || !user || !companion || !text || !incoming) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
-  var query = "select id FROM users where id = ?";
+  var id = genId(ID_LEN);
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
+  var fields = "id, user, date, companion, incoming, text";
+  var values = "?, ?, ?, ?, ?, ?";
+  var params = [id, user, date, companion, incoming, text];
 
-    if (!result.rows.length > 0) {
-      return callback(new Error("В базе данных нет пользователя с таким именем"));
-    }
+  var query = "INSERT INTO history (" + fields + ") VALUES (" + values + ")";
 
-    var id = genId(ID_LEN);
+  client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    var fields = "id, user, date, companion, incoming, text";
-    var values = "?, ?, ?, ?, ?, ?";
-    var params = [id, user, date, companion, incoming, text];
-
-    if(gift) { fields = fields + ", gift"; values = values + ", ?"; params.push(gift); }
-
-    var query = "INSERT INTO history (" + fields + ") VALUES (" + values + ")";
-
-    client.execute(query, params, {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, message);
-    });
+    callback(null, message);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Найти сохраненные сообщения пользователя
+/*
+Найти сохраненные сообщения пользователя: ИД игрока
+- Проверка ИД
+- Строим запрос (все поля) и выполняем
+- Возвращаем массив с сообщениями (если ничего нет - NULL)
+ */
 DBManager.prototype.findMessages = function(uid, callback) {
   var user = uid || '';
 
@@ -372,7 +432,13 @@ DBManager.prototype.findMessages = function(uid, callback) {
   });
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Удалить все сообщения пользователя
+/*
+ Удалить все сообщения игрока: ИД
+ - Проверка на ИД
+ - Строим и выполняем запрос на поиск всех сообщений игрока (нужны их ИД для удаления)
+ - По каждому найденному выполняем запрос на его удаления (параллельно)
+ - Возвращаем ИД игрока
+ */
 DBManager.prototype.deleteMessages = function(uid, callback) {
   var user = pid || '';
   if (!user) { callback(new Error("Задан пустой Id пользователя")); }
@@ -388,20 +454,26 @@ DBManager.prototype.deleteMessages = function(uid, callback) {
           client.execute(query, [item.id], {prepare: true }, function(err) {
             if (err) {  return callback(err); }
 
-            cb(null, pid);
+            cb(null, user);
           });
         },
         function(err, res) {
           if (err) {
             return callback(err, null);
           }
-          callback(null, pid);
+          callback(null, user);
         });
   });
 
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Сохранить в пльзователя в списке друзей
+/*
+ Добавить друга в БД: ИД, объект с данными друга
+ - Проверка (все поля обязательны)
+ - Генерируем ИД
+ - Строим и выполняем запрос
+ - Возвращаем объект обратно
+ */
 DBManager.prototype.addFriend = function(uid, frnd, callback) {
   var friend = frnd || {};
   var user = uid;
@@ -412,32 +484,28 @@ DBManager.prototype.addFriend = function(uid, frnd, callback) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var query = "select id FROM users where id = ?";
+  var id = genId(ID_LEN);
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-    if (!result.rows.length > 0) {
-      return callback(new Error("В базе данных нет пользователя с таким именем"));
-    }
+  var fields = "id, user, friend, date";
+  var values = "?, ?, ?, ?";
 
-    var id = genId(ID_LEN);
+  var params = [id, user, fid, date];
 
-    var fields = "id, user, friend, date";
-    var values = "?, ?, ?, ?";
+  var query = "INSERT INTO friends (" + fields + ") VALUES (" + values + ")";
 
-    var params = [id, user, fid, date];
+  client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    var query = "INSERT INTO friends (" + fields + ") VALUES (" + values + ")";
-
-    client.execute(query, params, {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, frnd);
-    });
+    callback(null, frnd);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Найти друзей пользователя
+/*
+ Найти друзей пользователя: ИД игрока
+ - Проверка ИД
+ - Строим запрос (все поля) и выполняем
+ - Возвращаем массив объектв с данными друзей (если ничгео нет - NULL)
+ */
 DBManager.prototype.findFriends = function(uid, callback) {
   if (!uid) {
     return callback(new Error("Задан пустой Id"), null);
@@ -464,7 +532,13 @@ DBManager.prototype.findFriends = function(uid, callback) {
   });
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Удалить все сообщения пользователя
+/*
+ Удалить всех друзей игрока: ИД
+ - Проверка на ИД
+ - Строим и выполняем запрос на поиск всех друзей игрока (нужны их ИД для удаления)
+ - По каждому найденному выполняем запрос на его удаление (параллельно)
+ - Возвращаем ИД игрока
+ */
 DBManager.prototype.deleteFriends = function(uid, callback) {
   var user = uid;
   if (!user) { callback(new Error("Задан пустой Id пользователя")); }
@@ -480,22 +554,25 @@ DBManager.prototype.deleteFriends = function(uid, callback) {
           client.execute(query, [item.id], {prepare: true }, function(err) {
             if (err) {  return callback(err); }
 
-            cb(null, pid);
+            cb(null, user);
           });
         },
         function(err, res) {
           if (err) {
             return callback(err, null);
           }
-          callback(null, pid);
+          callback(null, user);
         });
   });
-
 };
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Сохранить в гостя в списке гостей
+/*
+ Добавить гостя в БД: ИД, объект с данными гостя
+ - Проверка (все поля обязательны)
+ - Генерируем ИД
+ - Строим и выполняем запрос
+ - Возвращаем объект обратно
+ */
 DBManager.prototype.addGuest = function(uid, gst, callback) {
   var guest = gst || {};
   var user = uid;
@@ -506,32 +583,28 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var query = "select id FROM users where id = ?";
+  var id = genId(ID_LEN);
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-    if (!result.rows.length > 0) {
-      return callback(new Error("В базе данных нет пользователя с таким именем"));
-    }
+  var fields = "id, user, guest, date";
+  var values = "?, ?, ?, ?";
 
-    var id = genId(ID_LEN);
+  var params = [id, user, gid, date];
 
-    var fields = "id, user, guest, date";
-    var values = "?, ?, ?, ?";
+  var query = "INSERT INTO guests (" + fields + ") VALUES (" + values + ")";
 
-    var params = [id, user, gid, date];
+  client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    var query = "INSERT INTO guests (" + fields + ") VALUES (" + values + ")";
-
-    client.execute(query, params, {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, frnd);
-    });
+    callback(null, frnd);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Найти друзей пользователя
+/*
+ Найти гостей пользователя: ИД игрока
+ - Проверка ИД
+ - Строим запрос (все поля) и выполняем
+ - Возвращаем массив объектв с данными (Если не нашли ничего - NULL)
+ */
 DBManager.prototype.findGuests = function(uid, callback) {
   var user = uid;
   if (user == '') {
@@ -559,7 +632,13 @@ DBManager.prototype.findGuests = function(uid, callback) {
   });
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Удалить все сообщения пользователя
+/*
+ Удалить всех гостей игрока: ИД
+ - Проверка на ИД
+ - Строим и выполняем запрос на поиск всех гостей игрока (нужны их ИД для удаления)
+ - По каждому найденному выполняем запрос на его удаление (параллельно)
+ - Возвращаем ИД игрока
+ */
 DBManager.prototype.deleteGuests = function(uid, callback) {
   var user = uid;
   if (!user) { callback(new Error("Задан пустой Id пользователя")); }
@@ -575,20 +654,26 @@ DBManager.prototype.deleteGuests = function(uid, callback) {
           client.execute(query, [item.id], {prepare: true }, function(err) {
             if (err) {  return callback(err); }
 
-            cb(null, pid);
+            cb(null, user);
           });
         },
         function(err, res) {
           if (err) {
             return callback(err, null);
           }
-          callback(null, pid);
+          callback(null, user);
         });
   });
 
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Добавить товар в магазин
+/*
+ Добавить товар в БД: ИД, объект с данными
+ - Проверка (все поля обязательны)
+ - Генерируем ИД
+ - Строим и выполняем запрос
+ - Возвращаем объект обратно
+ */
 DBManager.prototype.addGood = function(gd, callback) {
   var good    = gd || {};
 
@@ -597,7 +682,7 @@ DBManager.prototype.addGood = function(gd, callback) {
   var price   = good.price;
   var data    = good.data;
 
-  if ( !goodId) {
+  if ( !goodId || !title || !price || !data) {
     return callback(new Error("Не указан Id товара"), null);
   }
 
@@ -613,17 +698,22 @@ DBManager.prototype.addGood = function(gd, callback) {
     client.execute(query, params, {prepare: true },  function(err) {
       if (err) {  return callback(err); }
 
-      callback(null, frnd);
+      callback(null, good);
     });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Найти товар
+/*
+ Найти товар: ИД
+ - Проверка ИД
+ - Строим запрос (все поля) и выполняем
+ - Возвращаем объект с данными (Если не нашли ничего - NULL)
+ */
 DBManager.prototype.findGood = function(goodid, callback) {
   if (!goodid) {
     return callback(new Error("Задан пустой Id товара"), null);
   }
 
-  var query = "select title, price, date FROM shop where goodId = ?";
+  var query = "select id, title, price, date FROM shop where goodId = ?";
 
   client.execute(query,[user], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -633,9 +723,11 @@ DBManager.prototype.findGood = function(goodid, callback) {
     if(result.rows.length > 0) {
 
       good = {
+        id   : result.rows[0].id,
         title: result.rows[0].title,
-        price: price.rows[0].price,
-        date:  date.rows[0].date
+        price: result.rows[0].price,
+        type : result.rows[0].type,
+        date:  result.rows[0].date
       };
 
       callback(null, good);
@@ -643,26 +735,50 @@ DBManager.prototype.findGood = function(goodid, callback) {
     } else { return callback(null, null); }
   });
 };
+/*
+ Найти все товары: ИД
+ - Проверка ИД
+ - Строим запрос (все поля) и выполняем
+ - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
+ */
+DBManager.prototype.findAllGoods = function(callback) {
+  var query = "select title, type, price, date FROM shop";
+
+  client.execute(query,[], {prepare: true }, function(err, result) {
+    if (err) { return callback(err, null); }
+
+    var goods = [];
+    for (var i = 0; i < result.rows.length; i++) {
+      var gd = result.rows[i];
+
+
+      goods.push({
+          title: gd.title,
+          type : gd.type,
+          price: gd.price,
+          date:  gd.date
+        });
+    }
+    callback(null, goods);
+  });
+};
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Удалить все сообщения пользователя
+/*
+ Удалить товар из БД: ИД
+ - Проверка на ИД
+ - Строим и выполняем запрос на удаление товара
+ - Возвращаем ИД товара
+ */
 DBManager.prototype.deleteGood = function(goodid, callback) {
   var id = goodid;
   if (!id) { callback(new Error("Задан пустой Id товара")); }
 
-  var query = "select id FROM shop where goodid = ?";
+  var query = "DELETE FROM guests WHERE id = ?";
 
-  client.execute(query,[id], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
+  client.execute(query, [results.rows[0].id], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
 
-    if(!results.rows[0]) { return callback(new Error("Нет товара с таким Id"));}
-
-    var query = "DELETE FROM guests WHERE id = ?";
-
-    client.execute(query, [results.rows[0].id], {prepare: true }, function(err) {
-      if (err) {  return callback(err); }
-
-        cb(null, goodid);
-      });
+    cb(null, goodid);
   });
 
 };

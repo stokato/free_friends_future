@@ -61,18 +61,19 @@ Profile.prototype.init = function(socket, opt, callback) {
       self.pLocation = options.location;
       self.pGender   = options.gender;
 
-      if (!pSocket) { return cb(new Error("Не задан Socket Id"), null); }
-      if (!pVID || !pName || !pAvatar || !pAge || !pLocation || !pGender) {
+      //if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
+      if (!self.pVID || !self.pName || !self.pAvatar || !self.pAge || !self.pLocation || !self.pGender) {
         return cb(new Error("На задана одна из опций"), null);
       }
 
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      dbManager.findUser(null, self.pVID, function(err, foundUser) {
+      var fList = ["name", "gender", "points", "money", "age", "location", "status"];
+      dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
-          self.pID     = foundUser.pId;
+          self.pID     = foundUser.id;
           self.pStatus = foundUser.status;
           self.pPoints = foundUser.points;
           self.pMoney  = foundUser.money;
@@ -122,7 +123,6 @@ Profile.prototype.init = function(socket, opt, callback) {
       money    : self.pMoney,
       gender   : self.pGender
     };
-
     callback(null, info);
   }); // waterfall
 
@@ -171,7 +171,7 @@ Profile.prototype.setInfo = function(options, callback) {
  */
 Profile.prototype.getInfo = function() {
   var options = {
-    id       : this.pId,
+    id       : this.pID,
     vid      : this.pVID,
     gender   : this.pGender,
     status   : this.pStatus,
@@ -331,7 +331,7 @@ Profile.prototype.getGuests = function(callback) {
 Profile.prototype.save = function(callback) {
   var self = this;
   var options = {
-    id       : self.pId,
+    id       : self.pID,
     vid      : self.pVID,
     age      : self.pAge,
     location : self.pLocation,
@@ -341,8 +341,9 @@ Profile.prototype.save = function(callback) {
     money    : self.money
   };
 
+
   dbManager.updateUser(options, function(err, id) {
-    if (err) {return callback(err, null); }
+    if (err) {console.log(err); return callback(err, null); }
 
     callback(null, id);
   });

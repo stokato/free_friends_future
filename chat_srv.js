@@ -26,7 +26,6 @@ exports.listen = function(server, callback) {
   io.set('log level', 1);
 
   io.sockets.on('connection', function (socket, options) {
-
     initProfile(socket, options);
 
     sendPublicMessage(socket);
@@ -37,8 +36,9 @@ exports.listen = function(server, callback) {
     showRooms(socket);
     changeRoom(socket);
 
-    //showProfile(socket);
-    //showPrivateMessages(socket)
+    showProfile(socket);
+
+    //showPrivateMessages(socket);
     //showGifts(socket);
     //showFriends(socket);
     //showGuests(socket);
@@ -50,7 +50,7 @@ exports.listen = function(server, callback) {
     //saveProfile(socket);
     //sendPrivateMessage(socket);
     //makeGift(socket);
-    //addToFriends(socket)
+    //addToFriends(socket);
   });
 
   callback();
@@ -65,48 +65,79 @@ exports.listen = function(server, callback) {
 - Получаем данные профилей игроков в комнате (для игрового стола)
 - Отправляем все клиенту
  */
-function initProfile(socket, options) {
-  async.waterfall([ // Инициализируем профиль пользователя
-    function(cb) {
-      if(userList[socket.id]) { return cb(new Error("Этот клиент уже инициализирован"))}
+function initProfile(socket) {
+  socket.on('init', function(options) {
+    async.waterfall([ // Инициализируем профиль пользователя
+      function (cb) {
+        if (userList[socket.id]) {
+          return cb(new Error("Этот клиент уже инициализирован"))
+        }
 
-      var profile = profilejs();
-      profile.init(socket.id, options, function(err, info) {
-        if(err) { return cb(err, null); }
+        var profile = new profilejs();
+        profile.init(socket.id, options, function (err, info) {
+          if (err) {
+            return cb(err, null);
+          }
 
-        userList[socket.id] = profile;
-        profiles[info.id]   = profile; /////////////???
-        cb(null, info);
-      });
-    }, ///////////////////////////////////////////////////////////////
-    function(info, cb) { // Помещяем в комнату
-      autoPlaceInRoom(socket, function(err, room) {
-        if(err) { return cb(err, null); }
+          if(profiles[info.id]) { return cb(new Error("Этот клиент уже инициализирован")); }
+          else {
+            userList[socket.id] = profile;
+            profiles[info.id] = profile; /////////////???
+          }
 
-        cb(null, info, room);
-      });
-    },///////////////////////////////////////////////////////////////
-    function(info, room, cb) { // Получаем данные по игрокам в комнате (для стола)
-      info.guys = [];          // По парням
+          cb(null, info);
+        });
+      }, ///////////////////////////////////////////////////////////////
+      function (info, cb) { // Помещяем в комнату
+        autoPlaceInRoom(socket, function (err, room) {
+          if (err) {
+            return cb(err, null);
+          }
 
-      for(guy in room.guys) {
-        info.guys.push( guy.getInfo() );
+          cb(null, info, room);
+        });
+      },///////////////////////////////////////////////////////////////
+      function (info, room, cb) { // Получаем данные по игрокам в комнате (для стола)
+        getRoomInfo(info, room, function(err, info, room) {
+          if (err) {
+            return cb(err, null);
+          }
+
+          cb(null, info, room);
+        });
+      }///////////////////////////////////////////////////////////////
+    ], function (err, info, room) { // Обрабатываем ошибки, либо передаем данные клиенту
+      if (err) {
+        return new GameError(socket, "INIT", err.message);
       }
 
-      info.girls = [];
-      for(girl in room.girls) {
-        info.girls.push( girl.getInfo() );
-      }
-        cb(null, info, room);
-    }///////////////////////////////////////////////////////////////
-  ], function(err, info, room) { // Обрабатываем ошибки, либо передаем данные клиенту
-    if(err) {
-      return new GameError(socket, "INIT");
-    }
-
-    socket.emit('open_room', info);
-    showLastMessages(socket, room);
+      socket.emit('open_room', info);
+      socket.broadcast.to().emit('online', info.id);
+      showLastMessages(socket, room);
+    });
   });
+}
+/*
+Подготовить данные по комнате
+- По каждому игроку в комнате
+-- Берем данные его прифиля и добавлям в объект
+- Возвращаем объект и комнату обратно
+ */
+function getRoomInfo(info, room, callback) {
+  info.room = {};
+  info.room.name = room.name;
+  info.room.guys = [];
+  for (guy in room.guys) {
+    if (room.guys.hasOwnProperty(guy))
+      info.room.guys.push(room.guys[guy].getInfo());
+  }
+
+  info.room.girls = [];
+  for (girl in room.girls) {
+    if (room.girls.hasOwnProperty(girl))
+      info.room.girls.push(room.girls[girl].getInfo());
+  }
+  callback(null, info, room);
 }
 
 /*
@@ -123,39 +154,41 @@ function autoPlaceInRoom(socket, callback) {
   var profile = userList[socket.id];
   var info = profile.getInfo();
   var room = null;
-  var count = 0;
+  var count = ONE_GENDER_IN_ROOM;
   var len = '';
   var genArr = '';
   if(info.gender == GUY) { len = 'guys_count'; genArr = 'guys';}
   else { len = 'girls_count'; genArr = 'girls';}
 
   for(item in roomList) {
-    if(item != roomList[socket.id]) {
-      var need = ONE_GENDER_IN_ROOM - item[len];
+    if(item != socket.id) {
+      var need = ONE_GENDER_IN_ROOM - roomList[item][len];
       if(need > 0 && need < count) {
         count = need;
-        room = item;
+        room = roomList[item];
       }
     }
   }
+
   if(!room) { // Нет ни одной свободной комнаты
     room = {
-      name: "Room" + (countRoom++) , // Как-нибудь генерируем новое имя (????)
+      name: "Room" + (++countRoom) , // Как-нибудь генерируем новое имя (????)
       guys: {},
       guys_count: 0,
       girls: {},
-      girls_count: {},
+      girls_count: 0,
       messages: []
     };
   }
 
-  socket.leave(roomList[socket.id].name);
   socket.join(room.name);
 
   room[genArr][info.id] = profile;
+  room[len] ++;
 
   var oldRoom = roomList[socket.id];
   if(oldRoom) {
+    socket.leave(oldRoom.name);
     delete oldRoom[genArr][info.id];
     oldRoom[len]--;
   }
@@ -172,12 +205,13 @@ function autoPlaceInRoom(socket, callback) {
  */
 function sendPublicMessage(socket) {
   socket.on('message', function(message){
-    waterfall([ //////////////////////////////////////////////////////////////////////////
+    async.waterfall([ //////////////////////////////////////////////////////////////////////////
         function(cb) { // Проверяем, авторизирован ли пользователь и отправляем сообщение
           var profile = userList[socket.id];
           if (profile) {
             var info = profile.getInfo();
             info['message'] = message;
+
 
             cb(null, info);
           } else {
@@ -195,7 +229,7 @@ function sendPublicMessage(socket) {
     ],///////////////////////////////////////////////////////////////////////////////
     function(err) {
       if(err) {
-        new GameError(socket, "SENDPUBMESSAGE");
+        new GameError(socket, "SENDPUBMESSAGE", err.message);
       }
     });
   });
@@ -217,7 +251,7 @@ function exitChat(socket) {
     }
 
     var profile = userList[socket.id];
-    waterfall([
+    async.waterfall([
       ///////////////////////////////////////////////////////////////////////////////////
       function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
         var info = profile.getInfo();
@@ -229,6 +263,7 @@ function exitChat(socket) {
       function (info, cb) { // сохраняем профиль в базу
         profile.save(function(err, res) {
           if (err) { return cb(err, null); }
+
           cb(null, info);
         });
       }, /////////////////////////////////////////////////////////////////////////////////////
@@ -247,7 +282,7 @@ function exitChat(socket) {
         cb(null, null);
       } //////////////////////////////////////////////////////////////////////////////////////
     ], function(err, res) {
-      if (err) { new GameError(null, "EXIT") }
+      if (err) { new GameError(null, "EXIT", err.message) }
 
       socket.disconnect(); // отключаемся
     }); ///////////////////////////////////////////////////////////////////////////////////////
@@ -279,25 +314,32 @@ function chooseRoom(socket) {
         else { genArr = 'girls'; len = 'girls_count'}
 
         for(item in roomList) {
-          if(roomList.hasOwnProperty(item) && item[genArr].length < ONE_GENDER_IN_ROOM) {
-            freeRooms.push(item);
+          if(roomList.hasOwnProperty(item) && roomList[item][len] < ONE_GENDER_IN_ROOM) {
+            freeRooms.push(roomList[item]);
           }
         }
 
         var index = randomInteger(0, freeRooms.length-1);
         var randRoom = freeRooms[index];
+        var roomInfo = {};
+        getRoomInfo(roomInfo, randRoom, function(err, info, room) {
+          if (err) {
+            return cb(err, null);
+          }
 
-        cb(null, profile, randRoom, genArr, len);
+          cb(null, profile, info, genArr, len);
+        });
       },////////////////////////////////// Получаем всех друзей пользователя
-      function(profile, randRoom, genArr, len, cb) {
+      function(profile, roomInfo, genArr, len, cb) {
         profile.getFriends(function(err, allFriends) {
           if(err) { return cb(err, null); }
 
-            cb(null, profile, randRoom, genArr, len, allFriends);
+            cb(null, profile, roomInfo, genArr, len, allFriends);
         });
       },///////////////////////// Составляем список друзей с неполными коматами
-      function(profile, randRoom, genArr, len, allFriends, cb) {
+      function(profile, roomInfo, genArr, len, allFriends, cb) {
         var friendList = [];
+        allFriends = allFriends || [];
         for(var i = 0; i < allFriends.length; i++) {
           var currFriend = profiles[allFriends[i].id];
           if(currFriend) {
@@ -309,14 +351,15 @@ function chooseRoom(socket) {
           }
         }
         var res = {
-          random    : randRoom,
+          random    : roomInfo,
           friends   : friendList
         };
+
         cb(null, res);
       }////////////////////////////////// Обрабатываем ошибки или отравляем результат
     ], function(err, res) {
         if(err) {
-          return new GameError(socket, "CHOOSEROOM");
+          return new GameError(socket, "CHOOSEROOM", err.message);
         }
 
         socket.emit('choose_room', res);
@@ -350,19 +393,20 @@ function showRooms(socket) {
 
     var resRooms = [];
     for (item in roomList) {
-      if (item[len] < ONE_GENDER_IN_ROOM) {
-        var res = {name: item.name, guys: [], girls: []};
+      var currRoom = roomList[item];
+      if (currRoom[len] < ONE_GENDER_IN_ROOM) {
+        var res = {name: currRoom.name, guys: [], girls: []};
 
-        for (guy in item.guys) {
-          res.guys.push( guy.getInfo() );
+        for (guy in roomList[item].guys) {
+          res.guys.push( currRoom.guys[guy].getInfo() );
         }
-        for (girl in item.girls) {
-          res.girls.push( girl.getInfo() );
+        for (girl in currRoom.girls) {
+          res.girls.push( currRoom.girls[girl].getInfo() );
         }
         resRooms.push(res);
       }
     }
-
+    console.log(res);
     socket.emit('show_rooms', resRooms);
   });
 }
@@ -405,22 +449,24 @@ function changeRoom(socket) {
     if (roomName == "newRoom") {
       countRoom++;
       newRoom = {
-        name: "Room" + (countRoom++), // Как-нибудь генерируем новое имя (????)
+        name: "Room" + (countRoom), // Как-нибудь генерируем новое имя (????)
         guys: {},
         guys_count: 0,
         girls: {},
-        girls_count: {},
+        girls_count: 0,
         messages: []
       };
     } else {
       for (var item in roomList) {
-        if (item.name == roomName) {
-          newRoom = item;
+        if (roomList[item].name == roomName) {
+          newRoom = roomList[item];
 
-          showLastMessages(socket, item);
+          showLastMessages(socket, roomList[item]);
         }
       }
     }
+    if(!newRoom) { return new GameError(socket, "CHANGEROOM", "Попытка открыть несуществующую комнату")}
+
     socket.leave(currRoom.name);
     socket.join(newRoom.name);
 
@@ -455,6 +501,7 @@ function changeRoom(socket) {
       });
     }
 
+    console.log(info);
     socket.emit('open_room', info);
   });
 }
@@ -482,7 +529,7 @@ function showProfile(socket) {
       return socket.emit('show_profile', selfInfo);
     }
 
-    waterfall([///////////////////////////////////////////////////////////////////
+    async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль того, чей просматриваем
         var friendProfile = null;
         var friendInfo = null;
@@ -508,7 +555,9 @@ function showProfile(socket) {
           cb(null, friendInfo);
         });//////////////////////////////////////////////////////////////
       }], function (err, friendInfo) { // Вызывается последней. Обрабатываем ошибки
-      if(err) { return new GameError(socket, "ADDFRIEND"); }
+      if(err) { return new GameError(socket, "ADDFRIEND", err.message); }
+
+      console.log(friendInfo);
 
       socket.emit('show_profile', friendInfo); // Отправляем инфу
       if(profiles[friendInfo.id]) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
@@ -531,7 +580,7 @@ function showPrivateMessages(socket) {
     }
 
     userList[socket.id].getHistory(function(err, history){
-        if(err) { return new GameError(socket, "SHOWHISTORY"); }
+        if(err) { return new GameError(socket, "SHOWHISTORY", err.message); }
 
         socket.emit('show_private_messages', history);
     });
@@ -552,7 +601,7 @@ function showGifts(socket) {
     userList[socket.id].getGifts(function(err, gifts) {
         if(err) { return new GameError(socket, "SHOWGIFTS"); }
 
-        socket.emit('show_gifts', gifts);
+        socket.emit('show_gifts', gifts, err.message);
     });
   });
 }
@@ -571,7 +620,7 @@ function showFriends(socket) {
     userList[socket.id].getFriends(function(err, friends) {
         if(err) { return new GameError(socket, "SHOWFRIENDS"); }
 
-        socket.emit('show_friends', friends);
+        socket.emit('show_friends', friends, err.message);
     });
   });
 }
@@ -590,7 +639,7 @@ function showGuests(socket) {
     userList[socket.id].getGuests(function(err, guests) {
         if(err) { return new GameError(socket, "SHOWGUESTS"); }
 
-        socket.emit('show_guests', guests);
+        socket.emit('show_guests', guests, err.message);
     });
   });
 }
@@ -662,7 +711,7 @@ function sendPrivateMessage(socket) {
         }
       }/////////////////////////////////////////////////////////////////////////////////
     ], function(err) { // Вызывается последней или в случае ошибки
-      if(err) { new GameError(socket, "SENDPRIVMESSAGE"); }
+      if(err) { new GameError(socket, "SENDPRIVMESSAGE", err.message); }
     });
   });
 }
@@ -716,7 +765,7 @@ function makeGift(socket) {
         });
       }
     ], function(err, gift) { // Вызывается последней. Обрабатываем ошибки
-      if (err) { return new GameError(socket, "MAKEGIFT"); }
+      if (err) { return new GameError(socket, "MAKEGIFT", err.message); }
 
       userList[socket.id].emit('make_gift', gift);
       if (profiles[rec.id]) {
@@ -771,7 +820,7 @@ function addToFriends(socket) {
           cb(null, friendInfo);
         })
       }], function (err, friendInfo) { // Вызывается последней. Обрабатываем ошибки
-      if(err) { return new GameError(socket, "ADDFRIEND"); }
+      if(err) { return new GameError(socket, "ADDFRIEND", err.message); }
 
       socket.emit('add_friend', friendInfo); // Или сообщаем пользователю о результате
       if(profiles[friendInfo.id]) { // Если друг онлайн, то и ему
@@ -790,7 +839,7 @@ function addToFriends(socket) {
 function showGiftShop(socket) {
  socket.on('show_gift_shop', function() {
    db.findAllGoods(function(err, goods) {
-     if(err) { return new GameError(socket, "SHOWGIFTSHOP"); }
+     if(err) { return new GameError(socket, "SHOWGIFTSHOP", err.message); }
 
      socket.emit('show_gift_shop', goods);
    });
@@ -808,7 +857,7 @@ function showTop(socket) {
   socket.on('showTop', function() {
     var fList = ["name", "gender", "points"];
     db.findAllUsers(function(err, users) {
-      if(err) { return new GameError(socket, "SHOWTOP"); }
+      if(err) { return new GameError(socket, "SHOWTOP", err.message); }
 
       users.sort(comparePoints);
 
@@ -838,7 +887,6 @@ function sendOne(socket, message) {
 // Показать последние сообщения
 function showLastMessages(socket, room) {
   var messages = room.messages;
-  if(!messages[0]) return callback(null, null);
 
   for(var i = 0; i < messages.length; i++) {
     sendOne(socket, messages[i]);
@@ -872,40 +920,40 @@ function randomInteger(min, max) {
 }
 
 // Свой объект ошибок
-function GameError(socket, func) {
-  this.name = func;
+function GameError(socket, func, message) {
+  this.message = message;
   this.stack = (new Error()).stack;
 
   switch(func) {
-    case "INIT"       : this.message = "Ошибка инициализации";
+    case "INIT"       : this.name = "Ошибка инициализации";
       break;
-    case "EXIT"       : this.message = "Ошибка отключения от игры";
+    case "EXIT"       : this.name = "Ошибка отключения от игры";
       break;
-    case "CHOOSEROOM" : this.message = "Ошибка открытия окна смены стола";
+    case "CHOOSEROOM" : this.name = "Ошибка открытия окна смены стола";
       break;
-    case "SHOWROOMS"  : this.message = "Ошибка открытия окна доступных столов";
+    case "SHOWROOMS"  : this.name = "Ошибка открытия окна доступных столов";
       break;
-    case "CHANGEROOM" : this.message = "Ошибка смены стола";
+    case "CHANGEROOM" : this.name = "Ошибка смены стола";
       break;
-    case "SHOWPROFILE": this.message = "Ошибка открытия окна профиля";
+    case "SHOWPROFILE": this.name = "Ошибка открытия окна профиля";
       break;
-    case "SHOWHISTORY": this.message = "Ошибка открытия окна личных сообщений";
+    case "SHOWHISTORY": this.name = "Ошибка открытия окна личных сообщений";
       break;
-    case "SHOWGIFTS"  : this.message = "Ошибка открытия окна подарков";
+    case "SHOWGIFTS"  : this.name = "Ошибка открытия окна подарков";
       break;
-    case "MAKEGIFT"   : this.message = "Ошибка совершения подарка";
+    case "MAKEGIFT"   : this.name = "Ошибка совершения подарка";
       break;
-    case "SHOWTOP"    : this.message = "Ошибка открытия топа игроков";
+    case "SHOWTOP"    : this.name = "Ошибка открытия топа игроков";
       break;
-    case "SENDPUBMESSAGE" : this.message = "Ошибка отправки публичного сообщения";
+    case "SENDPUBMESSAGE" : this.name = "Ошибка отправки публичного сообщения";
       break;
-    case "SENDPRIVMESSAGE" : this.message = "Ошибка отправки публичного сообщения";
+    case "SENDPRIVMESSAGE" : this.name = "Ошибка отправки публичного сообщения";
       break;
-    case "SHOWGIFTSHOP" : this.message = "Ошибка открытия окна магазина подарков";
+    case "SHOWGIFTSHOP" : this.name = "Ошибка открытия окна магазина подарков";
       break;
-    case "ADDFRIEND" : this.message = "Ошибка добавления в друзья";
+    case "ADDFRIEND" : this.name = "Ошибка добавления в друзья";
       break;
-    default:  this.message =   "Неизвестная ошибка"
+    default:  this.name =   "Неизвестная ошибка"
   }
   console.log(this.name + " : " + this.message);
   console.log(this.stack);

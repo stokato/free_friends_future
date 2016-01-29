@@ -488,19 +488,37 @@ DBManager.prototype.addFriend = function(uid, frnd, callback) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var id = genId(ID_LEN);
+  var query = "select * FROM user_friends where userid = ?";
 
-  var fields = "id, userid, friendid, date";
-  var values = "?, ?, ?, ?";
+  client.execute(query,[user], {prepare: true }, function(err, result) {
+    if (err) {
+      return callback(err, null);
+    }
 
-  var params = [id, user, fid, date];
+    var id = null;
+    if (result.rows.length > 0) {
+      for (var i = 0; i < result.rows.length; i++) {
+        if (result.rows[i].friendid == fid) {
+          id = result.rows[i].id;
+        }
+      }
+    }
+    if (!id) {
+      id = genId(ID_LEN);
+    }
 
-  var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
+    var fields = "id, userid, friendid, date";
+    var values = "?, ?, ?, ?";
 
-  client.execute(query, params, {prepare: true },  function(err) {
-    if (err) {  return callback(err); }
+    var params = [id, user, fid, date];
 
-    callback(null, frnd);
+    var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
+
+    client.execute(query, params, {prepare: true },  function(err) {
+      if (err) {  return callback(err); }
+
+      callback(null, frnd);
+    });
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -526,7 +544,7 @@ DBManager.prototype.findFriends = function(uid, callback) {
     if(result.rows.length > 0) {
 
       for(var i = 0; i < result.rows.length; i++) {
-        friend = { id: result.rows[i].friend, date: result.rows[i].date };
+        friend = { id: result.rows[i].friendid, date: result.rows[i].date };
         friends.push(friend);
       }
 
@@ -586,20 +604,34 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
   if ( !user || !gid) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
+  var query = "select * FROM user_guests where userid = ?";
 
-  var id = genId(ID_LEN);
+  client.execute(query,[user], {prepare: true }, function(err, result) {
+    if (err) { return callback(err, null); }
 
-  var fields = "id, userid, guestid, date";
-  var values = "?, ?, ?, ?";
+    var id = null;
+    if(result.rows.length > 0) {
 
-  var params = [id, user, gid, date];
+      for(var i = 0; i < result.rows.length; i++) {
+        if (result.rows[i].guestid == gid) {
+          id = result.rows[i].id;
+        }
+      }
+    }
+    if(!id) {  id = genId(ID_LEN); }
 
-  var query = "INSERT INTO user_guests (" + fields + ") VALUES (" + values + ")";
+    var fields = "id, userid, guestid, date";
+    var values = "?, ?, ?, ?";
 
-  client.execute(query, params, {prepare: true },  function(err) {
-    if (err) {  return callback(err); }
+    var params = [id, user, gid, date];
+    console.log(params);
+    var query = "INSERT INTO user_guests (" + fields + ") VALUES (" + values + ")";
 
-    callback(null, frnd);
+    client.execute(query, params, {prepare: true },  function(err) {
+      if (err) {  return callback(err); }
+
+      callback(null, guest);
+    });
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -611,13 +643,13 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
  */
 DBManager.prototype.findGuests = function(uid, callback) {
   var user = uid;
-  if (user == '') {
+  if (!user ) {
     return callback(new Error("Задан пустой Id"), null);
   }
 
-  var query = "select friendid, date FROM user_guests where user = ?";
+  var query = "select guestid, date FROM user_guests where userid = ?";
 
-  client.execute(query,[uid], {prepare: true }, function(err, result) {
+  client.execute(query,[user], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var guests = [];
@@ -626,7 +658,7 @@ DBManager.prototype.findGuests = function(uid, callback) {
     if(result.rows.length > 0) {
 
       for(var i = 0; i < result.rows.length; i++) {
-        guest = { id: result.rows[i].guest, date: result.rows[i].date };
+        guest = { id: result.rows[i].guestid, date: result.rows[i].date };
         guests.push(guest);
       }
 

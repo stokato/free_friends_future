@@ -63,6 +63,7 @@ Profile.prototype.init = function(socket, opt, callback) {
 
       //if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
       if (!self.pVID || !self.pName || !self.pAvatar || !self.pAge || !self.pLocation || !self.pGender) {
+
         return cb(new Error("На задана одна из опций"), null);
       }
 

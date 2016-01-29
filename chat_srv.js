@@ -14,6 +14,7 @@ var db = new dbjs();                                // Менеджер БД - �
 
 var userList = {};                                  // Профили пользователей по сокетам
 var roomList = {};                                  // Комнаты по сокетам
+var rooms    = {};
 var profiles = {};                                  // Профили пользователей по id (надо бы убрать)
 
 var countRoom = 0;                                  // Счетчки комнат (сейчас нужен для генерации идентификатора окна)
@@ -40,8 +41,8 @@ exports.listen = function(server, callback) {
 
     //showPrivateMessages(socket);
     //showGifts(socket);
-    //showFriends(socket);
-    //showGuests(socket);
+    showFriends(socket);
+    showGuests(socket);
 
     //showTop(socket);
 
@@ -50,7 +51,7 @@ exports.listen = function(server, callback) {
     //saveProfile(socket);
     //sendPrivateMessage(socket);
     //makeGift(socket);
-    //addToFriends(socket);
+    addToFriends(socket);
   });
 
   callback();
@@ -74,7 +75,7 @@ function initProfile(socket) {
         }
 
         var profile = new profilejs();
-        profile.init(socket.id, options, function (err, info) {
+        profile.init(socket, options, function (err, info) {
           if (err) {
             return cb(err, null);
           }
@@ -154,7 +155,7 @@ function autoPlaceInRoom(socket, callback) {
   var profile = userList[socket.id];
   var info = profile.getInfo();
   var room = null;
-  var count = ONE_GENDER_IN_ROOM;
+  var count = ONE_GENDER_IN_ROOM +1;
   var len = '';
   var genArr = '';
   if(info.gender == GUY) { len = 'guys_count'; genArr = 'guys';}
@@ -170,6 +171,7 @@ function autoPlaceInRoom(socket, callback) {
     }
   }
 
+
   if(!room) { // Нет ни одной свободной комнаты
     room = {
       name: "Room" + (++countRoom) , // Как-нибудь генерируем новое имя (????)
@@ -179,6 +181,7 @@ function autoPlaceInRoom(socket, callback) {
       girls_count: 0,
       messages: []
     };
+    rooms[room.name] = room;
   }
 
   socket.join(room.name);
@@ -191,6 +194,7 @@ function autoPlaceInRoom(socket, callback) {
     socket.leave(oldRoom.name);
     delete oldRoom[genArr][info.id];
     oldRoom[len]--;
+    if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
   }
 
   roomList[socket.id] = room;
@@ -313,9 +317,9 @@ function chooseRoom(socket) {
         if(info.gender == GUY) { genArr = 'guys'; len = 'guys_count'}
         else { genArr = 'girls'; len = 'girls_count'}
 
-        for(item in roomList) {
-          if(roomList.hasOwnProperty(item) && roomList[item][len] < ONE_GENDER_IN_ROOM) {
-            freeRooms.push(roomList[item]);
+        for(item in rooms) {
+          if(rooms.hasOwnProperty(item) && rooms[item][len] < ONE_GENDER_IN_ROOM) {
+            freeRooms.push(rooms[item]);
           }
         }
 
@@ -346,7 +350,9 @@ function chooseRoom(socket) {
             var frSocket = currFriend.getSocket();
             var friendsRoom = roomList[frSocket.id];
             if(friendsRoom[len] < ONE_GENDER_IN_ROOM) {
-              friendList.push(currFriend.getInfo());
+              var currInfo = currFriend.getInfo();
+              currInfo.room = friendsRoom.name;
+              friendList.push(currInfo);
             }
           }
         }
@@ -371,7 +377,7 @@ function chooseRoom(socket) {
 Показать список комнат (столов)
 - Получаем данные профиля
 - Узанем пол
-- Выбираем все комнаты со свободными местами для нашего пол и для каждой
+- Выбираем все комнаты со свободными местами для нашего пола и для каждой
 -- Получаем ее идентификтор и инфу по парням и девушкам (какую ???)
 - Передаем клиенту
  */
@@ -392,12 +398,12 @@ function showRooms(socket) {
     }
 
     var resRooms = [];
-    for (item in roomList) {
-      var currRoom = roomList[item];
+    for (item in rooms) {
+      var currRoom = rooms[item];
       if (currRoom[len] < ONE_GENDER_IN_ROOM) {
         var res = {name: currRoom.name, guys: [], girls: []};
 
-        for (guy in roomList[item].guys) {
+        for (guy in rooms[item].guys) {
           res.guys.push( currRoom.guys[guy].getInfo() );
         }
         for (girl in currRoom.girls) {
@@ -406,7 +412,7 @@ function showRooms(socket) {
         resRooms.push(res);
       }
     }
-    console.log(res);
+
     socket.emit('show_rooms', resRooms);
   });
 }
@@ -429,6 +435,9 @@ function changeRoom(socket) {
   socket.on('change_room', function(roomName) {
     if (!checkAutho(socket.id)) {
         return new GameError(socket, "CHANGEROOM");
+    }
+    if (roomList[socket.id].name == roomName) {
+      return new GameError(socket, "CHANGEROOM", "Пользователь уже находится в этой комнате");
     }
 
     var newRoom = null;
@@ -456,6 +465,7 @@ function changeRoom(socket) {
         girls_count: 0,
         messages: []
       };
+      rooms[newRoom.name] = newRoom;
     } else {
       for (var item in roomList) {
         if (roomList[item].name == roomName) {
@@ -477,31 +487,32 @@ function changeRoom(socket) {
 
     delete currRoom[genArr][info.id];
     currRoom[len]--;
+    if(currRoom.guys_count == 0 && currRoom.girls_count == 0) delete rooms[currRoom.name];
 
-    info.guys = [];
+    info.room = { name: newRoom.name};
+    info.room.guys = [];
 
-    for(var i = 0; i < newRoom.guys; i++) {
-      info.guys.push( {
-        id     : newRoom.guys[i].id,
-        avatar : newRoom.guys[i].avatar,
-        vid    : newRoom.guys[i].vid,
-        name   : newRoom.guys[i].name,
-        age    : newRoom.guys[i].age
+    for(item in newRoom.guys) {
+      info.room.guys.push( {
+        id     : newRoom.guys[item].getInfo().id,
+        avatar : newRoom.guys[item].getInfo().avatar,
+        vid    : newRoom.guys[item].getInfo().vid,
+        name   : newRoom.guys[item].getInfo().name,
+        age    : newRoom.guys[item].getInfo().age
       });
     }
 
-    info.girls = [];
-    for(var i = 0; i < newRoom.girls; i++) {
-      info.girls.push( {
-        id     : newRoom.girls[i].id,
-        avatar : newRoom.girls[i].avatar,
-        vid    : newRoom.girls[i].vid,
-        name   : newRoom.girls[i].name,
-        age    : newRoom.girls[i].age
+    info.room.girls = [];
+    for(item in newRoom.girls) {
+      info.room.girls.push( {
+        id     : newRoom.girls[item].getInfo().id,
+        avatar : newRoom.girls[item].getInfo().avatar,
+        vid    : newRoom.girls[item].getInfo().vid,
+        name   : newRoom.girls[item].getInfo().name,
+        age    : newRoom.girls[item].getInfo().age
       });
     }
 
-    console.log(info);
     socket.emit('open_room', info);
   });
 }
@@ -522,6 +533,8 @@ function showProfile(socket) {
     if (!checkAutho(socket.id)) {
         return new GameError(socket, "SHOWPROFILE");
     }
+
+
     var selfProfile = userList[socket.id];
     var selfInfo = selfProfile.getInfo();
 
@@ -539,7 +552,7 @@ function showProfile(socket) {
           cb(null, friendProfile, friendInfo);
         }
         else {                // Если нет - берем из базы
-          friendProfile = profilejs();
+          friendProfile = new profilejs();
           friendProfile.init(null, options, function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) {return cb(err, null); }
 
@@ -549,6 +562,7 @@ function showProfile(socket) {
         }
       },///////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
+        selfInfo.date = options.date;
         friendProfile.addToGuests(selfInfo, function(err, res) {
           if(err) { return cb(err, null); }
 
@@ -557,9 +571,8 @@ function showProfile(socket) {
       }], function (err, friendInfo) { // Вызывается последней. Обрабатываем ошибки
       if(err) { return new GameError(socket, "ADDFRIEND", err.message); }
 
-      console.log(friendInfo);
-
       socket.emit('show_profile', friendInfo); // Отправляем инфу
+
       if(profiles[friendInfo.id]) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
         var friendSocket = profiles[friendInfo.id].getSocket();
         friendSocket.emit('add_guest', selfInfo);
@@ -618,9 +631,9 @@ function showFriends(socket) {
     }
 
     userList[socket.id].getFriends(function(err, friends) {
-        if(err) { return new GameError(socket, "SHOWFRIENDS"); }
+        if(err) { return new GameError(socket, "SHOWFRIENDS", err.message); }
 
-        socket.emit('show_friends', friends, err.message);
+        socket.emit('show_friends', friends);
     });
   });
 }
@@ -637,9 +650,9 @@ function showGuests(socket) {
     }
 
     userList[socket.id].getGuests(function(err, guests) {
-        if(err) { return new GameError(socket, "SHOWGUESTS"); }
+        if(err) { return new GameError(socket, "SHOWGUESTS", err.message); }
 
-        socket.emit('show_guests', guests, err.message);
+        socket.emit('show_guests', guests);
     });
   });
 }
@@ -787,7 +800,7 @@ function addToFriends(socket) {
   socket.on('add_friend', function(friend) {
     var selfProfile = userList[socket.id];
     var selfInfo = selfProfile.getInfo();
-    waterfall([///////////////////////////////////////////////////////////////////
+    async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль друга
         var friendProfile = null;
         var friendInfo = null;
@@ -807,6 +820,7 @@ function addToFriends(socket) {
         }
       },///////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Добавляем первого в друзья
+        selfInfo.date = friend.date;
         friendProfile.addToFriends(selfInfo, function(err, res) {
           if(err) { return cb(err, null); }
 
@@ -814,6 +828,7 @@ function addToFriends(socket) {
         })
       },
       function (friendInfo, cb) { // Добавляем второго
+        friendInfo.date = friend.date;
         selfProfile.addToFriends(friendInfo, function(err, res) {
           if(err) { return cb(err, null); }
 
@@ -854,14 +869,14 @@ function showGiftShop(socket) {
  - Отправляем клиенту
  */
 function showTop(socket) {
-  socket.on('showTop', function() {
+  socket.on('show_top', function() {
     var fList = ["name", "gender", "points"];
     db.findAllUsers(function(err, users) {
       if(err) { return new GameError(socket, "SHOWTOP", err.message); }
 
       users.sort(comparePoints);
 
-      socket.emit('showTop', users);
+      socket.emit('show_top', users);
     });
   });
 }

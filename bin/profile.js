@@ -20,9 +20,7 @@ function Profile() {
 
   var pID       = null;   // Внутренний ИД
   var pVID      = null;   // Внешний
-  
-  var pName     = null;   // ???
-  var pAvatar   = null;   // ???
+
   var pAge      = null;   // ???
   var pLocation = null;   // ???
 
@@ -42,7 +40,7 @@ function Profile() {
 - Что-то проверяем
 - Ищем пользователя в БД и заполняем оставшиеся свойства
 - Если нет - добавляем
-- Возвращаем все свойсва (или не все ???)
+- Возвращаем свойсва
  */
 Profile.prototype.init = function(socket, opt, callback) {
   var self = this;
@@ -55,14 +53,12 @@ Profile.prototype.init = function(socket, opt, callback) {
 
       self.pVID      = options.vid;
 
-      self.pName     = options.name;
-      self.pAvatar   = options.avatar;
       self.pAge      = options.age;
       self.pLocation = options.location;
       self.pGender   = options.gender;
 
       //if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
-      if (!self.pVID || !self.pName || !self.pAvatar || !self.pAge || !self.pLocation || !self.pGender) {
+      if (!self.pVID ||  !self.pAge || !self.pLocation || !self.pGender) {
 
         return cb(new Error("На задана одна из опций"), null);
       }
@@ -81,6 +77,17 @@ Profile.prototype.init = function(socket, opt, callback) {
         }
         cb(null, foundUser);
       });
+    },
+    function (foundUser, cb) {  // Если изменились нужные для статистики поля, обмновляем их в базе
+      if(foundUser) {
+        if(self.pGender != foundUser.gender || self.pAge != foundUser.age || self.pLocation != foundUser.location) {
+          self.save(function(err, res) {
+            if (err) { return cb(err); }
+
+            cb(null, foundUser);
+          });
+        } else cb(null, foundUser);
+      } else cb(null, foundUser);
     },
   ////////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) { // Если в базе такого нет, добавляем
@@ -115,8 +122,6 @@ Profile.prototype.init = function(socket, opt, callback) {
     var info = {
       id       : self.pID,
       vid      : self.pVID,
-      name     : self.pName,
-      avatar   : self.pAvatar,
       age      : self.pAge,
       location : self.pLocation,
       status   : self.pStatus,
@@ -153,11 +158,9 @@ Profile.prototype.getMoney = function() {
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
-Устанавливаем свойста (пока не используется) Стату и пол ???
+Устанавливаем свойста (пока не используется)
  */
 Profile.prototype.setInfo = function(options, callback) {
-  this.pName       = (options.name)?     options.name : this.pName;
-  this.pAvatar     = (options.avatar)?   options.avatar : this.pAvatar;
   this.pAge        = (options.age)?      options.age : this.pAge;
   this.pLocation   = (options.location)? options.location : this.pLocation;
   this.pStatus     = (options.status)?   options.status : this.pStatus;
@@ -167,25 +170,50 @@ Profile.prototype.setInfo = function(options, callback) {
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
-Поулчаем сведения по пользователе
-- Или последние 4 каждый раз берутся из соц сетей (а может и пол) ???
+Поулчаем сведения о пользователе
  */
-Profile.prototype.getInfo = function() {
-  var options = {
-    id       : this.pID,
-    vid      : this.pVID,
-    gender   : this.pGender,
-    status   : this.pStatus,
-    points   : this.pPoints,
-
-    name     : this.pName,
-    avatar   : this.pAvatar,
-    age      : this.pAge,
-    location : this.pLocation
-  };
-  return options;
+//Profile.prototype.getInfo = function() {
+//  var options = {
+//    id       : this.pID,
+//    vid      : this.pVID
+//  };
+//  return options;
+//};
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Поулчаем id игрока
+ */
+Profile.prototype.getID = function() {
+  return this.pID;
 };
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Поулчаем vid игрока
+ */
+Profile.prototype.getVID = function() {
+  return this.pVID;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Поулчаем статус игрока
+ */
+Profile.prototype.getStatus = function() {
+  return this.pStatus;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Поулчаем очки игрока
+ */
+Profile.prototype.getPoints = function() {
+  return this.pPoints;
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Поулчаем очки игрока
+ */
+Profile.prototype.getGender = function() {
+  return this.pGender;
+};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 Добавляем подарок в БД
@@ -216,7 +244,7 @@ Profile.prototype.getGifts = function(callback) {
 - Сообщение должно иметь поля: собеседник, входящее/bool, текст, дата
  */
 Profile.prototype.addMessage = function(message, callback) {
-  if (!message.companion || !message.text || !message.date || !message.date) { // incom?
+  if (!message.companion || !message.text || !message.date) { // incom?
     return callback(new Error("Ошибка при добавлении сообщения в историю: заданы не все аргументы"));
   }
   var self = this;
@@ -276,6 +304,31 @@ Profile.prototype.addPoints = function(num, callback) {
 
     self.pPoints = options.points;
     callback(null, self.pPoints);
+  });
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Устанавливаем количество монет игрока
+ - Сначала в БД и если успешно
+ - В ОЗУ
+ - Возвращаем
+ */
+Profile.prototype.setMoney = function(num, callback) {
+  if (!isNumeric(num)) {
+    return callback(new Error("Ошибка при установке количества монет, количество монет задано некорректно"));
+  }
+  self = this;
+  var options = {
+    id : self.pID,
+    vid : self.pVID,
+    money : num
+  };
+
+  dbManager.updateUser(options, function(err, id) {
+    if (err) {return callback(err, null); }
+
+    self.pMoney = options.money;
+    callback(null, self.pMoney);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,8 +418,6 @@ Profile.prototype.remove = function(callback) {
   this.pSocket   = null;
 
   this.pVID      = null;
-  this.pName     = null;
-  this.pAvatar   = null;
   this.pAge      = null;
   this.pLocation = null;
   this.pStatus   = null;

@@ -5,6 +5,6 @@
   },
   "cassandra" : {
     "host": "127.0.0.1",
-    "keyspace": "hapi_chat"
+    "keyspace": "free_friends"
   }
 }

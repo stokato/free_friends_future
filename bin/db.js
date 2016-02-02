@@ -33,26 +33,23 @@ var DBManager = function(client) {
   */
 DBManager.prototype.addUser = function(usr, callback) {
   var user = usr || {};
-  var vid = user.vid || '';
-
-  var error = null;
+  var vid = user.vid;
   
-  if (vid == '') {
-    error = new Error("Не заданы имя пользователя или его Id");
-    return callback(error, null);
+  if (!vid) {
+    return callback(new Error("Не заданы имя пользователя или его Id"), null);
   }
 
   var id = genId(ID_LEN);
 
-  var fields = "usr_id, usr_vid";
+  var fields = "id, vid";
   var values = "?, ?";
   var params = [id, vid];
-  if (user.age)       { fields = fields + ", usr_age";      values = values +  ", ?"; params.push(user.age); }
-  if (user.location)  { fields = fields + ", usr_location"; values = values +  ", ?"; params.push(user.location); }
-  if (user.status)    { fields = fields + ", usr_status";   values = values +  ", ?"; params.push(user.status); }
-  if (user.money)     { fields = fields + ", usr_money";  values = values +  ", ?"; params.push(user.money); }
-  if (user.gender)    { fields = fields + ", usr_gender";   values = values +  ", ?"; params.push(user.gender); }
-  if (user.points)    { fields = fields + ", usr_points";   values = values +  ", ?"; params.push(user.points); }
+  if (user.age)       { fields = fields + ", age";      values = values +  ", ?"; params.push(user.age); }
+  if (user.location)  { fields = fields + ", location"; values = values +  ", ?"; params.push(user.location); }
+  if (user.status)    { fields = fields + ", status";   values = values +  ", ?"; params.push(user.status); }
+  if (user.money)     { fields = fields + ", money";  values = values +  ", ?"; params.push(user.money); }
+  if (user.gender)    { fields = fields + ", gender";   values = values +  ", ?"; params.push(user.gender); }
+  if (user.points)    { fields = fields + ", points";   values = values +  ", ?"; params.push(user.points); }
 
   var query = "INSERT INTO users (" + fields + ") VALUES (" + values + ")";
   
@@ -74,51 +71,50 @@ DBManager.prototype.addUser = function(usr, callback) {
  */
 DBManager.prototype.findUser = function(id, vid, f_list, callback) {
   if (!vid && !id) {
-    var error = new Error("Ошибка при поиске пользователя: Не задан ID или VID");
-    return callback(error, null);
+    return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
   }
   var search = '';
   var param = [];
 
   if(id) {
-    search = "usr_id";
+    search = "id";
     param.push(id);
   }
   else {
-    search = "usr_vid";
+    search = "vid";
     param.push(vid);
   }
 
   var fields = '';
   for(var i = 0; i < f_list.length; i++) {
-    if(f_list == "usr_age")      fields += ", usr_age";
-    if(f_list == "usr_location") fields += ", usr_location";
-    if(f_list == "usr_status")   fields += ", usr_status";
-    if(f_list == "usr_gender")   fields += ", usr_gender";
-    if(f_list == "usr_points")   fields += ", usr_points";
-    if(f_list == "usr_money")    fields += ", usr_money";
+    if(f_list[i] == "age")      fields += ", age";
+    if(f_list[i] == "location") fields += ", location";
+    if(f_list[i] == "status")   fields += ", status";
+    if(f_list[i] == "gender")   fields += ", gender";
+    if(f_list[i] == "points")   fields += ", points";
+    if(f_list[i] == "money")    fields += ", money";
   }
 
 
-  var query = "select usr_id, usr_vid " + fields + " FROM users where " + search +" = ?";
+  var query = "select id, vid " + fields + " FROM users where " + search +" = ?";
   
   client.execute(query,param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
-      
-    var user = '';
-                    
+
     if(result.rows.length > 0) {
-      user = result.rows[0];
-      callback(null, {
-                      id : user.usr_id,
-                      age : user.usr_age,
-                      location : user.usr_location,
-                      gender   : user.usr_gender,
-                      points   : user.usr_points,
-                      status : user.usr_status,
-                      money : user.usr_money,
-                      vid : user.usr_vid
-                    });
+      var us = result.rows[0];
+      var user = {
+        id : us.id,
+        age : us.age,
+        location : us.location,
+        gender   : us.gender,
+        points   : us.points,
+        status : us.status,
+        money : us.money,
+        vid : us.vid
+      };
+
+      callback(null, user);
     } else {
       callback(null, null);
     }
@@ -136,43 +132,39 @@ DBManager.prototype.findAllUsers = function(f_list, callback) {
 
   var fields = [];
   for(var i = 0; i < f_list.length; i++) {
-    if(f_list == "usr_age") fields += ", usr_age";
-    if(f_list == "usr_location") fields += ", usr_location";
-    if(f_list == "usr_status") fields += ", usr_status";
-    if(f_list == "usr_gender") fields += ", usr_gender";
-    if(f_list == "usr_points") fields += ", usr_points";
-    if(f_list == "usr_money") fields += ", usr_money";
+    if(f_list == "age") fields += ", age";
+    if(f_list == "location") fields += ", location";
+    if(f_list == "status") fields += ", status";
+    if(f_list == "gender") fields += ", gender";
+    if(f_list == "points") fields += ", points";
+    if(f_list == "money") fields += ", money";
   }
 
-  var query = "select usr_id" + fields + " FROM users";
+  var query = "select id" + fields + " FROM users";
 
   client.execute(query,[], {prepare: true }, function(err, result) {
-    if (err) {
-      return callback(err, null);
-    }
+    if (err) { return callback(err, null);}
 
     var users = [];
-    var user = '';
 
     if(result.rows.length > 0) {
       for(var i = 0; i < result.rows.length; i++) {
-        user = result.rows[i];
-        users.push({
-          id : user.usr_id,
-          vid    : user.usr_vid,
-          age : user.usr_age,
-          location : user.usr_location,
-          gender   : user.usr_gender,
-          status : user.usr_status,
-          points   : user.usr_points,
-          money  : userusr_.money
-        });
+        var us = result.rows[i];
+        var user = {
+          id : us.id,
+          vid    : us.vid,
+          age : us.age,
+          location : us.location,
+          gender   : us.gender,
+          status : us.status,
+          points   : us.points,
+          money  : us.money
+        };
+        users.push(user);
       }
-
-      callback(null, users);
-    } else {
-      callback(null, null);
     }
+
+    callback(null, users);
   });
 };
 
@@ -190,22 +182,20 @@ DBManager.prototype.updateUser = function(usr, callback) {
   
   var error = null;
   if (!id || !vid) {
-    error =  new Error("Задан пустй Id пользователя");
-    callback(error, null);
-    return;
+    return callback(new Error("Задан пустй Id пользователя"), null);
   }
   
-  var fields = " usr_vid = ? ";
+  var fields = " vid = ? ";
   var params = [];
   params.push(user.vid);
-  if (user.age)       { fields = fields + ", usr_age = ? ";      params.push(user.age); }
-  if (user.location)  { fields = fields + ", usr_location = ? "; params.push(user.location); }
-  if (user.status)    { fields = fields + ", usr_status = ? ";   params.push(user.status); }
-  if (user.money)     { fields = fields + ", usr_money = ? ";    params.push(user.money); }
-  if (user.gender)    { fields = fields + ", usr_gender = ? ";   params.push(user.gender); }
-  if (user.points)    { fields = fields + ", usr_points = ? ";   params.push(user.points); }
+  if (user.age)       { fields = fields + ", age = ? ";      params.push(user.age); }
+  if (user.location)  { fields = fields + ", location = ? "; params.push(user.location); }
+  if (user.status)    { fields = fields + ", status = ? ";   params.push(user.status); }
+  if (user.money)     { fields = fields + ", money = ? ";    params.push(user.money); }
+  if (user.gender)    { fields = fields + ", gender = ? ";   params.push(user.gender); }
+  if (user.points)    { fields = fields + ", points = ? ";   params.push(user.points); }
 
-  var query = "update users set " + fields + " where usr_id = ?";
+  var query = "update users set " + fields + " where id = ?";
   params.push(id);
   
   client.execute(query, params, {prepare: true }, function(err) {
@@ -222,10 +212,9 @@ DBManager.prototype.updateUser = function(usr, callback) {
  - Возвращаем ИД
  */
 DBManager.prototype.deleteUser = function(id, callback) {
-
   if (!id) { callback(new Error("Задан пустой Id")); }
   
-  var query = "DELETE FROM users WHERE usr_id = ?";
+  var query = "DELETE FROM users WHERE id = ?";
   
   client.execute(query, [id], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
@@ -242,28 +231,28 @@ DBManager.prototype.deleteUser = function(id, callback) {
 - Возвращаем объект подарка
  */
 DBManager.prototype.addGift = function(uid, gft, callback) {
-  var gift = gft           || {};
-  var user = uid;
+  var gift = gft || {};
 
   var giftId = gift.id;
   var type = gift.type;
   var data = gift.data;
   var date = gift.date;
   var fromid = gift.fromid;
+  var fromvid = gift.fromvid;
 
-  if (!user) {
+  if (!uid) {
     return callback(new Error("Не указан Id пользователя"), null);
   }
 
-  if (!type || !data || !date || !from) {
+  if (!type || !data || !date || !fromid || !fromvid) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
   var id = genId(ID_LEN);
 
-    var fields = "gft_id, gft_userid, gft_giftid, gft_type, gft_data, gft_date, gft_fromid";
-    var values = "?, ?, ?, ?, ?, ?, ?";
-    var params = [id, user, giftId, type, data, date, fromid];
+    var fields = "id, userid, giftid, type, data, date, fromid, fromvid";
+    var values = "?, ?, ?, ?, ?, ?, ?, ?";
+    var params = [id, uid, giftId, type, data, date, fromid, fromvid];
 
     var query = "INSERT INTO user_gifts (" + fields + ") VALUES (" + values + ")";
 
@@ -281,14 +270,13 @@ DBManager.prototype.addGift = function(uid, gft, callback) {
 - Возвращаем массив с подарками (если ничего нет NULL)
  */
 DBManager.prototype.findGifts = function(uid, callback) {
-  var user = uid;
-  if (!user) {
+  if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
 
-  var query = "select gft_giftid, gft_type, gft_data, gft_date, gft_fromid FROM user_gifts where gft_userid = ?";
+  var query = "select giftid, type, data, date, fromid, fromvid FROM user_gifts where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var gifts = [];
@@ -297,11 +285,12 @@ DBManager.prototype.findGifts = function(uid, callback) {
       for(var i = 0; i < result.rows.length; i++) {
         var gft = result.rows[i];
         var gift = {
-          id : gft.gft_giftid,
-          type : gft.gft_type,
-          data : gft.gft_data,
-          date : gft.gft_date,
-          fromid : gft.gft_fromid
+          giftidid : gft.giftid,
+          type : gft.type,
+          data : gft.data,
+          date : gft.date,
+          fromid : gft.fromid,
+          fromvid : gft.fromvid
         };
         gifts.push(gift);
       }
@@ -322,12 +311,11 @@ DBManager.prototype.findGifts = function(uid, callback) {
 - Возвращаем ИД игрока
  */
 DBManager.prototype.deleteGifts = function(uid, callback) {
-  var user = uid;
-  if (!user) { return callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select gft_id, user FROM user_gifts where gft_userid = ?";
+  var query = "select id, user FROM user_gifts where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var fields = '';
@@ -339,11 +327,11 @@ DBManager.prototype.deleteGifts = function(uid, callback) {
     fields += '?';
     params.push(result.rows.length-1);
 
-    var query = "DELETE FROM user_gifts WHERE gft_id in ( " + fields + " )";
+    var query = "DELETE FROM user_gifts WHERE id in ( " + fields + " )";
     client.execute(query, [params], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
-      callback(null, user);
+      callback(null, uid);
     });
   });
 
@@ -359,21 +347,21 @@ DBManager.prototype.deleteGifts = function(uid, callback) {
  */
 DBManager.prototype.addMessage = function(uid, msg, callback) {
   var message = msg                 || {};
-  var user = uid;
   var date = message.date;
-  var companion = message.companion;
+  var companionid = message.companionid;
   var incoming  = message.incoming;
   var text      = message.text;
+  var companionvid = message.companionvid;
 
-  if (!date || !user || !companion || !text) {
+  if (!date || !uid || !companionid || !text || !companionvid) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
   var id = genId(ID_LEN);
 
-  var fields = "mes_id, mes_userid, mes_date, mes_companionid, mes_incoming, mes_text";
-  var values = "?, ?, ?, ?, ?, ?";
-  var params = [id, user, date, companion, incoming, text];
+  var fields = "id, userid, date, companionid, companionvid, incoming, text";
+  var values = "?, ?, ?, ?, ?, ?, ?";
+  var params = [id, uid, date, companionid, companionvid, incoming, text];
 
   var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
 
@@ -391,13 +379,11 @@ DBManager.prototype.addMessage = function(uid, msg, callback) {
 - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 DBManager.prototype.findMessages = function(uid, callback) {
-  var user = uid || '';
+  if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
 
-  if (!user) { return callback(new Error("Задан пустой Id пользователя"), null); }
+  var query = "select  date,  companionid, companionvid,  incoming,  text FROM user_messages where userid = ?";
 
-  var query = "select  mes_date,  mes_companionid,  mes_incoming,  mes_text FROM user_messages where mes_userid = ?";
-
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var messages = [];
@@ -406,10 +392,11 @@ DBManager.prototype.findMessages = function(uid, callback) {
       for(var i = 0; i < result.rows.length; i++) {
         var msg = result.rows[i];
         var message = {
-          date      : msg.mes_date,
-          companion : msg.mes_companionid,
-          incoming  : msg.mes_incoming,
-          text      : msg.mes_text
+          date      : msg.date,
+          companionid : msg.companionid,
+          companionvid : msg.companionvid,
+          incoming  : msg.incoming,
+          text      : msg.text
         };
         messages.push(message);
       }
@@ -430,12 +417,11 @@ DBManager.prototype.findMessages = function(uid, callback) {
  - Возвращаем ИД игрока
  */
 DBManager.prototype.deleteMessages = function(uid, callback) {
-  var user = uid || '';
-  if (!user) { callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select mes_id FROM user_messages where mes_userid = ?";
+  var query = "select id FROM user_messages where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var fields = '';
@@ -447,11 +433,11 @@ DBManager.prototype.deleteMessages = function(uid, callback) {
     fields += '?';
     params.push(result.rows.length-1);
 
-    var query = "DELETE FROM user_messages WHERE mes_id in ( " + fields + " )";
+    var query = "DELETE FROM user_messages WHERE id in ( " + fields + " )";
     client.execute(query, [params], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
-      callback(null, user);
+      callback(null, uid);
     });
   });
 
@@ -466,17 +452,17 @@ DBManager.prototype.deleteMessages = function(uid, callback) {
  */
 DBManager.prototype.addFriend = function(uid, frnd, callback) {
   var friend = frnd || {};
-  var user = uid;
   var fid   = friend.id;
   var date = friend.date;
+  var fvid = friend.vid;
 
-  if ( !user || !fid) {
+  if ( !uid || !fid || !fvid) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var query = "select * FROM user_friends where frd_userid = ?";
+  var query = "select * FROM user_friends where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) {
       return callback(err, null);
     }
@@ -493,10 +479,10 @@ DBManager.prototype.addFriend = function(uid, frnd, callback) {
       id = genId(ID_LEN);
     }
 
-    var fields = "frd_id, frd_userid, frd_friendid, frd_date";
-    var values = "?, ?, ?, ?";
+    var fields = "id, userid, friendid, friendvid, date";
+    var values = "?, ?, ?, ?, ?";
 
-    var params = [id, user, fid, date];
+    var params = [id, uid, fid, fvid, date];
 
     var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 
@@ -519,7 +505,7 @@ DBManager.prototype.findFriends = function(uid, callback) {
     return callback(new Error("Задан пустой Id"), null);
   }
 
-  var query = "select frd_friendid, frd_friendvid, frd_date FROM user_friends where frd_userid = ?";
+  var query = "select friendid, friendvid, date FROM user_friends where userid = ?";
 
   client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -530,7 +516,7 @@ DBManager.prototype.findFriends = function(uid, callback) {
     if(result.rows.length > 0) {
 
       for(var i = 0; i < result.rows.length; i++) {
-        friend = { id: result.rows[i].frd_friendid, vid: result.rows[i].frd_friendvid, date: result.rows[i].frd_date };
+        friend = { id: result.rows[i].friendid, vid: result.rows[i].friendvid, date: result.rows[i].date };
         friends.push(friend);
       }
 
@@ -548,12 +534,11 @@ DBManager.prototype.findFriends = function(uid, callback) {
  - Возвращаем ИД игрока
  */
 DBManager.prototype.deleteFriends = function(uid, callback) {
-  var user = uid;
-  if (!user) { callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select frd_id FROM user_friends where frd_userid = ?";
+  var query = "select id FROM user_friends where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var fields = '';
@@ -565,11 +550,11 @@ DBManager.prototype.deleteFriends = function(uid, callback) {
     fields += '?';
     params.push(result.rows.length-1);
 
-    var query = "DELETE FROM user_friends WHERE frd_id in ( " + fields + " )";
+    var query = "DELETE FROM user_friends WHERE id in ( " + fields + " )";
     client.execute(query, [params], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
-      callback(null, user);
+      callback(null, uid);
     });
   });
 };
@@ -583,16 +568,16 @@ DBManager.prototype.deleteFriends = function(uid, callback) {
  */
 DBManager.prototype.addGuest = function(uid, gst, callback) {
   var guest = gst || {};
-  var user = uid;
   var gid   = guest.id;
+  var gvid = guest.vid;
   var date = guest.date;
 
-  if ( !user || !gid || !date) {
+  if ( !uid || !gid || !date || !gvid) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
-  var query = "select * FROM user_guests where gst_userid = ?";
+  var query = "select * FROM user_guests where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var id = null;
@@ -606,10 +591,10 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
     }
     if(!id) {  id = genId(ID_LEN); }
 
-    var fields = "gst_id, gst_userid, gst_guestid, gst_date";
-    var values = "?, ?, ?, ?";
+    var fields = "id, userid, guestid, guestvid, date";
+    var values = "?, ?, ?, ?, ?";
 
-    var params = [id, user, gid, date];
+    var params = [id, uid, gid, gvid, date];
     console.log(params);
     var query = "INSERT INTO user_guests (" + fields + ") VALUES (" + values + ")";
 
@@ -628,14 +613,13 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
  - Возвращаем массив объектв с данными (Если не нашли ничего - NULL)
  */
 DBManager.prototype.findGuests = function(uid, callback) {
-  var user = uid;
-  if (!user ) {
+  if (!uid ) {
     return callback(new Error("Задан пустой Id"), null);
   }
 
-  var query = "select gst_guestid, gst_guestvid, gst_date FROM user_guests where gst_userid = ?";
+  var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var guests = [];
@@ -644,7 +628,7 @@ DBManager.prototype.findGuests = function(uid, callback) {
     if(result.rows.length > 0) {
 
       for(var i = 0; i < result.rows.length; i++) {
-        guest = { id: result.rows[i].gst_guestid, vid: result.rows[i].gst_guestvid, date: result.rows[i].gst_date };
+        guest = { id: result.rows[i].guestid, vid: result.rows[i].guestvid, date: result.rows[i].date };
         guests.push(guest);
       }
 
@@ -662,12 +646,11 @@ DBManager.prototype.findGuests = function(uid, callback) {
  - Возвращаем ИД игрока
  */
 DBManager.prototype.deleteGuests = function(uid, callback) {
-  var user = uid;
-  if (!user) { callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select gst_id FROM user_guests where gst_user = ?";
+  var query = "select id FROM user_guests where user = ?";
 
-  client.execute(query,[user], {prepare: true }, function(err, result) {
+  client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var fields = '';
@@ -679,11 +662,11 @@ DBManager.prototype.deleteGuests = function(uid, callback) {
     fields += '?';
     params.push(result.rows.length-1);
 
-    var query = "DELETE FROM user_guests WHERE gst_id in ( " + fields + " )";
+    var query = "DELETE FROM user_guests WHERE id in ( " + fields + " )";
     client.execute(query, [params], {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
-      callback(null, user);
+      callback(null, uid);
     });
   });
 
@@ -711,7 +694,7 @@ DBManager.prototype.addGood = function(gd, callback) {
 
   var id = genId(ID_LEN);
 
-  var fields = "shp_id, shp_title, shp_price, shp_data, shp_type";
+  var fields = "id, title, price, data, type";
   var values = "?, ?, ?, ?, ?";
 
   var params = [id, goodId, title, price, data, type];
@@ -735,7 +718,7 @@ DBManager.prototype.findGood = function(goodid, callback) {
 
   if(!goodid) { return callback(new Error("Не задан ИД товара"), null); }
 
-  var query = "select shp_title, shp_type, shp_price, shp_data FROM shop where shp_id = ?";
+  var query = "select title, type, price, data FROM shop where id = ?";
 
   client.execute(query,[goodid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -745,10 +728,10 @@ DBManager.prototype.findGood = function(goodid, callback) {
 
     var good = {
       id   : goodid,
-      title: gd.shp_title,
-      type : gd.shp_type,
-      price: gd.shp_price,
-      data:  gd.shp_data
+      title: gd.title,
+      type : gd.type,
+      price: gd.price,
+      data:  gd.data
     };
 
     callback(null, good);
@@ -762,7 +745,7 @@ DBManager.prototype.findGood = function(goodid, callback) {
  - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
  */
 DBManager.prototype.findAllGoods = function(callback) {
-  var query = "select shp_title, shp_type, shp_price, shp_data FROM shop";
+  var query = "select id, title, type, price, data FROM shop";
 
   client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -773,10 +756,11 @@ DBManager.prototype.findAllGoods = function(callback) {
 
 
       goods.push({
-          title: gd.shp_title,
-          type : gd.shp_type,
-          price: gd.shp_price,
-          data:  gd.shp_data
+          giftid: gd.id,
+          title: gd.title,
+          type : gd.type,
+          price: gd.price,
+          data:  gd.data
         });
     }
     callback(null, goods);
@@ -793,7 +777,7 @@ DBManager.prototype.deleteGood = function(goodid, callback) {
   var id = goodid;
   if (!id) { callback(new Error("Задан пустой Id товара")); }
 
-  var query = "DELETE FROM shop WHERE shp_id = ?";
+  var query = "DELETE FROM shop WHERE id = ?";
 
   client.execute(query, [results.rows[0].id], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

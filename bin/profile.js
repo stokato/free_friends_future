@@ -58,15 +58,14 @@ Profile.prototype.init = function(socket, opt, callback) {
       self.pGender   = options.gender;
 
       //if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
-      if (!self.pVID ||  !self.pAge || !self.pLocation || !self.pGender) {
-
+      if (!self.pSocket || !self.pVID ||  !self.pAge || !self.pLocation || !self.pGender) {
         return cb(new Error("На задана одна из опций"), null);
       }
 
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      var fList = ["name", "gender", "points", "money", "age", "location", "status"];
+      var fList = ["gender", "points", "money", "age", "location", "status"];
       dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
@@ -78,9 +77,10 @@ Profile.prototype.init = function(socket, opt, callback) {
         cb(null, foundUser);
       });
     },
-    function (foundUser, cb) {  // Если изменились нужные для статистики поля, обмновляем их в базе
+    function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
       if(foundUser) {
-        if(self.pGender != foundUser.gender || self.pAge != foundUser.age || self.pLocation != foundUser.location) {
+        if(self.pGender != foundUser.gender || self.pAge != foundUser.age || self.pLocation != foundUser.location
+            || self.pStatus != foundUser.status) {
           self.save(function(err, res) {
             if (err) { return cb(err); }
 
@@ -101,24 +101,59 @@ Profile.prototype.init = function(socket, opt, callback) {
           gender  : self.pGender
         };
 
-        dbManager.addUser(newUser, function(err, addedUser) {
+        dbManager.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }
-          if (addedUser) {
-            self.pID = addedUser.id;
-            cb(null, null);
-          } else {
-            return cb(new Error("Ошибка при добавлении пользователя в базу данных"));
-          }
+
+          self.pID = user.id;
+
+          cb(null, null);
         });
       } else cb(null, null);
     }
    //////////////////////////////////////////////////////////////////////////////////
   ], function (err, result) { // Вызвается последней или в случае ошибки
-    if (err) {
-      console.log(err);
-     return  callback(err);
-    }
+    if (err) { return  callback(err); }
     
+    var info = {
+      id       : self.pID,
+      vid      : self.pVID,
+      status   : self.pStatus,
+      points   : self.pPoints,
+      money    : self.pMoney
+    };
+    callback(null, info);
+  }); // waterfall
+
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Инициализируем профиль
+ - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
+ - Что-то проверяем
+ - Ищем пользователя в БД и заполняем оставшиеся свойства
+ - Если нет - добавляем
+ - Возвращаем свойсва
+ */
+Profile.prototype.build = function(id, callback) {
+  var self = this;
+  self.pID = id;
+
+  if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
+
+  var fList = ["gender", "points", "status", "location", "age"];
+  dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
+    if (err) { return  callback(err, null); }
+    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
+
+    self.pVID     = foundUser.vid;
+    self.pStatus = foundUser.status;
+    self.pPoints = foundUser.points;
+    self.pGender = foundUser.gender;
+    self.pLocation = foundUser.location;
+    self.pAge = foundUser.age;
+
+    // self.pMoney  = foundUser.money;
+
     var info = {
       id       : self.pID,
       vid      : self.pVID,
@@ -126,21 +161,12 @@ Profile.prototype.init = function(socket, opt, callback) {
       location : self.pLocation,
       status   : self.pStatus,
       points   : self.pPoints,
-      money    : self.pMoney,
+      //money    : self.pMoney,
       gender   : self.pGender
     };
+
     callback(null, info);
-  }); // waterfall
-
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-/*
- Устанавливаем новый сокет
- */
-Profile.prototype.setSocket = function(socket, callback) {
-  this.pSocket = socket;
-  callback(null, this.pSocket);
+  });
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -156,29 +182,6 @@ Profile.prototype.getSocket = function() {
 Profile.prototype.getMoney = function() {
   return this.pMoney;
 };
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-Устанавливаем свойста (пока не используется)
- */
-Profile.prototype.setInfo = function(options, callback) {
-  this.pAge        = (options.age)?      options.age : this.pAge;
-  this.pLocation   = (options.location)? options.location : this.pLocation;
-  this.pStatus     = (options.status)?   options.status : this.pStatus;
-  this.pGender     = (options.gender)?   options.gender : this.pGender;
-  
-  callback(null, options);
-};
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-Поулчаем сведения о пользователе
- */
-//Profile.prototype.getInfo = function() {
-//  var options = {
-//    id       : this.pID,
-//    vid      : this.pVID
-//  };
-//  return options;
-//};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
  Поулчаем id игрока
@@ -209,7 +212,7 @@ Profile.prototype.getPoints = function() {
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
- Поулчаем очки игрока
+ Поулчаем пол игрока
  */
 Profile.prototype.getGender = function() {
   return this.pGender;
@@ -219,7 +222,7 @@ Profile.prototype.getGender = function() {
 Добавляем подарок в БД
  */
 Profile.prototype.addGift = function(gift, callback) {
-  self = this;
+  var self = this;
   dbManager.addGift(self.pID, gift, function(err, res) {
     if (err) { return callback(err, null); }
 
@@ -244,9 +247,6 @@ Profile.prototype.getGifts = function(callback) {
 - Сообщение должно иметь поля: собеседник, входящее/bool, текст, дата
  */
 Profile.prototype.addMessage = function(message, callback) {
-  if (!message.companion || !message.text || !message.date) { // incom?
-    return callback(new Error("Ошибка при добавлении сообщения в историю: заданы не все аргументы"));
-  }
   var self = this;
   dbManager.addMessage(self.pID, message, function(err, res) {
     if (err) { return callback(err, null); }
@@ -292,7 +292,7 @@ Profile.prototype.addPoints = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Ошибка при добавлении очков пользователю, количество очков задано некорректно"));
   }
-  self = this;
+  var self = this;
   var options = {
     id : self.pID,
     vid : self.pVID,
@@ -317,7 +317,7 @@ Profile.prototype.setMoney = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Ошибка при установке количества монет, количество монет задано некорректно"));
   }
-  self = this;
+  var self = this;
   var options = {
     id : self.pID,
     vid : self.pVID,
@@ -329,6 +329,28 @@ Profile.prototype.setMoney = function(num, callback) {
 
     self.pMoney = options.money;
     callback(null, self.pMoney);
+  });
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ Устанавливаем статус игрока
+ - Сначала в БД и если успешно
+ - В ОЗУ
+ - Возвращаем
+ */
+Profile.prototype.setStatus = function(str, callback) {
+  var self = this;
+  var options = {
+    id : self.pID,
+    vid : self.pVID,
+    status : str
+  };
+
+  dbManager.updateUser(options, function(err, id) {
+    if (err) {return callback(err, null); }
+
+    self.pStatus = options.status;
+    callback(null, self.pStatus);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,7 +390,7 @@ Profile.prototype.addToGuests = function(guest, callback) {
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /*
-Получаме гостей из БД
+Получаем гостей из БД
  */
 Profile.prototype.getGuests = function(callback) {
   var self = this;
@@ -397,7 +419,7 @@ Profile.prototype.save = function(callback) {
 
 
   dbManager.updateUser(options, function(err, id) {
-    if (err) {console.log(err); return callback(err, null); }
+    if (err) { return callback(err, null); }
 
     callback(null, id);
   });

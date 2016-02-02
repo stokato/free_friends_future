@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>App</title>
+	<link href="/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" rel="stylesheet">
+	<link href="/stylesheets/main.css" rel="stylesheet">
+</head>
+<body>
+	<nav class="">
+		<ul class="nav-left">
+			<li class="active"><a href="#">Игра</a></li>
+			<li><a href="#about" id="my-profile">Профиль</a></li>
+			<li><a href="#contact" id="top">Топ</a></li>
+			<li id="show-rooms"><button id="rooms-button">Выбрать комнату</button>
+				<ul id="room-list">
+
+				</ul>
+			</li>
+		</ul>
+		<ul class="nav-right">
+			<li><a>звук Выкл.</a></li>
+			<li><button>Зароботать</button></li>
+			<li><a href="../navbar/">241234</a></li>
+			<li><button>	Пополнить</button></li>
+		</ul>
+	</nav>
+	<div id="main">
+		<div class="game" id="start-game">Присоединиться к игре</div>
+	</div>
+	<div id="chat">
+		<div id="music" class="right-collumn">
+			<div class="avatar"><img src="/test/profile.jpg" class="img-circle"></div>
+			<div class="track-control">
+				<div class="title-wrap">
+					<div class="track-name fl_l">
+						Armin van...
+					</div>
+					<div class="duration fl_r">01:33</div>
+				</div>
+				<div class="progress  fl_l">
+					<div class="cur-progress" style="margin-left: 15.25px;"></div>
+				</div>
+				<div class="like  fl_l">
+					<div class="like-up fl_l">124</div>
+					<div class="like-down fl_r">101</div>
+				</div>
+			</div>
+			<div class="sound-ico"><img src="/assets/image/player-speaker.png"></div>
+			<div class="order">
+				<div class="fl_l"><button>Заказать</button></div>
+				<div class="fl_r"><button>Очередь</button></div>
+			</div>
+		</div>
+		<div id="messager">
+			<div id="messages" class="right-collumn border-top">
+				<div class="input-back">Введите свое сообщение и  нажмите Enter</div>
+				<div class="show-smile"></div>
+				<div id="input-message">
+					<div  contentEditable="true" class="input-message"></div>
+				</div>
+
+			</div>
+			<div id="message-list">
+
+			</div>
+		</div>
+	</div>
+	<div id="init">
+		<form id='user-enter-exit'>
+      <label >Id <input id='id' name='id' /></label>
+      <button id='login-button'>Войти</button>
+		</form>
+	</div>
+
+	<script src='/socket.io/socket.io.js' type='text/javascript'></script>
+	<script src="/bower_components/handlebars/handlebars.min.js"></script>
+	<!--<script src="/bower_components/jquery/dist/jquery.min.js"></script>-->
+	<script src='http://code.jquery.com/jquery-1.11.3.min.js' type='text/javascript'></script>
+	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="/bower_components/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+  	<script src='/javascripts/chat_clnt.js' type='text/javascript'></script>
+	<!--<script src="/assets/js/main.js"></script>-->
+	<!--<script src="/assets/js/message.js"></script>-->
+	<!--<script type="text/javascript">
+	Main.init();
+	</script>-->
+</body>
+</html>

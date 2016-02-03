@@ -29,6 +29,8 @@ function Profile() {
   var pPoints   = null;   // очки
   var pMoney    = null;   // деньги
 
+  var pReady    = false;
+
   var gift_1   = null;    // На игрвом столе на аватарах игроков весят подарки, по ним не ясно
   var gift_2   = null;
 }
@@ -57,7 +59,7 @@ Profile.prototype.init = function(socket, opt, callback) {
       self.pLocation = options.location;
       self.pGender   = options.gender;
 
-      //if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
+      if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
       if (!self.pSocket || !self.pVID ||  !self.pAge || !self.pLocation || !self.pGender) {
         return cb(new Error("На задана одна из опций"), null);
       }
@@ -79,8 +81,9 @@ Profile.prototype.init = function(socket, opt, callback) {
     },
     function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
       if(foundUser) {
-        if(self.pGender != foundUser.gender || self.pAge != foundUser.age || self.pLocation != foundUser.location
-            || self.pStatus != foundUser.status) {
+        if(self.pGender != foundUser.gender || self.pAge != foundUser.age
+            || self.pLocation != foundUser.location || self.pStatus != foundUser.status) {
+
           self.save(function(err, res) {
             if (err) { return cb(err); }
 

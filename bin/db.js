@@ -1,11 +1,11 @@
 var cassandra = require('cassandra-driver');
-var genId = require('uid');
 var async = require('async');
 var Config = require('../config.json').cassandra; // Настойки доступа к БД
                                                   // Клиент Кассанда
 var client = new cassandra.Client({contactPoints: [Config.host],
                                   keyspace: Config.keyspace});
-var ID_LEN = 10;                                  // Длина ИД (ключевое поле)
+
+var Uuid = cassandra.types.Uuid;  // Генератор id для Cassandra
 /**
  * Класс, обеспечивающий работу с БД Кассандра
  * содержит методы - добавить пользователя (обязательные поля - ид и имя) - возвращает добавленного
@@ -39,7 +39,7 @@ DBManager.prototype.addUser = function(usr, callback) {
     return callback(new Error("Не заданы имя пользователя или его Id"), null);
   }
 
-  var id = genId(ID_LEN);
+  var id = Uuid.random();
 
   var fields = "id, vid";
   var values = "?, ?";
@@ -248,7 +248,7 @@ DBManager.prototype.addGift = function(uid, gft, callback) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
-  var id = genId(ID_LEN);
+  var id = Uuid.random();
 
     var fields = "id, userid, giftid, type, data, date, fromid, fromvid";
     var values = "?, ?, ?, ?, ?, ?, ?, ?";
@@ -357,7 +357,7 @@ DBManager.prototype.addMessage = function(uid, msg, callback) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
-  var id = genId(ID_LEN);
+  var id = Uuid.random();
 
   var fields = "id, userid, date, companionid, companionvid, incoming, text";
   var values = "?, ?, ?, ?, ?, ?, ?";
@@ -460,37 +460,17 @@ DBManager.prototype.addFriend = function(uid, frnd, callback) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var query = "select * FROM user_friends where userid = ?";
+  var fields = "userid, friendid, friendvid, date";
+  var values = "?, ?, ?, ?";
 
-  client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) {
-      return callback(err, null);
-    }
+  var params = [uid, fid, fvid, date];
 
-    var id = null;
-    if (result.rows.length > 0) {
-      for (var i = 0; i < result.rows.length; i++) {
-        if (result.rows[i].friendid == fid) {
-          id = result.rows[i].id;
-        }
-      }
-    }
-    if (!id) {
-      id = genId(ID_LEN);
-    }
+  var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 
-    var fields = "id, userid, friendid, friendvid, date";
-    var values = "?, ?, ?, ?, ?";
+  client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    var params = [id, uid, fid, fvid, date];
-
-    var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
-
-    client.execute(query, params, {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, frnd);
-    });
+    callback(null, frnd);
   });
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -536,27 +516,13 @@ DBManager.prototype.findFriends = function(uid, callback) {
 DBManager.prototype.deleteFriends = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select id FROM user_friends where userid = ?";
+  var query = "DELETE FROM user_friends WHERE userid = ?";
+  client.execute(query, [uid], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
 
-  client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-
-    var fields = '';
-    var params = [];
-    for (var i = 0; i < result.rows.length-1; i ++) {
-      fields += '?, ';
-      params.push(result.rows[i]);
-    }
-    fields += '?';
-    params.push(result.rows.length-1);
-
-    var query = "DELETE FROM user_friends WHERE id in ( " + fields + " )";
-    client.execute(query, [params], {prepare: true }, function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, uid);
-    });
+    callback(null, uid);
   });
+
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -575,35 +541,20 @@ DBManager.prototype.addGuest = function(uid, gst, callback) {
   if ( !uid || !gid || !date || !gvid) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
-  var query = "select * FROM user_guests where userid = ?";
 
-  client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
+  var fields = "userid, guestid, guestvid, date";
+  var values = "?, ?, ?, ?";
 
-    var id = null;
-    if(result.rows.length > 0) {
+  var params = [uid, gid, gvid, date];
+  console.log(params);
+  var query = "INSERT INTO user_guests (" + fields + ") VALUES (" + values + ")";
 
-      for(var i = 0; i < result.rows.length; i++) {
-        if (result.rows[i].guestid == gid) {
-          id = result.rows[i].id;
-        }
-      }
-    }
-    if(!id) {  id = genId(ID_LEN); }
+  client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    var fields = "id, userid, guestid, guestvid, date";
-    var values = "?, ?, ?, ?, ?";
-
-    var params = [id, uid, gid, gvid, date];
-    console.log(params);
-    var query = "INSERT INTO user_guests (" + fields + ") VALUES (" + values + ")";
-
-    client.execute(query, params, {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, guest);
-    });
+    callback(null, guest);
   });
+
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -648,28 +599,12 @@ DBManager.prototype.findGuests = function(uid, callback) {
 DBManager.prototype.deleteGuests = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select id FROM user_guests where user = ?";
+  var query = "DELETE FROM user_guests where user = ?";
+  client.execute(query, [uid], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
 
-  client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-
-    var fields = '';
-    var params = [];
-    for (var i = 0; i < result.rows.length-1; i ++) {
-      fields += '?, ';
-      params.push(result.rows[i]);
-    }
-    fields += '?';
-    params.push(result.rows.length-1);
-
-    var query = "DELETE FROM user_guests WHERE id in ( " + fields + " )";
-    client.execute(query, [params], {prepare: true }, function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, uid);
-    });
+    callback(null, uid);
   });
-
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -692,7 +627,7 @@ DBManager.prototype.addGood = function(gd, callback) {
     return callback(new Error("Не указан Id товара"), null);
   }
 
-  var id = genId(ID_LEN);
+  var id = Uuid.random();
 
   var fields = "id, title, price, data, type";
   var values = "?, ?, ?, ?, ?";

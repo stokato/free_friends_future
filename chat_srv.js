@@ -3,7 +3,8 @@ var socketio  =  require('socket.io'),
     validator =  require('validator');
                                                     // Свои модули
 var profilejs =  require('./bin/profile'),          // Профиль
-    dbjs      = require('./bin/db');//,             // База
+    dbjs      = require('./bin/db'),                // База
+    GameError = require('./bin/game_error');//,
     //gamejs    = require('./bin/game');
 
 var ONE_GENDER_IN_ROOM = 5;                         // Макс. количество игроков одного пола в комнате
@@ -351,7 +352,7 @@ function chooseRoom() {
         var currFriend = profiles[allFriends[i].id];
         if(currFriend) {
           var frSocket = currFriend.getSocket();
-          var friendsRoom = roomList[frSocket.id]; console.log(currFriend);
+          var friendsRoom = roomList[frSocket.id];
           if(friendsRoom[len] < ONE_GENDER_IN_ROOM) {
             var currInfo = {
               id : currFriend.getID(),
@@ -979,53 +980,6 @@ function randomInteger(min, max) {
   return rand;
 }
 
-// Свой объект ошибок
-function GameError(socket, func, message) {
-  var err = {};
-  err.message = message;
-  err.stack = (new Error()).stack;
-
-  switch(func) {
-    case "INIT"       : err.name = "Ошибка инициализации";
-      break;
-    case "EXIT"       : err.name = "Ошибка отключения от игры";
-      break;
-    case "CHOOSEROOM" : err.name = "Ошибка открытия окна смены стола";
-      break;
-    case "SHOWROOMS"  : err.name = "Ошибка открытия окна доступных столов";
-      break;
-    case "CHANGEROOM" : err.name = "Ошибка смены стола";
-      break;
-    case "SHOWPROFILE": err.name = "Ошибка открытия окна профиля";
-      break;
-    case "SHOWHISTORY": err.name = "Ошибка открытия окна личных сообщений";
-      break;
-    case "SHOWGIFTS"  : err.name = "Ошибка открытия окна подарков";
-      break;
-    case "MAKEGIFT"   : err.name = "Ошибка совершения подарка";
-      break;
-    case "SHOWTOP"    : err.name = "Ошибка открытия топа игроков";
-      break;
-    case "SENDPUBMESSAGE" : err.name = "Ошибка отправки публичного сообщения";
-      break;
-    case "SENDPRIVMESSAGE" : err.name = "Ошибка отправки личного сообщения";
-      break;
-    case "SHOWGIFTSHOP" : err.name = "Ошибка открытия окна магазина подарков";
-      break;
-    case "ADDFRIEND" : err.name = "Ошибка добавления в друзья";
-      break;
-    case "CHANGESTATUS" : err.name = "Ошибка изменения статуса";
-      break;
-    default:  err.name =   "Неизвестная ошибка"
-  }
-  console.log(err.name + " : " + err.message);
-  console.log(err.stack);
-
-  if(socket)
-    socket.emit('error', err);
-}
-GameError.prototype = Object.create(Error.prototype);
-GameError.prototype.constructor = GameError;
 
 function checkInput(em, socket, options) {
   if(em == 'init' && userList[socket.id] ) { new Error("Пользователь уже инициализирован");  return false }
@@ -1048,27 +1002,23 @@ function checkInput(em, socket, options) {
   }
 
   if(em == 'show_profile') {
-    isValid = (validator.isAlphanumeric(options.id))? isValid : false;
     isValid = (validator.isDate(options.date))? isValid : false;
   }
 
   if(em == 'private_message') {
-    isValid = (validator.isAlphanumeric(options.id))? isValid : false;
     isValid = (validator.isDate(options.date))? isValid : false;
   }
 
   if(em == 'make_gift') {
-    isValid = (validator.isAlphanumeric(options.id))? isValid : false;
-    isValid = (validator.isAlphanumeric(options.giftid))? isValid : false;
     isValid = (validator.isDate(options.date))? isValid : false;
   }
 
   if(em == 'add_friend') {
-    isValid = (validator.isAlphanumeric(options.id))? isValid : false;
+   // isValid = (validator.isAlphanumeric(options.id))? isValid : false;
   }
 
   if(em == 'change_status') {
-
+    isValid = (validator.isAlphanumeric(options.status))? isValid : false;
   }
 
   return isValid;

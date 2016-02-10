@@ -11,25 +11,25 @@ function GameError(socket, func, message) {
             break;
         case "CHOOSEROOM" : err.name = "Ошибка открытия окна смены стола";
             break;
-        case "SHOWROOMS"  : err.name = "Ошибка открытия окна доступных столов";
+        case "GETROOMS"  : err.name = "Ошибка открытия окна доступных столов";
             break;
         case "CHANGEROOM" : err.name = "Ошибка смены стола";
             break;
-        case "SHOWPROFILE": err.name = "Ошибка открытия окна профиля";
+        case "GETPROFILE": err.name = "Ошибка открытия окна профиля";
             break;
-        case "SHOWHISTORY": err.name = "Ошибка открытия окна личных сообщений";
+        case "GETHISTORY": err.name = "Ошибка открытия окна личных сообщений";
             break;
-        case "SHOWGIFTS"  : err.name = "Ошибка открытия окна подарков";
+        case "GETGIFTS"  : err.name = "Ошибка открытия окна подарков";
             break;
         case "MAKEGIFT"   : err.name = "Ошибка совершения подарка";
             break;
-        case "SHOWTOP"    : err.name = "Ошибка открытия топа игроков";
+        case "GETTOP"    : err.name = "Ошибка открытия топа игроков";
             break;
         case "SENDPUBMESSAGE" : err.name = "Ошибка отправки публичного сообщения";
             break;
         case "SENDPRIVMESSAGE" : err.name = "Ошибка отправки личного сообщения";
             break;
-        case "SHOWGIFTSHOP" : err.name = "Ошибка открытия окна магазина подарков";
+        case "GETGIFTSHOP" : err.name = "Ошибка открытия окна магазина подарков";
             break;
         case "ADDFRIEND" : err.name = "Ошибка добавления в друзья";
             break;
@@ -44,6 +44,10 @@ function GameError(socket, func, message) {
         case "GAMEBEST" : err.name = "Игра остановлена. Ошибка в игре Кто больше нравится";
             break;
         case "GAMESYMPATHY" : err.name = "Игра остановлена. Ошибка в игре Симпатии";
+            break;
+        case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
+            break;
+        case "CHANGEMONEY" : err.name = "Ошбика изменения количества монег игрока";
             break;
         default:  err.name =   "Неизвестная ошибка"
     }

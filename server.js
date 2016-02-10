@@ -49,7 +49,7 @@ var server = http.createServer(function(req, res) {
 });
 
 server.listen(Config.port, function() {
-    require('./chat_srv').listen(server, function(){
+    require('./bin/io').listen(server, function(){
         console.log('server running at: ' + Config.host + ':' + Config.port);
     });
 });

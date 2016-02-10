@@ -1,22 +1,22 @@
 
 /*
- Инициализируем профиль
- - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
- - Что-то проверяем
- - Ищем пользователя в БД и заполняем оставшиеся свойства
- - Если нет - добавляем
- - Возвращаем свойсва
+ РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїСЂРѕС„РёР»СЊ
+ - РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР»СѓС‡РµРЅРЅС‹Рµ РёР· СЃРѕС† СЃРµС‚Рё СЃРІРѕР№СЃС‚РІР° (РІ Р‘Р” РѕРЅРё С‚РѕС‡РЅРѕ РЅРµ РЅСѓР¶РЅС‹, Р° РІ РћР—РЈ ???)
+ - Р§С‚Рѕ-С‚Рѕ РїСЂРѕРІРµСЂСЏРµРј
+ - РС‰РµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” Рё Р·Р°РїРѕР»РЅСЏРµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ СЃРІРѕР№СЃС‚РІР°
+ - Р•СЃР»Рё РЅРµС‚ - РґРѕР±Р°РІР»СЏРµРј
+ - Р’РѕР·РІСЂР°С‰Р°РµРј СЃРІРѕР№СЃРІР°
  */
 module.exports = function(id, callback) {
     var self = this;
     self.pID = id;
 
-    if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
+    if (!self.pID) { return callback(new Error("РќРµ Р·Р°РґР°РЅ РР”"), null); }
 
     var fList = ["gender", "points", "status", "location", "age"];
     self.dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
         if (err) { return  callback(err, null); }
-        if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
+        if (!foundUser) { return callback(new Error("РўР°РєРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅРµС‚ РІ Р‘Р”"), null); }
 
         self.pVID     = foundUser.vid;
         self.pStatus = foundUser.status;

@@ -1,5 +1,5 @@
 /*
- Поулчаем id игрока
+ РџРѕСѓР»С‡Р°РµРј id РёРіСЂРѕРєР°
  */
 module.exports = function() {
     return this.pID;

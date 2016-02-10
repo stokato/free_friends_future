@@ -1,5 +1,5 @@
 /*
- Сохраняем профиль в БД
+ РЎРѕС…СЂР°РЅСЏРµРј РїСЂРѕС„РёР»СЊ РІ Р‘Р”
  */
 module.exports = function(callback) {
     var self = this;

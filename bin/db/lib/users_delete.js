@@ -1,10 +1,10 @@
 /*
- Удаляем пользователя: ИД
- - Проверка на ИД
- - Возвращаем ИД
+ РЈРґР°Р»СЏРµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ: РР”
+ - РџСЂРѕРІРµСЂРєР° РЅР° РР”
+ - Р’РѕР·РІСЂР°С‰Р°РµРј РР”
  */
 module.exports = function(id, callback) {
-    if (!id) { callback(new Error("Задан пустой Id")); }
+    if (!id) { callback(new Error("Р—Р°РґР°РЅ РїСѓСЃС‚РѕР№ Id")); }
 
     var query = "DELETE FROM users WHERE id = ?";
 

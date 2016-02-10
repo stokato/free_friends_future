@@ -1,11 +1,11 @@
 /*
- Удаляем польлзователя из БД
- - Очищаем свойста
- - Удаляем подарки
- - личные сообщения
- - друзей
- - гостей
- - самого поьзователя
+ РЈРґР°Р»СЏРµРј РїРѕР»СЊР»Р·РѕРІР°С‚РµР»СЏ РёР· Р‘Р”
+ - РћС‡РёС‰Р°РµРј СЃРІРѕР№СЃС‚Р°
+ - РЈРґР°Р»СЏРµРј РїРѕРґР°СЂРєРё
+ - Р»РёС‡РЅС‹Рµ СЃРѕРѕР±С‰РµРЅРёСЏ
+ - РґСЂСѓР·РµР№
+ - РіРѕСЃС‚РµР№
+ - СЃР°РјРѕРіРѕ РїРѕСЊР·РѕРІР°С‚РµР»СЏ
  */
 module.exports = function(callback) {
 
@@ -21,16 +21,16 @@ module.exports = function(callback) {
     self.pGender   = null;
     self.pMoney    = null;
 
-    self.dbManager.deleteGifts(this.pID, function(err, id) {  // Удаляем подарки
+    self.dbManager.deleteGifts(this.pID, function(err, id) {  // РЈРґР°Р»СЏРµРј РїРѕРґР°СЂРєРё
         if(err) { return callback(err, null); }
-        self.dbManager.deleteMessages(id, function(err, id) { // и историю
+        self.dbManager.deleteMessages(id, function(err, id) { // Рё РёСЃС‚РѕСЂРёСЋ
             if(err) { return callback(err, null) }
-            self.dbManager.deleteFriends(id, function(err, id) { // и друзей
+            self.dbManager.deleteFriends(id, function(err, id) { // Рё РґСЂСѓР·РµР№
                 if(err) { return callback(err, null) }
-                self.dbManager.deleteGuests(id, function(err, id) { // и гостей
+                self.dbManager.deleteGuests(id, function(err, id) { // Рё РіРѕСЃС‚РµР№
                     if(err) { return callback(err, null) }
 
-                    self. dbManager.deleteUser(id, function(err, id) { // и самого пользователя
+                    self. dbManager.deleteUser(id, function(err, id) { // Рё СЃР°РјРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
                         if(err) { return callback(err, null) }
 
                         callback(null, id);

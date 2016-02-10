@@ -1,5 +1,5 @@
 /*
- Получаем всех друзей из БД
+ РџРѕР»СѓС‡Р°РµРј РІСЃРµС… РґСЂСѓР·РµР№ РёР· Р‘Р”
  */
 module.exports = function(callback) {
     var self = this;

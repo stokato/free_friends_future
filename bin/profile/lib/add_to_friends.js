@@ -1,5 +1,5 @@
 /*
- Добавляем друга в БД
+ Р”РѕР±Р°РІР»СЏРµРј РґСЂСѓРіР° РІ Р‘Р”
  */
 module.exports = function(friend, callback) {
     var self = this;

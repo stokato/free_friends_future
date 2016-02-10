@@ -1,5 +1,5 @@
 /*
- Добавляем подарок в БД
+ Р”РѕР±Р°РІР»СЏРµРј РїРѕРґР°СЂРѕРє РІ Р‘Р”
  */
 module.exports = function(gift, callback) {
     var self = this;

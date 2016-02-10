@@ -1,5 +1,5 @@
 /*
- Получаем гостей из БД
+ РџРѕР»СѓС‡Р°РµРј РіРѕСЃС‚РµР№ РёР· Р‘Р”
  */
 module.exports = function(callback) {
     var self = this;

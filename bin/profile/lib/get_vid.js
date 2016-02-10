@@ -1,5 +1,5 @@
 /*
- Поулчаем vid игрока
+ РџРѕСѓР»С‡Р°РµРј vid РёРіСЂРѕРєР°
  */
 module.exports = function() {
     return this.pVID;

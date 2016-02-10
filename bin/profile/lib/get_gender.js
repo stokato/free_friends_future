@@ -1,5 +1,5 @@
 /*
- Поулчаем пол игрока
+ РџРѕСѓР»С‡Р°РµРј РїРѕР» РёРіСЂРѕРєР°
  */
 module.exports = function() {
     return this.pGender;

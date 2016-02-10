@@ -1,5 +1,5 @@
 /*
- Получаем сокет
+ РџРѕР»СѓС‡Р°РµРј СЃРѕРєРµС‚
  */
 module.exports = function() {
     return this.pSocket;

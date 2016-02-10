@@ -1,5 +1,5 @@
 /*
- Поулчаем статус игрока
+ РџРѕСѓР»С‡Р°РµРј СЃС‚Р°С‚СѓСЃ РёРіСЂРѕРєР°
  */
 module.exports = function() {
     return this.pStatus;

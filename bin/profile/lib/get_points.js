@@ -1,5 +1,5 @@
 /*
- Поулчаем очки игрока
+ РџРѕСѓР»С‡Р°РµРј РѕС‡РєРё РёРіСЂРѕРєР°
  */
 module.exports = function() {
     return this.pPoints;

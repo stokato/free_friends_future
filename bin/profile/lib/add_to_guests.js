@@ -1,5 +1,5 @@
 /*
- Добавляем гостя в БД
+ Р”РѕР±Р°РІР»СЏРµРј РіРѕСЃС‚СЏ РІ Р‘Р”
  */
 module.exports = function(guest, callback) {
     var self = this;

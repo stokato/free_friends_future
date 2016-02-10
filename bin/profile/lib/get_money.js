@@ -1,5 +1,5 @@
 /*
- Получаем деньги
+ РџРѕР»СѓС‡Р°РµРј РґРµРЅСЊРіРё
  */
 module.exports = function() {
     return this.pMoney;

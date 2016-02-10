@@ -1,17 +1,17 @@
 var async     = require('async');
 /*
- Инициализируем профиль
- - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
- - Что-то проверяем
- - Ищем пользователя в БД и заполняем оставшиеся свойства
- - Если нет - добавляем
- - Возвращаем свойсва
+ РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїСЂРѕС„РёР»СЊ
+ - РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР»СѓС‡РµРЅРЅС‹Рµ РёР· СЃРѕС† СЃРµС‚Рё СЃРІРѕР№СЃС‚РІР° (РІ Р‘Р” РѕРЅРё С‚РѕС‡РЅРѕ РЅРµ РЅСѓР¶РЅС‹, Р° РІ РћР—РЈ ???)
+ - Р§С‚Рѕ-С‚Рѕ РїСЂРѕРІРµСЂСЏРµРј
+ - РС‰РµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р‘Р” Рё Р·Р°РїРѕР»РЅСЏРµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ СЃРІРѕР№СЃС‚РІР°
+ - Р•СЃР»Рё РЅРµС‚ - РґРѕР±Р°РІР»СЏРµРј
+ - Р’РѕР·РІСЂР°С‰Р°РµРј СЃРІРѕР№СЃРІР°
  */
 module.exports = function(socket, opt, callback) {
     var self = this;
     async.waterfall([
         //////////////////////////////////////////////////////////////////////////
-        function (cb) {  // Устанавливаем свойства
+        function (cb) {  // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРІРѕР№СЃС‚РІР°
             var options = opt || {};
 
             self.pSocket   = socket;
@@ -22,14 +22,14 @@ module.exports = function(socket, opt, callback) {
             self.pLocation = options.location;
             self.pGender   = options.gender;
 
-            if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
+            if (!self.pSocket) { return cb(new Error("РќРµ Р·Р°РґР°РЅ Socket Id"), null); }
             if (!self.pSocket || !self.pVID ||  !self.pAge || !self.pLocation || !self.pGender) {
-                return cb(new Error("На задана одна из опций"), null);
+                return cb(new Error("РќР° Р·Р°РґР°РЅР° РѕРґРЅР° РёР· РѕРїС†РёР№"), null);
             }
 
             cb(null, null);
         },
-        function (res, cb) {  // Ищем пользователя в базе
+        function (res, cb) {  // РС‰РµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ Р±Р°Р·Рµ
             var fList = ["gender", "points", "money", "age", "location", "status"];
             self.dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
                 if (err) { return cb(err); }
@@ -47,7 +47,7 @@ module.exports = function(socket, opt, callback) {
                 cb(null, foundUser);
             });
         },
-        function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
+        function (foundUser, cb) {  // Р•СЃР»Рё РёР·РјРµРЅРёР»РёСЃСЊ РЅСѓР¶РЅС‹Рµ  РїРѕР»СЏ, РѕР±РјРЅРѕРІР»СЏРµРј РёС… РІ Р±Р°Р·Рµ
             if(foundUser) {
                 if(self.pGender != foundUser.gender || self.pAge != foundUser.age
                     || self.pLocation != foundUser.location || self.pStatus != foundUser.status) {
@@ -61,9 +61,9 @@ module.exports = function(socket, opt, callback) {
             } else cb(null, foundUser);
         },
         ////////////////////////////////////////////////////////////////////////////
-        function (foundUser, cb) { // Если в базе такого нет, добавляем
+        function (foundUser, cb) { // Р•СЃР»Рё РІ Р±Р°Р·Рµ С‚Р°РєРѕРіРѕ РЅРµС‚, РґРѕР±Р°РІР»СЏРµРј
             if (!foundUser) {
-                // Добавляем пользователя
+                // Р”РѕР±Р°РІР»СЏРµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
                 var newUser = {
                     vid     : self.pVID,
@@ -82,7 +82,7 @@ module.exports = function(socket, opt, callback) {
             } else cb(null, null);
         }
         //////////////////////////////////////////////////////////////////////////////////
-    ], function (err) { // Вызвается последней или в случае ошибки
+    ], function (err) { // Р’С‹Р·РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРµР№ РёР»Рё РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё
         if (err) { return  callback(err); }
 
         var info = {

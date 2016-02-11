@@ -1,29 +1,29 @@
 var async     =  require('async');
-// Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
+// РЎРІРѕРё РјРѕРґСѓР»Рё
+var profilejs =  require('../../profile/index'),          // РџСЂРѕС„РёР»СЊ
     dbjs      = require('../../db/index'),
     GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 
 var db = new dbjs();
 /*
- Сделать подарок: ИД подарка, объект с инф. о получателе (VID, еще что то?)
- - Ищем подарок по ИД в базе
- - Получаем профиль адресата (из ОЗУ или БД)
- - Добавляем адресату подарок (пишем сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
+ РЎРґРµР»Р°С‚СЊ РїРѕРґР°СЂРѕРє: РР” РїРѕРґР°СЂРєР°, РѕР±СЉРµРєС‚ СЃ РёРЅС„. Рѕ РїРѕР»СѓС‡Р°С‚РµР»Рµ (VID, РµС‰Рµ С‡С‚Рѕ С‚Рѕ?)
+ - РС‰РµРј РїРѕРґР°СЂРѕРє РїРѕ РР” РІ Р±Р°Р·Рµ
+ - РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ Р°РґСЂРµСЃР°С‚Р° (РёР· РћР—РЈ РёР»Рё Р‘Р”)
+ - Р”РѕР±Р°РІР»СЏРµРј Р°РґСЂРµСЃР°С‚Сѓ РїРѕРґР°СЂРѕРє (РїРёС€РµРј СЃСЂР°Р·Сѓ РІ Р‘Р”)
+ - РЎРѕРѕР±С‰Р°РµРј РєР»РёРµРЅСѓ (Рё РІС‚РѕСЂРѕРјСѓ, РµСЃР»Рё РѕРЅ РѕРЅР»Р°Р№РЅ) (Р° С‡С‚Рѕ СЃРѕРѕР±С‰Р°РµРј?)
  */
 function makeGift(socket, userList, profiles) {
     socket.on('make_gift', function(options) {
 
         if (!checkInput('make_gift', socket, userList, options))
-            return new GameError(socket, "MAKEGIFT", "Верификация не пройдена");
+            return new GameError(socket, "MAKEGIFT", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         if (userList[socket.id].getID() == options.id)
-            return new GameError(socket, "MAKEGIFT", "Нельзя сделать подарок себе");
+            return new GameError(socket, "MAKEGIFT", "РќРµР»СЊР·СЏ СЃРґРµР»Р°С‚СЊ РїРѕРґР°СЂРѕРє СЃРµР±Рµ");
 
         async.waterfall([///////////////////////////////////////////////////////////////////
-            function (cb) { // Ищим подарок с таким id в базе данных (?????)
+            function (cb) { // РС‰РёРј РїРѕРґР°СЂРѕРє СЃ С‚Р°РєРёРј id РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С… (?????)
                 db.findGood(options.giftid, function (err, gift) {
                     if (err) {
                         return cb(err, null)
@@ -31,13 +31,13 @@ function makeGift(socket, userList, profiles) {
 
                     if (gift) {
                         cb(null, gift);
-                    } else cb(new Error("Нет такого подарка"), null);
+                    } else cb(new Error("РќРµС‚ С‚Р°РєРѕРіРѕ РїРѕРґР°СЂРєР°"), null);
                 });
             },///////////////////////////////////////////////////////////////
-            function (gift, cb) { // Ищим подарок с таким id в базе данных (?????)
+            function (gift, cb) { // РС‰РёРј РїРѕРґР°СЂРѕРє СЃ С‚Р°РєРёРј id РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С… (?????)
                 var money = userList[socket.id].getMoney();
                 if (money < gift.price) {
-                    cb(new Error("Недостаточно монет для совершения подарка"), null);
+                    cb(new Error("РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РјРѕРЅРµС‚ РґР»СЏ СЃРѕРІРµСЂС€РµРЅРёСЏ РїРѕРґР°СЂРєР°"), null);
                 } else {
                     userList[socket.id].setMoney(money - gift.price, function (err, money) {
                         if (err) {
@@ -49,16 +49,16 @@ function makeGift(socket, userList, profiles) {
                     });
                 }
             },///////////////////////////////////////////////////////////////
-            function (gift, cb) { // Получаем профиль адресата
+            function (gift, cb) { // РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ Р°РґСЂРµСЃР°С‚Р°
                 var recProfile = null;
 
-                if (profiles[options.id]) { // Если онлайн
+                if (profiles[options.id]) { // Р•СЃР»Рё РѕРЅР»Р°Р№РЅ
                     recProfile = profiles[options.id];
                     cb(null, recProfile, gift);
                 }
-                else {                // Если нет - берем из базы
+                else {                // Р•СЃР»Рё РЅРµС‚ - Р±РµСЂРµРј РёР· Р±Р°Р·С‹
                     recProfile = new profilejs();
-                    recProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+                    recProfile.build(options.id, function (err, info) {  // РќСѓР¶РµРЅ VID Рё РІСЃРµ РїРѕР»СЏ, РєР°Рє РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё
                         if (err) {
                             return cb(err, null);
                         }
@@ -67,7 +67,7 @@ function makeGift(socket, userList, profiles) {
                     });
                 }
             },///////////////////////////////////////////////////////////////
-            function (recProfile, gift, cb) { // Сохраняем подарок
+            function (recProfile, gift, cb) { // РЎРѕС…СЂР°РЅСЏРµРј РїРѕРґР°СЂРѕРє
                 var selfProfile = userList[socket.id];
                 gift.fromid = selfProfile.getID();
                 gift.fromvid = selfProfile.getVID();
@@ -80,7 +80,7 @@ function makeGift(socket, userList, profiles) {
                     cb(null, gift);
                 });
             }
-        ], function (err, gift) { // Вызывается последней. Обрабатываем ошибки
+        ], function (err, gift) { // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРµР№. РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕС€РёР±РєРё
             if (err) {
                 return new GameError(socket, "MAKEGIFT", err.message);
             }

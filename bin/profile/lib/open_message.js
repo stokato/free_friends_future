@@ -10,7 +10,7 @@ module.exports = function(options, callback) {
         opened : true
     };
 
-    this.dbManager.updateMessage(this.pID,message, function(err) {
+    this.dbManager.updateMessage(this.pID, message, function(err) {
         if (err) { return callback(err, null); }
 
         callback(null, null);

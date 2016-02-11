@@ -1,36 +1,36 @@
 var async     =  require('async');
-// Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
+// РЎРІРѕРё РјРѕРґСѓР»Рё
+var profilejs =  require('../../profile/index'),          // РџСЂРѕС„РёР»СЊ
     GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 /*
- Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
- - Получаем свой профиль
- - Получаем профиль адресата (из ОЗУ или БД)
- - Сохраняем адресату сообщение
- - Сохраняем сообщение себе                                       ???
- - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
+ РћС‚РїСЂР°РІРёС‚СЊ Р»РёС‡РЅРѕРµ СЃРѕРѕР±С‰РµРЅРёРµ: РЎРѕРѕР±С‰РµРЅРёРµ, РѕР±СЉРµРєС‚ СЃ РёРЅС„. Рѕ РїРѕР»СѓС‡Р°С‚РµР»Рµ (VID, РµС‰Рµ С‡С‚Рѕ С‚Рѕ?)
+ - РџРѕР»СѓС‡Р°РµРј СЃРІРѕР№ РїСЂРѕС„РёР»СЊ
+ - РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ Р°РґСЂРµСЃР°С‚Р° (РёР· РћР—РЈ РёР»Рё Р‘Р”)
+ - РЎРѕС…СЂР°РЅСЏРµРј Р°РґСЂРµСЃР°С‚Сѓ СЃРѕРѕР±С‰РµРЅРёРµ
+ - РЎРѕС…СЂР°РЅСЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ СЃРµР±Рµ                                       ???
+ - РЎРѕРѕР±С‰Р°РµРј РєР»РёРµРЅСѓ (Рё РІС‚РѕСЂРѕРјСѓ, РµСЃР»Рё РѕРЅ РѕРЅР»Р°Р№РЅ) (Р° С‡С‚Рѕ СЃРѕРѕР±С‰Р°РµРј?)
  */
 function sendPrivateMessage(socket, userList, profiles) {
     socket.on('private_message', function(options) {
 
         if (!checkInput('private_message', socket, userList, options))
-            return new GameError(socket, "SENDPRIVMESSAGE", "Верификация не пройдена");
+            return new GameError(socket, "SENDPRIVMESSAGE", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         if (userList[socket.id].getID() == options.id)
-            return new GameError(socket, "SENDPRIVMESSAGE", "Нельзя отправлять сообщения себе");
+            return new GameError(socket, "SENDPRIVMESSAGE", "РќРµР»СЊР·СЏ РѕС‚РїСЂР°РІР»СЏС‚СЊ СЃРѕРѕР±С‰РµРЅРёСЏ СЃРµР±Рµ");
 
         var selfProfile = userList[socket.id];
         async.waterfall([//////////////////////////////////////////////////////////////
-            function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
+            function (cb) { // РџРѕР»СѓС‡Р°РµРј РґР°РЅРЅС‹Рµ Р°РґСЂРµСЃР°С‚Р° Рё РіРѕС‚РѕРІРёРј СЃРѕРѕР±С‰РµРЅРёРµ Рє РґРѕР±Р°РІР»РµРЅРёСЋ РІ РёСЃС‚РѕСЂРёСЋ
                 var friendProfile = null;
-                if (profiles[options.id]) { // Если онлайн
+                if (profiles[options.id]) { // Р•СЃР»Рё РѕРЅР»Р°Р№РЅ
                     friendProfile = profiles[options.id];
                     cb(null, friendProfile);
                 }
-                else {                // Если нет - берем из базы
+                else {                // Р•СЃР»Рё РЅРµС‚ - Р±РµСЂРµРј РёР· Р±Р°Р·С‹
                     friendProfile = new profilejs();
-                    friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+                    friendProfile.build(options.id, function (err, info) {  // РќСѓР¶РµРЅ VID Рё РІСЃРµ РїРѕР»СЏ, РєР°Рє РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё
                         if (err) {
                             return cb(err, null);
                         }
@@ -39,7 +39,7 @@ function sendPrivateMessage(socket, userList, profiles) {
                     });
                 }
             }, ///////////////////////////////////////////////////////////////////////////////
-            function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
+            function (friendProfile, cb) { // РЎРѕС…СЂР°РЅСЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РІ РёСЃС‚РѕСЂРёСЋ РїРѕР»СѓС‡Р°С‚РµР»СЏ
                 var savingMessage = {
                     date: options.date,
                     companionid: selfProfile.getID(),
@@ -62,7 +62,7 @@ function sendPrivateMessage(socket, userList, profiles) {
                     cb(null, savingMessage, friendProfile);
                 });
             }, //////////////////////////////////////////////////////////////////////////////////////
-            function (savingMessage, friendProfile, cb) { // Сохраняем сообщение в историю отправителя
+            function (savingMessage, friendProfile, cb) { // РЎРѕС…СЂР°РЅСЏРµРј СЃРѕРѕР±С‰РµРЅРёРµ РІ РёСЃС‚РѕСЂРёСЋ РѕС‚РїСЂР°РІРёС‚РµР»СЏ
                 savingMessage = {
                     date: options.date,
                     companionid: friendProfile.getID(),
@@ -81,7 +81,7 @@ function sendPrivateMessage(socket, userList, profiles) {
                     cb(null, null);
                 });
             }/////////////////////////////////////////////////////////////////////////////////
-        ], function (err) { // Вызывается последней или в случае ошибки
+        ], function (err) { // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРµР№ РёР»Рё РІ СЃР»СѓС‡Р°Рµ РѕС€РёР±РєРё
             if (err) {
                 new GameError(socket, "SENDPRIVMESSAGE", err.message);
             }

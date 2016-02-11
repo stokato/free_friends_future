@@ -3,15 +3,15 @@ var GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 
 /*
- Показать своих друзей
- - Получаем друзей - массив (ИД и дата начала дружбы) (из БД)
- - Передаем клиенту
+ РџРѕРєР°Р·Р°С‚СЊ СЃРІРѕРёС… РґСЂСѓР·РµР№
+ - РџРѕР»СѓС‡Р°РµРј РґСЂСѓР·РµР№ - РјР°СЃСЃРёРІ (РР” Рё РґР°С‚Р° РЅР°С‡Р°Р»Р° РґСЂСѓР¶Р±С‹) (РёР· Р‘Р”)
+ - РџРµСЂРµРґР°РµРј РєР»РёРµРЅС‚Сѓ
  */
 function getFriends(socket, userList) {
     socket.on('get_friends', function() {
 
         if (!checkInput('get_friends', socket, userList, null))
-            return new GameError(socket, "getFRIENDS", "Верификация не пройдена");
+            return new GameError(socket, "getFRIENDS", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         userList[socket.id].getFriends(function (err, friends) {
             if (err) {

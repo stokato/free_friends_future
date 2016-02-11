@@ -1,15 +1,15 @@
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 /*
- Показать свои личные сообщения
- - Получаем историю сообщений - массив сообщений (дата, ИД собеседника, вх/исх, текст) (из БД)
- - Отправляем клиенту
+ РџРѕРєР°Р·Р°С‚СЊ СЃРІРѕРё Р»РёС‡РЅС‹Рµ СЃРѕРѕР±С‰РµРЅРёСЏ
+ - РџРѕР»СѓС‡Р°РµРј РёСЃС‚РѕСЂРёСЋ СЃРѕРѕР±С‰РµРЅРёР№ - РјР°СЃСЃРёРІ СЃРѕРѕР±С‰РµРЅРёР№ (РґР°С‚Р°, РР” СЃРѕР±РµСЃРµРґРЅРёРєР°, РІС…/РёСЃС…, С‚РµРєСЃС‚) (РёР· Р‘Р”)
+ - РћС‚РїСЂР°РІР»СЏРµРј РєР»РёРµРЅС‚Сѓ
  */
 function getPrivateMessages(socket, userList) {
     socket.on('get_private_messages', function() {
 
         if (!checkInput('get_private_messages', socket, userList, null))
-            return new GameError(socket, "GETHISTORY", "Верификация не пройдена");
+            return new GameError(socket, "GETHISTORY", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         userList[socket.id].getHistory(null, null, function (err, messages) {
             if (err) {

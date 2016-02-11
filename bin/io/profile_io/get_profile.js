@@ -1,28 +1,28 @@
 var async     =  require('async');
-// Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
+// РЎРІРѕРё РјРѕРґСѓР»Рё
+var profilejs =  require('../../profile/index'),          // РџСЂРѕС„РёР»СЊ
     GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 
 /*
- Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,
- которую можно достать из соц. сетей ????)
- - Если смотрим свой профиль - отправляем клиенту наши данные (какие ?)
- - Если чужой
- -- Получам профиль того, кого смотрим (из ОЗУ или БД)
- -- Добавляем себя ему в гости (пишем сразу в БД)
- -- Отправлем клиенту данные профиля (????)
- -- Если тот, кого смотрим, онлайн, наверно нужно его сразу уведомить о гостях ???
+ РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ (РќСѓР¶РЅР° Р»Рё РІРѕРѕР±С‰Рµ С‚Р°РєР°СЏ С„СѓРЅРєС†РёСЏ, РµСЃР»Рё РІ РѕРєРЅРµ РїСЂРѕС„РёР»СЏ С‚РѕР»СЊРєРѕ РёРЅС„,
+ РєРѕС‚РѕСЂСѓСЋ РјРѕР¶РЅРѕ РґРѕСЃС‚Р°С‚СЊ РёР· СЃРѕС†. СЃРµС‚РµР№ ????)
+ - Р•СЃР»Рё СЃРјРѕС‚СЂРёРј СЃРІРѕР№ РїСЂРѕС„РёР»СЊ - РѕС‚РїСЂР°РІР»СЏРµРј РєР»РёРµРЅС‚Сѓ РЅР°С€Рё РґР°РЅРЅС‹Рµ (РєР°РєРёРµ ?)
+ - Р•СЃР»Рё С‡СѓР¶РѕР№
+ -- РџРѕР»СѓС‡Р°Рј РїСЂРѕС„РёР»СЊ С‚РѕРіРѕ, РєРѕРіРѕ СЃРјРѕС‚СЂРёРј (РёР· РћР—РЈ РёР»Рё Р‘Р”)
+ -- Р”РѕР±Р°РІР»СЏРµРј СЃРµР±СЏ РµРјСѓ РІ РіРѕСЃС‚Рё (РїРёС€РµРј СЃСЂР°Р·Сѓ РІ Р‘Р”)
+ -- РћС‚РїСЂР°РІР»РµРј РєР»РёРµРЅС‚Сѓ РґР°РЅРЅС‹Рµ РїСЂРѕС„РёР»СЏ (????)
+ -- Р•СЃР»Рё С‚РѕС‚, РєРѕРіРѕ СЃРјРѕС‚СЂРёРј, РѕРЅР»Р°Р№РЅ, РЅР°РІРµСЂРЅРѕ РЅСѓР¶РЅРѕ РµРіРѕ СЃСЂР°Р·Сѓ СѓРІРµРґРѕРјРёС‚СЊ Рѕ РіРѕСЃС‚СЏС… ???
  */
 function getProfile(socket, userList, profiles) {
     socket.on('get_profile', function(options) {
 
         if (!checkInput('get_profile', socket, userList, options))
-            return new GameError(socket, "ADDFRIEND", "Верификация не пройдена");
+            return new GameError(socket, "ADDFRIEND", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         var selfProfile = userList[socket.id];
 
-        if (selfProfile.getID() == options.id) { // Если открываем свой профиль
+        if (selfProfile.getID() == options.id) { // Р•СЃР»Рё РѕС‚РєСЂС‹РІР°РµРј СЃРІРѕР№ РїСЂРѕС„РёР»СЊ
             var info = {
                 id: selfProfile.getID(),
                 vid: selfProfile.getVID(),
@@ -35,10 +35,10 @@ function getProfile(socket, userList, profiles) {
         }
 
         async.waterfall([///////////////////////////////////////////////////////////////////
-            function (cb) { // Получаем профиль того, чей просматриваем
+            function (cb) { // РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ С‚РѕРіРѕ, С‡РµР№ РїСЂРѕСЃРјР°С‚СЂРёРІР°РµРј
                 var friendProfile = null;
                 var friendInfo = null;
-                if (profiles[options.id]) { // Если онлайн
+                if (profiles[options.id]) { // Р•СЃР»Рё РѕРЅР»Р°Р№РЅ
                     friendProfile = profiles[options.id];
                     friendInfo = {
                         id: friendProfile.getID(),
@@ -48,7 +48,7 @@ function getProfile(socket, userList, profiles) {
                     };
                     cb(null, friendProfile, friendInfo);
                 }
-                else {                // Если нет - берем из базы
+                else {                // Р•СЃР»Рё РЅРµС‚ - Р±РµСЂРµРј РёР· Р±Р°Р·С‹
                     friendProfile = new profilejs();
                     friendProfile.build(options.id, function (err, info) {
                         if (err) {
@@ -65,7 +65,7 @@ function getProfile(socket, userList, profiles) {
                     });
                 }
             },///////////////////////////////////////////////////////////////
-            function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
+            function (friendProfile, friendInfo, cb) { // Р”РѕР±Р°РІР»СЏРµРј СЃРµР±СЏ РІ РіРѕСЃС‚Рё
                 var info = {
                     id: selfProfile.getID(),
                     vid: selfProfile.getVID(),
@@ -79,14 +79,14 @@ function getProfile(socket, userList, profiles) {
 
                     cb(null, friendInfo, info);
                 });//////////////////////////////////////////////////////////////
-            }], function (err, friendInfo, info) { // Вызывается последней. Обрабатываем ошибки
+            }], function (err, friendInfo, info) { // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРµР№. РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕС€РёР±РєРё
             if (err) {
                 return new GameError(socket, "ADDFRIEND", err.message);
             }
 
-            socket.emit('get_profile', friendInfo); // Отправляем инфу
+            socket.emit('get_profile', friendInfo); // РћС‚РїСЂР°РІР»СЏРµРј РёРЅС„Сѓ
 
-            if (profiles[friendInfo.id]) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
+            if (profiles[friendInfo.id]) { // Р•СЃР»Рё С‚РѕС‚, РєРѕРіРѕ РїСЂРѕСЃРјР°С‚РёСЂРІР°РµРј, РѕРЅР»Р°Р№РЅ, СЃРѕРѕР±С‰Р°РµРј Рѕ РїРѕСЃРµС‰РµРЅРёРё
                 var friendProfile = profiles[friendInfo.id];
                 var friendSocket = friendProfile.getSocket();
                 friendSocket.emit('add_guest', info);

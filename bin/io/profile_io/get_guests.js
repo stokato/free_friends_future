@@ -1,15 +1,15 @@
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 /*
- Показать свои подарки (полученные)
- - Получаем подарки - массив подарков со всеми свойствами (из БД)
- - Передаем клиенту
+ РџРѕРєР°Р·Р°С‚СЊ СЃРІРѕРё РїРѕРґР°СЂРєРё (РїРѕР»СѓС‡РµРЅРЅС‹Рµ)
+ - РџРѕР»СѓС‡Р°РµРј РїРѕРґР°СЂРєРё - РјР°СЃСЃРёРІ РїРѕРґР°СЂРєРѕРІ СЃРѕ РІСЃРµРјРё СЃРІРѕР№СЃС‚РІР°РјРё (РёР· Р‘Р”)
+ - РџРµСЂРµРґР°РµРј РєР»РёРµРЅС‚Сѓ
  */
 function getGuests(socket, userList) {
     socket.on('get_guests', function() {
 
         if (!checkInput('get_guests', socket, userList, null))
-            return new GameError(socket, "GETGUESTS", "Верификация не пройдена");
+            return new GameError(socket, "GETGUESTS", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         userList[socket.id].getGuests(function (err, guests) {
             if (err) {

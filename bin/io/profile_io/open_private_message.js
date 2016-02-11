@@ -2,15 +2,15 @@
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 /*
- Пометить сообщение как октрытое
+ РџРѕРјРµС‚РёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РєР°Рє РѕРєС‚СЂС‹С‚РѕРµ
  */
 function openPrivateMessage(socket, userList) {
     socket.on('open_private_message', function(options) {
 
         if (!checkInput('open_private_message', socket, userList, null))
-            return new GameError(socket, "OPENMESSAGE", "Верификация не пройдена");
+            return new GameError(socket, "OPENMESSAGE", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
-        userList[socket.id].openMessage(options, function (err, res) {
+        userList[socket.id].openMessage(options, function (err) {
             if (err) {
                 return new GameError(socket, "OPENMESSAGE", err.message);
             }

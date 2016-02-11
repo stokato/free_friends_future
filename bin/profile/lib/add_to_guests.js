@@ -6,7 +6,7 @@ module.exports = function(guest, callback) {
     self.dbManager.addGuest(self.pID, guest, function(err, gst) {
         if (err) { return callback(err, null); }
 
-        self.pNewMessages ++;
+        self.pNewGuests ++;
         self.save(function(err) {
             if (err) { return callback(err, null); }
 

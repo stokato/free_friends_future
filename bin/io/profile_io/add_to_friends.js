@@ -1,24 +1,24 @@
 var async     =  require('async');
-// Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
+// РЎРІРѕРё РјРѕРґСѓР»Рё
+var profilejs =  require('../../profile/index'),          // РџСЂРѕС„РёР»СЊ
     GameError = require('../../game_error'),
     checkInput = require('../../check_input');
 
 /*
- Добавить пользователя в друзья: Информация о друге (VID, или что то еще?)
- - Получаем свой профиль
- - Получаем профиль друга (из ОЗУ или БД)
- - Добдавляем друг другу в друзья (Сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн) ???
+ Р”РѕР±Р°РІРёС‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ РґСЂСѓР·СЊСЏ: РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РґСЂСѓРіРµ (VID, РёР»Рё С‡С‚Рѕ С‚Рѕ РµС‰Рµ?)
+ - РџРѕР»СѓС‡Р°РµРј СЃРІРѕР№ РїСЂРѕС„РёР»СЊ
+ - РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ РґСЂСѓРіР° (РёР· РћР—РЈ РёР»Рё Р‘Р”)
+ - Р”РѕР±РґР°РІР»СЏРµРј РґСЂСѓРі РґСЂСѓРіСѓ РІ РґСЂСѓР·СЊСЏ (РЎСЂР°Р·Сѓ РІ Р‘Р”)
+ - РЎРѕРѕР±С‰Р°РµРј РєР»РёРµРЅСѓ (Рё РІС‚РѕСЂРѕРјСѓ, РµСЃР»Рё РѕРЅ РѕРЅР»Р°Р№РЅ) ???
  */
 function addToFriends(socket, userList, profiles) {
     socket.on('add_friend', function(options) {
 
         if (!checkInput('add_friend', socket, userList, options))
-            return new GameError(socket, "ADDFRIEND", "Верификация не пройдена");
+            return new GameError(socket, "ADDFRIEND", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
 
         if (userList[socket.id].getID() == options.id)
-            return new GameError(socket, "ADDFRIEND", "Нельзя добавить в друзья себя");
+            return new GameError(socket, "ADDFRIEND", "РќРµР»СЊР·СЏ РґРѕР±Р°РІРёС‚СЊ РІ РґСЂСѓР·СЊСЏ СЃРµР±СЏ");
 
         var selfProfile = userList[socket.id];
         var selfInfo = {
@@ -27,15 +27,15 @@ function addToFriends(socket, userList, profiles) {
             date: options.date
         };
         async.waterfall([///////////////////////////////////////////////////////////////////
-            function (cb) { // Получаем профиль друга
+            function (cb) { // РџРѕР»СѓС‡Р°РµРј РїСЂРѕС„РёР»СЊ РґСЂСѓРіР°
                 var friendProfile = null;
-                if (profiles[options.id]) { // Если онлайн
+                if (profiles[options.id]) { // Р•СЃР»Рё РѕРЅР»Р°Р№РЅ
                     friendProfile = profiles[options.id];
                     cb(null, friendProfile);
                 }
-                else {                // Если нет - берем из базы
+                else {                // Р•СЃР»Рё РЅРµС‚ - Р±РµСЂРµРј РёР· Р±Р°Р·С‹
                     friendProfile = new profilejs();
-                    friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+                    friendProfile.build(options.id, function (err, info) {  // РќСѓР¶РµРЅ VID Рё РІСЃРµ РїРѕР»СЏ, РєР°Рє РїСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё
                         if (err) {
                             return cb(err, null);
                         }
@@ -44,13 +44,13 @@ function addToFriends(socket, userList, profiles) {
                     });
                 }
             },///////////////////////////////////////////////////////////////
-            function (friendProfile, cb) { // Добавляем первого в друзья
+            function (friendProfile, cb) { // Р”РѕР±Р°РІР»СЏРµРј РїРµСЂРІРѕРіРѕ РІ РґСЂСѓР·СЊСЏ
                 friendProfile.addToFriends(selfInfo, function (err, res) {
                     if (err) {
                         return cb(err, null);
                     }
 
-                    if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+                    if (profiles[friendProfile.getID()]) { // Р•СЃР»Рё РґСЂСѓРі РѕРЅР»Р°Р№РЅ, С‚Рѕ Рё РµРјСѓ
                         var friendSocket = friendProfile.getSocket();
                         friendSocket.emit('add_friend', selfInfo);
                         friendSocket.emit('get_news', friendProfile.getNews());
@@ -59,7 +59,7 @@ function addToFriends(socket, userList, profiles) {
                     cb(null, friendProfile);
                 })
             },
-            function (friendProfile, cb) { // Добавляем второго
+            function (friendProfile, cb) { // Р”РѕР±Р°РІР»СЏРµРј РІС‚РѕСЂРѕРіРѕ
                 var friendInfo = {
                     id: friendProfile.getID(),
                     vid: friendProfile.getVID(),
@@ -75,7 +75,7 @@ function addToFriends(socket, userList, profiles) {
 
                     cb(null, null);
                 })
-            }], function (err, res) { // Вызывается последней. Обрабатываем ошибки
+            }], function (err, res) { // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРµР№. РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕС€РёР±РєРё
             if (err) {
                 return new GameError(socket, "ADDFRIEND", err.message);
             }

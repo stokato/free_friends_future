@@ -55,7 +55,7 @@ function GameError(socket, func, message) {
     console.log(err.stack);
 
     if(socket)
-        socket.emit('error', err);
+        socket.emit('err', err);
 }
 GameError.prototype = Object.create(Error.prototype);
 GameError.prototype.constructor = GameError;

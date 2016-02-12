@@ -1,7 +1,7 @@
 // Свои модули
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input');
-var constats = require('./../constants_io');
+var constants = require('./../constants_io');
 var createRoom = require('./create_room');
 var getLastMessages = require('./get_last_messages');
 var getRoomInfo = require('./get_room_info');
@@ -35,7 +35,7 @@ function changeRoom(socket, userList, rooms, roomList) {
         var profile = userList[socket.id];
         var len = '';
         var genArr = '';
-        if (profile.getGender() == constats.GUY) {
+        if (profile.getGender() == constants.GUY) {
             len = 'guys_count';
             genArr = 'guys';
         }
@@ -51,7 +51,7 @@ function changeRoom(socket, userList, rooms, roomList) {
             var item;
             for (item in rooms) if (rooms.hasOwnProperty(item)) {
                 if (rooms[item].name == options.room) {
-                    if (rooms[item][len] >= constats.ONE_GENDER_IN_ROOM) {
+                    if (rooms[item][len] >= constants.ONE_GENDER_IN_ROOM) {
                         return new GameError(socket, "CHANGEROOM", "Попытка открыть комнату в которой нет места");
                     }
                     newRoom = rooms[item];

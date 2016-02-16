@@ -13,6 +13,7 @@ var getGender     = require('./lib/get_gender');
 var getGifts      = require('./lib/get_gifts');
 var getGuests     = require('./lib/get_guests');
 var getHistory    = require('./lib/get_history');
+var getPrivateChats = require('./lib/get_private_chats');
 var getID         = require('./lib/get_id');
 var getMoney      = require('./lib/get_money');
 var getNews       = require('./lib/get_news');
@@ -25,6 +26,14 @@ var remove        = require('./lib/remove');
 var save          = require('./lib/save');
 var setMoney      = require('./lib/set_money');
 var setStatus     = require('./lib/set_status');
+var setSocket     = require('./lib/set_socket');
+var addPrivateChat = require('./lib/add_private_chat');
+var deletePrivateChat = require('./lib/delete_private_chat');
+var isPrivateChat = require('./lib/is_private_chat');
+
+
+var setExitTimeout = require('./lib/set_exit_timeout');
+var clearExitTimeout = require('./lib/clear_exit_timeout');
 
 /**
  * Класс профиль пользователя, хранит, обменивается с базой и обрабатывает данные о пользователе
@@ -60,6 +69,10 @@ function Profile() {
   this.pNewFriends  = 0;
   this.pNewGuests   = 0;
 
+  this.pPrivateChats = [];
+
+  this.pExitTimeout;
+
   this.gift_1   = null;    // На игрвом столе на аватарах игроков весят подарки, по ним не ясно
   this.gift_2   = null;
 }
@@ -82,11 +95,19 @@ Profile.prototype.openMessage     = openMessage;
 Profile.prototype.addPoints       = addPoints;
 Profile.prototype.setMoney        = setMoney;
 Profile.prototype.setStatus       = setStatus;
+Profile.prototype.setSocket      =  setSocket;
 Profile.prototype.addToFriends    = addToFriends;
 Profile.prototype.getFriends      = getFriends;
 Profile.prototype.addToGuests     = addToGuests;
 Profile.prototype.getGuests       = getGuests;
 Profile.prototype.save            = save;
 Profile.prototype.remove          = remove;
+
+Profile.prototype.setExitTimeout = setExitTimeout;
+Profile.prototype.clearExitTimeout = clearExitTimeout;
+Profile.prototype.addPrivateChat = addPrivateChat;
+Profile.prototype.deletePrivateChat = deletePrivateChat;
+Profile.prototype.isPrivateChat = isPrivateChat;
+Profile.prototype.getPrivateChats = getPrivateChats;
 
 module.exports = Profile;

@@ -1,28 +1,15 @@
 /*
- Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
+ Найти сохраненные сообщения пользователя: ИД игрока
  - Проверка ИД
  - Строим запрос (все поля) и выполняем
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
-module.exports = function(uid, compids, callback) {
-    var companionids = compids || [];
-
+module.exports = function(uid, callback) {
     if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
-    if (!companionids[0]) { return callback(new Error("Задан пустой Id собеседника"), null); }
 
-    var fields = "";
-    var params = [uid];
-    for(var i = 0; i < companionids.length; i++) {
-        if (fields == "") fields = "?";
-        else
-            fields = fields + ", " + "?";
+    var query = "select * FROM user_messages where userid = ?";
 
-        params.push(companionids[i]);
-    }
-
-    var query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
-
-    this.client.execute(query,params, {prepare: true }, function(err, result) {
+    this.client.execute(query,[uid], {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
 
         var messages = [];
@@ -42,7 +29,6 @@ module.exports = function(uid, compids, callback) {
                 messages.push(message);
             }
 
-
             callback(null, messages);
 
         } else {
@@ -50,5 +36,3 @@ module.exports = function(uid, compids, callback) {
         }
     });
 };
-
-

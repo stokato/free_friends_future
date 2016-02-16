@@ -13,7 +13,7 @@ function checkInput(em, socket, userList, opt) {
     }
 
     if(em == 'message') {
-        isValid = (validator.isDate(options.date))? isValid : false;
+
     }
 
     if(em == 'change_room') {
@@ -21,15 +21,15 @@ function checkInput(em, socket, userList, opt) {
     }
 
     if(em == 'get_profile') {
-        isValid = (validator.isDate(options.date))? isValid : false;
+
     }
 
     if(em == 'private_message') {
-        isValid = (validator.isDate(options.date))? isValid : false;
+
     }
 
     if(em == 'make_gift') {
-        isValid = (validator.isDate(options.date))? isValid : false;
+
     }
 
     if(em == 'add_friend') {
@@ -40,10 +40,18 @@ function checkInput(em, socket, userList, opt) {
         //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
     }
 
-    if(em == 'change_money') {
-        isValid = (validator.isInt(options.money))? isValid : false;
+    if(em == 'change_money')
+    {
+
     }
 
+    if(em == 'open_private_chat') {
+        isValid = (!validator.isNull(options.id))? isValid : false;
+    }
+
+    if(em == 'close_private_chat') {
+        isValid = (!validator.isNull(options.id))? isValid : false;
+    }
     return isValid;
 }
 

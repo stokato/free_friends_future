@@ -69,9 +69,10 @@ function makeGift(socket, userList, profiles) {
             },///////////////////////////////////////////////////////////////
             function (recProfile, gift, cb) { // Сохраняем подарок
                 var selfProfile = userList[socket.id];
+                var date = new Date();
                 gift.fromid = selfProfile.getID();
                 gift.fromvid = selfProfile.getVID();
-                gift.date = options.date;
+                gift.date = date;
                 recProfile.addGift(gift, function (err, result) {
                     if (err) {
                         return cb(err, null);

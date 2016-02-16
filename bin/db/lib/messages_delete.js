@@ -9,7 +9,7 @@ module.exports = function(uid, callback) {
     var self = this;
     if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-    var query = "select id FROM user_messages where userid = ?";
+    var query = "select companionid FROM user_messages where userid = ?";
 
     self.client.execute(query,[uid], {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
@@ -23,8 +23,8 @@ module.exports = function(uid, callback) {
         fields += '?';
         params.push(result.rows.length-1);
 
-        var query = "DELETE FROM user_messages WHERE id in ( " + fields + " )";
-        self.client.execute(query, [params], {prepare: true }, function(err) {
+        var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
+        self.client.execute(query, [uid, params], {prepare: true }, function(err) {
             if (err) {  return callback(err); }
 
             callback(null, uid);

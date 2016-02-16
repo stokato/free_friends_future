@@ -47,7 +47,11 @@ function GameError(socket, func, message) {
             break;
         case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
             break;
-        case "CHANGEMONEY" : err.name = "Ошбика изменения количества монег игрока";
+        //case "CHANGEMONEY" : err.name = "Ошибка изменения количества монег игрока";
+        //    break;
+        case "OPENPRIVCHAT" : err.name = "Ошибка открытия приватного чата";
+            break;
+        case "CLOSEPRIVCHAT" : err.name = "Ошибка закрытия приватного чата";
             break;
         default:  err.name =   "Неизвестная ошибка"
     }

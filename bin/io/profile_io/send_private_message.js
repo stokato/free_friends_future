@@ -40,8 +40,9 @@ function sendPrivateMessage(socket, userList, profiles) {
                 }
             }, ///////////////////////////////////////////////////////////////////////////////
             function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
+                var date = new Date();
                 var savingMessage = {
-                    date: options.date,
+                    date: date,
                     companionid: selfProfile.getID(),
                     companionvid: selfProfile.getVID(),
                     incoming: true,
@@ -56,15 +57,19 @@ function sendPrivateMessage(socket, userList, profiles) {
                     if (profiles[options.id]) {
                         savingMessage['vid'] = selfProfile.getVID();
                         var friendSocket = profiles[options.id].getSocket();
-                        friendSocket.emit('private_message', savingMessage);
-                        friendSocket.emit('get_news', friendProfile.getNews());
+
+                        if(profiles[options.id].isPrivateChat(selfProfile.getID())) {
+                            friendSocket.emit('private_message', savingMessage);
+                        } else {
+                            friendSocket.emit('get_news', friendProfile.getNews());
+                        }
                     }
-                    cb(null, savingMessage, friendProfile);
+                    cb(null, savingMessage, friendProfile, date);
                 });
             }, //////////////////////////////////////////////////////////////////////////////////////
-            function (savingMessage, friendProfile, cb) { // Сохраняем сообщение в историю отправителя
+            function (savingMessage, friendProfile, date, cb) { // Сохраняем сообщение в историю отправителя
                 savingMessage = {
-                    date: options.date,
+                    date: date,
                     companionid: friendProfile.getID(),
                     companionvid: friendProfile.getVID(),
                     incoming: false,

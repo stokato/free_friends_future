@@ -16,6 +16,8 @@ var changeStatus      = require('./chat_io/change_status');
 var getProfile        = require('./profile_io/get_profile');
 var getGifts          = require('./profile_io/get_gifts');
 var getPrivMes        = require('./profile_io/get_private_messages');
+var openPrivateChat   = require('./profile_io/open_private_chat');
+var closePrivateChat  = require('./profile_io/close_private_chat');
 var getFriends        = require('./profile_io/get_friends');
 var getGuests         = require('./profile_io/get_guests');
 var addToFriends      = require('./profile_io/add_to_friends');
@@ -24,7 +26,7 @@ var sendPrivMes       = require('./profile_io/send_private_message');
 var openPrivMes       = require('./profile_io/open_private_message');
 var getTop            = require('./top_io/get_top');
 var getGiftShop       = require('./shop_io/get_gift_shop');
-var changeMoney       = require('./money_io/change_money');
+//var changeMoney       = require('./money_io/change_money');
 
 /*
 При подключении выполняем инициализацию и вешаем эмиттеры
@@ -38,7 +40,7 @@ module.exports.listen = function(server, callback) {
     // Чат
     initProfile(socket,userList,profiles, roomList, rooms);
     sendPublicMessage(socket, userList, roomList);
-    exit(socket, userList, profiles, roomList);
+    exit(socket, userList, profiles, roomList, rooms);
     chooseRoom(socket, userList, roomList, rooms, profiles);
     getRooms(socket, userList, rooms);
     changeRoom(socket, userList, rooms, roomList);
@@ -54,12 +56,15 @@ module.exports.listen = function(server, callback) {
     makeGift(socket, userList, profiles);
     sendPrivMes(socket, userList, profiles);
     openPrivMes(socket, userList);
+    openPrivateChat(socket, userList, profiles);
+    closePrivateChat(socket, userList, profiles);
+
     // Топ
     getTop(socket, userList);
     // Магазин
     getGiftShop(socket, userList);
     // Деньги
-    changeMoney(socket, userList);
+    //changeMoney(socket, userList);
     // Игра
 
   });

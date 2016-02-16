@@ -11,9 +11,7 @@ function openPrivateMessage(socket, userList) {
             return new GameError(socket, "OPENMESSAGE", "Верификация не пройдена");
 
         userList[socket.id].openMessage(options, function (err) {
-            if (err) {
-                return new GameError(socket, "OPENMESSAGE", err.message);
-            }
+            if (err) { return new GameError(socket, "OPENMESSAGE", err.message); }
 
             socket.emit('open_private_message', options);
         })

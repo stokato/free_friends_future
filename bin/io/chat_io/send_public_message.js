@@ -16,7 +16,7 @@ function sendPublicMessage(socket, userList, roomList) {
             id: profile.getID(),
             vid: profile.getVID(),
             text: message.text,
-            date: message.date
+            date: new Date()
         };
         var currRoom = roomList[socket.id];
 

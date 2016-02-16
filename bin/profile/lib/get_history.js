@@ -6,7 +6,7 @@
  */
 module.exports = function(count, position, callback) {
     var self = this;
-    self.dbManager.findMessages(self.pID, function(err, messages) {
+    self.dbManager.findAllMessages(self.pID, function(err, messages) {
         if (err) { return callback(err, null); }
 
         if (!count) {

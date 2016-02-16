@@ -70,7 +70,7 @@ function getProfile(socket, userList, profiles) {
                     id: selfProfile.getID(),
                     vid: selfProfile.getVID(),
                     points: selfProfile.getPoints(),
-                    date: options.date
+                    date: new Date()
                 };
                 friendProfile.addToGuests(info, function (err, res) {
                     if (err) {

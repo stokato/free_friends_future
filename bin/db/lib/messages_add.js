@@ -7,11 +7,11 @@
  */
 module.exports = function(uid, msg, callback) {
     var message = msg                 || {};
-    var date = message.date;
     var companionid = message.companionid;
     var incoming  = message.incoming;
     var text      = message.text;
     var companionvid = message.companionvid;
+    var date = message.date;
     var opened   = message.opened;
 
     if (!date || !uid || !companionid || !text || !companionvid) {

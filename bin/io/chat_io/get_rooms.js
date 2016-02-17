@@ -1,7 +1,7 @@
 var async     =  require('async');
 // Свои модули
 var GameError = require('../../game_error'),
-    checkInput = require('../../check_input');
+  checkInput = require('../../check_input');
 var getRoomInfo = require('./get_room_info');
 
 /*
@@ -12,39 +12,34 @@ var getRoomInfo = require('./get_room_info');
  -- Получаем ее идентификтор и инфу по парням и девушкам (какую ???)
  - Передаем клиенту
  */
-function getRooms(socket, userList, rooms) {
-    socket.on('get_rooms', function() {
-        if (!checkInput('get_rooms', socket, userList, null))
-            return new GameError(socket, "getROOMS", "Верификация не пройдена");
+module.exports = function (socket, userList, rooms) {
+  socket.on('get_rooms', function() {
+    if (!checkInput('get_rooms', socket, userList, null))
+      return new GameError(socket, "getROOMS", "Верификация не пройдена");
 
-        var len = '';
-        if (userList[socket.id].getGender() == require('./../constants_io').GUY) {
-            len = 'guys_count';
-        }
-        else {
-            len = 'girls_count';
-        }
+    var len = '';
+    if (userList[socket.id].getSex() == require('./../constants_io').GUY) {
+      len = 'guys_count';
+    } else {
+      len = 'girls_count';
+    }
 
-        var resRooms = [];
-        async.map(rooms, function (item, cb) {
-            if (item[len] < require('./../constants_io').ONE_GENDER_IN_ROOM) {
-                getRoomInfo(item, function (err, info) {
-                    if (err) {
-                        return cb(err, null);
-                    }
+    var resRooms = [];
+    async.map(rooms, function (item, cb) {
+      if (item[len] < require('./../constants_io').ONE_GENDER_IN_ROOM) {
+        getRoomInfo(item, function (err, info) {
+          if (err) { return cb(err, null); }
 
-                    resRooms.push(info);
-                    cb(null, null);
-                });
-            } else cb(null, null);
-        }, function (err, results) {
-            if (err) {
-                return new GameError(socket, 'getROOMS', err.message)
-            }
-
-            socket.emit('get_rooms', resRooms);
+          resRooms.push(info);
+          cb(null, null);
         });
-    });
-}
+      } else cb(null, null);
+    }, function (err, results) {
+      if (err) { return new GameError(socket, 'getROOMS', err.message) }
 
-module.exports = getRooms;
+      socket.emit('get_rooms', resRooms);
+    });
+  });
+};
+
+

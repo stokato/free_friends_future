@@ -1,6 +1,6 @@
 var dbjs      = require('./../../db/index'),                // База
-    GameError = require('./../../game_error'),
-    checkInput = require('./../../check_input');
+  GameError = require('./../../game_error'),
+  checkInput = require('./../../check_input');
 
 var db = new dbjs();
 
@@ -11,27 +11,25 @@ var db = new dbjs();
  - Сортируем по очкам
  - Отправляем клиенту
  */
-function getTop(socket, userList) {
-    socket.on('get_top', function() {
-        if (!checkInput('get_top', socket, userList, null))
-            return new GameError(socket, "GETTOP", "Верификация не пройдена");
+module.exports = function (socket, userList) {
+  socket.on('get_top', function() {
+    if (!checkInput('get_top', socket, userList, null))
+      return new GameError(socket, "GETTOP", "Верификация не пройдена");
 
-        var fList = ["name", "gender", "points"];
-        db.findAllUsers(fList, function (err, users) {
-            if (err) {
-                return new GameError(socket, "GETTOP", err.message);
-            }
+    var fList = ["name", "gender", "points"];
+    db.findAllUsers(fList, function (err, users) {
+      if (err) { return new GameError(socket, "GETTOP", err.message); }
 
-            users.sort(comparePoints);
+      users.sort(comparePoints);
 
-            socket.emit('get_top', users);
-        });
+      socket.emit('get_top', users);
     });
-}
+  });
+};
 
 // Для сортировки массива игроков (получение топа по очкам)
 function comparePoints(userA, userB) {
-    return userB.points - userA.points;
+  return userB.points - userA.points;
 }
 
-module.exports = getTop;
+

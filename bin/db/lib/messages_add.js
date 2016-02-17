@@ -5,20 +5,20 @@
  - Строим и выполняем запрос
  - Возвращаем объект сообщения
  */
-module.exports = function(uid, msg, callback) {
-    var message = msg                 || {};
+module.exports = function(uid, options, callback) {
+    var message = options || {};
     var companionid = message.companionid;
     var incoming  = message.incoming;
     var text      = message.text;
     var companionvid = message.companionvid;
-    var date = message.date;
+    var date = message.date || new Date();
     var opened   = message.opened;
 
     if (!date || !uid || !companionid || !text || !companionvid) {
         return callback(new Error("Не указан один из параметров сообщения"), null);
     }
 
-    var id = this.uuid.random();
+    var id = this.timeUuid.fromDate(date);
 
     var fields = "id, userid, date, companionid, companionvid, incoming, text, opened";
     var values = "?, ?, ?, ?, ?, ?, ?, ?";

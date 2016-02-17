@@ -1,26 +1,23 @@
 
 var GameError = require('../../game_error'),
-    checkInput = require('../../check_input');
+  checkInput = require('../../check_input');
 
 /*
  Показать своих друзей
  - Получаем друзей - массив (ИД и дата начала дружбы) (из БД)
  - Передаем клиенту
  */
-function getFriends(socket, userList) {
-    socket.on('get_friends', function() {
+module.exports = function (socket, userList) {
+  socket.on('get_friends', function() {
+    if (!checkInput('get_friends', socket, userList, null))
+      return new GameError(socket, "getFRIENDS", "Верификация не пройдена");
 
-        if (!checkInput('get_friends', socket, userList, null))
-            return new GameError(socket, "getFRIENDS", "Верификация не пройдена");
+    userList[socket.id].getFriends(function (err, friends) {
+      if (err) {  return new GameError(socket, "getFRIENDS", err.message); }
 
-        userList[socket.id].getFriends(function (err, friends) {
-            if (err) {
-                return new GameError(socket, "getFRIENDS", err.message);
-            }
-
-            socket.emit('get_friends', friends);
-        });
+      socket.emit('get_friends', friends);
     });
-}
+  });
+};
 
-module.exports = getFriends;
+

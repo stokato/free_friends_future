@@ -18,9 +18,10 @@ module.exports = function(uid, callback) {
         var guest = null;
 
         if(result.rows.length > 0) {
-
+            var row;
             for(var i = 0; i < result.rows.length; i++) {
-                guest = { id: result.rows[i].guestid, vid: result.rows[i].guestvid, date: result.rows[i].date };
+                row = result.rows[i];
+                guest = { id: row.guestid, vid: row.guestvid, date: row.date };
                 guests.push(guest);
             }
 

@@ -2,5 +2,5 @@
  Поулчаем vid игрока
  */
 module.exports = function() {
-    return this.pVID;
+ return this.pVID;
 };

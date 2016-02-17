@@ -32,7 +32,7 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
 
             var len = '';
             var genArr = '';
-            if (profile.getGender() == constants.GUY) {
+            if (profile.getSex() == constants.GUY) {
                 len = 'guys_count';
                 genArr = 'guys';
             }
@@ -56,6 +56,7 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
             new GameError(null, "EXIT", err.message)
         }
 
+        //callback(null, null);
         socket.disconnect(); // отключаемся
     }); ///////////////////////////////////////////////////////////////////////////////////////
 };

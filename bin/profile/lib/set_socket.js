@@ -5,5 +5,5 @@
  - Возвращаем
  */
 module.exports = function(socket) {
-    this.pSocket = socket;
+ this.pSocket = socket;
 };

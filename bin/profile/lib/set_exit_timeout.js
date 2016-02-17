@@ -1,4 +1,4 @@
 
 module.exports = function(tm) {
-  this.pExitTimeout = tm;
+ this.pExitTimeout = tm;
 };

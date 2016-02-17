@@ -6,24 +6,24 @@
  */
 module.exports = function(goodid, callback) {
 
-    if(!goodid) { return callback(new Error("Не задан ИД товара"), null); }
+ if(!goodid) { return callback(new Error("Не задан ИД товара"), null); }
 
-    var query = "select title, type, price, data FROM shop where id = ?";
+ var query = "select title, type, price, data FROM shop where id = ?";
 
-    this.client.execute(query,[goodid], {prepare: true }, function(err, result) {
-        if (err) { return callback(err, null); }
+ this.client.execute(query,[goodid], {prepare: true }, function(err, result) {
+   if (err) { return callback(err, null); }
 
-        if(result.rows.length == 0) { return callback(null, null); }
-        var gd = result.rows[0];
+   if(result.rows.length == 0) { return callback(null, null); }
+   var row = result.rows[0];
 
-        var good = {
-            id   : goodid,
-            title: gd.title,
-            type : gd.type,
-            price: gd.price,
-            data:  gd.data
-        };
+   var good = {
+     id   : goodid,
+     title: row.title,
+     type : row.type,
+     price: row.price,
+     data:  row.data
+     };
 
-        callback(null, good);
-    });
+   callback(null, good);
+ });
 };

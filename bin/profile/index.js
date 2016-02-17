@@ -9,7 +9,7 @@ var addToFriends  = require('./lib/add_to_friends');
 var addToGuests   = require('./lib/add_to_guests');
 var build         = require('./lib/build');
 var getFriends    = require('./lib/get_friends');
-var getGender     = require('./lib/get_gender');
+var getSex        = require('./lib/get_gender');
 var getGifts      = require('./lib/get_gifts');
 var getGuests     = require('./lib/get_guests');
 var getHistory    = require('./lib/get_history');
@@ -54,10 +54,11 @@ function Profile() {
   this.pID       = null;   // Внутренний ИД
   this.pVID      = null;   // Внешний
 
-  this.pAge      = 0;      // ???
-  this.pLocation = null;   // ???
+  this.pAge      = 0;      // Возраст
+  this.pCountry  = null;   // Страна
+  this.pCity     = null;   // Город
 
-  this.pGender   = null;   // пол игрока
+  this.pSex      = null;   // пол игрока (1 - женский, 2 - мужской)
   this.pStatus   = null;   // статус (заводит игрок)
   this.pPoints   = 0;      // очки
   this.pMoney    = 0;      // деньги
@@ -69,7 +70,7 @@ function Profile() {
   this.pNewFriends  = 0;
   this.pNewGuests   = 0;
 
-  this.pPrivateChats = [];
+  this.pPrivateChats = [];  // Сприсок открытых приватных чатов
 
   this.pExitTimeout;
 
@@ -86,7 +87,7 @@ Profile.prototype.getVID          = getVID;
 Profile.prototype.getStatus       = getStatus;
 Profile.prototype.getPoints       = getPoints;
 Profile.prototype.getNews         = getNews;
-Profile.prototype.getGender       = getGender;
+Profile.prototype.getSex          = getSex;
 Profile.prototype.addGift         = addGift;
 Profile.prototype.getGifts        = getGifts;
 Profile.prototype.addMessage      = addMessage;

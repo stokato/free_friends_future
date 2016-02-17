@@ -9,13 +9,13 @@ var closeConnection = require('./close_connection');
  - удаляем профиль и комнату из памяти
  - отключаем сокет
  */
-function exit(socket, userList, profiles, roomList, rooms) {
+module.exports = function (socket, userList, profiles, roomList, rooms) {
     socket.on('exit', function() {
+        socket.disconnect();
         userList[socket.id].setExitTimeout(
             setTimeout(function(){
-                closeConnection(socket, userList, profiles, roomList, rooms)
+                closeConnection(socket, userList, profiles, roomList, rooms);
             }, constants.EXIT_TIMEOUT))
     });
 } // Выходим из чата
 
-module.exports = exit;

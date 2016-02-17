@@ -10,53 +10,54 @@ var createRoom = require('./create_room');
  - Привязываемся к новой
  - Возвращаем выбранную комнату
  */
-function autoPlaceInRoom(socket, userList, roomList, rooms, callback) {
-    var profile = userList[socket.id];
-    var room = null;
-    var count = constats.ONE_GENDER_IN_ROOM +1;
-    var len = '';
-    var genArr = '';
-    if(profile.getGender() == constats.GUY) { len = 'guys_count'; genArr = 'guys';}
-    else { len = 'girls_count'; genArr = 'girls';}
+module.exports = function (socket, userList, roomList, rooms, callback) {
+  var profile = userList[socket.id];
+  var room = null;
+  var count = constats.ONE_GENDER_IN_ROOM +1;
+  var len = '';
+  var sexArr = '';
 
-    var selfRoomName = '';
-    if(roomList[socket.id]) {
-        selfRoomName = roomList[socket.id].name;
+  if(profile.getSex() == constats.GUY) { len = 'guys_count'; sexArr = 'guys';}
+  else { len = 'girls_count'; sexArr = 'girls';}
+
+  var selfRoomName = '';
+  if(roomList[socket.id]) {
+    selfRoomName = roomList[socket.id].name;
+  }
+
+  var item;
+  for(item in rooms) if (rooms.hasOwnProperty(item)) {
+    if(item != selfRoomName) {
+      var need = constats.ONE_GENDER_IN_ROOM - rooms[item][len];
+
+      if(need > 0 && need < count) {
+        count = need;
+        room = rooms[item];
+      }
     }
-    var item;
-    for(item in rooms) if (rooms.hasOwnProperty(item)) {
-        if(item != selfRoomName) {
-            var need = constats.ONE_GENDER_IN_ROOM - rooms[item][len];
-
-            if(need > 0 && need < count) {
-                count = need;
-                room = rooms[item];
-            }
-        }
-    }
+  }
 
 
-    if(!room) { // Нет ни одной свободной комнаты
-        room = createRoom(socket);
-        rooms[room.name] = room;
-    }
+  if(!room) { // Нет ни одной свободной комнаты
+    room = createRoom(socket);
+    rooms[room.name] = room;
+  }
 
-    socket.join(room.name);
+  socket.join(room.name);
 
-    room[genArr][profile.getID()] = profile;
-    room[len] ++;
+  room[sexArr][profile.getID()] = profile;
+  room[len] ++;
 
-    var oldRoom = roomList[socket.id];
-    if(oldRoom) {
-        socket.leave(oldRoom.name);
-        delete oldRoom[genArr][profile.getID()];
-        oldRoom[len]--;
-        if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
-    }
+  var oldRoom = roomList[socket.id];
+  if(oldRoom) {
+    socket.leave(oldRoom.name);
+    delete oldRoom[sexArr][profile.getID()];
+    oldRoom[len]--;
+    if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
+  }
 
-    roomList[socket.id] = room;
+  roomList[socket.id] = room;
 
-    callback(null, room);
+  callback(null, room);
 }
 
-module.exports = autoPlaceInRoom;

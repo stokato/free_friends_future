@@ -7,8 +7,8 @@ var rooms    = {};                                  // Комнаты по их 
 var profiles = {};                                  // Профили пользователей по id (надо бы убрать)
 
 var initProfile       = require('./chat_io/init_profile');
-var sendPublicMessage = require('./chat_io/send_public_message');
-var exit              = require('./chat_io/exit');
+//var sendPublicMessage = require('./chat_io/send_public_message');
+//var exit              = require('./chat_io/exit');
 var chooseRoom        = require('./chat_io/choose_room');
 var getRooms          = require('./chat_io/get_rooms');
 var changeRoom        = require('./chat_io/change_room');
@@ -22,11 +22,12 @@ var getFriends        = require('./profile_io/get_friends');
 var getGuests         = require('./profile_io/get_guests');
 var addToFriends      = require('./profile_io/add_to_friends');
 var makeGift          = require('./profile_io/make_gift');
-var sendPrivMes       = require('./profile_io/send_private_message');
+var sendMessage       = require('./chat_io/send_message');
 var openPrivMes       = require('./profile_io/open_private_message');
 var getTop            = require('./top_io/get_top');
 var getGiftShop       = require('./shop_io/get_gift_shop');
 //var changeMoney       = require('./money_io/change_money');
+var disconnect       = require('./chat_io/disconnect');
 
 /*
 При подключении выполняем инициализацию и вешаем эмиттеры
@@ -39,8 +40,8 @@ module.exports.listen = function(server, callback) {
   io.sockets.on('connection', function (socket) {
     // Чат
     initProfile(socket,userList,profiles, roomList, rooms);
-    sendPublicMessage(socket, userList, roomList);
-    exit(socket, userList, profiles, roomList, rooms);
+    //sendPublicMessage(socket, userList, roomList);
+    //exit(socket, userList, profiles, roomList, rooms);
     chooseRoom(socket, userList, roomList, rooms, profiles);
     getRooms(socket, userList, rooms);
     changeRoom(socket, userList, rooms, roomList);
@@ -54,10 +55,11 @@ module.exports.listen = function(server, callback) {
     getGuests(socket, userList);
     addToFriends(socket, userList, profiles);
     makeGift(socket, userList, profiles);
-    sendPrivMes(socket, userList, profiles);
+    sendMessage(socket, userList, profiles, roomList);
     openPrivMes(socket, userList);
     openPrivateChat(socket, userList, profiles);
     closePrivateChat(socket, userList, profiles);
+    disconnect(socket, userList, profiles, roomList, rooms);
 
     // Топ
     getTop(socket, userList);

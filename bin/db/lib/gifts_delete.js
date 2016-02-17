@@ -30,6 +30,4 @@ module.exports = function(uid, callback) {
             callback(null, uid);
         });
     });
-
-
 };

@@ -5,9 +5,7 @@
  - Возвращаем массив с подарками (если ничего нет NULL)
  */
 module.exports = function(uid, callback) {
-    if (!uid) {
-        return callback(new Error("Задан пустой Id пользователя"), null);
-    }
+    if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null);}
 
     var query = "select giftid, type, data, date, fromid, fromvid FROM user_gifts where userid = ?";
 
@@ -18,14 +16,14 @@ module.exports = function(uid, callback) {
 
         if(result.rows.length > 0) {
             for(var i = 0; i < result.rows.length; i++) {
-                var gft = result.rows[i];
+                var row= result.rows[i];
                 var gift = {
-                    giftidid : gft.giftid,
-                    type : gft.type,
-                    data : gft.data,
-                    date : gft.date,
-                    fromid : gft.fromid,
-                    fromvid : gft.fromvid
+                    giftidid : row.giftid,
+                    type : row.type,
+                    data : row.data,
+                    date : row.date,
+                    fromid : row.fromid,
+                    fromvid : row.fromvid
                 };
                 gifts.push(gift);
             }

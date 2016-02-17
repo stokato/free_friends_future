@@ -2,5 +2,5 @@
  Поулчаем id игрока
  */
 module.exports = function() {
-    return this.pID;
+ return this.pID;
 };

@@ -6,7 +6,7 @@ var client = new cassandra.Client({contactPoints: [Config.host],
                                   keyspace: Config.keyspace});
 
 var Uuid = cassandra.types.Uuid;  // Генератор id для Cassandra
-
+var TimeUuid = cassandra.types.TimeUuid;
 var addUser             = require('./lib/users_add');
 var findUser            = require('./lib/users_find');
 var findAllUsers        = require('./lib/users_find_all');
@@ -44,8 +44,9 @@ var deleteGood          = require('./lib/shop_delete');
  *                 - добавить, найти, удалить товар (магазин)
  */
 var DBManager = function() {
-  this.client = client;
-  this.uuid = Uuid;
+ this.client = client;
+ this.uuid = Uuid;
+ this.timeUuid = TimeUuid;
 };
 
 DBManager.prototype.addUser         = addUser;

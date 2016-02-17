@@ -25,6 +25,6 @@ module.exports = function(uid, frnd, callback) {
     this.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return callback(err); }
 
-        callback(null, frnd);
+        callback(null, friend);
     });
 };

@@ -8,7 +8,11 @@ module.exports = function(chat, callback) {
   var self = this;
   self.pPrivateChats.push(chat);
 
-  self.dbManager.findMessages(self.pID, [chat.id], function(err, messages) {
+  var options = {
+    id_list : [chat.id],
+    date    : chat.date
+  };
+  self.dbManager.findMessages(self.pID, options, function(err, messages) {
     if (err) { return callback(err, null); }
 
     chat.messages = messages;

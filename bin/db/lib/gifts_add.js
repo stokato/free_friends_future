@@ -5,8 +5,8 @@
  - Строим и выполняем запрос
  - Возвращаем объект подарка
  */
-module.exports = function(uid, gft, callback) {
-    var gift = gft || {};
+module.exports = function(uid, options, callback) {
+    var gift = options || {};
 
     var giftId = gift.id;
     var type = gift.type;
@@ -15,9 +15,7 @@ module.exports = function(uid, gft, callback) {
     var fromid = gift.fromid;
     var fromvid = gift.fromvid;
 
-    if (!uid) {
-        return callback(new Error("Не указан Id пользователя"), null);
-    }
+    if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
     if (!type || !data || !date || !fromid || !fromvid) {
         return callback(new Error("Не указаны параметры подарка"), null);
@@ -33,6 +31,7 @@ module.exports = function(uid, gft, callback) {
 
     this.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return callback(err); }
+
         callback(null, gift);
     });
 };

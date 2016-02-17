@@ -5,18 +5,18 @@
  - Если задан position - count с указанной позиции
  */
 module.exports = function(options, callback) {
-    var self = this;
-    var message = {
-        id : options.id,
-        companionid : options.companionid,
-        opened : true
-    };
+  var self = this;
+  var message = {
+    id : options.id,
+    companionid : options.companionid,
+    opened : true
+  };
 
-    self.dbManager.updateMessage(this.pID, message, function(err) {
-        if (err) { return callback(err, null); }
+  self.dbManager.updateMessage(this.pID, message, function(err) {
+    if (err) { return callback(err, null); }
 
-        self.pNewMessages--;
+    self.pNewMessages--;
 
-        callback(null, null);
-    });
+    callback(null, null);
+  });
 };

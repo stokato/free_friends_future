@@ -5,15 +5,14 @@
  - Возвращаем ИД товара
  */
 module.exports = function(goodid, callback) {
-    var id = goodid;
-    if (!id) { callback(new Error("Задан пустой Id товара")); }
+ var id = goodid;
+ if (!id) { callback(new Error("Задан пустой Id товара")); }
 
-    var query = "DELETE FROM shop WHERE id = ?";
+ var query = "DELETE FROM shop WHERE id = ?";
 
-    this.client.execute(query, [results.rows[0].id], {prepare: true }, function(err) {
-        if (err) {  return callback(err); }
+ this.client.execute(query, [id], {prepare: true }, function(err) {
+   if (err) {  return callback(err); }
 
-        cb(null, goodid);
-    });
-
+   callback(null, id);
+ });
 };

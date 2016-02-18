@@ -1,9 +1,9 @@
-var async     =  require('async');
+var async      =  require('async');
 // Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
-  dbjs      = require('../../db/index'),
-  GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+var profilejs  =  require('../../profile/index'),          // Профиль
+  dbjs         = require('../../db/index'),
+  GameError    = require('../../game_error'),
+  checkInput   = require('../../check_input');
 
 var db = new dbjs();
 /*

@@ -59,5 +59,5 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   roomList[socket.id] = room;
 
   callback(null, room);
-}
+};
 

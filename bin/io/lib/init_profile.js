@@ -6,7 +6,7 @@ var profilejs =  require('../../profile/index'),          // Профиль
 var autoPlace = require('./auto_place_in_room');
 var getRoomInfo = require('./get_room_info');
 var getLastMessages = require('./get_last_messages'),
-  genDateHistory = require('../profile_io/gen_date_history');
+  genDateHistory = require('./gen_date_history');
 
 /*
  Выполняем инициализацию

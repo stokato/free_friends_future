@@ -1,8 +1,8 @@
-var async = require('async');
-var profilejs =  require('../../profile/index'),
-  GameError = require('../../game_error'),
-  checkInput = require('../../check_input'),
-  genDateHistory = require('./gen_date_history');
+var async         = require('async');
+var profilejs     =  require('../../profile/index'),
+  GameError       = require('../../game_error'),
+  checkInput      = require('../../check_input'),
+  genDateHistory  = require('./gen_date_history');
 
 module.exports = function(socket, userList, profiles) {
   socket.on('open_private_chat', function(options) {

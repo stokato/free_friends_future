@@ -13,6 +13,7 @@ module.exports = function(id, vid, f_list, callback) {
  var search = '';
  var param = [];
 
+
  if(id) {
    search = "id";
    param.push(id);

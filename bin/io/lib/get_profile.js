@@ -25,6 +25,10 @@ module.exports = function (socket, userList, profiles) {
       var info = {
         id     : selfProfile.getID(),
         vid    : selfProfile.getVID(),
+        age    : selfProfile.getAge(),
+        sex    : selfProfile.getSex(),
+        city   : selfProfile.getCity(),
+        country: selfProfile.getCountry(),
         status : selfProfile.getStatus(),
         points : selfProfile.getPoints(),
         money  : selfProfile.getMoney()
@@ -42,6 +46,10 @@ module.exports = function (socket, userList, profiles) {
           friendInfo = {
             id     : friendProfile.getID(),
             vid    : friendProfile.getVID(),
+            age    : friendProfile.getAge(),
+            sex    : friendProfile.getSex(),
+            city   : friendProfile.getCity(),
+            country: friendProfile.getCountry(),
             status : friendProfile.getStatus(),
             points : friendProfile.getPoints()
           };
@@ -55,6 +63,10 @@ module.exports = function (socket, userList, profiles) {
             friendInfo = {
               id     : info.id,
               vid    : info.vid,
+              age    : info.age,
+              sex    : info.sex,
+              city   : info.city,
+              country: info.country,
               status : info.status,
               points : info.points
             };
@@ -66,6 +78,10 @@ module.exports = function (socket, userList, profiles) {
         var info = {
           id     : selfProfile.getID(),
           vid    : selfProfile.getVID(),
+          age    : selfProfile.getAge(),
+          sex    : selfProfile.getSex(),
+          city   : selfProfile.getCity(),
+          country: selfProfile.getCountry(),
           points : selfProfile.getPoints(),
           date   : new Date()
         };

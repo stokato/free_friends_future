@@ -13,6 +13,10 @@ module.exports = function (room, callback) {
     gInfo = {
       id: room.guys[guy].getID(),
       vid: room.guys[guy].getVID(),
+      age: room.guys[guy].getAge(),
+      sex: room.guys[guy].getSex(),
+      city: room.guys[guy].getCity(),
+      country: room.guys[guy].getCountry(),
       points: room.guys[guy].getPoints()
     };
     info.guys.push(gInfo);
@@ -22,9 +26,12 @@ module.exports = function (room, callback) {
     gInfo = {
       id: room.girls[girl].getID(),
       vid: room.girls[girl].getVID(),
+      age: room.girls[girl].getAge(),
+      sex: room.girls[girl].getSex(),
+      city: room.girls[girl].getCity(),
+      country: room.girls[girl].getCountry(),
       points: room.girls[girl].getPoints()
     };
-    gInfo['points'] = room.girls[girl].getPoints();
     info.girls.push(gInfo);
   }
   callback(null, info, room);

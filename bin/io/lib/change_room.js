@@ -80,7 +80,14 @@ module.exports = function (socket, userList, rooms, roomList) {
     getRoomInfo(newRoom, function (err, info) {
       if (err) { return new GameError(socket, "CHANGEROOM", err.message); }
 
-      var message = { id : profile.getID(), vid : profile.getVID() };
+      var message = {
+        id : profile.getID(),
+        vid : profile.getVID(),
+        age : profile.getAge(),
+        sex : profile.getSex(),
+        city : profile.getCity(),
+        country : profile.getCountry
+      };
       socket.broadcast.in(currRoom.name).emit('leave', message);
 
       socket.leave(currRoom.name);

@@ -13,7 +13,7 @@ module.exports = function(date, callback) {
    self.save(function(err) {
      if (err) { return callback(err, null); }
 
-     callback(null, guests);
+     callback(null, messages);
    });
    callback(null, messages);
  });

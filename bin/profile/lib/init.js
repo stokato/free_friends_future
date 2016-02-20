@@ -15,7 +15,8 @@ module.exports = function(socket, opt, callback) {
 
       self.pSocket   = socket;
       self.pVID      = options.vid;
-      self.pAge      = options.age;
+      self.pBDate    = new Date(options.bdate);
+      self.pAge      = new Date().getFullYear() - self.pBDate.getFullYear();
       self.pCountry  = options.country;
       self.pCity     = options.city;
       self.pSex      = options.sex;
@@ -36,6 +37,11 @@ module.exports = function(socket, opt, callback) {
           self.pStatus = foundUser.status;
           self.pPoints = foundUser.points;
           self.pMoney  = foundUser.money;
+
+          self.pAge = (self.pAge)? self.pAge : foundUser.age;
+          self.pSex = (self.pSex)? self.pSex : foundUser.sex;
+          self.pCountry = (self.pCountry)? self.pCountry : foundUser.country;
+          self.pCity = (self.pCity)? self.pCity : foundUser.city;
 
           self.pNewMessages = foundUser.newmessages || 0;
           self.pNewGifts    = foundUser.newgifts    || 0;
@@ -91,6 +97,10 @@ module.exports = function(socket, opt, callback) {
       status   : self.pStatus,
       points   : self.pPoints,
       money    : self.pMoney,
+      sex      : self.pSex,
+      age      : self.pAge,
+      city     : self.pCity,
+      country  : self.pCountry,
       messages : self.pNewMessages,
       gifts    : self.pNewGifts,
       friends  : self.pNewFriends,

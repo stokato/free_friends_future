@@ -36,7 +36,7 @@ module.exports = function(id, callback) {
      id       : self.pID,
      vid      : self.pVID,
      age      : self.pAge,
-     country  : self.pCounry,
+     country  : self.pCountry,
      city     : self.pCity,
      status   : self.pStatus,
      points   : self.pPoints,

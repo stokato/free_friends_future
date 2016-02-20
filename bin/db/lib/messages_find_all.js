@@ -18,9 +18,10 @@ module.exports = function(uid, options, callback) {
    if(result.rows.length == 0) return callback(null, null);
 
    var fields = "?";
-   params.push(result.rows[0].companionid);
-   for(var i = 1; i< result.rows.length; i++) {
-     params.push(result.rows[i].companionid);
+   var companions = result.rows;
+   params.push(companions[0].companionid);
+   for(var i = 1; i< companions.length; i++) {
+     params.push(companions[i].companionid);
      fields = fields + ", ?";
    }
 
@@ -48,7 +49,48 @@ module.exports = function(uid, options, callback) {
          };
          messages.push(message);
        }
-       callback(null, messages);
+
+       var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
+       params = [];
+       for(var i = 0; i< companions.length; i++) {
+         params.push(companions[i].companionid);
+       }
+       self.client.execute(query, params, {prepare: true }, function(err, result) {
+         if (err) { return callback(err, null); }
+
+         var users = [];
+         for(var i = 0; i < result.rows.length; i++) {
+           var row = result.rows[i];
+           var user = {
+             id      : row.id,
+             vid     : row.vid,
+             age     : row.age,
+             sex     : row.sex,
+             city    : row.city,
+             country : row.country,
+             points  : row.points
+           };
+           users.push(user);
+         }
+
+         for(var i = 0; i < messages.length; i++) {
+           for(var j = 0; j < users.length; j++) {
+             if(users[j].id.toString() == messages[i].companionid.toString()) {
+               if (!users[j].messages) users[j].messages = [];
+               if (messages[i].opened == false) users[j].opened = true;
+               var message = {
+                 id:   messages[i].id,
+                 companionid : messages[i].companionid,
+                 opened: messages[i].opened,
+                 text: messages[i].text,
+                 date: messages[i].date
+               };
+               users[j].messages.push(message);
+             }
+           }
+         }
+         callback(null, users);
+       });
      } else {
        callback(null, null);
      }

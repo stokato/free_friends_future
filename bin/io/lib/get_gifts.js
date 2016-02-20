@@ -12,9 +12,7 @@ module.exports = function (socket, userList) {
       return new GameError(socket, "GETGIFTS", "Верификация не пройдена");
 
     userList[socket.id].getGifts(function (err, gifts) {
-      if (err) {
-        return new GameError(socket, "GETGIFTS", err.message);
-      }
+      if (err) { return new GameError(socket, "GETGIFTS", err.message); }
 
       socket.emit('get_gifts', gifts);
     });

@@ -23,7 +23,11 @@ module.exports = function (socket, userList, profiles) {
     var selfInfo = {
       id   : selfProfile.getID(),
       vid  : selfProfile.getVID(),
-      date : options.date
+      date : options.date,
+      sex  : selfProfile.getSex(),
+      age : selfProfile.getAge(),
+      city : selfProfile.getCity(),
+      country : selfProfile.getCountry()
     };
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль друга
@@ -59,7 +63,11 @@ module.exports = function (socket, userList, profiles) {
           id     : friendProfile.getID(),
           vid    : friendProfile.getVID(),
           points : friendProfile.getPoints(),
-          date   : options.date
+          date   : options.date,
+          age    : friendProfile.getAge(),
+          city   : friendProfile.getCity(),
+          country: friendProfile.getCountry(),
+          sex    : friendProfile.getSex()
         };
         selfProfile.addToFriends(friendInfo, function (err, res) {
           if (err) { return cb(err, null); }

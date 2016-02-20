@@ -9,7 +9,7 @@ var addToFriends  = require('./lib/add_to_friends');
 var addToGuests   = require('./lib/add_to_guests');
 var build         = require('./lib/build');
 var getFriends    = require('./lib/get_friends');
-var getSex        = require('./lib/get_gender');
+var getSex        = require('./lib/get_sex');
 var getGifts      = require('./lib/get_gifts');
 var getGuests     = require('./lib/get_guests');
 var getHistory    = require('./lib/get_history');
@@ -30,7 +30,9 @@ var setSocket     = require('./lib/set_socket');
 var addPrivateChat = require('./lib/add_private_chat');
 var deletePrivateChat = require('./lib/delete_private_chat');
 var isPrivateChat = require('./lib/is_private_chat');
-
+var getAge        = require('./lib/get_age');
+var getCity       = require('./lib/get_city');
+var getCountry    = require('./lib/get_country');
 
 var setExitTimeout = require('./lib/set_exit_timeout');
 var clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -51,8 +53,9 @@ function Profile() {
   this.dbManager = dbManager;
   this.pSocket   = null;   // Сокет
 
-  this.pID       = null;   // Внутренний ИД
-  this.pVID      = null;   // Внешний
+  this.pID           = null;   // Внутренний ИД
+  this.pVID          = null;   // Внешний
+  this.pBDate        = null;
 
   this.pAge      = 0;      // Возраст
   this.pCountry  = null;   // Страна
@@ -110,5 +113,9 @@ Profile.prototype.addPrivateChat = addPrivateChat;
 Profile.prototype.deletePrivateChat = deletePrivateChat;
 Profile.prototype.isPrivateChat = isPrivateChat;
 Profile.prototype.getPrivateChats = getPrivateChats;
+
+Profile.prototype.getAge = getAge;
+Profile.prototype.getCity = getCity;
+Profile.prototype.getCountry = getCountry;
 
 module.exports = Profile;

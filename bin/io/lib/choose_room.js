@@ -75,6 +75,10 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
               var currInfo = {
                 id: currFriend.getID(),
                 vid: currFriend.getVID(),
+                age: currFriend.getAge(),
+                sex: currFriend.getSex(),
+                city: currFriend.getCity(),
+                country: currFriend.getCountry(),
                 room: friendsRoom.name
               };
               friendList.push(currInfo);

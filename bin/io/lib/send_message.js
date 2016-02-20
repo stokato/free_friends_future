@@ -26,6 +26,10 @@ module.exports = function (socket, userList, profiles, roomList) {
     var info = {
       id   : selfProfile.getID(),
       vid  : selfProfile.getVID(),
+      age  : selfProfile.getAge(),
+      sex  : selfProfile.getSex(),
+      city : selfProfile.getCity(),
+      country: selfProfile.getCountry(),
       text : options.text,
       date : new Date()
     };

@@ -7,10 +7,11 @@ function checkInput(em, socket, userList, opt) {
   var isValid = true;
 
   if(em == 'init') {
-    isValid = (validator.isInt(options.age))? isValid : false;
-    isValid = (!validator.isNull(options.country))? isValid : false;
-    isValid = (!validator.isNull(options.city))? isValid : false;
+   // isValid = (validator.isInt(options.age))? isValid : false;
+    isValid = (validator.isInt(options.country))? isValid : false;
+    isValid = (validator.isInt(options.city))? isValid : false;
     isValid = (options.sex == 1 || options.sex == 2)? isValid : false;
+    isValid = (validator.isDate(options.bdate)? isValid : false);
   }
 
   if(em == 'message') {

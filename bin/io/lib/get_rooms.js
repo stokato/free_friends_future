@@ -2,7 +2,8 @@ var async     =  require('async');
 // Свои модули
 var GameError = require('../../game_error'),
   checkInput = require('../../check_input');
-var getRoomInfo = require('./get_room_info');
+var getRoomInfo = require('./get_room_info'),
+    constants  = require('../constants_io');
 
 /*
  Показать список комнат (столов)
@@ -18,7 +19,7 @@ module.exports = function (socket, userList, rooms) {
       return new GameError(socket, "getROOMS", "Верификация не пройдена");
 
     var len = '';
-    if (userList[socket.id].getSex() == require('./../constants_io').GUY) {
+    if (userList[socket.id].getSex() == constants.GUY) {
       len = 'guys_count';
     } else {
       len = 'girls_count';
@@ -26,7 +27,7 @@ module.exports = function (socket, userList, rooms) {
 
     var resRooms = [];
     async.map(rooms, function (item, cb) {
-      if (item[len] < require('./../constants_io').ONE_GENDER_IN_ROOM) {
+      if (item[len] < constants.ONE_GENDER_IN_ROOM) {
         getRoomInfo(item, function (err, info) {
           if (err) { return cb(err, null); }
 

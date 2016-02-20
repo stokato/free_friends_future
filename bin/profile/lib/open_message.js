@@ -16,6 +16,11 @@ module.exports = function(options, callback) {
     if (err) { return callback(err, null); }
 
     self.pNewMessages--;
+    self.save(function(err) {
+      if (err) { return callback(err, null); }
+
+      callback(null, guests);
+    });
 
     callback(null, null);
   });

@@ -65,8 +65,7 @@ module.exports = function (socket, userList, rooms, roomList) {
       return new GameError(socket, "CHANGEROOM", "Попытка открыть несуществующую комнату")
     }
 
-    socket.leave(currRoom.name);
-    socket.join(newRoom.name);
+
 
     newRoom[sexArr][profile.getID()] = profile;
     newRoom[len]++;
@@ -79,9 +78,15 @@ module.exports = function (socket, userList, rooms, roomList) {
 
 
     getRoomInfo(newRoom, function (err, info) {
-      if (err) {
-        return new GameError(socket, "CHANGEROOM", err.message);
-      }
+      if (err) { return new GameError(socket, "CHANGEROOM", err.message); }
+
+      var message = { id : profile.getID(), vid : profile.getVID() };
+      socket.broadcast.in(currRoom.name).emit('leave', message);
+
+      socket.leave(currRoom.name);
+      socket.join(newRoom.name);
+
+      socket.broadcast.in(newRoom.name).emit('join', message);
 
       socket.emit('open_room', info);
     });

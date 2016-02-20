@@ -9,6 +9,12 @@ module.exports = function(date, callback) {
  self.dbManager.findAllMessages(self.pID,  { date : date }, function(err, messages) {
    if (err) { return callback(err, null); }
 
+   self.pNewMesages = 0;
+   self.save(function(err) {
+     if (err) { return callback(err, null); }
+
+     callback(null, guests);
+   });
    callback(null, messages);
  });
 };

@@ -15,8 +15,16 @@ module.exports = function(chat, callback) {
   self.dbManager.findMessages(self.pID, options, function(err, messages) {
     if (err) { return callback(err, null); }
 
-    chat.messages = messages;
+    var info = {
+      id       : chat.id,
+      vid      : chat.vid,
+      age      : chat.age,
+      city     : chat.city,
+      country  : chat.country,
+      sex      : chat.sex,
+      messages : messages
+    };
 
-    callback(null, chat);
+    callback(null, info);
   });
 };

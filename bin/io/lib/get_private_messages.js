@@ -10,11 +10,11 @@ module.exports = function (socket, userList) {
   socket.on('get_private_messages', function() {
     if (!checkInput('get_private_messages', socket, userList, null))
       return new GameError(socket, "GETHISTORY", "Верификация не пройдена");
-    var firstDate = genDateHistory(new Date());
-    userList[socket.id].getHistory(firstDate, function (err, messages) {
+
+    userList[socket.id].getHistory(function (err, chats) {
       if (err) { return new GameError(socket, "GETHISTORY", err.message); }
 
-      socket.emit('get_private_messages', messages);
+      socket.emit('get_private_messages', chats);
     });
   })
 };

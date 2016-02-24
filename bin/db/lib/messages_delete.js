@@ -24,7 +24,7 @@ module.exports = function(uid, callback) {
     params.push(result.rows.length-1);
 
     var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
-    self.client.execute(query, [uid, params], {prepare: true }, function(err) {
+    self.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       query = "DELETE FROM user_chats WHERE userid = ?";

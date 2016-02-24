@@ -24,17 +24,21 @@ module.exports = function(date, callback) {
      var chats = {};
      for(var j = 0; j < self.pPrivateChats.length; j++) { // Готовим список чатов
        var chat = self.pPrivateChats[j].id;
-       chats[chat.id] = {
+       chats[chat] = {
          id       : chat.id,
          vid      : chat.vid,
+         age      : chat.age,
+         city     : chat.city,
+         country  : chat.country,
+         sex      : chat.sex,
          messages : []
        }
      }
 
      var currChat = null;
      for(var i = 0; i < messages.length; i++) { // Разносим историю по чатам
-       if(currChat != messages[i].companionid) {
-         currChat = messages[i].companionid;
+       if(currChat != messages[i].companionid.toString()) {
+         currChat = messages[i].companionid.toString();
        }
 
        chats[currChat].messages.push(messages[i]);

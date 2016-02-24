@@ -1,20 +1,13 @@
 /*
- Получаем историю сообщений:
+ Получаем историю чатов:
  - Читаем из БД
- - Если задан параметр count - указанное количество с конца
- - Если задан position - count с указанной позиции
+ - Возвращаем массив чатов
  */
-module.exports = function(date, callback) {
+module.exports = function(callback) {
  var self = this;
- self.dbManager.findAllMessages(self.pID,  { date : date }, function(err, messages) {
+ self.dbManager.findChats(self.pID, function(err, chats) {
    if (err) { return callback(err, null); }
 
-   self.pNewMesages = 0;
-   self.save(function(err) {
-     if (err) { return callback(err, null); }
-
-     callback(null, messages);
-   });
-   callback(null, messages);
+   callback(null, chats);
  });
 };

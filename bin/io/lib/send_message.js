@@ -63,8 +63,7 @@ module.exports = function (socket, userList, profiles, roomList) {
           companionid  : selfProfile.getID(),
           companionvid : selfProfile.getVID(),
           incoming     : true,
-          text         : options.text,
-          opened       : false
+          text         : options.text
         };
         friendProfile.addMessage(savingMessage, function (err, result) {
           if (err) { return cb(err, null); }
@@ -89,8 +88,7 @@ module.exports = function (socket, userList, profiles, roomList) {
           companionid  : friendProfile.getID(),
           companionvid : friendProfile.getVID(),
           incoming     : false,
-          text         : options.text,
-          opened       : true
+          text         : options.text
         };
         selfProfile.addMessage(savingMessage, function (err, res) {
           if (err) { cb(err, null); }

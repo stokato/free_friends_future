@@ -1,3 +1,4 @@
+var async = require('async');
 /*
  Добавить сообщение в БД: ИД, объект сообщения
  - Проверка (все поля обязательны)
@@ -19,22 +20,46 @@ module.exports = function(uid, options, callback) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
-  var id = this.timeUuid.fromDate(date);
+  async.waterfall([
+    function(cb) {
+      var id = self.timeUuid.fromDate(date);
 
-  var fields = "id, userid, date, companionid, companionvid, incoming, text, opened";
-  var values = "?, ?, ?, ?, ?, ?, ?, ?";
-  var params = [id, uid, date, companionid, companionvid, incoming, text, opened];
+      var fields = "id, userid, date, companionid, companionvid, incoming, text";
+      var values = "?, ?, ?, ?, ?, ?, ?";
+      var params = [id, uid, date, companionid, companionvid, incoming, text];
 
-  var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
+      var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
 
-  self.client.execute(query, params, {prepare: true },  function(err) {
+      self.client.execute(query, params, {prepare: true },  function(err) {
+        if (err) { return cb(err); }
+
+        cb(null, id);
+      });
+    }, function(id, cb) {
+      var params = [uid, companionid];
+      var query = "INSERT INTO user_chats ( userid, companionid) VALUES (?, ?)";
+
+      self.client.execute(query, params, {prepare: true },  function(err) {
+        if (err) { return cb(err); }
+
+        cb(null, id);
+      });
+    },
+    function(id, cb) {
+      if(!opened) {
+        var params = [uid, companionid, id];
+        var query = "INSERT INTO user_new_messages ( userid, companionid, messageid) VALUES (?, ?, ?)";
+
+        self.client.execute(query, params, {prepare: true },  function(err) {
+          if (err) {  return cb(err); }
+
+          cb(null, message);
+        });
+      } else cb(null, message);
+    }
+  ], function(err, message) {
     if (err) {  return callback(err); }
 
-    query = "INSERT INTO user_chats ( userid, companionid ) VALUES ( ?, ? )";
-    self.client.execute(query, [uid, companionid], {prepare: true },  function(err) {
-      if (err) {  return callback(err); }
-
-      callback(null, message);
-    });
+    callback(null, message);
   });
 };

@@ -38,15 +38,15 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
         len = 'girls_count';
         genArr = 'girls';
       }
-
-      var roomName = roomList[socket.id].name;
-      delete roomList[socket.id][genArr][profile.getID()];
-      roomList[socket.id][len]--;
-      delete roomList[socket.id];
-      delete profiles[profile.getID()];
-      if(rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0)
-        delete rooms[roomName];
-
+      if (roomList[socket.id]) {
+        var roomName = roomList[socket.id].name;
+        delete roomList[socket.id][genArr][profile.getID()];
+        roomList[socket.id][len]--;
+        delete roomList[socket.id];
+        delete profiles[profile.getID()];
+        if (rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0)
+          delete rooms[roomName];
+      }
       cb(null, null);
     } //////////////////////////////////////////////////////////////////////////////////////
   ], function (err) {

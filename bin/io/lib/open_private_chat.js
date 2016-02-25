@@ -26,53 +26,66 @@ module.exports = function(socket, userList, profiles) {
           });
         }
       },
-      function(compProfile, cb) { ////////////////////// Отрываем чат для одного и отрпавляем ему историю
+      function(compProfile, cb) { ////////////////////// Отрываем чат для одного и отправляем ему историю
         var selfProfile = userList[socket.id];
 
         if(selfProfile.getID() == options.id) {
           return cb(new Error("Попытка открыть чат с самим сабой"))
         }
-        var firstDate = genDateHistory(new Date);
-        var chat = {
-          id      : compProfile.getID(),
-          vid     : compProfile.getVID(),
-          date    : firstDate,
-          age     : compProfile.getAge(),
-          city    : compProfile.getCity(),
-          country : compProfile.getCountry(),
-          sex     : compProfile.getSex(),
-          messages: []
-        };
-        selfProfile.addPrivateChat(chat, function(err, chatInfo) {
-          if(err) { return cb(err, null); }
 
-          socket.emit('open_private_chat', chatInfo);
-
-          cb(null, selfProfile, compProfile, firstDate);
-        });
-
-      },  ///////////////////////////////// Открываем чат второму и тоже отправляем историю
-      function(selfProfile, compProfile, firstDate, cb) {
-        if (profiles[options.id]) {
+        if(!selfProfile.isPrivateChat(compProfile.getID())) {
+          var firstDate = genDateHistory(new Date());
           var chat = {
-            id       : selfProfile.getID(),
-            vid      : selfProfile.getVID(),
-            date     : firstDate,
-            age      : selfProfile.getAge(),
-            city     : selfProfile.getCity(),
-            country  : selfProfile.getCountry(),
-            sex      : selfProfile.getSex(),
-            messages : []
+            id      : compProfile.getID(),
+            vid     : compProfile.getVID(),
+            date    : firstDate,
+            age     : compProfile.getAge(),
+            city    : compProfile.getCity(),
+            country : compProfile.getCountry(),
+            sex     : compProfile.getSex()
           };
-          compProfile.addPrivateChat(chat, function (err, chatInfo) {
-            if (err) { cb(err, null); }
+          selfProfile.addPrivateChat(chat, function(err, history) {
+            if(err) { return cb(err, null); }
 
-            var compSocket = compProfile.getSocket();
-            compSocket.emit('open_private_chat', chatInfo);
-          });
+            history = history || [];
+            history.sort(compareDates);
+
+            for(var i = 0; i < history.length; i++) {
+              sendOne(socket, history[i]);
+            }
+        });
+          cb(null, null);
+          //cb(null, selfProfile, compProfile, firstDate);
         }
-        cb(null, null);
-      }
+
+      }//,  ///////////////////////////////// Открываем чат второму и тоже отправляем историю
+      //function(selfProfile, compProfile, firstDate, cb) {
+      //  if (profiles[options.id] && !compProfile.isPrivateChat(selfProfile.getID())) {
+      //    var chat = {
+      //      id       : selfProfile.getID(),
+      //      vid      : selfProfile.getVID(),
+      //      date     : firstDate,
+      //      age      : selfProfile.getAge(),
+      //      city     : selfProfile.getCity(),
+      //      country  : selfProfile.getCountry(),
+      //      sex      : selfProfile.getSex(),
+      //      messages : []
+      //    };
+      //    compProfile.addPrivateChat(chat, function (err, history) {
+      //      if (err) { cb(err, null); }
+      //
+      //      history = history || [];
+      //      history.sort(compareDates);
+      //
+      //      var compSocket = compProfile.getSocket();
+      //
+      //      for(var i = 0; i < history.length; i++) {
+      //        sendOne(compSocket, history[i]);
+      //      }
+      //    });
+      //  }
+      //  cb(null, null);
+      //}
     ], function(err, res) {
       if (err) { return new GameError(socket, "OPENPRIVCHAT", err.message); }
 

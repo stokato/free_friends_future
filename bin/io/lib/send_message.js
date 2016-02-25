@@ -5,6 +5,7 @@ var profilejs =  require('../../profile/index'),          // Профиль
   checkInput = require('../../check_input');
 var sendInRoom = require('./send_in_room');
 var sendOne = require('./send_one');
+var genDateHistory  = require('./gen_date_history');
 /*
  Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
  - Получаем свой профиль
@@ -56,6 +57,55 @@ module.exports = function (socket, userList, profiles, roomList) {
           });
         }
       }, ///////////////////////////////////////////////////////////////////////////////
+      function(friendProfile, cb) { // Открываем чат, если еще не открыт
+        var chat = null;
+        if(!selfProfile.isPrivateChat(friendProfile.getID())) {
+          var firstDate = genDateHistory(new Date());
+          chat = {
+            id      : friendProfile.getID(),
+            vid     : friendProfile.getVID(),
+            date    : firstDate,
+            age     : friendProfile.getAge(),
+            city    : friendProfile.getCity(),
+            country : friendProfile.getCountry(),
+            sex     : friendProfile.getSex()
+          };
+          selfProfile.addPrivateChat(chat, function (err, history) {
+            if (err) { return cb(err, null); }
+
+            history = history || [];
+            history.sort(compareDates);
+
+            for (var i = 0; i < history.length; i++) {
+              sendOne(socket, history[i]);
+            }
+          });
+        }
+        if (profiles[options.id] && !friendProfile.isPrivateChat(selfProfile.getID())) {
+          chat = {
+            id       : selfProfile.getID(),
+            vid      : selfProfile.getVID(),
+            date     : firstDate,
+            age      : selfProfile.getAge(),
+            city     : selfProfile.getCity(),
+            country  : selfProfile.getCountry(),
+            sex      : selfProfile.getSex()
+          };
+          friendProfile.addPrivateChat(chat, function (err, history) {
+            if (err) { cb(err, null); }
+
+            history = history || [];
+            history.sort(compareDates);
+
+            var friendSocket = friendProfile.getSocket();
+
+            for(var i = 0; i < history.length; i++) {
+              sendOne(friendSocket, history[i]);
+            }
+          });
+        }
+        cb(null, friendProfile);
+      },//////////////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
         var date = new Date();
         var savingMessage = {
@@ -106,3 +156,7 @@ module.exports = function (socket, userList, profiles, roomList) {
 };
 
 
+// Для сортировки массива сообщений (получение топа по дате)
+function compareDates(mesA, mesB) {
+  return mesA.date - mesB.date;
+}

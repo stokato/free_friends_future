@@ -1,6 +1,9 @@
 var socketio  =  require('socket.io');
 var io = null;                                      // Сокет
 
+var pays = require('../pays');
+var paysManager = new pays();
+
 var userList = {};                                  // Профили пользователей по сокетам
 var roomList = {};                                  // Комнаты по сокетам
 var rooms    = {};                                  // Комнаты по их именам
@@ -70,6 +73,6 @@ module.exports.listen = function(server, callback) {
     // Игра
 
   });
-  callback();
+  callback(null, paysManager);
 };
 

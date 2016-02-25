@@ -49,10 +49,8 @@ module.exports = function(uid, callback) {
                     guests[index].country = row.country;
                     guests[index].points = row.points;
                 }
-
+                callback(null, guests);
             });
-
-            callback(null, guests);
 
         } else { return callback(null, null); }
     });

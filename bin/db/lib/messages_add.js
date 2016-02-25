@@ -33,31 +33,31 @@ module.exports = function(uid, options, callback) {
       self.client.execute(query, params, {prepare: true },  function(err) {
         if (err) { return cb(err); }
 
-        cb(null, id);
+        cb(null, fields, values, params);
       });
-    }, function(id, cb) {
+    },
+    function(fields, values, params, cb) {
+      if(!opened) {
+        var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
+
+        self.client.execute(query, params, {prepare: true },  function(err) {
+          if (err) {  return cb(err); }
+
+          cb(null, null);
+        });
+      } else cb(null, null);
+    },
+    function(res, cb) {
       var params = [uid, companionid];
       var query = "INSERT INTO user_chats ( userid, companionid) VALUES (?, ?)";
 
       self.client.execute(query, params, {prepare: true },  function(err) {
         if (err) { return cb(err); }
 
-        cb(null, id);
+        cb(null, null);
       });
-    },
-    function(id, cb) {
-      if(!opened) {
-        var params = [uid, companionid, id];
-        var query = "INSERT INTO user_new_messages ( userid, companionid, messageid) VALUES (?, ?, ?)";
-
-        self.client.execute(query, params, {prepare: true },  function(err) {
-          if (err) {  return cb(err); }
-
-          cb(null, message);
-        });
-      } else cb(null, message);
     }
-  ], function(err, message) {
+  ], function(err, res) {
     if (err) {  return callback(err); }
 
     callback(null, message);

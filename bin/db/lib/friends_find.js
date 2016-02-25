@@ -47,9 +47,8 @@ module.exports = function(uid, callback) {
           friends[index].points = row.points;
         }
 
+        callback(null, friends);
       });
-
-      callback(null, friends);
 
     } else { return callback(null, null); }
   });

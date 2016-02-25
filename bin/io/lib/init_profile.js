@@ -71,25 +71,39 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
           cb(null, info, room);
         });
       },///////////////////////////////////////////////////////////////
+      function(info, room, cb) {
+        socket.emit('init', info);
+        socket.broadcast.emit('online', {id: info.id, vid: info.vid});
+
+        getLastMessages(socket, room);
+
+        cb(null, info, room);
+      },
       function (info, room, cb) { // Получаем данные по приватным чатам
         var firstDate = genDateHistory(new Date());
-        userList[socket.id].getPrivateChats(firstDate, function(err, chats) {
+        userList[socket.id].getPrivateChats(firstDate, function(err, history) {
           if(err) { return cb(err, null) }
 
-          info.chats = chats;
-          cb(null, info, room);
+          history = history || [];
+          history.sort(compareDates);
+
+          for(var i = 0; i < history.length; i++) {
+            socket.emit('message', history[i]);
+          }
+
+          cb(null, null);
         });
       }///////////////////////////////////////////////////////////////
-    ], function (err, info, room) { // Обрабатываем ошибки, либо передаем данные клиенту
-      if (err) {
-        return new GameError(socket, "INIT", err.message);
-      }
-      socket.emit('init', info);
-      socket.broadcast.emit('online', {id: info.id, vid: info.vid});
+    ], function (err, res) { // Обрабатываем ошибки, либо передаем данные клиенту
+      if (err) { return new GameError(socket, "INIT", err.message); }
 
-      getLastMessages(socket, room);
     });
   })
 };
+
+// Для сортировки массива сообщений (получение топа по дате)
+function compareDates(mesA, mesB) {
+  return mesA.date - mesB.date;
+}
 
 

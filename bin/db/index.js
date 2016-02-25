@@ -31,6 +31,7 @@ var findGood            = require('./lib/shop_find');
 var findAllGoods        = require('./lib/shop_find_all');
 var deleteGood          = require('./lib/shop_delete');
 var findChats           = require('./lib/chats_find');
+var addOrder            = require('./lib/orders_add');
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра
@@ -74,5 +75,6 @@ DBManager.prototype.findGood        = findGood;
 DBManager.prototype.findAllGoods    = findAllGoods;
 DBManager.prototype.deleteGood      = deleteGood;
 DBManager.prototype.findChats       = findChats;
+DBManager.prototype.addOrder        = addOrder;
 
 module.exports = DBManager;

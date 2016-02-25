@@ -23,8 +23,8 @@ module.exports = function(uid, options, callback) {
 
     params.push(companions[i]);
   }
-  async.waterfall([
-    function(cb) {
+  async.waterfall([/////////////////////////////////////////////////////////
+    function(cb) { // Получаем историю сообщений за указанный период (прочитанных)
       var query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
       var params2 = params.slice(0);
       if (date) {
@@ -46,7 +46,8 @@ module.exports = function(uid, options, callback) {
               companionvid : row.companionvid,
               incoming     : row.incoming,
               text         : row.text,
-              opened       : true
+              opened       : true,
+              userid       : uid
             };
             messages.push(message);
           }
@@ -56,32 +57,10 @@ module.exports = function(uid, options, callback) {
         }
       });
     },
-    function(messages, cb) {
+    function(messages, cb) { // Получаем все непрочитанный сообщения
       var query = "select * FROM user_new_messages where userid = ? and companionid in (" + fields + ")";
       self.client.execute(query, params, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
-
-        if(result.rows.length > 0) {
-          var rows = result.rows;
-          var fields2 = "?";
-          var params2 = params.slice(0);
-          params2[params2.length] = rows[0].messageid;
-          for(var i = 1; i < rows.length; i++) {
-            params2.push(rows[i].messageid);
-            fields2 = fields2 + ", ?";
-          }
-          cb(null, messages, params2, fields2);
-        } else cb(null, messages, null, null);
-      });
-    },
-    function( messages, params2, fields2, cb) {
-      if(!params2) { return cb(null, messages) }
-      var query = "select * FROM user_messages where userid = ? and companionid in (" + fields +
-                    ") and id in (" + fields2 + ")";
-
-      self.client.execute(query, params2, {prepare: true }, function(err, result) {
-        if (err) { return cb(err, null); }
-
         var newMessages = [];
 
         if(result.rows.length > 0) {
@@ -94,23 +73,23 @@ module.exports = function(uid, options, callback) {
               companionvid : row.companionvid,
               incoming     : row.incoming,
               text         : row.text,
-              opened       : false
+              opened       : false,
+              userid       : uid
             };
             newMessages.push(message);
           }
 
-          var resultMessages = messages.slice(0);
+          var len = messages.length;
           for(var i = 0; i < newMessages.length; i++) {
-            var m = true;
-            for(var j = 0; j < messages.length; j++) {
+            var noSuch = true;
+            for(var j = 0; j < len; j++) {
               if(newMessages[i].id.toString() == messages[j].id.toString()) {
-                m = false;
-                resultMessages[j].opened = false;
+                noSuch = false;
               }
             }
-            if(m) { resultMessages.push(newMessages[i]); }
+            if(noSuch) messages.push(newMessages[i]);
           }
-          cb(null, resultMessages);
+          cb(null, messages);
         } else {
           cb(null, messages);
         }
@@ -119,15 +98,15 @@ module.exports = function(uid, options, callback) {
     function(messages, cb) {
       var query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
       self.client.execute(query, params, {prepare: true }, function(err) {
-        if (err) {  return cb(err); }
+        if (err) {  return cb(err, null); }
 
         cb(null, messages);
       });
-    }
-  ], function(err, result) {
+    },
+  ], function(err, messages) {
     if(err) return callback(err, null);
 
-    callback(null, result);
+    callback(null, messages);
   })
 
 };

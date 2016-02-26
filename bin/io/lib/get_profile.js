@@ -1,8 +1,8 @@
 var async     =  require('async');
 // Свои модули
 var profilejs =  require('../../profile/index'),          // Профиль
-  GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+    GameError = require('../../game_error'),
+    checkInput = require('../../check_input');
 
 /*
  Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,
@@ -16,43 +16,27 @@ var profilejs =  require('../../profile/index'),          // Профиль
  */
 module.exports = function (socket, userList, profiles) {
   socket.on('get_profile', function(options) {
-    if (!checkInput('get_profile', socket, userList, options))
+    if (!checkInput('get_profile', socket, userList, options)) {
       return new GameError(socket, "ADDFRIEND", "Верификация не пройдена");
+    }
 
     var selfProfile = userList[socket.id];
+    var selfInfo = fillInfo(selfProfile);
 
     if (selfProfile.getID() == options.id) { // Если открываем свой профиль
-      var info = {
-        id     : selfProfile.getID(),
-        vid    : selfProfile.getVID(),
-        age    : selfProfile.getAge(),
-        sex    : selfProfile.getSex(),
-        city   : selfProfile.getCity(),
-        country: selfProfile.getCountry(),
-        status : selfProfile.getStatus(),
-        points : selfProfile.getPoints(),
-        money  : selfProfile.getMoney()
-      };
-
-      return socket.emit('get_profile', info);
+      return socket.emit('get_profile', selfInfo);
     }
+
+    var isOnline = false;
+    if(profiles[options.id]) { isOnline = true }
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль того, чей просматриваем
         var friendProfile = null;
         var friendInfo = null;
-        if (profiles[options.id]) { // Если онлайн
+        if (isOnline) { // Если онлайн
           friendProfile = profiles[options.id];
-          friendInfo = {
-            id     : friendProfile.getID(),
-            vid    : friendProfile.getVID(),
-            age    : friendProfile.getAge(),
-            sex    : friendProfile.getSex(),
-            city   : friendProfile.getCity(),
-            country: friendProfile.getCountry(),
-            status : friendProfile.getStatus(),
-            points : friendProfile.getPoints()
-          };
+          friendInfo = fillInfo(friendProfile);
           cb(null, friendProfile, friendInfo);
         }
         else {                // Если нет - берем из базы
@@ -60,49 +44,43 @@ module.exports = function (socket, userList, profiles) {
           friendProfile.build(options.id, function (err, info) {
             if (err) { return cb(err, null); }
 
-            friendInfo = {
-              id     : info.id,
-              vid    : info.vid,
-              age    : info.age,
-              sex    : info.sex,
-              city   : info.city,
-              country: info.country,
-              status : info.status,
-              points : info.points
-            };
+            friendInfo = fillInfo(friendProfile);
+
             cb(null, friendProfile, friendInfo);
           });
         }
       },///////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
-        var info = {
-          id     : selfProfile.getID(),
-          vid    : selfProfile.getVID(),
-          age    : selfProfile.getAge(),
-          sex    : selfProfile.getSex(),
-          city   : selfProfile.getCity(),
-          country: selfProfile.getCountry(),
-          points : selfProfile.getPoints(),
-          date   : new Date()
-        };
-        friendProfile.addToGuests(info, function (err, res) {
+        selfInfo[date] = new Date();
+        friendProfile.addToGuests(selfInfo, function (err, res) {
           if (err) { return cb(err, null); }
 
-          cb(null, friendInfo, info);
+          cb(null, friendInfo, selfInfo, friendProfile);
         });//////////////////////////////////////////////////////////////
-      }], function (err, friendInfo, info) { // Вызывается последней. Обрабатываем ошибки
+      }], function (err, friendInfo, selfInfo, friendProfile) { // Вызывается последней. Обрабатываем ошибки
       if (err) { return new GameError(socket, "ADDFRIEND", err.message); }
 
       socket.emit('get_profile', friendInfo); // Отправляем инфу
 
-      if (profiles[friendInfo.id]) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
-        var friendProfile = profiles[friendInfo.id];
+      if (isOnline) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
         var friendSocket = friendProfile.getSocket();
-        friendSocket.emit('add_guest', info);
+        friendSocket.emit('add_guest', selfInfo);
         friendSocket.emit('get_news', friendProfile.getNews());
       }
     }); // waterfall
   });
 };
 
+function fillInfo(profile) {
+  return  {
+    id     : profile.getID(),
+    vid    : profile.getVID(),
+    age    : profile.getAge(), //
+    sex    : profile.getSex(),
+    city   : profile.getCity(),
+    country: profile.getCountry(), //
+    status : profile.getStatus(),
+    points : profile.getPoints()
+  }
+}
 

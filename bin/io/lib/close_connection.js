@@ -1,12 +1,14 @@
 var async     =  require('async');
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
 
-var constants = require('./../constants_io');
+var GameError = require('../../game_error'),      // Ошбики
+    checkInput = require('../../check_input'),    // Верификация
+    constants = require('./../constants_io'),     // Константы
+    defineSex = require('./define_sex');
 
 module.exports = function(socket, userList, profiles, roomList, rooms) {
-  if (!checkInput('exit', socket, userList, null))
+  if (!checkInput('exit', socket, userList, null)) {
     return new GameError(socket, "EXIT", "Верификация не пройдена");
+  }
 
   var profile = userList[socket.id];
   async.waterfall([
@@ -28,24 +30,17 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
     function (res, cb) { // удалеяем профиль и сокет из памяти
       delete userList[socket.id];
 
-      var len = '';
-      var genArr = '';
-      if (profile.getSex() == constants.GUY) {
-        len = 'guys_count';
-        genArr = 'guys';
-      }
-      else {
-        len = 'girls_count';
-        genArr = 'girls';
-      }
+      var sex = defineSex(profile);
+
       if (roomList[socket.id]) {
         var roomName = roomList[socket.id].name;
-        delete roomList[socket.id][genArr][profile.getID()];
-        roomList[socket.id][len]--;
+        delete roomList[socket.id][sex.sexArr][profile.getID()];
+        roomList[socket.id][sex.len]--;
         delete roomList[socket.id];
         delete profiles[profile.getID()];
-        if (rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0)
+        if (rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0) {
           delete rooms[roomName];
+        }
       }
       cb(null, null);
     } //////////////////////////////////////////////////////////////////////////////////////

@@ -38,10 +38,10 @@ module.exports = function(socket, opt, callback) {
           self.pPoints = foundUser.points;
           self.pMoney  = foundUser.money;
 
-          self.pAge = (self.pAge)? self.pAge : foundUser.age;
-          self.pSex = (self.pSex)? self.pSex : foundUser.sex;
-          self.pCountry = (self.pCountry)? self.pCountry : foundUser.country;
-          self.pCity = (self.pCity)? self.pCity : foundUser.city;
+          self.pAge     = (self.pAge)     ? self.pAge     : foundUser.age;
+          self.pSex     = (self.pSex)     ? self.pSex     : foundUser.sex;
+          self.pCountry = (self.pCountry) ? self.pCountry : foundUser.country;
+          self.pCity    = (self.pCity)    ? self.pCity    : foundUser.city;
 
           self.pNewMessages = foundUser.newmessages || 0;
           self.pNewGifts    = foundUser.newgifts    || 0;

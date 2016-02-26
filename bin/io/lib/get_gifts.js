@@ -1,5 +1,5 @@
 var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+    checkInput = require('../../check_input');
 
 /*
  Показать подарки
@@ -8,8 +8,9 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList) {
   socket.on('get_gifts', function() {
-    if (!checkInput('get_gifts', socket, userList, null))
+    if (!checkInput('get_gifts', socket, userList, null)) {
       return new GameError(socket, "GETGIFTS", "Верификация не пройдена");
+    }
 
     userList[socket.id].getGifts(function (err, gifts) {
       if (err) { return new GameError(socket, "GETGIFTS", err.message); }

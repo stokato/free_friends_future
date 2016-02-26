@@ -17,14 +17,17 @@ module.exports = function(uid, callback) {
     var friend = null;
     var friendList = [];
     var fields = "";
+
     if(result.rows.length > 0) {
-      for(var i = 0; i < result.rows.length; i++) {
+      var i = null;
+      var rowsLen = result.rows.length;
+      for(i = 0; i < rowsLen; i++) {
         var row = result.rows[i];
         friend = { id: row.friendid, vid: row.friendvid, date: row.date };
         friends.push(friend);
         friendList.push(row.friendid);
-        if(i == 0) fields = "?";
-        else fields = fields + ", ?";
+        if(i == 0) { fields = "?"; }
+        else { fields = fields + ", ?"; }
       }
 
       var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
@@ -32,10 +35,13 @@ module.exports = function(uid, callback) {
       self.client.execute(query, friendList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
 
-        for(var i = 0; i < result.rows.length; i++) {
+        var i = null;
+        var rowsLen = result.rows.length;
+        for(i = 0; i < rowsLen; i++) {
           var row = result.rows[i];
-          var index;
-          for(var j = 0; j < friendList.length; j++) {
+          var index, j;
+          var friendsLen = friendList.length;
+          for(j = 0; j < friendsLen; j++) {
             if(friendList[j].toString() == row.id.toString()) {
               index = j;
             }

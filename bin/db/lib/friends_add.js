@@ -17,9 +17,7 @@ module.exports = function(uid, frnd, callback) {
 
   var fields = "userid, friendid, friendvid, date";
   var values = "?, ?, ?, ?";
-
   var params = [uid, fid, fvid, date];
-
   var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 
   this.client.execute(query, params, {prepare: true },  function(err) {

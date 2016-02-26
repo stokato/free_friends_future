@@ -10,7 +10,8 @@ module.exports = function(chat, callback) {
 
   var options = {
     id_list : [chat.id],
-    date    : chat.date
+    fdate    : chat.fdate,
+    sdate    : chat.sdate
   };
   self.dbManager.findMessages(self.pID, options, function(err, messages) {
     if (err) { return callback(err, null); }
@@ -19,7 +20,7 @@ module.exports = function(chat, callback) {
     var history = [];
     var message = null;
     for(var i = 0; i < messages.length; i++) {
-      if(messages[i].incoming) {
+      if(messages[i].incoming) { // Если входящее, берем данные собеседника (хранятся в чате) и наоборот
         message = {
           chat    : chat.id,
           id      : chat.id,

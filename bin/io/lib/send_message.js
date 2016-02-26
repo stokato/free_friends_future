@@ -1,11 +1,13 @@
 var async     =  require('async');
+
 // Свои модули
 var profilejs =  require('../../profile/index'),          // Профиль
-  GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
-var sendInRoom = require('./send_in_room');
-var sendOne = require('./send_one');
-var genDateHistory  = require('./gen_date_history');
+    GameError = require('../../game_error'),
+    checkInput = require('../../check_input'),
+    sendInRoom = require('./send_in_room'),
+    sendOne = require('./send_one'),
+    genDateHistory  = require('./gen_date_history');
+
 /*
  Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
  - Получаем свой профиль
@@ -19,18 +21,19 @@ module.exports = function (socket, userList, profiles, roomList) {
     if (!checkInput('message', socket, userList, options))
       return new GameError(socket, "SENDPRIVMESSAGE", "Верификация не пройдена");
 
-    if (userList[socket.id].getID() == options.id)
+    var selfProfile = userList[socket.id];
+    if (selfProfile.getID() == options.id)
       return new GameError(socket, "SENDPRIVMESSAGE", "Нельзя отправлять сообщения себе");
 
     var chat = options.id;
-    var selfProfile = userList[socket.id];
+
     var info = {
       id   : selfProfile.getID(),
       vid  : selfProfile.getVID(),
-      age  : selfProfile.getAge(),
+      age  : selfProfile.getAge(), //
       sex  : selfProfile.getSex(),
       city : selfProfile.getCity(),
-      country: selfProfile.getCountry(),
+      country: selfProfile.getCountry(), //
       text : options.text,
       date : new Date()
     };
@@ -39,7 +42,6 @@ module.exports = function (socket, userList, profiles, roomList) {
 
       return sendInRoom(socket, currRoom, info);
     }
-
 
     async.waterfall([//////////////////////////////////////////////////////////////
       function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
@@ -65,7 +67,7 @@ module.exports = function (socket, userList, profiles, roomList) {
             id      : friendProfile.getID(),
             vid     : friendProfile.getVID(),
             date    : firstDate,
-            age     : friendProfile.getAge(),
+            age     : friendProfile.getAge(), //
             city    : friendProfile.getCity(),
             country : friendProfile.getCountry(),
             sex     : friendProfile.getSex()
@@ -86,7 +88,7 @@ module.exports = function (socket, userList, profiles, roomList) {
             id       : selfProfile.getID(),
             vid      : selfProfile.getVID(),
             date     : firstDate,
-            age      : selfProfile.getAge(),
+            age      : selfProfile.getAge(), //
             city     : selfProfile.getCity(),
             country  : selfProfile.getCountry(),
             sex      : selfProfile.getSex()
@@ -120,9 +122,9 @@ module.exports = function (socket, userList, profiles, roomList) {
 
           if (profiles[options.id]) {
             savingMessage['vid'] = selfProfile.getVID();
-            var friendSocket = profiles[options.id].getSocket();
+            var friendSocket = friendProfile.getSocket();
 
-            if(profiles[options.id].isPrivateChat(selfProfile.getID())) {
+            if(friendProfile.isPrivateChat(selfProfile.getID())) {
               info.chat = selfProfile.getID();
               sendOne(friendSocket, info);
             } else {

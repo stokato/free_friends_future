@@ -1,9 +1,11 @@
 var async     =  require('async');
+
 var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
-var constants = require('./../constants_io');
-var createRoom = require('./create_room');
-var getRoomInfo = require('./get_room_info');
+    checkInput = require('../../check_input'),
+    constants = require('./../constants_io'),
+    defineSex = require('./define_sex'),
+    createRoom = require('./create_room'),
+    getRoomInfo = require('./get_room_info');
 /*
  Предлагаем способ смены комнаты
  - Получаем профиль
@@ -24,37 +26,32 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         var profile = userList[socket.id];
 
         var freeRooms = [];
-        var len = '';
-        var sexArr = '';
-        if (profile.getSex() == constants.GUY) {
-          sexArr = 'guys';
-          len = 'guys_count'
-        }
-        else {
-          sexArr = 'girls';
-          len = 'girls_count'
-        }
+
+        var sex = defineSex(profile);
+
         var item;
         for (item in rooms) if (rooms.hasOwnProperty(item)
-          && rooms[item][len] < constants.ONE_GENDER_IN_ROOM &&
+          && rooms[item][sex.len] < constants.ONE_GENDER_IN_ROOM &&
           roomList[socket.id].name != rooms[item].name) {
           freeRooms.push(rooms[item]);
         }
 
+        if(freeRooms.length > 0) {
+          var index = randomInteger(0, freeRooms.length - 1);
+          var randRoom = freeRooms[index];
+          getRoomInfo(randRoom, function (err, info) {
+            if (err) { return cb(err, null); }
 
-        if (freeRooms.length == 0) {
-          var newRoom = createRoom(socket);
-          rooms[newRoom.name] = newRoom;
-          freeRooms.push(newRoom);
+            cb(null, profile, info, sex.sexArr, sex.len);
+          });
+        } else {
+          cb(null, profile, null, sex.sexArr, sex.len);
         }
-
-        var index = randomInteger(0, freeRooms.length - 1);
-        var randRoom = freeRooms[index];
-        getRoomInfo(randRoom, function (err, info) {
-          if (err) { return cb(err, null); }
-
-          cb(null, profile, info, sexArr, len);
-        });
+        //if (freeRooms.length == 0) {
+        //  var newRoom = createRoom(socket);
+        //  rooms[newRoom.name] = newRoom;
+        //  freeRooms.push(newRoom);
+        //}
       },////////////////////////////////// Получаем всех друзей пользователя
       function (profile, roomInfo, genArr, len, cb) {
         profile.getFriends(function (err, allFriends) {
@@ -66,7 +63,9 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
       function (roomInfo, len, allFriends, cb) {
         var friendList = [];
         allFriends = allFriends || [];
-        for (var i = 0; i < allFriends.length; i++) {
+        var i = null;
+        var friendsLen = allFriends.length;
+        for (i = 0; i < friendsLen; i++) {
           var currFriend = profiles[allFriends[i].id];
           if (currFriend) {
             var frSocket = currFriend.getSocket();
@@ -75,10 +74,10 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
               var currInfo = {
                 id: currFriend.getID(),
                 vid: currFriend.getVID(),
-                age: currFriend.getAge(),
+                age: currFriend.getAge(), //
                 sex: currFriend.getSex(),
                 city: currFriend.getCity(),
-                country: currFriend.getCountry(),
+                country: currFriend.getCountry(), //
                 room: friendsRoom.name
               };
               friendList.push(currInfo);

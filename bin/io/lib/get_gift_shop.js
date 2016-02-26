@@ -1,6 +1,6 @@
 var dbjs      = require('./../../db/index'),
-  GameError = require('./../../game_error'),
-  checkInput = require('./../../check_input');
+    GameError = require('./../../game_error'),
+    checkInput = require('./../../check_input');
 
 var db = new dbjs();
 /*
@@ -10,8 +10,9 @@ var db = new dbjs();
  */
 module.exports = function (socket, userList) {
   socket.on('get_gift_shop', function() {
-    if (!checkInput('get_gift_shop', socket, userList, null))
+    if (!checkInput('get_gift_shop', socket, userList, null)) {
       return new GameError(socket, "GETGIFTSHOP", "Верификация не пройдена");
+    }
 
     db.findAllGoods(function (err, goods) {
       if (err) { return new GameError(socket, "GETGIFTSHOP", err.message); }

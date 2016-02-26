@@ -27,9 +27,9 @@ module.exports = function(id, callback) {
    self.pAge = foundUser.age;
 
    self.pNewMessages = foundUser.newmessages || 0;
-   self.pNewGifts    = foundUser.newgifts || 0;
-   self.pNewFriends  = foundUser.newfriends || 0;
-   self.pNewGuests   = foundUser.newguests || 0;
+   self.pNewGifts    = foundUser.newgifts    || 0;
+   self.pNewFriends  = foundUser.newfriends  || 0;
+   self.pNewGuests   = foundUser.newguests   || 0;
    // self.pMoney  = foundUser.money;
 
    var info = {

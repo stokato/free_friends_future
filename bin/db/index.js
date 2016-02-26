@@ -7,31 +7,32 @@ var client = new cassandra.Client({contactPoints: [Config.host],
 
 var Uuid = cassandra.types.Uuid;  // Генератор id для Cassandra
 var TimeUuid = cassandra.types.TimeUuid;
+
 var addUser             = require('./lib/users_add');
-var findUser            = require('./lib/users_find');
-var findAllUsers        = require('./lib/users_find_all');
-var updateUser          = require('./lib/users_update');
-var deleteUser          = require('./lib/users_delete');
-var addGift             = require('./lib/gifts_add');
-var findGifts           = require('./lib/gifts_find');
-var deleteGifts         = require('./lib/gifts_delete');
-var addMessage          = require('./lib/messages_add');
-var findAllMessages     = require('./lib/messages_find_all');
-var findMessages        = require('./lib/messages_find');
-var updateMessage       = require('./lib/messages_update');
-var deleteMessages      = require('./lib/messages_delete');
-var addFriend           = require('./lib/friends_add');
-var findFriends         = require('./lib/friends_find');
-var deleteFriends       = require('./lib/friends_delete');
-var addGuest            = require('./lib/guests_add');
-var findGuests          = require('./lib/guests_find');
-var deleteGuests        = require('./lib/guests_delete');
-var addGood             = require('./lib/shop_add');
-var findGood            = require('./lib/shop_find');
-var findAllGoods        = require('./lib/shop_find_all');
-var deleteGood          = require('./lib/shop_delete');
-var findChats           = require('./lib/chats_find');
-var addOrder            = require('./lib/orders_add');
+    findUser            = require('./lib/users_find');
+    findAllUsers        = require('./lib/users_find_all');
+    updateUser          = require('./lib/users_update');
+    deleteUser          = require('./lib/users_delete');
+    addGift             = require('./lib/gifts_add');
+    findGifts           = require('./lib/gifts_find');
+    deleteGifts         = require('./lib/gifts_delete');
+    addMessage          = require('./lib/messages_add');
+    findAllMessages     = require('./lib/messages_find_all');
+    findMessages        = require('./lib/messages_find');
+    updateMessage       = require('./lib/messages_update');
+    deleteMessages      = require('./lib/messages_delete');
+    addFriend           = require('./lib/friends_add');
+    findFriends         = require('./lib/friends_find');
+    deleteFriends       = require('./lib/friends_delete');
+    addGuest            = require('./lib/guests_add');
+    findGuests          = require('./lib/guests_find');
+    deleteGuests        = require('./lib/guests_delete');
+    addGood             = require('./lib/shop_add');
+    findGood            = require('./lib/shop_find');
+    findAllGoods        = require('./lib/shop_find_all');
+    deleteGood          = require('./lib/shop_delete');
+    findChats           = require('./lib/chats_find');
+    addOrder            = require('./lib/orders_add');
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра

@@ -1,5 +1,5 @@
 var constants = require('./../constants_io');
-var closeConnection = require('./close_connection');
+    closeConnection = require('./close_connection');
 
 /*
  Выходим (отключаемся)

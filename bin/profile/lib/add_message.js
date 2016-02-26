@@ -4,8 +4,8 @@
  */
 module.exports = function(message, callback) {
   var self = this;
-  if (!self.isPrivateChat(message.companionid)) message.opened = false;
-  else message.opened = true;
+
+  message.opened = self.isPrivateChat(message.companionid); // Если чат открыт, сообщение уже прочитано
 
   self.dbManager.addMessage(self.pID, message, function(err) {
     if (err) { return callback(err, null); }

@@ -1,36 +1,34 @@
 var socketio  =  require('socket.io');
-var io = null;                                      // Сокет
 
-var pays = require('../pays');
-var paysManager = new pays();
-
-var userList = {};                                  // Профили пользователей по сокетам
-var roomList = {};                                  // Комнаты по сокетам
-var rooms    = {};                                  // Комнаты по их именам
-var profiles = {};                                  // Профили пользователей по id (надо бы убрать)
-
-var initProfile       = require('./lib/init_profile');
+var initProfile       = require('./lib/init_profile'),
 //var sendPublicMessage = require('./chat_io/send_public_message');
 //var exit              = require('./chat_io/exit');
-var chooseRoom        = require('./lib/choose_room');
-var getRooms          = require('./lib/get_rooms');
-var changeRoom        = require('./lib/change_room');
-var changeStatus      = require('./lib/change_status');
-var getProfile        = require('./lib/get_profile');
-var getGifts          = require('./lib/get_gifts');
-var getPrivMes        = require('./lib/get_private_messages');
-var openPrivateChat   = require('./lib/open_private_chat');
-var closePrivateChat  = require('./lib/close_private_chat');
-var getFriends        = require('./lib/get_friends');
-var getGuests         = require('./lib/get_guests');
-var addToFriends      = require('./lib/add_to_friends');
-var makeGift          = require('./lib/make_gift');
-var sendMessage       = require('./lib/send_message');
-var openPrivMes       = require('./lib/open_private_message');
-var getTop            = require('./lib/get_top');
-var getGiftShop       = require('./lib/get_gift_shop');
+    chooseRoom        = require('./lib/choose_room'),
+    getRooms          = require('./lib/get_rooms'),
+    changeRoom        = require('./lib/change_room'),
+    changeStatus      = require('./lib/change_status'),
+    getProfile        = require('./lib/get_profile'),
+    getGifts          = require('./lib/get_gifts'),
+    getPrivMes        = require('./lib/get_private_messages'),
+    openPrivateChat   = require('./lib/open_private_chat'),
+    closePrivateChat  = require('./lib/close_private_chat'),
+    getFriends        = require('./lib/get_friends'),
+    getGuests         = require('./lib/get_guests'),
+    addToFriends      = require('./lib/add_to_friends'),
+    makeGift          = require('./lib/make_gift'),
+    sendMessage       = require('./lib/send_message'),
+//var openPrivMes       = require('./lib/open_private_message');
+    getTop            = require('./lib/get_top'),
+    getGiftShop       = require('./lib/get_gift_shop'),
 //var changeMoney       = require('./money_io/change_money');
-var disconnect       = require('./lib/disconnect');
+    disconnect       = require('./lib/disconnect');
+
+var io = null;                                      // Сокет
+
+var userList = {};                                  // Профили пользователей по сокетам
+    roomList = {},                                  // Комнаты по сокетам
+    rooms    = {},                                  // Комнаты по их именам
+    profiles = {};                                  // Профили пользователей по id (надо бы убрать)
 
 /*
 При подключении выполняем инициализацию и вешаем эмиттеры
@@ -59,7 +57,7 @@ module.exports.listen = function(server, callback) {
     addToFriends(socket, userList, profiles);
     makeGift(socket, userList, profiles);
     sendMessage(socket, userList, profiles, roomList);
-    openPrivMes(socket, userList);
+    //openPrivMes(socket, userList);
     openPrivateChat(socket, userList, profiles);
     closePrivateChat(socket, userList, profiles);
     disconnect(socket, userList, profiles, roomList, rooms);
@@ -73,6 +71,6 @@ module.exports.listen = function(server, callback) {
     // Игра
 
   });
-  callback(null, paysManager);
+  callback(null, null);
 };
 

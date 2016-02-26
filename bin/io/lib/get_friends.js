@@ -9,8 +9,9 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList) {
   socket.on('get_friends', function() {
-    if (!checkInput('get_friends', socket, userList, null))
+    if (!checkInput('get_friends', socket, userList, null)) {
       return new GameError(socket, "getFRIENDS", "Верификация не пройдена");
+    }
 
     userList[socket.id].getFriends(function (err, friends) {
       if (err) {  return new GameError(socket, "getFRIENDS", err.message); }

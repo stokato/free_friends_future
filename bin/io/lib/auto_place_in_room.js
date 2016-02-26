@@ -1,5 +1,6 @@
-var constats = require('./../constants_io');
-var createRoom = require('./create_room');
+var constats = require('./../constants_io'),
+    defineSex = require('./define_sex'),
+    createRoom = require('./create_room');
 /*
  Помещаем пользователя в случайную комнату (при подключении)
  - Получаем свой профиль
@@ -14,11 +15,8 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   var profile = userList[socket.id];
   var room = null;
   var count = constats.ONE_GENDER_IN_ROOM +1;
-  var len = '';
-  var sexArr = '';
 
-  if(profile.getSex() == constats.GUY) { len = 'guys_count'; sexArr = 'guys';}
-  else { len = 'girls_count'; sexArr = 'girls';}
+  var sex = defineSex(profile);
 
   var selfRoomName = '';
   if(roomList[socket.id]) {
@@ -28,7 +26,7 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   var item;
   for(item in rooms) if (rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
-      var need = constats.ONE_GENDER_IN_ROOM - rooms[item][len];
+      var need = constats.ONE_GENDER_IN_ROOM - rooms[item][sex.len];
 
       if(need > 0 && need < count) {
         count = need;
@@ -37,7 +35,6 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
     }
   }
 
-
   if(!room) { // Нет ни одной свободной комнаты
     room = createRoom(socket);
     rooms[room.name] = room;
@@ -45,14 +42,14 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
 
   socket.join(room.name);
 
-  room[sexArr][profile.getID()] = profile;
-  room[len] ++;
+  room[sex.sexArr][profile.getID()] = profile;
+  room[sex.len] ++;
 
   var oldRoom = roomList[socket.id];
   if(oldRoom) {
     socket.leave(oldRoom.name);
-    delete oldRoom[sexArr][profile.getID()];
-    oldRoom[len]--;
+    delete oldRoom[sex.sexArr][profile.getID()];
+    oldRoom[sex.len]--;
     if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
   }
 

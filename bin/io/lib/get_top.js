@@ -1,6 +1,6 @@
 var dbjs      = require('./../../db/index'),                // База
-  GameError = require('./../../game_error'),
-  checkInput = require('./../../check_input');
+    GameError = require('./../../game_error'),
+    checkInput = require('./../../check_input');
 
 var db = new dbjs();
 
@@ -13,8 +13,9 @@ var db = new dbjs();
  */
 module.exports = function (socket, userList) {
   socket.on('get_top', function() {
-    if (!checkInput('get_top', socket, userList, null))
+    if (!checkInput('get_top', socket, userList, null))  {
       return new GameError(socket, "GETTOP", "Верификация не пройдена");
+    }
 
     var fList = ["name", "gender", "points"];
     db.findAllUsers(fList, function (err, users) {

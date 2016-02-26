@@ -8,8 +8,9 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList) {
   socket.on('change_status', function(options) {
-    if (!checkInput('change_status', socket, userList, options))
+    if (!checkInput('change_status', socket, userList, options)) {
       return new GameError(socket, "CHANGESTATUS", "Верификация не пройдена");
+    }
 
     var profile = userList[socket.id];
     profile.setStatus(options.status, function (err, status) {

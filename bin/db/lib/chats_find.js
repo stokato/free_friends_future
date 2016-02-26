@@ -10,11 +10,10 @@ module.exports = function(uid, callback) {
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
-  async.waterfall([
-    function (cb) {//////////////////////////////////////////////////////////
+  async.waterfall([ //////////////////////////////////////////////////////////
+    function (cb) {
       var params = [uid];
-
-      var query = "select companionid FROM user_chats where userid = ?";
+      var query = "select companionid, isnew FROM user_chats where userid = ?";
 
       self.client.execute(query, params, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
@@ -24,15 +23,20 @@ module.exports = function(uid, callback) {
         var fields = "?";
         var rows = result.rows;
         var companions = [];
+        var newMessages = {};
+
         companions.push(rows[0].companionid);
+        newMessages[rows[0].companionid.toString()] = rows[0].isnew;
         for (var i = 1; i < rows.length; i++) {
           companions.push(rows[i].companionid);
+          newMessages[rows[i].companionid.toString()] = rows[i].isnew;
           fields = fields + ", ?";
         }
-        cb(null, fields, companions);
+
+        cb(null, fields, companions, newMessages);
       });
     },////////////////////////////////////////////////////////////////////
-    function (fields, companions, cb) {
+    function (fields, companions, newMessages, cb) {
       if(!companions) { return cb(null, null, null, null); }
       var query = "select * FROM users where id in (" + fields + ")";
 
@@ -50,31 +54,12 @@ module.exports = function(uid, callback) {
             city: row.city,
             country: row.country,
             points: row.points,
-            isnew: false
+            isnew: newMessages[row.id.toString()]
           };
           users.push(user);
         }
-        cb(null, users, companions, fields);
-      });
-    },////////////////////////////////////////////////////////////////////////////
-    function (users, params, fields, cb) {
-      if(!users) { return cb(null, null) }
-      params.unshift(uid);
-      var query = "select * FROM user_new_messages where userid = ? and companionid in (" + fields + ")";
 
-      self.client.execute(query, params, {prepare: true}, function (err, result) {
-        if (err) { return cb(err, null); }
-
-        if (result.rows.length > 0) {
-          var rows = result.rows;
-          for (var i = 0; i < users.length; i++) {
-            for (var j = 0; j < rows.length; j++) {
-              if (users[i].id.toString() == rows[j].companionid.toString())
-                users[i].isnew = true;
-            }
-          }
-          cb(null, users);
-        } else callback(null, users);
+        cb(null, users);
       });
     }
   ], function(err, users) {

@@ -1,12 +1,12 @@
 var async     =  require('async');
 // Свои модули
 var profilejs =  require('../../profile/index'),          // Профиль
-  GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
-var autoPlace = require('./auto_place_in_room');
-var getRoomInfo = require('./get_room_info');
-var getLastMessages = require('./get_last_messages'),
-  genDateHistory = require('./gen_date_history');
+    GameError = require('../../game_error'),
+    checkInput = require('../../check_input'),
+    autoPlace = require('./auto_place_in_room'),
+    getRoomInfo = require('./get_room_info'),
+    getLastMessages = require('./get_last_messages'),
+    genDateHistory = require('./gen_date_history');
 
 /*
  Выполняем инициализацию
@@ -19,23 +19,28 @@ var getLastMessages = require('./get_last_messages'),
  */
 module.exports = function (socket, userList, profiles, roomList, rooms) {
   socket.on('init', function(options) {
-    if (!checkInput('init', socket, userList, options))
+    if (!checkInput('init', socket, userList, options)) {
       return new GameError(socket, "INIT", "Верификация не пройдена");
+    }
 
-    async.waterfall([ // Инициализируем профиль пользователя
-      function (cb) {
+    async.waterfall([///////////////////////////////////////////////////////////
+      function (cb) { // Инициализируем профиль пользователя
         var profile = new profilejs();
         var newConnect = false;
         profile.init(socket, options, function (err, info) {
           if (err) { return cb(err, null); }
 
-          if (profiles[info.id])  {
+          var oldProfile = profiles[info.id];
+          if (oldProfile)  {
             //cb(new Error("Этот пользователь уже инициализирован"), null);
-            profiles[info.id].clearExitTimeout();
-            var oldSocket = profiles[info.id].getSocket();
-            profiles[info.id].setSocket(socket);
+            oldProfile.clearExitTimeout();
+
+            var oldSocket = oldProfile.getSocket();
+            oldProfile.setSocket(socket);
+
             delete userList[oldSocket.id];
-            userList[socket.id] =  profiles[info.id];
+            userList[socket.id] =  oldProfile;
+
             var room = roomList[oldSocket.id];
             delete  roomList[oldSocket.id];
             roomList[socket.id] = room;
@@ -52,7 +57,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       }, ///////////////////////////////////////////////////////////////
       function (info, newConnect, cb) { // Помещяем в комнату
         if(newConnect) {
-          autoPlace(socket,  userList, roomList, rooms, function (err, room) {
+          autoPlace(socket, userList, roomList, rooms, function (err, room) {
             if (err) { return cb(err, null); }
 
             cb(null, info, room);
@@ -66,6 +71,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       function (info, room, cb) { // Получаем данные по игрокам в комнате (для стола)
         getRoomInfo(room, function (err, roomInfo) {
           if (err) { return cb(err, null); }
+
           info['room'] = roomInfo;
 
           cb(null, info, room);

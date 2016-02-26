@@ -48,8 +48,8 @@ module.exports = function(uid, options, callback) {
       } else cb(null, null);
     },
     function(res, cb) {
-      var params = [uid, companionid];
-      var query = "INSERT INTO user_chats ( userid, companionid) VALUES (?, ?)";
+      var params = [uid, companionid, !opened];
+      var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
 
       self.client.execute(query, params, {prepare: true },  function(err) {
         if (err) { return cb(err); }

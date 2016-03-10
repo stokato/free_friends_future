@@ -15,11 +15,13 @@ module.exports = function(uid, callback) {
 
    var gifts = [];
 
-   if(result.rows.length > 0) {
+   var rowsLen = result.rows.length;
+   var i;
+   if(rowsLen > 0) {
      var userList = [];
      var fields = "";
-     for(var i = 0; i < result.rows.length; i++) {
-       var row= result.rows[i];
+     for(i = 0; i < rowsLen; i++) {
+       var row = result.rows[i];
        var gift = {
          giftid : row.giftid,
          type : row.type,
@@ -42,7 +44,8 @@ module.exports = function(uid, callback) {
        if (err) { return callback(err, null); }
 
        var users = [];
-       for(var i = 0; i < result.rows.length; i++) {
+       rowsLen = result.rows.length;
+       for(i = 0; i < rowsLen; i++) {
          var row = result.rows[i];
          var user = {
            id      : row.id,
@@ -56,8 +59,10 @@ module.exports = function(uid, callback) {
          users.push(user);
        }
 
-       for(var i = 0; i < gifts.length; i++) {
-         for(var j = 0; j < users.length; j++) {
+       var giftsLen = gifts.length;
+       var usersLen = users.length;
+       for(i = 0; i < giftsLen; i++) {
+         for(var j = 0; j < usersLen; j++) {
            if(users[j].id.toString() == gifts[i].fromid.toString()) {
              if (!users[j].gifts) users[j].gifts = [];
              var gift = {

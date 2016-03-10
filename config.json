@@ -6,5 +6,10 @@
   "cassandra" : {
     "host": "127.0.0.1",
     "keyspace": "free_friends2"
+  },
+  "user" : {
+    "settings" : {
+      "start_money" : "50"
+    }
   }
 }

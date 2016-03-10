@@ -11,7 +11,7 @@ module.exports = function (socket, userList) {
       return new GameError(socket, "GETHISTORY", "Верификация не пройдена");
     }
 
-    userList[socket.id].getHistory(function (err, chats) {
+    userList[socket.id].getPrivateChats(function (err, chats) {
       if (err) { return new GameError(socket, "GETHISTORY", err.message); }
 
       socket.emit('get_private_messages', chats);

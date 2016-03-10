@@ -1,4 +1,5 @@
 var async     = require('async');
+var Config = require('./../../../config.json').user;
 /*
  Инициализируем профиль
  - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
@@ -50,7 +51,7 @@ module.exports = function(socket, opt, callback) {
         }
         cb(null, foundUser);
       });
-    },
+    },////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
       if(foundUser) {
         if(self.pSex != foundUser.sex || self.pAge != foundUser.age ||
@@ -75,8 +76,11 @@ module.exports = function(socket, opt, callback) {
           age     : self.pAge,
           country : self.pCountry,
           city    : self.pCity,
-          sex     : self.pSex
+          sex     : self.pSex,
+          money   : Config.settings.start_money
         };
+
+        self.pMoney = newUser.money;
 
         self.dbManager.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }

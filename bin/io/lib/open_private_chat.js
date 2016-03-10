@@ -31,7 +31,7 @@ module.exports = function(socket, userList, profiles) {
         var selfProfile = userList[socket.id];
 
         if(selfProfile.getID() == options.id) {
-          return cb(new Error("Попытка открыть чат с самим сабой"))
+          return cb(new Error("Попытка открыть чат с самим сабой"));
         }
 
         if(!selfProfile.isPrivateChat(compProfile.getID())) {
@@ -47,7 +47,8 @@ module.exports = function(socket, userList, profiles) {
             country : compProfile.getCountry(),
             sex     : compProfile.getSex()
           };
-          selfProfile.addPrivateChat(chat, function(err, history) {
+          selfProfile.addPrivateChat(chat);
+          selfProfile.getHistory(chat, function(err, history) {
             if(err) { return cb(err, null); }
 
             history = history || [];
@@ -58,6 +59,8 @@ module.exports = function(socket, userList, profiles) {
             }
         });
           cb(null, null);
+        } else {
+          return cb(new Error("Чат с этим пользователем уже открыт"));
         }
       }
     ], function(err, res) {

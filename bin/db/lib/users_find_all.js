@@ -24,8 +24,10 @@ module.exports = function(f_list, callback) {
 
    var users = [];
 
-   if(result.rows.length > 0) {
-     for(var i = 0; i < result.rows.length; i++) {
+   var i;
+   var rowsLen = result.rows.length;
+   if(rowsLen > 0) {
+     for(i = 0; i < rowsLen; i++) {
        var row = result.rows[i];
        var user = {
          id       : row.id,
@@ -35,8 +37,8 @@ module.exports = function(f_list, callback) {
          city     : row.city,
          sex      : row.sex,
          status   : row.status,
-         points   : row.points,
-         money    : row.money
+         points   : row.points || 0,
+         money    : row.money || 0
        };
        users.push(user);
      }

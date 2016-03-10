@@ -20,7 +20,9 @@ module.exports = function(uid, options, callback) {
    var fields = "?";
    var companions = result.rows;
    params.push(companions[0].companionid);
-   for(var i = 1; i< companions.length; i++) {
+   var i;
+   var compLen = companions.length;
+   for(i = 1; i< compLen; i++) {
      params.push(companions[i].companionid);
      fields = fields + ", ?";
    }
@@ -35,8 +37,10 @@ module.exports = function(uid, options, callback) {
      if (err) { return callback(err, null); }
      var messages = [];
 
-     if(result.rows.length > 0) {
-       for(var i = 0; i < result.rows.length; i++) {
+     var i;
+     var rowsLen = result.rows.length;
+     if(rowsLen > 0) {
+       for(i = 0; i < rowsLen; i++) {
          var row = result.rows[i];
          var message = {
            id        : row.id,
@@ -52,14 +56,18 @@ module.exports = function(uid, options, callback) {
 
        var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
        params = [];
-       for(var i = 0; i< companions.length; i++) {
+
+
+       var compLen = companions.length;
+       for(i = 0; i< compLen; i++) {
          params.push(companions[i].companionid);
        }
        self.client.execute(query, params, {prepare: true }, function(err, result) {
          if (err) { return callback(err, null); }
 
          var users = [];
-         for(var i = 0; i < result.rows.length; i++) {
+         var rowsLen = result.rows.length;
+         for(i = 0; i < rowsLen; i++) {
            var row = result.rows[i];
            var user = {
              id      : row.id,
@@ -68,13 +76,16 @@ module.exports = function(uid, options, callback) {
              sex     : row.sex,
              city    : row.city,
              country : row.country,
-             points  : row.points
+             points  : row.points || 0
            };
            users.push(user);
          }
 
-         for(var i = 0; i < messages.length; i++) {
-           for(var j = 0; j < users.length; j++) {
+         var i, j;
+         var mesLen = messages.length;
+         var userLen = users.length;
+         for(i = 0; i < mesLen; i++) {
+           for(j = 0; j < userLen; j++) {
              if(users[j].id.toString() == messages[i].companionid.toString()) {
                if (!users[j].messages) users[j].messages = [];
                if (messages[i].opened == false) users[j].opened = true;

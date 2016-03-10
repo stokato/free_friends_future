@@ -14,14 +14,16 @@ module.exports = function(callback) {
 
    var goods = [];
 
-   for (var i = 0; i < result.rows.length; i++) {
+   var i;
+   var rowsLen = result.rows.length;
+   for (i = 0; i < rowsLen; i++) {
      var row = result.rows[i];
 
      var good = {
        giftid: row.id,
        title: row.title,
        type : row.type,
-       price: row.price,
+       price: row.price || 0,
        data:  row.data
      };
 

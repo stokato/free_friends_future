@@ -9,12 +9,12 @@ var async = require('async');
 module.exports = function(uid, options, callback) {
   var self = this;
   var message = options || {};
-  var companionid = message.companionid;
-  var incoming  = message.incoming;
-  var text      = message.text;
+  var companionid  = message.companionid;
+  var incoming     = message.incoming;
+  var text         = message.text;
   var companionvid = message.companionvid;
-  var date = message.date || new Date();
-  var opened   = message.opened;
+  var date         = message.date || new Date();
+  var opened       = message.opened;
 
   if (!date || !uid || !companionid || !text || !companionvid) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
@@ -30,7 +30,7 @@ module.exports = function(uid, options, callback) {
 
       var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
 
-      self.client.execute(query, params, {prepare: true },  function(err) {
+      self.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
 
         cb(null, fields, values, params);

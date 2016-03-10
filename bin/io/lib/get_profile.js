@@ -17,57 +17,93 @@ var profilejs =  require('../../profile/index'),          // Профиль
 module.exports = function (socket, userList, profiles) {
   socket.on('get_profile', function(options) {
     if (!checkInput('get_profile', socket, userList, options)) {
-      return new GameError(socket, "ADDFRIEND", "Верификация не пройдена");
+      return new GameError(socket, "GETPROFILE", "Верификация не пройдена");
     }
 
     var selfProfile = userList[socket.id];
     var selfInfo = fillInfo(selfProfile);
 
     if (selfProfile.getID() == options.id) { // Если открываем свой профиль
-      return socket.emit('get_profile', selfInfo);
-    }
+      async.waterfall([
+        function (cb) { // Получаем историю
+          selfProfile.getPrivateChats(function (err, chats) {
+            if (err) {  return cb(err, null); }
 
-    var isOnline = false;
-    if(profiles[options.id]) { isOnline = true }
+            selfInfo['chats'] = chats;
+            cb(null, null);
+          });
+        }, /////////////////////////////////////////////////////////////
+        function (res, cb) { // Получаем подарки
+          selfProfile.getGifts(function (err, gifts) {
+            if (err) {  return cb(err, null); }
 
-    async.waterfall([///////////////////////////////////////////////////////////////////
-      function (cb) { // Получаем профиль того, чей просматриваем
-        var friendProfile = null;
-        var friendInfo = null;
-        if (isOnline) { // Если онлайн
-          friendProfile = profiles[options.id];
-          friendInfo = fillInfo(friendProfile);
-          cb(null, friendProfile, friendInfo);
-        }
-        else {                // Если нет - берем из базы
-          friendProfile = new profilejs();
-          friendProfile.build(options.id, function (err, info) {
+            selfInfo['gifts'] = gifts;
+            cb(null, null);
+          });
+        },/////////////////////////////////////////////////////////////////////
+        function (res, cb) { // Получаем друзей
+          selfProfile.getFriends(function (err, friends) {
+            if (err) {  return cb(err, null); }
+
+            selfInfo['friends'] = friends;
+            cb(null, null);
+          });
+        },/////////////////////////////////////////////////////////////////////
+        function (res, cb) { // Получаем гостей
+          selfProfile.getGuests(function (err, guests) {
             if (err) { return cb(err, null); }
 
-            friendInfo = fillInfo(friendProfile);
-
-            cb(null, friendProfile, friendInfo);
+            selfInfo['guests'] = guests;
+            cb(null, null);
           });
+        }/////////////////////////////////////////////////////////////////////
+      ], function(err, res) {
+        if (err) { return new GameError(socket, "GETPROFILE", err.message); }
+
+        socket.emit('get_profile', selfInfo);
+      });
+    } else {
+      var isOnline = false;
+      if(profiles[options.id]) { isOnline = true }
+
+      async.waterfall([///////////////////////////////////////////////////////////////////
+        function (cb) { // Получаем профиль того, чей просматриваем
+          var friendProfile = null;
+          var friendInfo = null;
+          if (isOnline) { // Если онлайн
+            friendProfile = profiles[options.id];
+            friendInfo = fillInfo(friendProfile);
+            cb(null, friendProfile, friendInfo);
+          } else {                // Если нет - берем из базы
+            friendProfile = new profilejs();
+            friendProfile.build(options.id, function (err, info) {
+              if (err) { return cb(err, null); }
+
+              friendInfo = fillInfo(friendProfile);
+
+              cb(null, friendProfile, friendInfo);
+            });
+          }
+        },///////////////////////////////////////////////////////////////
+        function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
+          selfInfo["date"] = new Date();
+          friendProfile.addToGuests(selfInfo, function (err, res) {
+            if (err) { return cb(err, null); }
+
+            cb(null, friendInfo, selfInfo, friendProfile);
+          });//////////////////////////////////////////////////////////////
+        }], function (err, friendInfo, selfInfo, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+        if (err) { return new GameError(socket, "GETPROFILE", err.message); }
+
+        socket.emit('get_profile', friendInfo); // Отправляем инфу
+
+        if (isOnline) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
+          var friendSocket = friendProfile.getSocket();
+          friendSocket.emit('add_guest', selfInfo);
+          friendSocket.emit('get_news', friendProfile.getNews());
         }
-      },///////////////////////////////////////////////////////////////
-      function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
-        selfInfo[date] = new Date();
-        friendProfile.addToGuests(selfInfo, function (err, res) {
-          if (err) { return cb(err, null); }
-
-          cb(null, friendInfo, selfInfo, friendProfile);
-        });//////////////////////////////////////////////////////////////
-      }], function (err, friendInfo, selfInfo, friendProfile) { // Вызывается последней. Обрабатываем ошибки
-      if (err) { return new GameError(socket, "ADDFRIEND", err.message); }
-
-      socket.emit('get_profile', friendInfo); // Отправляем инфу
-
-      if (isOnline) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
-        var friendSocket = friendProfile.getSocket();
-        friendSocket.emit('add_guest', selfInfo);
-        friendSocket.emit('get_news', friendProfile.getNews());
-      }
-    }); // waterfall
+      }); // waterfall
+    }
   });
 };
 

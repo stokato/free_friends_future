@@ -72,7 +72,8 @@ module.exports = function (socket, userList, profiles, roomList) {
             country : friendProfile.getCountry(),
             sex     : friendProfile.getSex()
           };
-          selfProfile.addPrivateChat(chat, function (err, history) {
+          selfProfile.addPrivateChat(chat);
+          selfProfile.getPrivateChats(chat, function (err, history) {
             if (err) { return cb(err, null); }
 
             history = history || [];

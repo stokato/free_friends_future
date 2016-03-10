@@ -21,6 +21,8 @@ function GameError(socket, func, message) {
      break;
    case "GETGIFTS"           : err.name = "Ошибка открытия окна подарков";
      break;
+   case "GETMONEY"           : err.name = "Ошибка получения баланса";
+     break;
    case "MAKEGIFT"           : err.name = "Ошибка совершения подарка";
      break;
    case "GETTOP"             : err.name = "Ошибка открытия топа игроков";
@@ -47,8 +49,8 @@ function GameError(socket, func, message) {
      break;
    case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
      break;
-        //case "CHANGEMONEY" : err.name = "Ошибка изменения количества монег игрока";
-        //    break;
+   case "GETCHATHISTORY"     : err.name = "Ошибка получения истории сообщений";
+     break;
    case "OPENPRIVCHAT"       : err.name = "Ошибка открытия приватного чата";
      break;
    case "CLOSEPRIVCHAT"      : err.name = "Ошибка закрытия приватного чата";

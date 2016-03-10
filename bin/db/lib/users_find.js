@@ -47,9 +47,9 @@ module.exports = function(id, vid, f_list, callback) {
        country : row.country,
        city    : row.city,
        sex     : row.sex,
-       points  : row.points,
+       points  : row.points || 0,
        status  : row.status,
-       money   : row.money,
+       money   : row.money || 0,
        vid     : row.vid
        };
 

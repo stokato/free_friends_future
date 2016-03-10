@@ -16,12 +16,14 @@ module.exports = function(uid, callback) {
 
     var fields = '';
     var params = [];
-    for (var i = 0; i < result.rows.length-1; i ++) {
+    var i;
+    var rowsLen = result.rows.length;
+    for (i = 0; i < rowsLen-1; i ++) {
       fields += '?, ';
       params.push(result.rows[i]);
     }
     fields += '?';
-    params.push(result.rows.length-1);
+    params.push(rowsLen-1);
 
     var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
     self.client.execute(query, params, {prepare: true }, function(err) {

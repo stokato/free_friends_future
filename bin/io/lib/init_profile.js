@@ -86,8 +86,13 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         cb(null, info, room);
       },
       function (info, room, cb) { // Получаем данные по приватным чатам
-        var firstDate = genDateHistory(new Date());
-        userList[socket.id].getPrivateChats(firstDate, function(err, history) {
+        var secondDate = new Date();
+        var firstDate = genDateHistory(secondDate);
+        var options = {
+          fdate : firstDate,
+          sdate : secondDate
+        };
+        userList[socket.id].getPrivateChatsWithHistory(options, function(err, history) {
           if(err) { return cb(err, null) }
 
           history = history || [];

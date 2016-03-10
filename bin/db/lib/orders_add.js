@@ -2,9 +2,9 @@
  Добавляем заказ в БД
  */
 module.exports = function(options, callback) {
-  var order = options || {};
-  var vid = order.vid;
-  var userid = order.userid;
+  var order   = options || {};
+  var vid     = order.vid;
+  var userid  = order.userid;
   var uservid = order.uservid;
   var sum     = order.sum;
   var date    = order.date || new Date;

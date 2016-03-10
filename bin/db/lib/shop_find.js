@@ -20,7 +20,7 @@ module.exports = function(goodid, callback) {
      id   : goodid,
      title: row.title,
      type : row.type,
-     price: row.price,
+     price: row.price || 0,
      data:  row.data
      };
 

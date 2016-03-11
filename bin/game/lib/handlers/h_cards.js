@@ -1,24 +1,46 @@
-function() { // Карты, ждем, кода все ответят, потом показываем всем их ответы и где золото
-  if(countActions == 0) {
-    var options = {picks : []};
-    for (var i = 0; i < currPlayers.length; i++) {
-      var id = currPlayers[i].getID();
-      var answer = actionsQueue[id];
-      if(!validator.isNumeric(answer[0] || answer < 0 || answer > 9 ))  {
-        self.stop();
-        return new GameError(gSocket, 'GAMECARDS', "Неверные агрументы");
+var GameError = require('./../../../game_error'),
+  checkInput = require('./../../../check_input');
+var constants = require('../../constants_game');
+
+var startTimer   = require('../start_timer'),
+    pushAllPlayers = require('../push_all_players');
+
+// РљР°СЂС‚С‹, Р¶РґРµРј, РєРѕРґР° РІСЃРµ РѕС‚РІРµС‚СЏС‚, РїРѕС‚РѕРј РїРѕРєР°Р·С‹РІР°РµРј РІСЃРµРј РёС… РѕС‚РІРµС‚С‹ Рё РіРґРµ Р·РѕР»РѕС‚Рѕ
+module.exports = function(game) {
+  return function (timer) {
+    if (game.countActions == 0 || timer) {
+      if(!timer) { clearTimeout(game.currTimer); }
+
+      var options = {picks: []};
+      var item, player, answers;
+      for (item in game.currPlayers) if(game.currPlayers.hasOwnProperty(item)) {
+        player = game.currPlayers[item];
+        answers = game.actionsQueue[player.getID()];
+
+        if (!checkInput('game_cards', game.gSocket, game.userList, answers[0])) {
+          game.stop();
+          return new GameError(socket, "GAMECARDS", "РќРµРІРµСЂРЅС‹Рµ Р°РіСЂСѓРјРµРЅС‚С‹");
+        }
+
+        options.picks.push({id: player.getID(), pick: answers[0].pick});
       }
-      options.picks.push({ id : id, pick : answer });
+      options.gold = randomInteger(0, constants.CARD_COUNT - 1);
+
+      game.emit(options);
+
+      game.nextGame = 'start';
+      game.currPlayers = {};
+      pushAllPlayers(game.gRoom, currPlayers);
+      game.actionsQueue = {};
+      game.countActions = constants.PLAYERS_COUNT;
+      game.currTimer = startTimer(game.handlers[nextGame]);
     }
-    options.gold = randomInteger(0, CARD_COUNT-1);
-
-    self.emit(options);
-
-    nextGame = 'start';
-    currPlayers = [];
-    pushAllPlayers(gRoom, currPlayers);
-    actionsQueue = {};
-    countActions = PLAYERS_COUNT;
-    currTimer = startTimer(handlers[nextGame], countActions);
   }
+};
+
+// РџРѕР»СѓС‡РёС‚СЊ СЃР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ РёР· РґРёР°РїР°Р·РѕРЅР°
+function randomInteger(min, max) {
+  var rand = min - 0.5 + Math.random() * (max - min + 1);
+  rand = Math.round(rand);
+  return rand;
 }

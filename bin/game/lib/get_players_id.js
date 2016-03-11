@@ -1,8 +1,9 @@
-// Собрать в массив ИД всех играков в списке
+// РЎРѕР±СЂР°С‚СЊ РІ РјР°СЃСЃРёРІ РР” РІСЃРµС… РёРіСЂР°РєРѕРІ РІ СЃРїРёСЃРєРµ
 module.exports = function (players) {
-  var arr = [];
-  for(var i = 0; i < players.length; i++) {
-    arr.push(players[i].getID());
+  var arr = [], item, player;
+  for(item in players) if(players.hasOwnProperty(item)) {
+    player = players[item];
+    arr.push(player.getID());
   }
   return arr;
 };

@@ -1,18 +1,22 @@
-// Ожидать хода ото всех играков (поместить их в список текущих игроков)
-module.exports = function (room, players, withoutid) {
+
+// РћР¶РёРґР°С‚СЊ С…РѕРґР° РѕС‚Рѕ РІСЃРµС… РёРіСЂР°РєРѕРІ (РїРѕРјРµСЃС‚РёС‚СЊ РёС… РІ СЃРїРёСЃРѕРє С‚РµРєСѓС‰РёС… РёРіСЂРѕРєРѕРІ)
+module.exports = function (room, players, excessIds) {
+  excessIds = excessIds || [];
   var guys = room.guys;
   var girls = room.girls;
-  
-  for (guy in guys) {
-    players.push(guys[guy]);
+
+  var guy, girl, item;
+  for (item in guys) if (guys.hasOwnProperty(item)) {
+    guy = guys[item];
+    if(excessIds.indexOf(guy.getID()) < 0) {
+      players[guys[guy].getID()] = (guys[guy]);
+    }
   }
   
-  for (girl in girls) {
-    players.push(girls[girl]);
+  for (item in girls) if(girls.hasOwnProperty(item)) {
+    girl = girls[item];
+    if(excessIds.indexOf(girl.getID()) < 0) {
+      players[girls[girl].getID()] = (girls[girl]);
+    }
   }
-  
-  for(var i = 0; i < withoutid.length; i++) {
-    var index = players.indexOf(withoutid[i]);
-    if (index != -1) players.splice(index, 1);
-  }
-}
+};

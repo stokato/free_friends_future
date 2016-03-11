@@ -1,4 +1,4 @@
-// Начать игру
+// РќР°С‡Р°С‚СЊ РёРіСЂСѓ
 module.exports = function() {
-  this.actions.start();
+  this.handlers.start();
 };

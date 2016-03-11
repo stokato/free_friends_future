@@ -1,22 +1,38 @@
-function() { // Вопросы, ждем, когда все ответят, потом показываем всем ответы
-  if(countActions == 0) {
-    var options = { answers : [] };
-    for (var i = 0; i < currPlayers.length; i++) {
-      var id = currPlayers[i].getID();
-      var answer = actionsQueue[id];
-      if(answer[0].pick != '1' || answer[0].pick != '2' || answer[0].pick != '3')  {
-        self.stop();
-        return new GameError(gSocket, 'GAMEQUESTIONS', "Неверные агрументы");
-      }
-      options.answers.push({ id : id, pick : answer[0] });
-    }
-    self.emit(options);
+var constants = require('../../constants_game');
+var GameError = require('./../../../game_error'),
+  checkInput = require('./../../../check_input');
 
-    nextGame = 'start';
-    currPlayers = [];
-    actionsQueue = {};
-    pushAllPlayers(gRoom, currPlayers);
-    countActions = PLAYERS_COUNT;
-    currTimer = startTimer(handlers[nextGame], countActions);
+var startTimer   = require('../start_timer'),
+    pushAllPlayers = require('../push_all_players');
+
+// Р’РѕРїСЂРѕСЃС‹, Р¶РґРµРј, РєРѕРіРґР° РІСЃРµ РѕС‚РІРµС‚СЏС‚, РїРѕС‚РѕРј РїРѕРєР°Р·С‹РІР°РµРј РІСЃРµРј РѕС‚РІРµС‚С‹
+module.exports = function(game) {
+  return function(timer) {
+    if(game.countActions == 0 || timer) {
+      if(!timer) { clearTimeout(game.currTimer); }
+
+      var options = { answers : [] };
+      var item, player;
+      for (item in game.currPlayers) if(game.currPlayers.hasOwnProperty(item)) {
+        player = game.currPlayers[item];
+        var answers = game.actionsQueue[player.getID()];
+
+        if (!checkInput('game_questions', game.gSocket, game.userList, answers[0])) {
+          game.stop();
+          return new GameError(socket, "GAMEQUESTIONS",
+                        "РќРµРІРµСЂРЅС‹Рµ Р°РіСЂСѓРјРµРЅС‚С‹: РѕС‚РІРµС‚С‹ РЅР° РІРѕРїСЂРѕСЃС‹ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ 1, 2 РёР»Рё 3");
+        }
+
+        options.answers.push({ id : player.getID(), pick : answers[0] });
+      }
+      game.emit(options);
+
+      game.nextGame = 'start';
+      game.currPlayers = {};
+      game.actionsQueue = {};
+      pushAllPlayers(game.gRoom, currPlayers);
+      game.countActions = constants.PLAYERS_COUNT;
+      game.currTimer = startTimer(game.handlers[game.nextGame]);
+    }
   }
-}
+};

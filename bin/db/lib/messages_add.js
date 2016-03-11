@@ -40,7 +40,7 @@ module.exports = function(uid, options, callback) {
       if(!opened) {
         var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
 
-        self.client.execute(query, params, {prepare: true },  function(err) {
+        self.client.execute(query, params, { prepare: true },  function(err) {
           if (err) {  return cb(err); }
 
           cb(null, null);
@@ -51,7 +51,7 @@ module.exports = function(uid, options, callback) {
       var params = [uid, companionid, !opened];
       var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
 
-      self.client.execute(query, params, {prepare: true },  function(err) {
+      self.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
 
         cb(null, null);

@@ -1,19 +1,34 @@
-function(id, opt) { // Бутылочка поцелуи, сообщаем всем выбор пары
-  if(!validator.isBoolean(opt.kiss)) {
-    self.stop();
-    new GameError(gSocket, 'GAMEBOTTLE', "Неверные агрументы");
-  }
-  var options = {};
-  options['kiss'] = { id : id, pick : opt.kiss};
-  self.emit(options);
 
-  if(countActions == 0) {
-    nextGame = 'start';
-    actionsQueue = {};
-    currPlayers = [];
-    pushAllPlayers(gRoom, currPlayers);
+var GameError = require('./../../../game_error'),
+    checkInput = require('./../../../check_input');
+var constants = require('../../constants_game');
 
-    countActions = PLAYERS_COUNT;
-    currTimer = startTimer(handlers[nextGame], countActions);
+var startTimer   = require('../start_timer'),
+    pushAllPlayers = require('../push_all_players');
+
+// Р‘СѓС‚С‹Р»РѕС‡РєР° РїРѕС†РµР»СѓРё, СЃРѕРѕР±С‰Р°РµРј РІСЃРµРј РІС‹Р±РѕСЂ РїР°СЂС‹
+module.exports = function(game) {
+  return function (timer, id, options) {
+
+    if (!checkInput('game_bottle_kisses', game.gSocket, game.userList, options)) {
+      game.stop();
+      return new GameError(socket, "GAMEBOTTLE", "Р’РµСЂРёС„РёРєР°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°");
+    }
+
+    var result = {};
+    result['kiss'] = {id: id, pick: options.kiss};
+    game.emit(result);
+
+    if (game.countActions == 0 || timer) {
+      if(!timer) { clearTimeout(game.currTimer); }
+
+      game.nextGame = 'start';
+      game.actionsQueue = {};
+      game.currPlayers = {};
+      pushAllPlayers(game.gRoom, game.currPlayers);
+
+      game.countActions = constants.PLAYERS_COUNT;
+      game.currTimer = startTimer(game.handlers[game.nextGame]);
+    }
   }
-}
+};

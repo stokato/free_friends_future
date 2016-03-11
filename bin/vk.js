@@ -125,7 +125,12 @@ function changeOrderStatus(request, callback) {
           dbManager.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }
 
-            cb(null, {orderid : orderid});
+            var newPurchase = { userid: info.id, goodid: goodInfo.id };
+            dbManager.addPurchase(newPurchase, function(err, id) {
+              if (err) { return cb(err, null); }
+
+              cb(null, {orderid : orderid});
+            });
           });
         });
       } ///////////////////////////////////////////////////////////////////////////////

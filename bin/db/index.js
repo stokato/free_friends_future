@@ -1,38 +1,42 @@
 var cassandra = require('cassandra-driver');
 var async = require('async');
 var Config = require('../../config.json').cassandra; // Настойки доступа к БД
-                                                  // Клиент Кассанда
+// Клиент Кассанда
 var client = new cassandra.Client({contactPoints: [Config.host],
-                                  keyspace: Config.keyspace});
+  keyspace: Config.keyspace});
 
 var Uuid = cassandra.types.Uuid;  // Генератор id для Cassandra
 var TimeUuid = cassandra.types.TimeUuid;
 
-var addUser             = require('./lib/users_add');
-    findUser            = require('./lib/users_find');
-    findAllUsers        = require('./lib/users_find_all');
-    updateUser          = require('./lib/users_update');
-    deleteUser          = require('./lib/users_delete');
-    addGift             = require('./lib/gifts_add');
-    findGifts           = require('./lib/gifts_find');
-    deleteGifts         = require('./lib/gifts_delete');
-    addMessage          = require('./lib/messages_add');
-    findAllMessages     = require('./lib/messages_find_all');
-    findMessages        = require('./lib/messages_find');
-    updateMessage       = require('./lib/messages_update');
-    deleteMessages      = require('./lib/messages_delete');
-    addFriend           = require('./lib/friends_add');
-    findFriends         = require('./lib/friends_find');
-    deleteFriends       = require('./lib/friends_delete');
-    addGuest            = require('./lib/guests_add');
-    findGuests          = require('./lib/guests_find');
-    deleteGuests        = require('./lib/guests_delete');
-    addGood             = require('./lib/shop_add');
-    findGood            = require('./lib/shop_find');
-    findAllGoods        = require('./lib/shop_find_all');
-    deleteGood          = require('./lib/shop_delete');
-    findChats           = require('./lib/chats_find');
-    addOrder            = require('./lib/orders_add');
+var addUser             = require('./lib/users_add'),
+  findUser            = require('./lib/users_find'),
+  findAllUsers        = require('./lib/users_find_all'),
+  updateUser          = require('./lib/users_update'),
+  deleteUser          = require('./lib/users_delete'),
+  addGift             = require('./lib/gifts_add'),
+  findGifts           = require('./lib/gifts_find'),
+  deleteGifts         = require('./lib/gifts_delete'),
+  addMessage          = require('./lib/messages_add'),
+  findAllMessages     = require('./lib/messages_find_all'),
+  findMessages        = require('./lib/messages_find'),
+  updateMessage       = require('./lib/messages_update'),
+  deleteMessages      = require('./lib/messages_delete'),
+  addFriend           = require('./lib/friends_add'),
+  findFriends         = require('./lib/friends_find'),
+  deleteFriends       = require('./lib/friends_delete'),
+  addGuest            = require('./lib/guests_add'),
+  findGuests          = require('./lib/guests_find'),
+  deleteGuests        = require('./lib/guests_delete'),
+  addGood             = require('./lib/shop_add'),
+  findGood            = require('./lib/shop_find'),
+  findAllGoods        = require('./lib/shop_find_all'),
+  deleteGood          = require('./lib/shop_delete'),
+  findChats           = require('./lib/chats_find'),
+  addOrder            = require('./lib/orders_add'),
+  findOrders          = require('./lib/orders_find'),
+  addPurchase         = require('./lib/purchases_add'),
+  findPurchase        = require('./lib/purchases_find'),
+  deletePurchase      = require('./lib/purchases_delete');
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра
@@ -47,9 +51,9 @@ var addUser             = require('./lib/users_add');
  *                 - добавить, найти, удалить товар (магазин)
  */
 var DBManager = function() {
- this.client = client;
- this.uuid = Uuid;
- this.timeUuid = TimeUuid;
+  this.client = client;
+  this.uuid = Uuid;
+  this.timeUuid = TimeUuid;
 };
 
 DBManager.prototype.addUser         = addUser;
@@ -77,5 +81,9 @@ DBManager.prototype.findAllGoods    = findAllGoods;
 DBManager.prototype.deleteGood      = deleteGood;
 DBManager.prototype.findChats       = findChats;
 DBManager.prototype.addOrder        = addOrder;
+DBManager.prototype.findOrders      = findOrders;
+DBManager.prototype.addPurchase     = addPurchase;
+DBManager.prototype.findPurchase    = findPurchase;
+DBManager.prototype.deletePurchase  = deletePurchase;
 
 module.exports = DBManager;

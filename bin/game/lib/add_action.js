@@ -1,4 +1,5 @@
-// Добавить ход игрока в очередь для обработки
+
+// Р”РѕР±Р°РІРёС‚СЊ С…РѕРґ РёРіСЂРѕРєР° РІ РѕС‡РµСЂРµРґСЊ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
 module.exports = function (game) {
   game.gSocket.on('action', function(options) {
     var profile = game.userList[game.gSocket.id];
@@ -8,7 +9,7 @@ module.exports = function (game) {
       }
       game.actionsQueue[profile.getID()].push(options);
       game.countActions--;
-      game.handlers[game.nextGame](profile.getID(), options);
+      game.handlers[game.nextGame](false, profile.getID(), options);
     }
   });
 };

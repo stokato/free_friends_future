@@ -6,6 +6,9 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-
+    "async": "^1.5.2",
+    "cassandra-driver": "^3.0.1",
+    "socket.io": "^1.4.5",
+    "validator": "^5.1.0"
   }
 }

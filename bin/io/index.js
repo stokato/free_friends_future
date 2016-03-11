@@ -22,8 +22,9 @@ var initProfile       = require('./lib/init_profile'),
     getTop            = require('./lib/get_top'),
     getGiftShop       = require('./lib/get_gift_shop'),
 //var changeMoney       = require('./money_io/change_money');
-    getMoney          = require('./lib/get_money');
-    disconnect       = require('./lib/disconnect');
+    getMoney          = require('./lib/get_money'),
+    joinGame          = require('./lib/join_game'),
+    disconnect        = require('./lib/disconnect');
 
 var io = null;                                      // Сокет
 
@@ -73,7 +74,7 @@ module.exports.listen = function(server, callback) {
     //changeMoney(socket, userList);
     getMoney(socket, userList);
     // Игра
-
+    joinGame(socket, userList, roomList);
   });
   callback(null, null);
 };

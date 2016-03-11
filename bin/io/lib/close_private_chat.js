@@ -14,12 +14,12 @@ module.exports = function(socket, userList, profiles) {
     selfProfile.deletePrivateChat(options.id);
     socket.emit('close_private_chat', { id : options.id });
 
-    if (profiles[options.id]) { // Если онлайн
-      var compProfile = profiles[options.id];
-      compProfile.deletePrivateChat(selfProfile.getID());
-
-      var compSocket = compProfile.getSocket();
-      compSocket.emit('close_private_chat', { id : selfProfile.getID() });
-    }
+    //if (profiles[options.id]) { // Если онлайн
+    //  var compProfile = profiles[options.id];
+    //  compProfile.deletePrivateChat(selfProfile.getID());
+    //
+    //  var compSocket = compProfile.getSocket();
+    //  compSocket.emit('close_private_chat', { id : selfProfile.getID() });
+    //}
   });
 };

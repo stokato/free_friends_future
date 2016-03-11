@@ -43,6 +43,9 @@ module.exports = function (socket, userList, profiles, roomList) {
       return sendInRoom(socket, currRoom, info);
     }
 
+    if (!checkInput('private_message', socket, userList, options))
+      return new GameError(socket, "SENDPRIVMESSAGE", "Верификация не пройдена");
+
     async.waterfall([//////////////////////////////////////////////////////////////
       function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
         var friendProfile = null;
@@ -73,7 +76,7 @@ module.exports = function (socket, userList, profiles, roomList) {
             sex     : friendProfile.getSex()
           };
           selfProfile.addPrivateChat(chat);
-          selfProfile.getPrivateChats(chat, function (err, history) {
+          selfProfile.getHistory(chat, function (err, history) {
             if (err) { return cb(err, null); }
 
             history = history || [];

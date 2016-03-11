@@ -1,12 +1,13 @@
 var constants = require('../../constants_game');
 
+
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
     pushAllPlayers = require('../push_all_players');
 
 module.exports = function(game) {
-  return function() {
+  return function(timer, uid) {
     var rand;
     clearTimeout(game.currTimer);
     rand = randomInteger(0, constants.GAMES.length - 1);
@@ -14,51 +15,53 @@ module.exports = function(game) {
 
     game.actionsQueue = {};
 
-    var options = { game : game.nextGame };
-    if(game.nextGame == 'bottle') {  // для бутылочки ходит тот же, кто крутил вочек
+    var result = { game : game.nextGame };
+    if(game.nextGame == 'bottle') {  // РґР»СЏ Р±СѓС‚С‹Р»РѕС‡РєРё С…РѕРґРёС‚ С‚РѕС‚ Р¶Рµ, РєС‚Рѕ РєСЂСѓС‚РёР» РІРѕС‡РµРє
       game.countActions = 1;
-      options[players] =  getPlayersID(game.currPlayers);
-      game.emit(options);
+      result[players] =  getPlayersID(game.currPlayers);
+      game.emit(result);
     }
-    if(game.nextGame == 'questions') { // для вопросов ходят все, отвечая на произовльный вопрос
+    if(game.nextGame == 'questions') { // РґР»СЏ РІРѕРїСЂРѕСЃРѕРІ С…РѕРґСЏС‚ РІСЃРµ, РѕС‚РІРµС‡Р°СЏ РЅР° РїСЂРѕРёР·РѕРІР»СЊРЅС‹Р№ РІРѕРїСЂРѕСЃ
       game.currPlayers = [];
       game.countActions = constants.PLAYERS_COUNT;
       pushAllPlayers(game.gRoom, game.currPlayers);
       rand = randomInteger(0, constants.GAME_QUESTIONS.length - 1);
-      options['question'] =  constants.GAME_QUESTIONS[rand];
-      options['players'] = getPlayersID(game.currPlayers);
-      game.emit(options);
+      result['question'] =  constants.GAME_QUESTIONS[rand];
+      result['players'] = getPlayersID(game.currPlayers);
+      game.emit(result);
     }
-    if(game.nextGame == 'cards') { // для карт ходят все
-      game.currPlayers = [];
+    if(game.nextGame == 'cards') { // РґР»СЏ РєР°СЂС‚ С…РѕРґСЏС‚ РІСЃРµ
+      game.currPlayers = {};
       game.countActions = constants.PLAYERS_COUNT;
       pushAllPlayers(game.gRoom, game.currPlayers);
-      options['players'] = getPlayersID(game.currPlayers);
-      game.emit(options);
+      result['players'] = getPlayersID(game.currPlayers);
+      game.emit(result);
     }
-    if(game.nextGame == 'best') { // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходя остальные
-      var player = randomPlayer(game.gRoom, game.currPlayers[0].getSex());
+    if(game.nextGame == 'best') { // РґР»СЏ РёРіСЂС‹ "Р»СѓС‡С€РёР№" РІС‹Р±РёСЂР°РµРј РїСЂРѕРёР·РІРѕР»СЊРЅРѕ РїР°СЂСѓ Рє РёРіСЂРѕРєСѓ С‚РѕРіРѕ Р¶Рµ РїРѕР»Р°, С…РѕРґСЏС‚ РѕСЃС‚Р°Р»СЊРЅС‹Рµ
+      var firstGender = game.currPlayers[uid].getSex();
+      var secondGender = (firstGender == 'guy') ? 'girl' : 'guy';
+      var player = randomPlayer(game.gRoom, secondGender);
       var arr = [];
-      arr.push(game.currPlayers[0].getID());
+      arr.push(game.currPlayers[uid].getID());
       arr.push(player.getID());
 
       game.countActions = constants.PLAYERS_COUNT-2;
       pushAllPlayers(game.gRoom, game.currPlayers, arr);
-      options['players'] = getPlayersID(game.currPlayers);
-      options['best'] = arr;
-      game.emit(options);
+      result['players'] = getPlayersID(game.currPlayers);
+      result['best'] = arr;
+      game.emit(result);
     }
-    if(game.nextGame == 'sympathy') { // для игры "симпатия" ходят все
+    if(game.nextGame == 'sympathy') { // РґР»СЏ РёРіСЂС‹ "СЃРёРјРїР°С‚РёСЏ" С…РѕРґСЏС‚ РІСЃРµ
       game.countActions = constants.PLAYERS_COUNT;
       pushAllPlayers(game.gRoom, game.currPlayers);
-      options['players'] = getPlayersID(game.currPlayers);
-      game.emit(options);
+      result['players'] = getPlayersID(game.currPlayers);
+      game.emit(result);
     }
-    game.currTimer = startTimer(game.handlers[game.nextGame], game.countActions);
+    game.currTimer = startTimer(game.handlers[game.nextGame]);
   }
 };
 
-// Получить случайное число из диапазона
+// РџРѕР»СѓС‡РёС‚СЊ СЃР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ РёР· РґРёР°РїР°Р·РѕРЅР°
 function randomInteger(min, max) {
   var rand = min - 0.5 + Math.random() * (max - min + 1);
   rand = Math.round(rand);

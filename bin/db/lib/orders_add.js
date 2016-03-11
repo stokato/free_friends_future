@@ -1,5 +1,5 @@
 /*
- Добавляем заказ в БД
+ Р”РѕР±Р°РІР»СЏРµРј Р·Р°РєР°Р· РІ Р‘Р”
  */
 module.exports = function(options, callback) {
   var order   = options || {};
@@ -10,7 +10,7 @@ module.exports = function(options, callback) {
   var date    = order.date || new Date;
 
   if (!vid || !userid || !uservid || !sum) {
-    return callback(new Error("Не задан один из параметров заказа"), null);
+    return callback(new Error("РќРµ Р·Р°РґР°РЅ РѕРґРёРЅ РёР· РїР°СЂР°РјРµС‚СЂРѕРІ Р·Р°РєР°Р·Р°"), null);
   }
 
   var id = this.uuid.random();

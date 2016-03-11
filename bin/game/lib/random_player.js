@@ -1,18 +1,20 @@
-// Выбрать произвольного игрока любого, или указанного пола
-module.exports = function (room, gen) {
+// Р’С‹Р±СЂР°С‚СЊ РїСЂРѕРёР·РІРѕР»СЊРЅРѕРіРѕ РёРіСЂРѕРєР° Р»СЋР±РѕРіРѕ, РёР»Рё СѓРєР°Р·Р°РЅРЅРѕРіРѕ РїРѕР»Р°
+module.exports = function (room, sex) {
   var guys = room.guys;
   var girls = room.girls;
   var allPlayers = [];
-  var gender = gen || '';
-  
-  if(gender == '' || gender == 'guy')   {
-    for (guy in guys) {
+  var gender = sex || '';
+
+  var guy, girl;
+
+  if(gender == '' || gender == 'guy')    {
+    for (guy in guys)  if (guys.hasOwnProperty(guy)) {
       allPlayers.push(guys[guy]);
     }
   }
   
   if(gender == '' || gender == 'girl') {
-    for (girl in girls) {
+    for (girl in girls) if(girls.hasOwnProperty(girl)) {
       allPlayers.push(girls[girl]);
     }
   }
@@ -20,3 +22,10 @@ module.exports = function (room, gen) {
   var rand = randomInteger(0, allPlayers.length-1);
   return allPlayers[rand];
 };
+
+// РџРѕР»СѓС‡РёС‚СЊ СЃР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ РёР· РґРёР°РїР°Р·РѕРЅР°
+function randomInteger(min, max) {
+  var rand = min - 0.5 + Math.random() * (max - min + 1);
+  rand = Math.round(rand);
+  return rand;
+}

@@ -32,7 +32,10 @@ var init          = require('./lib/init'),
     isPrivateChat = require('./lib/is_private_chat'),
     getAge        = require('./lib/get_age'),
     getCity       = require('./lib/get_city'),
-    getCountry    = require('./lib/get_country');
+    getCountry    = require('./lib/get_country'),
+    setReady      = require('./lib/set_ready'),
+    getReady      = require('./lib/get_ready'),
+    getPurchase    = require('./lib/get_purchase');
 
 var setExitTimeout = require('./lib/set_exit_timeout'),
     clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -106,6 +109,7 @@ Profile.prototype.addToGuests     = addToGuests;
 Profile.prototype.getGuests       = getGuests;
 Profile.prototype.save            = save;
 Profile.prototype.remove          = remove;
+Profile.prototype.getPurchase      = getPurchase;
 
 Profile.prototype.setExitTimeout             = setExitTimeout;
 Profile.prototype.clearExitTimeout           = clearExitTimeout;
@@ -117,5 +121,7 @@ Profile.prototype.getPrivateChatsWithHistory = getPrivateChatsWithHistory;
 Profile.prototype.getAge     = getAge;
 Profile.prototype.getCity    = getCity;
 Profile.prototype.getCountry = getCountry;
+Profile.prototype.setReady   = setReady;
+Profile.prototype.getReady   = getReady;
 
 module.exports = Profile;

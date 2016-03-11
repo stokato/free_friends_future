@@ -20,11 +20,12 @@ module.exports = function (socket, userList, profiles) {
       return new GameError(socket, "ADDFRIEND", "Нельзя добавить в друзья себя");
     }
 
+    var date = new Date();
     var selfProfile = userList[socket.id];
     var selfInfo = {
       id      : selfProfile.getID(),
       vid     : selfProfile.getVID(),
-      date    : options.date,
+      date    : date,
       sex     : selfProfile.getSex(), //
       age     : selfProfile.getAge(),
       city    : selfProfile.getCity(),
@@ -58,7 +59,7 @@ module.exports = function (socket, userList, profiles) {
           id     : friendProfile.getID(),
           vid    : friendProfile.getVID(),
           points : friendProfile.getPoints(),
-          date   : options.date,
+          date   : date,
           age    : friendProfile.getAge(), //
           city   : friendProfile.getCity(),
           country: friendProfile.getCountry(),

@@ -1,8 +1,8 @@
-// Вызвать эмиты у клиентов
+// Р’С‹Р·РІР°С‚СЊ СЌРјРёС‚С‹ Сѓ РєР»РёРµРЅС‚РѕРІ
 module.exports = function(options, one) {
   if(one) {
-    this.gSocket.emit(options);
+    this.gSocket.emit('game', options);
   } else {
-    this.gSocket.broadcast.to(this.gRoom.name).emit(stage, options);
+    this.gSocket.broadcast.in(this.gRoom.name).emit('game', options);
   }
 };

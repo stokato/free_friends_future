@@ -1,8 +1,9 @@
 // Вызвать эмиты у клиентов
-module.exports = function(options, one) {
+module.exports = function(socket, options, one) {
   if(one) {
-    this.gSocket.emit('game', options);
+    socket.emit('game', options);
   } else {
-    this.gSocket.broadcast.in(this.gRoom.name).emit('game', options);
+    socket.emit('game', options);
+    socket.broadcast.in(this.gRoom.name).emit('game', options);
   }
 };

@@ -40,7 +40,7 @@ module.exports = function (socket, userList, rooms, roomList) {
     var sex = defineSex(profile);
 
     if (options.room == "new_room") {
-      newRoom = createRoom(socket);
+      newRoom = createRoom(socket, userList);
       rooms[newRoom.name] = newRoom;
     } else {
       var item;

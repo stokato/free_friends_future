@@ -43,7 +43,7 @@ module.exports = function(uid, options, callback) {
        for(i = 0; i < rowsLen; i++) {
          var row = result.rows[i];
          var message = {
-           id        : row.id,
+           id        : row.id.toString(),
            date      : row.date,
            companionid : row.companionid,
            companionvid : row.companionvid,
@@ -70,7 +70,7 @@ module.exports = function(uid, options, callback) {
          for(i = 0; i < rowsLen; i++) {
            var row = result.rows[i];
            var user = {
-             id      : row.id,
+             id      : row.id.toString(),
              vid     : row.vid,
              age     : row.age,
              sex     : row.sex,
@@ -86,7 +86,7 @@ module.exports = function(uid, options, callback) {
          var userLen = users.length;
          for(i = 0; i < mesLen; i++) {
            for(j = 0; j < userLen; j++) {
-             if(users[j].id.toString() == messages[i].companionid.toString()) {
+             if(users[j].id == messages[i].companionid) {
                if (!users[j].messages) users[j].messages = [];
                if (messages[i].opened == false) users[j].opened = true;
                var message = {

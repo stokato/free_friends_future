@@ -1,8 +1,8 @@
 var GAMES = [ 'bottle', 'questions', 'cards', 'best', 'sympathy'];
 var GAME_QUESTIONS = [];
-var TIMEOUT = 15;
+var TIMEOUT = 360;
 var CARD_COUNT = 10;
-var PLAYERS_COUNT = 10;
+var PLAYERS_COUNT = 4;//10;
 var SHOW_SYMPATHY_LIMIT = 2;
 
 module.exports.GAMES = GAMES;

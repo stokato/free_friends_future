@@ -30,7 +30,7 @@ module.exports = function(f_list, callback) {
      for(i = 0; i < rowsLen; i++) {
        var row = result.rows[i];
        var user = {
-         id       : row.id,
+         id       : row.id.toString(),
          vid      : row.vid,
          age      : row.age,
          country  : row.country,

@@ -47,6 +47,8 @@ function GameError(socket, func, message) {
      break;
    case "GAMESYMPATHY"       : err.name = "Игра остановлена. Ошибка в игре Симпатии";
      break;
+   case "GAME"               : err.name = "Игра остановлена всвязи с ошибкой";
+     break;
    case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
      break;
    case "GETCHATHISTORY"     : err.name = "Ошибка получения истории сообщений";

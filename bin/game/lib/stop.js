@@ -2,8 +2,8 @@
 module.exports = function() {
   clearTimeout(this.currTimer);
   
-  var guys = this.room.guys;
-  var girls = this.room.girls;
+  var guys = this.gRoom.guys;
+  var girls = this.gRoom.girls;
   
   var guy, girl;
   for (guy in guys) if(guys.hasOwnProperty(guy)) {

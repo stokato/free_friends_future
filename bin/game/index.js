@@ -34,13 +34,14 @@ function Game(socket, room, ul) {
   this.gSocket = socket;        // Сокет
 
   this.actionsQueue = {};       // Очередь действий игроков
-  this.oldActionsQueue  = {};   // предидущая очередь(для показа симпатий)
+  this.answersLimits = {};
+  this.storedOptions  = {};     // опции, сохраненные на предидущих этапах
   this.currPlayers  = {};       // Игроки, которые на данном этапе могут ходить
   this.nextGame = 'start';      // Игра, которая будет вызвана следующей
   this.currTimer = null;        // Таймер, ограничивает время действия игроков, вызвывает следующую игру
   this.countActions = 0;        // Количество действий до перехода к следующей игре
 
-  addAction(self);
+  //addAction(self, socket);
 
   this.handlers = { // Обработчики игр
     start         : hStart(self),

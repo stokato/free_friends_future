@@ -44,9 +44,9 @@ module.exports = function(uid, options, callback) {
          for(i = 0; i < rowsLen; i++) {
            var row = result.rows[i];
            var message = {
-             id           : row.id,
+             id           : row.id.toString(),
              date         : row.date,
-             companionid  : row.companionid,
+             companionid  : row.companionid.toString(),
              companionvid : row.companionvid,
              incoming     : row.incoming,
              text         : row.text,
@@ -72,9 +72,9 @@ module.exports = function(uid, options, callback) {
          for(i = 0; i < rowsLen; i++) {
            var row = result.rows[i];
            var message = {
-             id           : row.id,
+             id           : row.id.toString(),
              date         : row.date,
-             companionid  : row.companionid,
+             companionid  : row.companionid.toString(),
              companionvid : row.companionvid,
              incoming     : row.incoming,
              text         : row.text,
@@ -90,7 +90,7 @@ module.exports = function(uid, options, callback) {
          for(i = 0; i < newMesLen; i++) {
            var noSuch = true;
            for(j = 0; j < len; j++) {
-             if(newMessages[i].id.toString() == messages[j].id.toString()) {
+             if(newMessages[i].id == messages[j].id) {
                noSuch = false;
              }
            }

@@ -25,7 +25,7 @@ module.exports = function(uid, callback) {
      var row;
      for(i = 0; i < rowsLen; i++) {
        row = result.rows[i];
-       guest = { id: row.guestid, vid: row.guestvid, date: row.date };
+       guest = { id: row.guestid.toString(), vid: row.guestvid, date: row.date };
        guests.push(guest);
        guestList.push(row.guestid);
        if(i == 0) { fields = "?"; }

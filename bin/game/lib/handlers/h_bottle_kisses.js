@@ -4,20 +4,24 @@ var GameError = require('./../../../game_error'),
 var constants = require('../../constants_game');
 
 var startTimer   = require('../start_timer'),
-    pushAllPlayers = require('../push_all_players');
+    pushAllPlayers = require('../push_all_players'),
+    setAnswersLimit = require('../set_answers_limits');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
-  return function (timer, id, options) {
+  return function (socket, timer, id, options) {
 
-    if (!checkInput('game_bottle_kisses', game.gSocket, game.userList, options)) {
-      game.stop();
-      return new GameError(socket, "GAMEBOTTLE", "Верификация не пройдена");
+    if(id) {
+      var player = game.currPlayers[id];
+      //if (!checkInput('game_bottle_kisses', player.getSocket(), game.userList, options)) {
+      //  game.stop();
+      //  return new GameError(player.getSocket(), "GAMEBOTTLE", "Верификация не пройдена");
+      //}
+
+      var result = {};
+      result['kiss'] = {id: id, pick: options.pick};
+      game.emit(player.getSocket(), result);
     }
-
-    var result = {};
-    result['kiss'] = {id: id, pick: options.kiss};
-    game.emit(result);
 
     if (game.countActions == 0 || timer) {
       if(!timer) { clearTimeout(game.currTimer); }
@@ -26,6 +30,7 @@ module.exports = function(game) {
       game.actionsQueue = {};
       game.currPlayers = {};
       pushAllPlayers(game.gRoom, game.currPlayers);
+      setAnswersLimit(game, 1);
 
       game.countActions = constants.PLAYERS_COUNT;
       game.currTimer = startTimer(game.handlers[game.nextGame]);

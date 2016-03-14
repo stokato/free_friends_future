@@ -36,7 +36,7 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   }
 
   if(!room) { // Нет ни одной свободной комнаты
-    room = createRoom(socket);
+    room = createRoom(socket, userList);
     rooms[room.name] = room;
   }
 

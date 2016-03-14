@@ -22,8 +22,8 @@ module.exports = function(userid, callback) {
       var row = result.rows[i];
 
       var good = {
-        id: row.id,
-        goodid: row.goodid
+        id: row.id.toString(),
+        goodid: row.goodid.toString()
       };
 
       goods.push(good);

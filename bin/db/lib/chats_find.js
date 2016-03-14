@@ -47,7 +47,7 @@ module.exports = function(uid, callback) {
         for (var i = 0; i < result.rows.length; i++) {
           var row = result.rows[i];
           var user = {
-            id: row.id,
+            id: row.id.toString(),
             vid: row.vid,
             age: row.age,
             sex: row.sex,

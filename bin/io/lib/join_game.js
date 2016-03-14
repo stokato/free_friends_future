@@ -11,22 +11,16 @@ module.exports = function (socket, userList, roomList) {
       return new GameError(socket, "JOINGAME", "Верификация не пройдена");
     }
 
-    userList[socket.id].setReady(true);
+    var selfProfile = userList[socket.id];
+    selfProfile.setReady(true);
 
     var room = roomList[socket.id];
-    var allReady = true;
 
-    var item, guy, girl;
-    for (item in room.guys) if(room.guys.hasOwnProperty(item)) {
-      guy = room.guys[item];
-      if (!guy.getReady()) allReady = false;
-    }
-    for (item in room.girls) if(room.girls.hasOwnProperty(item)) {
-      girl = room.girls[item];
-      if (!girl.getReady()) allReady = false;
-    }
+    var info = { id: selfProfile.getID(), vid: selfProfile.getVID() };
+    socket.emit('join_game', info);
+    socket.in(room.name).emit('join_game', info);
 
-    if (allReady) room.game.start();
+    room.game.start(socket);
   });
 };
 

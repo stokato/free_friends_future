@@ -23,7 +23,7 @@ module.exports = function(userid, callback) {
       var row = result.rows[i];
 
       var order = {
-        id: row.id,
+        id: row.id.toString(),
         vid: row.vid,
         sum: row.sum || 0,
         date: row.date,

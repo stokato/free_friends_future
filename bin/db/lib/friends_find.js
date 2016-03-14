@@ -23,7 +23,7 @@ module.exports = function(uid, callback) {
       var rowsLen = result.rows.length;
       for(i = 0; i < rowsLen; i++) {
         var row = result.rows[i];
-        friend = { id: row.friendid, vid: row.friendvid, date: row.date };
+        friend = { id: row.friendid.toString(), vid: row.friendvid, date: row.date };
         friends.push(friend);
         friendList.push(row.friendid);
         if(i == 0) { fields = "?"; }

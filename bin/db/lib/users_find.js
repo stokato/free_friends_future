@@ -42,7 +42,7 @@ module.exports = function(id, vid, f_list, callback) {
    if(result.rows.length > 0) {
      var row = result.rows[0];
      var user = {
-       id      : row.id,
+       id      : row.id.toString(),
        age     : row.age,
        country : row.country,
        city    : row.city,

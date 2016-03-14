@@ -20,7 +20,7 @@ module.exports = function(callback) {
      var row = result.rows[i];
 
      var good = {
-       giftid: row.id,
+       giftid: row.id.toString(),
        title: row.title,
        type : row.type,
        price: row.price || 0,

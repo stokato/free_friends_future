@@ -1,29 +1,38 @@
-var constants = require('../../constants_game');
+var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
-    pushAllPlayers = require('../push_all_players'),
-    setAnswersLimit = require('../set_answers_limits');
+    activateAllPlayers = require('../activate_all_players'),
+    setActionsLimit = require('../set_action_limits');
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
-  return function (socket, timer, id) {
+  return function (timer) {
+    if (game.gActionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game.gTimer); }
 
-    if (game.countActions == 0 || timer) {
-      if(!timer) { clearTimeout(game.currTimer); }
+      var result = { complete: true };
 
-      var options = {complete: true};
+      var item, player;
+      for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+        player = game.gActivePlayers[item];
+        break;
+      }
 
-      game.emit(socket, options);
+      game.emit(player.getSocket(), result);
 
-      game.nextGame = 'sympathy_show';
-      game.currPlayers = [];
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, constants.PLAYERS_COUNT -1);
-      game.storedOptions = game.actionsQueue;
-      game.actionsQueue = {};
-      game.countActions = constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
+      game.gNextGame = constants.G_SYMPATHY_SHOW;
 
-      game.currTimer = startTimer(game.pSocket, game.handlers[game.nextGame]);
+      game.gStoredOptions = game.gActionsQueue;
+
+      game.gActivePlayers = {};
+      game.gActionsQueue = {};
+
+      activateAllPlayers(game.gRoom, game.gActivePlayers);
+
+      setActionsLimit(game, constants.PLAYERS_COUNT -1);
+      game.gActionsCount = constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
+
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

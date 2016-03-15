@@ -31,7 +31,7 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
 
         var item;
         for (item in rooms) if (rooms.hasOwnProperty(item)
-          && rooms[item][sex.len] < constants.ONE_GENDER_IN_ROOM &&
+          && rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM &&
           roomList[socket.id].name != rooms[item].name) {
           freeRooms.push(rooms[item]);
         }
@@ -70,7 +70,7 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
           if (currFriend) {
             var frSocket = currFriend.getSocket();
             var friendsRoom = roomList[frSocket.id];
-            if (friendsRoom[len] < constants.ONE_GENDER_IN_ROOM) {
+            if (friendsRoom[len] < constants.ONE_SEX_IN_ROOM) {
               var currInfo = {
                 id: currFriend.getID(),
                 vid: currFriend.getVID(),

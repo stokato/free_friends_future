@@ -46,7 +46,7 @@ module.exports = function (socket, userList, rooms, roomList) {
       var item;
       for (item in rooms) if (rooms.hasOwnProperty(item)) {
         if (rooms[item].name == options.room) {
-          if (rooms[item][sex.len] >= constants.ONE_GENDER_IN_ROOM) {
+          if (rooms[item][sex.len] >= constants.ONE_SEX_IN_ROOM) {
             return new GameError(socket, "CHANGEROOM", "Попытка открыть комнату в которой нет места");
           }
           newRoom = rooms[item];
@@ -61,6 +61,8 @@ module.exports = function (socket, userList, rooms, roomList) {
 
     newRoom[sex.sexArr][profile.getID()] = profile;
     newRoom[sex.len]++;
+
+    profile.setGame(newRoom.game);
 
     roomList[socket.id] = newRoom;
 

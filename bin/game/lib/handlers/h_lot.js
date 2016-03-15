@@ -1,82 +1,96 @@
-var constants = require('../../constants_game');
-
+//var random = require('random-js')();
+var constants = require('../../constants');
 
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
-    pushAllPlayers = require('../push_all_players'),
-    setAnswersLimit = require('../set_answers_limits');
+    activateAllPlayers = require('../activate_all_players'),
+    setActionsLimit = require('../set_action_limits');
 
 module.exports = function(game) {
-  return function(socket, timer, uid) {
+  return function(timer, uid) {
+    clearTimeout(game.gTimer);
+
     var rand;
-    clearTimeout(game.currTimer);
-    rand = randomInteger(0, constants.GAMES.length - 1);
-    game.nextGame = constants.GAMES[rand];
+    do {
+      rand = Math.floor(Math.random() * constants.GAMES.length);
+    } while(rand == game.gStoredRand);
+    game.gStoredRand = rand;
 
-    game.actionsQueue = {};
+    game.gNextGame = constants.GAMES[rand];
 
-    var result = { game : game.nextGame, players: null };
-    if(game.nextGame == 'bottle') {  // для бутылочки ходит тот же, кто крутил вочек
-      game.countActions = 1;
-      result.players =  getPlayersID(game.currPlayers);
-      setAnswersLimit(game, 1);
-    }
-    if(game.nextGame == 'questions') { // для вопросов ходят все, отвечая на произовльный вопрос
-      game.currPlayers = {};
-      game.countActions = constants.PLAYERS_COUNT;
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, 1);
-      rand = randomInteger(0, constants.GAME_QUESTIONS.length - 1);
-      result['question'] =  constants.GAME_QUESTIONS[rand];
-      result['players'] = getPlayersID(game.currPlayers);
-    }
-    if(game.nextGame == 'cards') { // для карт ходят все
-      game.currPlayers = {};
-      game.countActions = constants.PLAYERS_COUNT;
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, 1);
-      result['players'] = getPlayersID(game.currPlayers);
-    }
-    if(game.nextGame == 'best') { // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
-      var firstPlayer;
-      if(uid) {
-        firstPlayer = game.currPlayers[uid];
-      } else {
-        firstPlayer = randomPlayer(game.gRoom);
-      }
-      var firstGender = firstPlayer.getSex();
-      //var secondGender = (firstGender == 2) ? 1 : 2;
-      var player = randomPlayer(game.gRoom, firstGender, [firstPlayer.getID()]);
-      var arr = [];
-      arr.push(firstPlayer.getID());
-      arr.push(player.getID());
+    game.gActionsQueue = {};
 
-      game.storedOptions = {};
-      game.storedOptions[firstPlayer.getID()] = firstPlayer;
-      game.storedOptions[player.getID] = player;
+    var result = { game : game.gNextGame, players: [] };
 
-      game.countActions = constants.PLAYERS_COUNT-2;
-      game.currPlayers = {};
-      pushAllPlayers(game.gRoom, game.currPlayers, arr);
-      setAnswersLimit(game, 1);
-      result['players'] = getPlayersID(game.currPlayers);
-      result['best'] = arr;
+    switch (game.gNextGame) {
+      /////////////////////// БУТЫЛОЧКА //////////////////////////////////////////
+      case constants.G_BOTTLE :    // для бутылочки ходит тот же, кто крутил вочек
+        game.gActionsCount = 1;
+        setActionsLimit(game, 1);
+        break;
+      ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
+      case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
+        game.gActivePlayers = {};
+        activateAllPlayers(game.gRoom, game.gActivePlayers);
+
+        setActionsLimit(game, 1);
+        game.gActionsCount = constants.PLAYERS_COUNT;
+
+        rand = Math.floor(Math.random() * constants.GAME_QUESTIONS.length);
+        result['question'] =  constants.GAME_QUESTIONS[rand];
+        break;
+      ////////////////////// КАРТЫ /////////////////////////////////////////////////////
+      case constants.G_CARDS : // для карт ходят все
+        game.gActivePlayers = {};
+        activateAllPlayers(game.gRoom, game.gActivePlayers);
+
+        setActionsLimit(game, 1);
+        game.gActionsCount = constants.PLAYERS_COUNT;
+        break;
+      //////////////////// ЛУЧШИЙ ///////////////////////////////////////////////////////
+      case constants.G_BEST : // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
+        var firstPlayer;
+        if(uid) {
+          firstPlayer = game.gActivePlayers[uid];
+        } else {
+          firstPlayer = randomPlayer(game.gRoom);
+        }
+        var firstGender = firstPlayer.getSex();
+        var secondPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.getID()]);
+
+        var bestPlayers = [firstPlayer.getID(), secondPlayer.getID()];
+
+        game.gStoredOptions = {};
+        game.gStoredOptions[firstPlayer.getID()] = firstPlayer;
+        game.gStoredOptions[secondPlayer.getID()] = secondPlayer;
+
+        game.gActivePlayers = {};
+        activateAllPlayers(game.gRoom, game.gActivePlayers, bestPlayers);
+
+        setActionsLimit(game, 1);
+        game.gActionsCount = constants.PLAYERS_COUNT-2;
+
+        result['best'] = bestPlayers;
+        break;
+      //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
+      case constants.G_SYMPATHY:
+        game.gActivePlayers = {};
+        activateAllPlayers(game.gRoom, game.gActivePlayers);
+
+        setActionsLimit(game, constants.SHOW_SYMPATHY_LIMIT);
+        game.gActionsCount = constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
+        break;
     }
-    if(game.nextGame == 'sympathy') { // для игры "симпатия" ходят все
-      game.countActions = constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, constants.SHOW_SYMPATHY_LIMIT);
-      result['players'] = getPlayersID(game.currPlayers);
+    /////////////////////////////////////////////////////////////////////////////////////
+    result['players'] = getPlayersID(game.gActivePlayers);
+
+    var item, player;
+    for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+      player = game.gActivePlayers[item];
+      break;
     }
-    game.emit(socket, result);
-    game.currTimer = startTimer(game.pSocket, game.handlers[game.nextGame]);
+    game.emit(player.getSocket(), result);
+    game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
   }
 };
-
-// Получить случайное число из диапазона
-function randomInteger(min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1);
-  rand = Math.round(rand);
-  return rand;
-}

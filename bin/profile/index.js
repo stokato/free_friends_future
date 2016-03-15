@@ -35,7 +35,9 @@ var init          = require('./lib/init'),
     getCountry    = require('./lib/get_country'),
     setReady      = require('./lib/set_ready'),
     getReady      = require('./lib/get_ready'),
-    getPurchase    = require('./lib/get_purchase');
+    getPurchase    = require('./lib/get_purchase'),
+    setGame       = require('./lib/set_game'),
+    getGame       = require('./lib/get_game');
 
 var setExitTimeout = require('./lib/set_exit_timeout'),
     clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -82,6 +84,8 @@ function Profile() {
 
   this.gift_1   = null;    // На игрвом столе на аватарах игроков весят подарки, по ним не ясно
   this.gift_2   = null;
+
+  this.pGame    = null;
 }
 
 Profile.prototype.init            = init;
@@ -123,5 +127,7 @@ Profile.prototype.getCity    = getCity;
 Profile.prototype.getCountry = getCountry;
 Profile.prototype.setReady   = setReady;
 Profile.prototype.getReady   = getReady;
+Profile.prototype.setGame    = setGame;
+Profile.prototype.getGame    = getGame;
 
 module.exports = Profile;

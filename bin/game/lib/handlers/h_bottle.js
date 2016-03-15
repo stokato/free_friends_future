@@ -1,36 +1,40 @@
+var constants = require('../../constants');
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
-    setAnswersLimit = require('../set_answers_limits');
+    setActionsLimit = require('../set_action_limits');
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
-  return function(socket, timer, uid) {
-    if(!timer) { clearTimeout(game.currTimer); }
+  return function(timer, uid) {
+    if(!timer) { clearTimeout(game.gTimer); }
 
     var firstPlayer = null;
     if(uid) {
-      firstPlayer = game.currPlayers[uid];
+      firstPlayer = game.gActivePlayers[uid];
     } else {
-      for(var item in game.currPlayers) if(game.currPlayers.hasOwnProperty(item)) {
-        firstPlayer = game.currPlayers[item];
+      for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+        firstPlayer = game.gActivePlayers[item];
       }
     }
 
     var firstGender = firstPlayer.getSex();
-    var secondGender = (firstGender == 1) ? 2 : 1;
-    var player = randomPlayer(game.gRoom, secondGender);
-    game.currPlayers[player.getID()] = player;
-    setAnswersLimit(game, 1);
-    game.nextGame = 'bottle_kisses';
-    game.countActions = 2;
-    game.actionsQueue = {};
+    var secondGender = (firstGender == constants.CONFIG.sex.male)
+             ? constants.CONFIG.sex.female : constants.CONFIG.sex.male;
+    var secondPlayer = randomPlayer(game.gRoom, secondGender);
 
-    var options = {};
-    options['players'] = getPlayersID(game.currPlayers);
+    game.gActivePlayers[secondPlayer.getID()] = secondPlayer;
+    game.gActionsQueue = {};
 
-    game.emit(socket, options);
+    setActionsLimit(game, 1);
+    game.gActionsCount = 2;
 
-    game.currTimer = startTimer(game.pSocket, game.handlers[game.nextGame]);
+    game.gNextGame = constants.G_BOTTLE_KISSES;
+
+    var result = { players: getPlayersID(game.gActivePlayers) };
+
+    game.emit(firstPlayer.getSocket(), result);
+
+    game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
   }
 };

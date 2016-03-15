@@ -1,5 +1,6 @@
 var async     =  require('async');
 // Свои модули
+var addEmits  =  require('./add_emits');
 var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
@@ -102,11 +103,17 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
             socket.emit('message', history[i]);
           }
 
+
           cb(null, null);
         });
+      }, ////////////////////////////////////////////////////////////
+      function(res, cb) { // добавляем слушатели
+        addEmits(socket, userList, profiles, roomList, rooms);
+        cb(null, null);
       }///////////////////////////////////////////////////////////////
     ], function (err, res) { // Обрабатываем ошибки, либо передаем данные клиенту
       if (err) { return new GameError(socket, "INIT", err.message); }
+
 
     });
   })

@@ -1,9 +1,7 @@
-var addAction      = require('../lib/add_action');
-var constants = require('../constants_game');
+var constants = require('../constants');
 
-// Начать игру если есть нужное количество игроков и все они готовы
-module.exports = function(socket) {
-  addAction(this,  socket);
+// Начинаем игру если есть нужное количество игроков и все они готовы
+module.exports = function() {
 
   var item, guy, girl, allReady = true, countOfPlayers = 0;
   var guys = this.gRoom.guys;
@@ -21,6 +19,6 @@ module.exports = function(socket) {
   }
 
   if(allReady && countOfPlayers == constants.PLAYERS_COUNT) {
-    this.handlers.start(socket, null);
+    this.gHandlers.start(null);
   }
 };

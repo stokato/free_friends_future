@@ -1,7 +1,8 @@
-var constants = require('../constants_game');
-// Запустить таймер, по истечении которого будет выполнен заданный обработчик игры
-module.exports = function(socket, func) {
+var constants = require('../constants');
+
+// Запускаем таймер, по истечении которого будет выполнен заданный обработчик игры
+module.exports = function(func) {
   return setTimeout(function() {
-    func(socket, true, null, null);
+    func(true, null, null);
   }, constants.TIMEOUT * 1000);
 };

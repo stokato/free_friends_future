@@ -1,4 +1,4 @@
-var addAction      = require('./lib/add_action');
+var constants      = require('./constants');
 
 var start          = require('./lib/start'),
     stop           = require('./lib/stop'),
@@ -16,9 +16,7 @@ var hStart         = require('./lib/handlers/h_start'),
 
 /**
  * Класс Игра
- * @param socket
  * @param room
- * @param ul
  * @constructor
  * Метод start запускает игру, выполняетя обработчик start, котоырй дает клиентам команду показать волчек
  *       и назначает ведущего игрока
@@ -27,33 +25,32 @@ var hStart         = require('./lib/handlers/h_start'),
  * Если не все игроки сделали свой ход за установленное время, обработчик срабатывает автоматически
  * Метод stop останавливает игру и сбрасывает у всех играков флаги готовности к игре
  */
-function Game(socket, room, ul) {
+function Game(room) {
   var self = this;
-  this.userList = ul;
-  this.gRoom = room;            // Стола этой игры
-  this.gSocket = socket;        // Сокет
+  this.gRoom = room;                 // Стол этой игры
 
-  this.actionsQueue = {};       // Очередь действий игроков
-  this.answersLimits = {};
-  this.storedOptions  = {};     // опции, сохраненные на предидущих этапах
-  this.currPlayers  = {};       // Игроки, которые на данном этапе могут ходить
-  this.nextGame = 'start';      // Игра, которая будет вызвана следующей
-  this.currTimer = null;        // Таймер, ограничивает время действия игроков, вызвывает следующую игру
-  this.countActions = 0;        // Количество действий до перехода к следующей игре
+  this.gActionsQueue = {};          // Очередь действий игроков
+  this.gActionsLimits = {};         // Лимиты ответов для игроков
+  this.gActionsCount = 0;            // Количество ответов до перехода к следующей игре
 
-  //addAction(self, socket);
+  this.gStoredOptions  = {};        // опции, сохраненные на предидущих этапах
+  this.gActivePlayers  = {};       // Игроки, которые на данном этапе могут ходить
+  this.gNextGame = 'start';        // Игра, которая будет вызвана следующей
 
-  this.handlers = { // Обработчики игр
-    start         : hStart(self),
-    lot           : hLot(self),
-    bottle        : hBottle(self),
-    bottle_kisses : hBottleKisses(self),
-    questions     : hQuestions(self),
-    cards         : hCards(self),
-    best          : hBest(self),
-    sympathy      : hSympathy(self),
-    sympathy_show : hSympathyShow(self)
-  };
+  this.gTimer = null;       // Таймер, ограничивает время действия игроков, вызвывает следующую игру
+
+  this.gHandlers = {};           // Обработчики игр
+  this.gHandlers[constants.G_START]         = hStart(self);
+  this.gHandlers[constants.G_LOT]           = hLot(self);
+  this.gHandlers[constants.G_BOTTLE]        = hBottle(self);
+  this.gHandlers[constants.G_BOTTLE_KISSES] = hBottleKisses(self);
+  this.gHandlers[constants.G_QUESTIONS]     = hQuestions(self);
+  this.gHandlers[constants.G_CARDS]         = hCards(self);
+  this.gHandlers[constants.G_BEST]          = hBest(self);
+  this.gHandlers[constants.G_SYMPATHY]      = hSympathy(self);
+  this.gHandlers[constants.G_SYMPATHY_SHOW] = hSympathyShow(self);
+
+  this.gStoredRand = 5;
 }
 
 Game.prototype.start = start;

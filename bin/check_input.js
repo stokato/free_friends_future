@@ -1,15 +1,24 @@
 var validator = require('validator');
+var constants_io = require('./io/constants_io');
+var constants_game = require('./game/constants');
+
 var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
 var ID_LEN = 36;
 
 function checkInput(em, socket, userList, opt) {
-  if(em == 'init' && userList[socket.id] ) { new Error("Пользователь уже инициализирован");  return false }
-  if(em != 'init' && !userList[socket.id] ) { new Error("Пользователь не авторизован");  return false }
+  if(em == constants_io.IO_INIT && userList[socket.id] ) {
+    new Error("Пользователь уже инициализирован");
+    return false
+  }
+  if(em != constants_io.IO_INIT && !userList[socket.id] ) {
+    new Error("Пользователь не авторизован");
+    return false
+  }
   var options = opt;
   var isValid = true;
   var val;
 
-  if(em == 'init') {
+  if(em == constants_io.IO_INIT) {
 
     if(!checkOptionsType(options)) { return false }
 
@@ -20,51 +29,51 @@ function checkInput(em, socket, userList, opt) {
     isValid = (validator.isDate(options.bdate + "")? isValid : false);
   }
 
-  if(em == 'message') {
+  if(em == constants_io.IO_MESSAGE) {
     if(!checkOptionsType(options)) { return false }
   }
 
-  if(em == 'change_room') {
+  if(em == constants_io.IO_CHANGE_ROOM) {
     if(!checkOptionsType(options)) { return false }
 
-    isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
+    //isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
   }
 
-  if(em == 'get_profile') {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = checkID(options.id);
-  }
-
-  if(em == 'private_message') {
+  if(em == constants_io.IO_GET_PROFILE) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.id);
   }
 
-  if(em == 'make_gift') {
-    if(!checkOptionsType(options)) { return false }
-  }
-
-  if(em == 'add_friend') {
+  if(em == constants_io.IO_PRIVATE_MESSAGE) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.id);
   }
 
-  if(em == 'change_status') {
+  if(em == constants_io.IO_MAKE_GIFT) {
+    if(!checkOptionsType(options)) { return false }
+  }
+
+  if(em == constants_io.IO_ADD_FRIEND) {
+    if(!checkOptionsType(options)) { return false }
+
+    isValid = checkID(options.id);
+  }
+
+  if(em == constants_io.IO_CHANGE_STATUS) {
     if(!checkOptionsType(options)) { return false }
 
     //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
   }
 
-  if(em == 'open_private_chat') {
+  if(em == constants_io.IO_OPEN_PRIVATE_CHAT) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.id);
   }
 
-  if(em == 'get_chat_history') {
+  if(em == constants_io.IO_GET_CHAT_HISTORY) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.id);
@@ -72,45 +81,45 @@ function checkInput(em, socket, userList, opt) {
     isValid = (validator.isDate(options.sdate + "")? isValid : false);
   }
 
-  if(em == 'open_private_chat') {
+  if(em == constants_io.IO_OPEN_PRIVATE_CHAT) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = (!validator.isNull(options.id))? isValid : false;
   }
 
-  if(em == 'close_private_chat') {
+  if(em == constants_io.IO_CLOSE_PRIVATE_CHAT) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = (!validator.isNull(options.id))? isValid : false;
   }
 
-  if(em == 'game_best') {
+  if(em == constants_game.G_BEST) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.pick);
   }
 
-  if(em == 'game_bottle_kisses') {
+  if(em == constants_game.G_BOTTLE_KISSES) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = (validator.isBoolean(options.pick + "")? isValid : false);
   }
 
-  if(em == 'game_questions') {
+  if(em == constants_game.G_QUESTIONS) {
     if(!checkOptionsType(options)) { return false }
 
     val = options.pick + "";
     isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
   }
 
-  if(em == 'game_cards') {
+  if(em == constants_game.G_CARDS) {
     if(!checkOptionsType(options)) { return false }
 
     val = options.pick + "";
     isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
   }
 
-  if(em == 'game_sympathy') {
+  if(em == constants_game.G_SYMPATHY || em == constants_game.G_SYMPATHY_SHOW) {
     if(!checkOptionsType(options)) { return false }
 
     isValid = checkID(options.pick);

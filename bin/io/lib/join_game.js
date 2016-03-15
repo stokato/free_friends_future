@@ -12,15 +12,17 @@ module.exports = function (socket, userList, roomList) {
     }
 
     var selfProfile = userList[socket.id];
-    selfProfile.setReady(true);
+    if(!selfProfile.getReady()) {
+      selfProfile.setReady(true);
 
-    var room = roomList[socket.id];
+      var room = roomList[socket.id];
 
-    var info = { id: selfProfile.getID(), vid: selfProfile.getVID() };
-    socket.emit('join_game', info);
-    socket.in(room.name).emit('join_game', info);
+      var info = { id: selfProfile.getID(), vid: selfProfile.getVID() };
+      socket.emit('join_game', info);
+      socket.in(room.name).emit('join_game', info);
 
-    room.game.start(socket);
+      room.game.start(socket);
+    }
   });
 };
 

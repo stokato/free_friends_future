@@ -1,3 +1,6 @@
+var constants_io = require('./io/constants_io');
+var constants_game = require('./game/constants');
+
 // Свой объект ошибок
 function GameError(socket, func, message) {
  var err = {};
@@ -5,57 +8,57 @@ function GameError(socket, func, message) {
  err.stack = (new Error()).stack;
 
  switch(func) {
-   case "INIT"               : err.name = "Ошибка инициализации";
+   case constants_io.IO_INIT       : err.name = "Ошибка инициализации";
      break;
-   case "EXIT"               : err.name = "Ошибка отключения от игры";
+   case constants_io.IO_DISCONNECT : err.name = "Ошибка отключения от игры";
      break;
-   case "CHOOSEROOM"         : err.name = "Ошибка открытия окна смены стола";
+   case constants_io.IO_CHOOSE_ROOM         : err.name = "Ошибка открытия окна смены стола";
      break;
-   case "GETROOMS"           : err.name = "Ошибка открытия окна доступных столов";
+   case constants_io.IO_GET_ROOMS          : err.name = "Ошибка открытия окна доступных столов";
      break;
-   case "CHANGEROOM"         : err.name = "Ошибка смены стола";
+   case constants_io.IO_CHANGE_ROOM        : err.name = "Ошибка смены стола";
      break;
-   case "GETPROFILE"         : err.name = "Ошибка открытия окна профиля";
+   case constants_io.IO_GET_PROFILE       : err.name = "Ошибка открытия окна профиля";
      break;
-   case "GETHISTORY"         : err.name = "Ошибка открытия окна личных сообщений";
+   //case "GETHISTORY"         : err.name = "Ошибка открытия окна личных сообщений";
+   //  break;
+   //case "GETGIFTS"           : err.name = "Ошибка открытия окна подарков";
+   //  break;
+   case constants_io.IO_GET_MONEY          : err.name = "Ошибка получения баланса";
      break;
-   case "GETGIFTS"           : err.name = "Ошибка открытия окна подарков";
+   case constants_io.IO_MAKE_GIFT          : err.name = "Ошибка совершения подарка";
      break;
-   case "GETMONEY"           : err.name = "Ошибка получения баланса";
+   case constants_io.IO_GET_TOP             : err.name = "Ошибка открытия топа игроков";
      break;
-   case "MAKEGIFT"           : err.name = "Ошибка совершения подарка";
+   case constants_io.IO_MESSAGE    : err.name = "Ошибка отправки публичного сообщения";
      break;
-   case "GETTOP"             : err.name = "Ошибка открытия топа игроков";
+   case constants_io.IO_PRIVATE_MESSAGE    : err.name = "Ошибка отправки личного сообщения";
      break;
-   case "SENDPUBMESSAGE"     : err.name = "Ошибка отправки публичного сообщения";
+   case constants_io.IO_GET_SHOP       : err.name = "Ошибка открытия окна магазина подарков";
      break;
-   case "SENDPRIVMESSAGE"    : err.name = "Ошибка отправки личного сообщения";
+   case constants_io.IO_ADD_FRIEND          : err.name = "Ошибка добавления в друзья";
      break;
-   case "GETGIFTSHOP"        : err.name = "Ошибка открытия окна магазина подарков";
+   case constants_io.IO_CHANGE_STATUS      : err.name = "Ошибка изменения статуса";
      break;
-   case "ADDFRIEND"          : err.name = "Ошибка добавления в друзья";
+   case constants_game.G_BOTTLE         : err.name = "Игра остановлена. Ошибка в игре бутылочка";
      break;
-   case "CHANGESTATUS"       : err.name = "Ошибка изменения статуса";
+   case constants_game.G_QUESTIONS     : err.name = "Игра остановлена. Ошибка в игре Вопросы";
      break;
-   case "GAMEBOTTLE"         : err.name = "Игра остановлена. Ошибка в игре бутылочка";
+   case constants_game.G_CARDS          : err.name = "Игра остановлена. Ошибка в игре Золото";
      break;
-   case "GAMEQUESTIONS"      : err.name = "Игра остановлена. Ошибка в игре Вопросы";
+   case constants_game.G_BEST           : err.name = "Игра остановлена. Ошибка в игре Кто больше нравится";
      break;
-   case "GAMECARDS"          : err.name = "Игра остановлена. Ошибка в игре Золото";
-     break;
-   case "GAMEBEST"           : err.name = "Игра остановлена. Ошибка в игре Кто больше нравится";
-     break;
-   case "GAMESYMPATHY"       : err.name = "Игра остановлена. Ошибка в игре Симпатии";
+   case constants_game.G_SYMPATHY       : err.name = "Игра остановлена. Ошибка в игре Симпатии";
      break;
    case "GAME"               : err.name = "Игра остановлена всвязи с ошибкой";
      break;
-   case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
+   //case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";
+   //  break;
+   case constants_io.IO_GET_CHAT_HISTORY     : err.name = "Ошибка получения истории сообщений";
      break;
-   case "GETCHATHISTORY"     : err.name = "Ошибка получения истории сообщений";
+   case constants_io.IO_OPEN_PRIVATE_CHAT       : err.name = "Ошибка открытия приватного чата";
      break;
-   case "OPENPRIVCHAT"       : err.name = "Ошибка открытия приватного чата";
-     break;
-   case "CLOSEPRIVCHAT"      : err.name = "Ошибка закрытия приватного чата";
+   case constants_io.IO_CLOSE_PRIVATE_CHAT      : err.name = "Ошибка закрытия приватного чата";
      break;
    default:  err.name =   "Неизвестная ошибка"
  }

@@ -1,50 +1,48 @@
-var GameError = require('./../../../game_error'),
-  checkInput = require('./../../../check_input');
-var constants = require('../../constants_game');
+var GameError = require('./../../../game_error');
+var constants = require('../../constants');
 
-var startTimer   = require('../start_timer'),
-    pushAllPlayers = require('../push_all_players'),
-    setAnswersLimit = require('../set_answers_limits');
+var startTimer         = require('../start_timer'),
+    activateAllPlayers = require('../activate_all_players'),
+    setActionsLimit    = require('../set_action_limits');
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
-  return function(socket, timer, id, options) {
-    if(id) {
-      var sympathy = game.storedOptions[options.pick];
-      var result = { sympathy: []}, i;
+  return function(timer, uid, options) {
+    if(uid) {
+      var sympathy = game.gStoredOptions[options.pick];
+
+      var result = { picks: [] }, i;
 
       for(i = 0; i < sympathy.length; i ++) {
-        var uid = sympathy[i].pick;
+        var pickedId = sympathy[i].pick;
 
-        //if (!checkInput('game_sympathy', game.currPlayers[id].getSocket(), game.userList, options)) {
-        //  game.stop();
-        //  return new GameError(game.currPlayers[id].getSocket(), "GAMESYMPATHY",
-        //    "Неверные агрументы: в качестве ответа должен быть указан ИД игрока");
-        //}
-
-        if(!game.gRoom.guys[uid] && !game.gRoom.girls[uid]) {
+        if(!game.gRoom.guys[pickedId] && !game.gRoom.girls[pickedId]) {
           game.stop();
-          return new GameError(game.currPlayers[id].getSocket(), 'GAMESYMPATHY', "Неверные агрументы: нет игрока с таким ИД");
+          return new GameError(game.gActivePlayers[uid].getSocket(),
+                      'GAMESYMPATHY', "Неверные агрументы: нет игрока с таким ИД");
         }
 
-        result.sympathy.push({id : options.pick, sympathy : uid})
+        result.picks.push({ id : options.pick, pick : pickedId })
       }
 
-      game.emit(socket, result, id);
+      game.emit(game.gActivePlayers[uid].getSocket(), result, uid);
     }
 
-    if(game.countActions == 0 || timer) {
-      if(!timer) { clearTimeout(game.currTimer); }
+    if(game.gActionsCount == 0 || timer) { // После истечения времени на просмотр чужих симпатий
+      if(!timer) { clearTimeout(game.gTimer); }
 
-      game.nextGame = 'start';
-      game.currPlayers = {};
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, 1);
-      game.actionsQueue = {};
-      game.storedOptions = {};
-      game.countActions = constants.PLAYERS_COUNT;
+      game.gNextGame = constants.G_START;
 
-      game.currTimer = startTimer(game.pSocket, game.handlers[game.nextGame]);
+      game.gActivePlayers = {};
+      game.gActionsQueue = {};
+      game.gStoredOptions = {};
+
+      activateAllPlayers(game.gRoom, game.gActivePlayers);
+
+      setActionsLimit(game, 1);
+      game.gActionsCount = constants.PLAYERS_COUNT;
+
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

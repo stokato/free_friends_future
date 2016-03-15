@@ -23,7 +23,7 @@ module.exports = function (socket, userList, rooms) {
 
     var resRooms = [];
     async.map(rooms, function (item, cb) { ///////////////////////////////////////
-      if (item[sex.len] < constants.ONE_GENDER_IN_ROOM) {
+      if (item[sex.len] < constants.ONE_SEX_IN_ROOM) {
         getRoomInfo(item, function (err, info) {
           if (err) { return cb(err, null); }
 

@@ -14,7 +14,7 @@ var constats = require('./../constants_io'),
 module.exports = function (socket, userList, roomList, rooms, callback) {
   var profile = userList[socket.id];
   var room = null;
-  var count = constats.ONE_GENDER_IN_ROOM +1;
+  var count = constats.ONE_SEX_IN_ROOM +1;
 
   var sex = defineSex(profile);
 
@@ -26,7 +26,7 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   var item;
   for(item in rooms) if (rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
-      var need = constats.ONE_GENDER_IN_ROOM - rooms[item][sex.len];
+      var need = constats.ONE_SEX_IN_ROOM - rooms[item][sex.len];
 
       if(need > 0 && need < count) {
         count = need;
@@ -52,7 +52,7 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
     oldRoom[sex.len]--;
     if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
   }
-
+  profile.setGame(room.game);
   roomList[socket.id] = room;
 
   callback(null, room);

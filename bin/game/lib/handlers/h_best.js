@@ -1,23 +1,18 @@
-var GameError = require('./../../../game_error'),
-    checkInput = require('./../../../check_input');
-var constants = require('../../constants_game');
+var GameError = require('./../../../game_error');
+var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
-    pushAllPlayers = require('../push_all_players'),
-    setAnswersLimit = require('../set_answers_limits');
+    activateAllPlayers = require('../activate_all_players'),
+    setActionsLimit = require('../set_action_limits');
 
 module.exports = function(game) {
-  return function(socket, timer, id, options) { // Лучший, сообщаем всем их выбор
+  return function(timer, id, options) { // Лучший, сообщаем всем их выбор
     if(id) {
-      var player = game.currPlayers[id];
-      //if (!checkInput('game_best', player.getSocket(), game.userList, options)) {
-      //  game.stop();
-      //  return new GameError(player.getSocket(), "GAMEBEST", "Верификация не пройдена");
-      //}
+      var player = game.gActivePlayers[id];
 
       var result = {};
 
-      if(!game.storedOptions[options.pick]) {
+      if(!game.gStoredOptions[options.pick]) { // Если нет такого пользоателя среди кандидатов
         game.stop();
         return new GameError(player.getSocket(), 'GAMEBEST',
           "Неверные аргументы: за пользователя с таким ИД нельзя проголосовать");
@@ -25,20 +20,21 @@ module.exports = function(game) {
 
       result['pick'] = { id : id, pick : options.pick};
 
-      game.emit(socket, result);
+      game.emit(player.getSocket(), result);
     }
 
-    if(game.countActions == 0 || timer) {
-      if(!timer) { clearTimeout(game.currTimer); }
+    if(game.gActionsCount == 0 || timer) { // После голосования
+      if(!timer) { clearTimeout(game.gTimer); }
 
-      game.nextGame = 'start';
-      game.currPlayers = {};
-      pushAllPlayers(game.gRoom, game.currPlayers);
-      setAnswersLimit(game, 1);
-      game.actionsQueue = {};
-      game.countActions = constants.PLAYERS_COUNT;
+      game.gNextGame = constants.G_START;
+      game.gActivePlayers = {};
+      game.gActionsQueue = {};
+      activateAllPlayers(game.gRoom, game.gActivePlayers);
 
-      game.currTimer = startTimer(game.pSocket, game.handlers[game.nextGame]);
+      setActionsLimit(game, 1);
+      game.gActionsCount = constants.PLAYERS_COUNT;
+
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

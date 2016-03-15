@@ -10,6 +10,17 @@
   "user" : {
     "settings" : {
       "start_money" : "50"
+    },
+    "constants" : {
+      "sex" : {
+        "male" : "2",
+        "female" : "1"
+      }
     }
+  },
+  "io" : {
+    "len_room_history" : "5",
+    "one_sex_in_room"  : "5",
+    "exit_timeout"  : "3000"
   }
 }

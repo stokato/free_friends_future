@@ -2,9 +2,9 @@ var async     =  require('async');
 
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
-    constants = require('./../constants_io'),
+    constants = require('./../constants'),
     defineSex = require('./define_sex'),
-    createRoom = require('./create_room'),
+    //createRoom = require('./create_room'),
     getRoomInfo = require('./get_room_info');
 /*
  Предлагаем способ смены комнаты
@@ -17,17 +17,17 @@ var GameError = require('../../game_error'),
  - Отправляем клиенту случайную комнату и список друзей (какие данные нужны ???)
  */
 module.exports = function (socket, userList, roomList, rooms, profiles) {
-  socket.on('choose_room', function() {
-    if (!checkInput('choose_room', socket, userList, null))
-      return new GameError(socket, "CHOOSEROOM", "Верификация не пройдена");
+  socket.on(constants.IO_CHOOSE_ROOM, function() {
+    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, null)) { return; }
+    var f = constants.FIELDS;
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков
       function (cb) {
-        var profile = userList[socket.id];
+        var selfProfile = userList[socket.id];
 
         var freeRooms = [];
 
-        var sex = defineSex(profile);
+        var sex = defineSex(selfProfile);
 
         var item;
         for (item in rooms) if (rooms.hasOwnProperty(item)
@@ -37,15 +37,15 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         }
 
         if(freeRooms.length > 0) {
-          var index = randomInteger(0, freeRooms.length - 1);
+          var index = Math.floor(Math.random() * freeRooms.length);
           var randRoom = freeRooms[index];
           getRoomInfo(randRoom, function (err, info) {
             if (err) { return cb(err, null); }
 
-            cb(null, profile, info, sex.sexArr, sex.len);
+            cb(null, selfProfile, info, sex.sexArr, sex.len);
           });
         } else {
-          cb(null, profile, null, sex.sexArr, sex.len);
+          cb(null, selfProfile, null, sex.sexArr, sex.len);
         }
         //if (freeRooms.length == 0) {
         //  var newRoom = createRoom(socket);
@@ -53,8 +53,8 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         //  freeRooms.push(newRoom);
         //}
       },////////////////////////////////// Получаем всех друзей пользователя
-      function (profile, roomInfo, genArr, len, cb) {
-        profile.getFriends(function (err, allFriends) {
+      function (selfProfile, roomInfo, genArr, len, cb) {
+        selfProfile.getFriends(function (err, allFriends) {
           if (err) { return cb(err, null); }
 
           cb(null, roomInfo, len, allFriends);
@@ -63,44 +63,37 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
       function (roomInfo, len, allFriends, cb) {
         var friendList = [];
         allFriends = allFriends || [];
-        var i = null;
-        var friendsLen = allFriends.length;
-        for (i = 0; i < friendsLen; i++) {
-          var currFriend = profiles[allFriends[i].id];
+        var i;
+        for (i = 0; i < allFriends.length; i++) {
+          var currFriend = profiles[allFriends[i][f.id]];
           if (currFriend) {
-            var frSocket = currFriend.getSocket();
-            var friendsRoom = roomList[frSocket.id];
+            var friendSocket = currFriend.getSocket();
+            var friendsRoom = roomList[friendSocket[f.id]];
             if (friendsRoom[len] < constants.ONE_SEX_IN_ROOM) {
-              var currInfo = {
-                id: currFriend.getID(),
-                vid: currFriend.getVID(),
-                age: currFriend.getAge(), //
-                sex: currFriend.getSex(),
-                city: currFriend.getCity(),
-                country: currFriend.getCountry(), //
-                room: friendsRoom.name
-              };
+              var currInfo = {};
+              currInfo[f.id]      = currFriend.getID();
+              currInfo[f.vid]     = currFriend.getVID();
+              currInfo[f.age]     = currFriend.getAge();
+              currInfo[f.sex]     = currFriend.getSex();
+              currInfo[f.city]    = currFriend.getCity();
+              currInfo[f.country] = currFriend.getCountry();
+              currInfo[f.room]    = friendsRoom.name;
+
               friendList.push(currInfo);
             }
           }
         }
-        var res = {
-          random: roomInfo,
-          friends: friendList
-        };
+        var result = {};
+        result[f.random] = roomInfo;
+        result[f.friends] = friendList;
 
-        cb(null, res);
+        socket.emit(constants.IO_CHOOSE_ROOM, result);
+
+        cb(null, result);
       }////////////////////////////////// Обрабатываем ошибки или отравляем результат
     ], function (err, res) {
-      if (err) { return new GameError(socket, "CHOOSEROOM", err.message); }
+      if (err) { return new GameError(socket, constants.IO_CHOOSE_ROOM, err.message); }
 
-      socket.emit('choose_room', res);
     })
   });
 };
-
-function randomInteger(min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1);
-  rand = Math.round(rand);
-  return rand;
-}

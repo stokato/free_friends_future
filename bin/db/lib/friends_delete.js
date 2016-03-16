@@ -1,3 +1,5 @@
+var constants = require('../constants');
+var buildQuery = require('./build_query');
 /*
  Удалить всех друзей игрока: ИД
  - Проверка на ИД
@@ -6,13 +8,15 @@
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-    if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-    var query = "DELETE FROM user_friends WHERE userid = ?";
-    this.client.execute(query, [uid], {prepare: true }, function(err) {
-        if (err) {  return callback(err); }
+  var f = constants.IO.FIELDS;
 
-        callback(null, uid);
-    });
+  var query = buildQuery.build(buildQuery.Q_DELETE, [], constants.T_USERFRIENDS, [f.userid], [1]);
+  this.client.execute(query, [uid], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
+
+    callback(null, uid);
+  });
 
 };

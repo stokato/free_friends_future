@@ -65,11 +65,11 @@ function Profile() {
   this.pAge      = 0;      // Возраст
   this.pCountry  = null;   // Страна
   this.pCity     = null;   // Город
-
   this.pSex      = null;   // пол игрока (1 - женский, 2 - мужской)
+
   this.pStatus   = null;   // статус (заводит игрок)
   this.pPoints   = 0;      // очки
-  this.pMoney    = 0;      // деньги
+  this.pMoney    = 0;      // деньги (БД)
 
   this.pReady    = false;
 

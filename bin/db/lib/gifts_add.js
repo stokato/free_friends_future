@@ -1,3 +1,5 @@
+var constants = require('../constants');
+var buildQuery = require('./build_query');
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
  - Провека: все поля
@@ -5,33 +7,34 @@
  - Строим и выполняем запрос
  - Возвращаем объект подарка
  */
-module.exports = function(uid, options, callback) {
-    var gift = options || {};
+module.exports = function(uid, options, callback) { options = options || {};
+  var f = constants.IO.FIELDS;
 
-    var giftId = gift.id;
-    var type = gift.type;
-    var data = gift.data;
-    var date = gift.date;
-    var fromid = gift.fromid;
-    var fromvid = gift.fromvid;
+  if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
-    if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
+  if (!options[f.type] || !options[f.data] || !options[f.date] || !options[f.fromid]
+    || !options[f.fromvid]) {
+    return callback(new Error("Не указаны параметры подарка"), null);
+  }
 
-    if (!type || !data || !date || !fromid || !fromvid) {
-        return callback(new Error("Не указаны параметры подарка"), null);
-    }
+  var id = this.uuid.random();
 
-    var id = this.uuid.random();
+  var fields = fields = [f.id, f.userid, f.giftid, f.type, f.data, f.date, f.fromid, f.fromvid];
+  var query = buildQuery.build(buildQuery.Q_INSERT, fields, constants.T_USERGIFTS);
 
-    var fields = "id, userid, giftid, type, data, date, fromid, fromvid";
-    var values = "?, ?, ?, ?, ?, ?, ?, ?";
-    var params = [id, uid, giftId, type, data, date, fromid, fromvid];
+  var params = [];
+  params.push(id);
+  params.push(uid);
+  params.push(options[f.id]);
+  params.push(options[f.type]);
+  params.push(options[f.data]);
+  params.push(options[f.date]);
+  params.push(options[f.fromid]);
+  params.push(options[f.fromvid]);
 
-    var query = "INSERT INTO user_gifts (" + fields + ") VALUES (" + values + ")";
+  this.client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
-    this.client.execute(query, params, {prepare: true },  function(err) {
-        if (err) {  return callback(err); }
-
-        callback(null, gift);
-    });
+    callback(null, options);
+  });
 };

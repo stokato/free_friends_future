@@ -1,4 +1,4 @@
-var constats = require('./../constants_io'),
+var constants = require('./../constants'),
     defineSex = require('./define_sex'),
     createRoom = require('./create_room');
 /*
@@ -12,11 +12,11 @@ var constats = require('./../constants_io'),
  - Возвращаем выбранную комнату
  */
 module.exports = function (socket, userList, roomList, rooms, callback) {
-  var profile = userList[socket.id];
-  var room = null;
-  var count = constats.ONE_SEX_IN_ROOM +1;
+  var selfProfile = userList[socket.id];
+  var newRoom = null;
+  var count = constants.ONE_SEX_IN_ROOM +1;
 
-  var sex = defineSex(profile);
+  var sex = defineSex(selfProfile);
 
   var selfRoomName = '';
   if(roomList[socket.id]) {
@@ -26,35 +26,35 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
   var item;
   for(item in rooms) if (rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
-      var need = constats.ONE_SEX_IN_ROOM - rooms[item][sex.len];
+      var need = constants.ONE_SEX_IN_ROOM - rooms[item][sex.len];
 
       if(need > 0 && need < count) {
         count = need;
-        room = rooms[item];
+        newRoom = rooms[item];
       }
     }
   }
 
-  if(!room) { // Нет ни одной свободной комнаты
-    room = createRoom(socket, userList);
-    rooms[room.name] = room;
+  if(!newRoom) { // Нет ни одной свободной комнаты
+    newRoom = createRoom(socket, userList);
+    rooms[newRoom.name] = newRoom;
   }
 
-  socket.join(room.name);
+  socket.join(newRoom.name);
 
-  room[sex.sexArr][profile.getID()] = profile;
-  room[sex.len] ++;
+  newRoom[sex.sexArr][selfProfile.getID()] = selfProfile;
+  newRoom[sex.len] ++;
 
   var oldRoom = roomList[socket.id];
   if(oldRoom) {
     socket.leave(oldRoom.name);
-    delete oldRoom[sex.sexArr][profile.getID()];
+    delete oldRoom[sex.sexArr][selfProfile.getID()];
     oldRoom[sex.len]--;
     if(oldRoom.guys_count == 0 && oldRoom.girls_count == 0) delete rooms[oldRoom.name];
   }
-  profile.setGame(room.game);
-  roomList[socket.id] = room;
+  selfProfile.setGame(newRoom.game);
+  roomList[socket.id] = newRoom;
 
-  callback(null, room);
+  callback(null, newRoom);
 };
 

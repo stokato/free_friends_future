@@ -1,128 +1,138 @@
 var validator = require('validator');
-var constants_io = require('./io/constants_io');
+
+var GameError = require('./game_error');
+var constants_io = require('./io/constants');
 var constants_game = require('./game/constants');
 
 var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
 var ID_LEN = 36;
 
-function checkInput(em, socket, userList, opt) {
+function checkInput(em, socket, userList, options) {
   if(em == constants_io.IO_INIT && userList[socket.id] ) {
-    new Error("Пользователь уже инициализирован");
-    return false
+    new GameError(socket, em, "Пользователь уже инициализирован");
+    return false;
   }
   if(em != constants_io.IO_INIT && !userList[socket.id] ) {
-    new Error("Пользователь не авторизован");
-    return false
+    new GameError(socket, em, "Пользователь не авторизован");
+    return false;
   }
-  var options = opt;
+  if(!checkOptionsType(options)) {
+    new GameError(socket, em, "Не заданы опции");
+    return false;
+  }
+
   var isValid = true;
   var val;
+  var f = constants_io.FIELDS;
 
-  if(em == constants_io.IO_INIT) {
+  switch (em) {
+    case constants_io.IO_INIT :
+      isValid = (validator.isInt(options[f.country] + ""))? isValid : false;
+      isValid = (validator.isInt(options[f.city] + ""))? isValid : false;
+      isValid = (options[f.sex] + "" == constants_io.GUY ||
+                 options[f.sex] + "" == constants_io.GIRL) ? isValid : false;
+      isValid = (validator.isDate(options[f.bdate] + "")? isValid : false);
 
-    if(!checkOptionsType(options)) { return false }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно заданы поля: страна, город, пол, дата рождения");
+      }
+      break;
+    case constants_io.IO_MESSAGE :
 
-   // isValid = (validator.isInt(options.age))? isValid : false;
-    isValid = (validator.isInt(options.country + ""))? isValid : false;
-    isValid = (validator.isInt(options.city + ""))? isValid : false;
-    isValid = (options.sex == 1 || options.sex + "" == 2)? isValid : false;
-    isValid = (validator.isDate(options.bdate + "")? isValid : false);
-  }
+      break;
+    case constants_io.IO_CHANGE_ROOM :
 
-  if(em == constants_io.IO_MESSAGE) {
-    if(!checkOptionsType(options)) { return false }
-  }
+      //isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
+      break;
+    case constants_io.IO_GET_PROFILE :
+      isValid = checkID(options[f.id]);
 
-  if(em == constants_io.IO_CHANGE_ROOM) {
-    if(!checkOptionsType(options)) { return false }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
+    case constants_io.IO_PRIVATE_MESSAGE :
+      isValid = checkID(options[f.id]);
 
-    //isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
+    case constants_io.IO_MAKE_GIFT :
 
-  if(em == constants_io.IO_GET_PROFILE) {
-    if(!checkOptionsType(options)) { return false }
+      break;
+    case constants_io.IO_ADD_FRIEND :
+      isValid = checkID(options[f.id]);
 
-    isValid = checkID(options.id);
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
+    case constants_io.IO_CHANGE_STATUS :
 
-  if(em == constants_io.IO_PRIVATE_MESSAGE) {
-    if(!checkOptionsType(options)) { return false }
+      //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
+      break;
+    case constants_io.IO_OPEN_PRIVATE_CHAT :
+      isValid = checkID(options[f.id]);
 
-    isValid = checkID(options.id);
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
+    case constants_io.IO_GET_CHAT_HISTORY :
+      isValid = checkID(options[f.id]);
+      isValid = (validator.isDate(options[f.first_date] + "")? isValid : false);
+      isValid = (validator.isDate(options[f.second_date] + "")? isValid : false);
 
-  if(em == constants_io.IO_MAKE_GIFT) {
-    if(!checkOptionsType(options)) { return false }
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно заданы поля: ИД, минимальная и максимальная даты выборки");
+      }
+      break;
+    case constants_io.IO_CLOSE_PRIVATE_CHAT :
+      isValid = checkID(options[f.id]);
 
-  if(em == constants_io.IO_ADD_FRIEND) {
-    if(!checkOptionsType(options)) { return false }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
+    case constants_game.G_BEST :
+      isValid = checkID(options[f.pick]);
 
-    isValid = checkID(options.id);
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим");
+      }
+      break;
+    case constants_game.G_BOTTLE_KISSES :
+      isValid = (validator.isBoolean(options[f.pick] + "")? isValid : false);
 
-  if(em == constants_io.IO_CHANGE_STATUS) {
-    if(!checkOptionsType(options)) { return false }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean");
+      }
+      break;
+    case constants_game.G_QUESTIONS :
+      val = options[f.pick] + "";
+      isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
-    //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
-  }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть 1, 2 или 3");
+      }
+      break;
+    case constants_game.G_CARDS :
+      val = options[f.pick] + "";
+      isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
 
-  if(em == constants_io.IO_OPEN_PRIVATE_CHAT) {
-    if(!checkOptionsType(options)) { return false }
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9");
+      }
+      break;
+    case constants_game.G_SYMPATHY :
+    case constants_game.G_SYMPATHY_SHOW :
+      isValid = checkID(options[f.pick]);
 
-    isValid = checkID(options.id);
-  }
-
-  if(em == constants_io.IO_GET_CHAT_HISTORY) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = checkID(options.id);
-    isValid = (validator.isDate(options.fdate + "")? isValid : false);
-    isValid = (validator.isDate(options.sdate + "")? isValid : false);
-  }
-
-  if(em == constants_io.IO_OPEN_PRIVATE_CHAT) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = (!validator.isNull(options.id))? isValid : false;
-  }
-
-  if(em == constants_io.IO_CLOSE_PRIVATE_CHAT) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = (!validator.isNull(options.id))? isValid : false;
-  }
-
-  if(em == constants_game.G_BEST) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = checkID(options.pick);
-  }
-
-  if(em == constants_game.G_BOTTLE_KISSES) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = (validator.isBoolean(options.pick + "")? isValid : false);
-  }
-
-  if(em == constants_game.G_QUESTIONS) {
-    if(!checkOptionsType(options)) { return false }
-
-    val = options.pick + "";
-    isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
-  }
-
-  if(em == constants_game.G_CARDS) {
-    if(!checkOptionsType(options)) { return false }
-
-    val = options.pick + "";
-    isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
-  }
-
-  if(em == constants_game.G_SYMPATHY || em == constants_game.G_SYMPATHY_SHOW) {
-    if(!checkOptionsType(options)) { return false }
-
-    isValid = checkID(options.pick);
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД в выборе игрока");
+      }
+      break;
   }
 
   return isValid;

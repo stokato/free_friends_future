@@ -1,5 +1,5 @@
-var GameError = require('../../game_error'),
-    checkInput = require('../../check_input');
+var GameError = require('../../../game_error'),
+    checkInput = require('../../../check_input');
 /*
  Показать свои личные сообщения
  - Получаем историю сообщений - массив сообщений (дата, ИД собеседника, вх/исх, текст) (из БД)

@@ -1,3 +1,5 @@
+var constants = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Удалить все подарки игрока: ИД
  - Проверка на ИД
@@ -6,30 +8,31 @@
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-    var self = this;
-    if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
+  var self = this;
+  if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
 
-    var query = "select id, user FROM user_gifts where userid = ?";
+  var f = constants.IO.FIELDS;
 
-    self.client.execute(query,[uid], {prepare: true }, function(err, result) {
-        if (err) { return callback(err, null); }
+  var fields = [f.id, f.userid];
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, constants.T_USERGIFTS, [f.userid], [1]);
 
-        var fields = '';
-        var params = [];
-        var i;
-        var rowsLen = result.rows.length;
-        for (i = 0; i < rowsLen-1; i ++) {
-            fields += '?, ';
-            params.push(result.rows[i]);
-        }
-        fields += '?';
-        params.push(result.rows.length-1);
+  self.client.execute(query,[uid], {prepare: true }, function(err, result) {
+    if (err) { return callback(err, null); }
 
-        var query = "DELETE FROM user_gifts WHERE id in ( " + fields + " )";
-        self.client.execute(query, [params], { prepare: true }, function(err) {
-            if (err) {  return callback(err); }
 
-            callback(null, uid);
-        });
+    var params = [];
+    var i;
+    var rowsLen = result.rows.length;
+    var const_fields = rowsLen;
+    for (i = 0; i < rowsLen; i ++) {
+      params.push(result.rows[i]);
+    }
+
+    var query = qBuilder.build(qBuilder.Q_DELETE, [], constants.T_USERGIFTS, [f.id], [const_fields]);
+    self.client.execute(query, [params], { prepare: true }, function(err) {
+      if (err) {  return callback(err); }
+
+      callback(null, uid);
     });
+  });
 };

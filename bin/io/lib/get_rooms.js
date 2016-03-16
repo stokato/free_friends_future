@@ -4,7 +4,7 @@ var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     defineSex  = require('./define_sex'),
     getRoomInfo = require('./get_room_info'),
-    constants  = require('../constants_io');
+    constants  = require('../constants');
 
 /*
  Показать список комнат (столов)
@@ -15,9 +15,8 @@ var GameError = require('../../game_error'),
  - Передаем клиенту
  */
 module.exports = function (socket, userList, rooms) {
-  socket.on('get_rooms', function() {
-    if (!checkInput('get_rooms', socket, userList, null))
-      return new GameError(socket, "getROOMS", "Верификация не пройдена");
+  socket.on(constants.IO_GET_ROOMS, function() {
+    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, null)) { return; }
 
     var sex = defineSex(userList[socket.id]);
 
@@ -34,9 +33,9 @@ module.exports = function (socket, userList, rooms) {
       } else cb(null, null);
     }, //////////////////////////////////////////////////
     function (err, results) {
-      if (err) { return new GameError(socket, 'getROOMS', err.message) }
+      if (err) { return new GameError(socket, constants.IO_GET_ROOMS, err.message) }
 
-      socket.emit('get_rooms', resRooms);
+      socket.emit(constants.IO_GET_ROOMS, resRooms);
     }); // map
   });
 };

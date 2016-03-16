@@ -1,21 +1,23 @@
+var constants = require('../../io/constants');
 /*
  Устанавливаем статус игрока
  - Сначала в БД и если успешно
  - В ОЗУ
  - Возвращаем
  */
-module.exports = function(str, callback) {
+module.exports = function(status, callback) {
   var self = this;
-  var options = {
-    id     : self.pID,
-    vid    : self.pVID,
-    status : str
-  };
+  var f = constants.FIELDS;
+
+  var options = {};
+  options[f.id]     = self.pID;
+  options[f.vid]    = self.pVID;
+  options[f.status] = status;
 
   self.dbManager.updateUser(options, function(err) {
     if (err) {return callback(err, null); }
 
-    self.pStatus = options.status;
+    self.pStatus = status;
     callback(null, self.pStatus);
   });
 };

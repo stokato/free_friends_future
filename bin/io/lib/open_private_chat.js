@@ -1,52 +1,52 @@
-var async         = require('async');
-var profilejs     =  require('../../profile/index'),
+var async           = require('async');
+var profilejs       = require('../../profile/index'),
     GameError       = require('../../game_error'),
     checkInput      = require('../../check_input'),
     genDateHistory  = require('./gen_date_history'),
-    sendOne         = require('./send_one');
+    sendOne         = require('./send_one'),
+    constants       = require('./../constants');
 
 module.exports = function(socket, userList, profiles) {
-  socket.on('open_private_chat', function(options) {
-    if (!checkInput('open_private_chat', socket, userList, options)) {
-      return new GameError(socket, "OPENPRIVCHAT", "Верификация не пройдена");
-    }
+  socket.on(constants.IO_OPEN_PRIVATE_CHAT, function(options) {
+    if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket, userList, options)) { return; }
 
+    var f = constants.FIELDS;
     async.waterfall([ ///////////////////////////////////////////////////////////////////
       function(cb) {
-        var compProfile;
-        if (profiles[options.id]) { // Если онлайн
-          compProfile = profiles[options.id];
-          cb(null, compProfile);
+        var friendProfile;
+        if (profiles[options[f.id]]) { // Если онлайн
+          friendProfile = profiles[options[f.id]];
+          cb(null, friendProfile);
         }
         else {                // Если нет - берем из базы
-          compProfile = new profilejs();
-          compProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile = new profilejs(); // Нужен VID и все поля, как при подключении
+          friendProfile.build(options[f.id], function (err, info) {
             if (err) { return cb(err, null); }
 
-            cb(null, compProfile);
+            cb(null, friendProfile);
           });
         }
-      },
-      function(compProfile, cb) { ////////////////////// Отрываем чат для одного и отправляем ему историю
+      }, ///////////////////////////////////////////////////////////////////////////
+      function(friendProfile, cb) { // Отрываем чат для одного и отправляем ему историю
         var selfProfile = userList[socket.id];
 
-        if(selfProfile.getID() == options.id) {
+        if(selfProfile.getID() == options[f.id]) {
           return cb(new Error("Попытка открыть чат с самим сабой"));
         }
 
-        if(!selfProfile.isPrivateChat(compProfile.getID())) {
+        if(!selfProfile.isPrivateChat(friendProfile.getID())) {
           var secondDate = new Date();
           var firstDate = genDateHistory(secondDate);
-          var chat = {
-            id      : compProfile.getID(),
-            vid     : compProfile.getVID(),
-            fdate   : firstDate,
-            sdate   : secondDate,
-            age     : compProfile.getAge(), //
-            city    : compProfile.getCity(),
-            country : compProfile.getCountry(),
-            sex     : compProfile.getSex()
-          };
+          var chat = {};
+          chat[f.id]          = friendProfile.getID();
+          chat[f.vid]         = friendProfile.getVID();
+          chat[f.first_date]  = firstDate;
+          chat[f.second_date] = secondDate;
+          chat[f.age]         = friendProfile.getAge();
+          chat[f.city]        = friendProfile.getCity();
+          chat[f.country]     = friendProfile.getCountry();
+          chat[f.sex]         = friendProfile.getSex();
+
           selfProfile.addPrivateChat(chat);
           selfProfile.getHistory(chat, function(err, history) {
             if(err) { return cb(err, null); }
@@ -64,7 +64,7 @@ module.exports = function(socket, userList, profiles) {
         }
       }
     ], function(err, res) {
-      if (err) { return new GameError(socket, "OPENPRIVCHAT", err.message); }
+      if (err) { return new GameError(socket, constants.IO_OPEN_PRIVATE_CHAT, err.message); }
 
     });
   });
@@ -72,5 +72,6 @@ module.exports = function(socket, userList, profiles) {
 
 // Для сортировки массива сообщений (получение топа по дате)
 function compareDates(mesA, mesB) {
-  return mesA.date - mesB.date;
+  var f = constants.FIELDS;
+  return mesA[f.date] - mesB[f.date];
 }

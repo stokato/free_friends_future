@@ -15,7 +15,52 @@ module.exports.LEN_ROOM_HISTORY = Config.io.len_room_history;
 module.exports.EXIT_TIMEOUT = Config.io.exit_timeout;      // Таймаут отключения при вызове клиентом exit
 module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут ожидания запроса от клиента перед отключением
 //module.exports.LEN_PRIVATE_HISTORY = LEN_PRIVATE_HISTORY; // Длина истории приватных сообщений в днях
+module.exports.NEW_ROOM = "new_room";
 
+// наименования полей
+module.exports.FIELDS = {
+  id : 'id',
+  vid: 'vid',
+  date: 'date',
+  points: 'points',
+  sex : 'sex',
+  age : 'age',
+  city: 'city',
+  bdate: 'bdate',
+  country : 'country',
+  room: 'room',
+  status: 'status',
+  random: 'random',
+  friends: 'friends',
+  chats: 'chats',
+  gifts: 'gifts',
+  guests: 'guests',
+  first_date: 'first_date',
+  second_date: 'second_date',
+  giftid: 'giftid',
+  text: 'text',
+  companionid : 'companionid',
+  companionvid: 'companionvid',
+  incoming   : 'incoming',
+  chat : 'chat',
+  pick : 'pick',
+  newmessages : 'newmessages',
+  newgifts : 'newgifts',
+  newfriends : 'newfriends',
+  newguests : 'newguests',
+  innew : 'isnew',
+  userid : 'userid',
+  friendid : 'friendid',
+  friendvid : 'friendvid',
+  type : 'type',
+  data : 'data',
+  fromid : 'fromid',
+  fromvid : 'fromvid',
+  guestid : 'guestid',
+  guestvid : 'guestvid'
+};
+
+// емиты
 module.exports.IO_INIT                = 'init';
 module.exports.IO_MESSAGE             = 'message';
 module.exports.IO_PRIVATE_MESSAGE     = 'private_message';
@@ -34,3 +79,7 @@ module.exports.IO_OPEN_PRIVATE_CHAT   = 'open_private_chat';
 module.exports.IO_CLOSE_PRIVATE_CHAT  = 'close_private_chat';
 module.exports.IO_JOIN_GAME           = 'join_game';
 module.exports.IO_DISCONNECT          = 'disconnect';
+module.exports.IO_GET_NEWS            = 'get_news';
+module.exports.IO_ONLINE              = 'online';
+module.exports.IO_OFFLINE             = 'offline';
+module.exports.IO_ADD_GUEST           = 'add_guest';

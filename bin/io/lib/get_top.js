@@ -1,6 +1,7 @@
 var dbjs      = require('./../../db/index'),                // База
     GameError = require('./../../game_error'),
-    checkInput = require('./../../check_input');
+    checkInput = require('./../../check_input'),
+    constants = require('./../constants');
 
 var db = new dbjs();
 
@@ -12,25 +13,24 @@ var db = new dbjs();
  - Отправляем клиенту
  */
 module.exports = function (socket, userList) {
-  socket.on('get_top', function() {
-    if (!checkInput('get_top', socket, userList, null))  {
-      return new GameError(socket, "GETTOP", "Верификация не пройдена");
-    }
+  socket.on(constants.IO_GET_TOP, function() {
+    if (!checkInput(constants.IO_GET_TOP, socket, userList, null))  { return; }
 
-    var fList = ["name", "gender", "points"];
+    var fList = [constants.FIELDS.sex, constants.FIELDS.points];
     db.findAllUsers(fList, function (err, users) {
-      if (err) { return new GameError(socket, "GETTOP", err.message); }
+      if (err) { return new GameError(socket, constants.IO_GET_TOP, err.message); }
 
       users.sort(comparePoints);
 
-      socket.emit('get_top', users);
+      socket.emit(constants.IO_GET_TOP, users);
     });
   });
 };
 
 // Для сортировки массива игроков (получение топа по очкам)
 function comparePoints(userA, userB) {
-  return userB.points - userA.points;
+  var points = constants.FIELDS.points;
+  return userB[points] - userA[points];
 }
 
 

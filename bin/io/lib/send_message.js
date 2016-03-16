@@ -1,12 +1,13 @@
 var async     =  require('async');
 
 // Свои модули
-var profilejs =  require('../../profile/index'),          // Профиль
-    GameError = require('../../game_error'),
-    checkInput = require('../../check_input'),
-    sendInRoom = require('./send_in_room'),
-    sendOne = require('./send_one'),
-    genDateHistory  = require('./gen_date_history');
+var profilejs       = require('../../profile/index'), // Профиль
+    GameError       = require('../../game_error'),
+    checkInput      = require('../../check_input'),
+    sendInRoom      = require('./send_in_room'),
+    sendOne         = require('./send_one'),
+    genDateHistory  = require('./gen_date_history'),
+    constants       = require('./../constants');
 
 /*
  Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
@@ -17,45 +18,45 @@ var profilejs =  require('../../profile/index'),          // Профиль
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
 module.exports = function (socket, userList, profiles, roomList) {
-  socket.on('message', function(options) {
-    if (!checkInput('message', socket, userList, options))
-      return new GameError(socket, "SENDPRIVMESSAGE", "Верификация не пройдена");
+  socket.on(constants.IO_MESSAGE, function(options) {
+    if (!checkInput(constants.IO_MESSAGE, socket, userList, options)) { return; }
 
+    var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
-    if (selfProfile.getID() == options.id)
-      return new GameError(socket, "SENDPRIVMESSAGE", "Нельзя отправлять сообщения себе");
+    if (selfProfile.getID() == options[f.id]) {
+      return new GameError(socket, constants.IO_MESSAGE, "Нельзя отправлять сообщения себе");
+    }
 
-    var chat = options.id;
+    var isChat = options[f.id] || false;
 
-    var info = {
-      id   : selfProfile.getID(),
-      vid  : selfProfile.getVID(),
-      age  : selfProfile.getAge(), //
-      sex  : selfProfile.getSex(),
-      city : selfProfile.getCity(),
-      country: selfProfile.getCountry(), //
-      text : options.text,
-      date : new Date()
-    };
-    if(!chat) {
+    var info = {};
+    info[f.id]      = selfProfile.getID();
+    info[f.vid]     = selfProfile.getVID();
+    info[f.age]     = selfProfile.getAge();
+    info[f.sex]     = selfProfile.getSex();
+    info[f.city]    = selfProfile.getCity();
+    info[f.country] = selfProfile.getCountry();
+    info[f.text]    = options[f.text];
+    info[f.date]    = new Date();
+
+    if(!isChat) {
       var currRoom = roomList[socket.id];
 
       return sendInRoom(socket, currRoom, info);
     }
 
-    if (!checkInput('private_message', socket, userList, options))
-      return new GameError(socket, "SENDPRIVMESSAGE", "Верификация не пройдена");
+    if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, userList, options)){ return; }
 
     async.waterfall([//////////////////////////////////////////////////////////////
       function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
         var friendProfile = null;
-        if (profiles[options.id]) { // Если онлайн
-          friendProfile = profiles[options.id];
+        if (profiles[options[f.id]]) { // Если онлайн
+          friendProfile = profiles[options[f.id]];
           cb(null, friendProfile);
         }
         else {                // Если нет - берем из базы
           friendProfile = new profilejs();
-          friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
             cb(null, friendProfile);
@@ -63,19 +64,13 @@ module.exports = function (socket, userList, profiles, roomList) {
         }
       }, ///////////////////////////////////////////////////////////////////////////////
       function(friendProfile, cb) { // Открываем чат, если еще не открыт
-        var chat = null;
+        var chat = null, firstDate = genDateHistory(new Date());
         if(!selfProfile.isPrivateChat(friendProfile.getID())) {
-          var firstDate = genDateHistory(new Date());
-          chat = {
-            id      : friendProfile.getID(),
-            vid     : friendProfile.getVID(),
-            date    : firstDate,
-            age     : friendProfile.getAge(), //
-            city    : friendProfile.getCity(),
-            country : friendProfile.getCountry(),
-            sex     : friendProfile.getSex()
-          };
+          chat = fillInfo(friendProfile);
+
           selfProfile.addPrivateChat(chat);
+
+          chat[f.date] = firstDate;
           selfProfile.getHistory(chat, function (err, history) {
             if (err) { return cb(err, null); }
 
@@ -86,18 +81,14 @@ module.exports = function (socket, userList, profiles, roomList) {
               sendOne(socket, history[i]);
             }
           });
-        }
-        if (profiles[options.id] && !friendProfile.isPrivateChat(selfProfile.getID())) {
-          chat = {
-            id       : selfProfile.getID(),
-            vid      : selfProfile.getVID(),
-            date     : firstDate,
-            age      : selfProfile.getAge(), //
-            city     : selfProfile.getCity(),
-            country  : selfProfile.getCountry(),
-            sex      : selfProfile.getSex()
-          };
-          friendProfile.addPrivateChat(chat, function (err, history) {
+        } // Если собеседник онлайн и у него не открыт чат с нами
+        if (profiles[options[f.id]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
+          chat = fillInfo(selfProfile);
+
+          friendProfile.addPrivateChat(chat);
+
+          chat[f.date] = firstDate;
+          friendProfile.getHistory(chat, function (err, history) {
             if (err) { cb(err, null); }
 
             history = history || [];
@@ -114,49 +105,48 @@ module.exports = function (socket, userList, profiles, roomList) {
       },//////////////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
         var date = new Date();
-        var savingMessage = {
-          date         : date,
-          companionid  : selfProfile.getID(),
-          companionvid : selfProfile.getVID(),
-          incoming     : true,
-          text         : options.text
-        };
+        var savingMessage = {};
+        savingMessage[f.date]         = date;
+        savingMessage[f.companionid]  = selfProfile.getID();
+        savingMessage[f.companionvid] = selfProfile.getVID();
+        savingMessage[f.incoming]     = true;
+        savingMessage[f.text]         = options[f.text];
+
         friendProfile.addMessage(savingMessage, function (err, result) {
           if (err) { return cb(err, null); }
 
-          if (profiles[options.id]) {
-            savingMessage['vid'] = selfProfile.getVID();
+          if (profiles[options[f.id]]) {
             var friendSocket = friendProfile.getSocket();
 
             if(friendProfile.isPrivateChat(selfProfile.getID())) {
-              info.chat = selfProfile.getID();
+              info[f.chat] = selfProfile.getID();
               sendOne(friendSocket, info);
             } else {
-              friendSocket.emit('get_news', friendProfile.getNews());
+              friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
             }
           }
           cb(null, savingMessage, friendProfile, date);
         });
       }, //////////////////////////////////////////////////////////////////////////////////////
       function (savingMessage, friendProfile, date, cb) { // Сохраняем сообщение в историю отправителя
-        savingMessage = {
-          date         : date,
-          companionid  : friendProfile.getID(),
-          companionvid : friendProfile.getVID(),
-          incoming     : false,
-          text         : options.text
-        };
+
+        savingMessage[f.date]         = date;
+        savingMessage[f.companionid]  = friendProfile.getID();
+        savingMessage[f.companionvid] = friendProfile.getVID();
+        savingMessage[f.incoming]     = false;
+        //savingMessage[f.text]         = options[f.text];
+
         selfProfile.addMessage(savingMessage, function (err, res) {
           if (err) { cb(err, null); }
 
-          info.chat = friendProfile.getID();
+          info[f.chat] = friendProfile.getID();
           sendOne(socket, info);
 
           cb(null, null);
         });
       }/////////////////////////////////////////////////////////////////////////////////
     ], function (err) { // Вызывается последней или в случае ошибки
-      if (err) { new GameError(socket, "SENDPRIVMESSAGE", err.message); }
+      if (err) { new GameError(socket, constants.IO_MESSAGE, err.message); }
     });
   });
 };
@@ -164,5 +154,20 @@ module.exports = function (socket, userList, profiles, roomList) {
 
 // Для сортировки массива сообщений (получение топа по дате)
 function compareDates(mesA, mesB) {
-  return mesA.date - mesB.date;
+  var f = constants.FIELDS;
+  return mesA[f.date] - mesB[f.date];
+}
+
+function fillInfo(profile) {
+  var f = constants.FIELDS;
+  var info = {};
+  info[f.id]      = profile.getID();
+  info[f.vid]     = profile.getVID();
+  info[f.age]     = profile.getAge();
+  info[f.sex]     = profile.getSex();
+  info[f.city]    = profile.getCity();
+  info[f.country] = profile.getCountry();
+  info[f.points]  = profile.getPoints();
+
+  return info;
 }

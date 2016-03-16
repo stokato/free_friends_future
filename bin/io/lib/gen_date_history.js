@@ -1,4 +1,4 @@
-var constants = require('./../constants_io');
+var constants = require('./../constants');
 
 module.exports = function(date) {
   //var len = constants.LEN_PRIVATE_HISTORY;

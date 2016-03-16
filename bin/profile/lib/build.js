@@ -1,4 +1,4 @@
-
+var constants = require('../../io/constants');
 /*
  Инициализируем профиль
  - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
@@ -9,44 +9,44 @@
  */
 module.exports = function(id, callback) {
  var self = this;
+ var f = constants.FIELDS;
  self.pID = id;
 
  if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
 
- var fList = ["sex", "points", "status", "counry", "city", "age"];
+ var fList = [f.sex, f.points, f.status, f.country, f.city, f.age];
  self.dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
 
-   self.pVID    = foundUser.vid;
-   self.pStatus = foundUser.status;
-   self.pPoints = foundUser.points;
-   self.pSex    = foundUser.sex;
-   self.pCountry = foundUser.country;
-   self.pCity   = foundUser.city;
-   self.pAge = foundUser.age;
+   self.pVID     = foundUser[f.vid];
+   self.pStatus  = foundUser[f.status];
+   self.pPoints  = foundUser[f.points];
+   self.pSex     = foundUser[f.sex];
+   self.pCountry = foundUser[f.country];
+   self.pCity    = foundUser[f.city];
+   self.pAge     = foundUser[f.age];
 
-   self.pNewMessages = foundUser.newmessages || 0;
-   self.pNewGifts    = foundUser.newgifts    || 0;
-   self.pNewFriends  = foundUser.newfriends  || 0;
-   self.pNewGuests   = foundUser.newguests   || 0;
-   // self.pMoney  = foundUser.money;
+   self.pNewMessages = foundUser[f.newmessages] || 0;
+   self.pNewGifts    = foundUser[f.newgifts]    || 0;
+   self.pNewFriends  = foundUser[f.newfriends]  || 0;
+   self.pNewGuests   = foundUser[f.newguests]   || 0;
+   self.pMoney       = foundUser[f.money]       || 0;
 
-   var info = {
-     id       : self.pID,
-     vid      : self.pVID,
-     age      : self.pAge,
-     country  : self.pCountry,
-     city     : self.pCity,
-     status   : self.pStatus,
-     points   : self.pPoints,
-     //money    : self.pMoney,
-     sex      : self.pSex,
-     messages : self.pNewMessages,
-     gifts    : self.pNewGifts,
-     friends  : self.pNewFriends,
-     guests   : self.pNewGifts
-   };
+   var info = {};
+   info[f.id]       = self.pID;
+   info[f.vid]      = self.pVID;
+   info[f.age]      = self.pAge;
+   info[f.country]  = self.pCountry;
+   info[f.city]     = self.pCity;
+   info[f.status]   = self.pStatus;
+   info[f.points]   = self.pPoints;
+   info[f.money]    = self.pMoney;
+   info[f.sex]      = self.pSex;
+   info[f.messages] = self.pNewMessages;
+   info[f.gifts]    = self.pNewGifts;
+   info[f.friends]  = self.pNewFriends;
+   info[f.guests]   = self.pNewGifts;
 
    callback(null, info);
  });

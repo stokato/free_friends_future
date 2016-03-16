@@ -2,7 +2,7 @@ var gamejs = require('../../game');
 /*
  Создать новую комнату
  */
-var countRoom = 0;                                  // Счетчки комнат (сейчас нужен для генерации идентификатора окна)
+var countRoom = 0;    // Счетчки комнат (сейчас нужен для генерации идентификатора окна)
 
 module.exports = function () {
   var name = "Room" + (++countRoom);

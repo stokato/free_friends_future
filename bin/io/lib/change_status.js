@@ -1,5 +1,6 @@
 var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+    checkInput = require('../../check_input'),
+    constants = require('./../constants');
 /*
  Отправить изменить статус игрока: Статус
  - Получаем свой профиль
@@ -7,16 +8,20 @@ var GameError = require('../../game_error'),
  - Возвращаем клиенту новый статус
  */
 module.exports = function (socket, userList) {
-  socket.on('change_status', function(options) {
-    if (!checkInput('change_status', socket, userList, options)) {
-      return new GameError(socket, "CHANGESTATUS", "Верификация не пройдена");
+  socket.on(constants.IO_CHANGE_STATUS, function(options) {
+    if (!checkInput(constants.IO_CHANGE_STATUS, socket, userList, options)) {
+      return;
     }
 
-    var profile = userList[socket.id];
-    profile.setStatus(options.status, function (err, status) {
-      if (err) { return new GameError(socket, "CHANGESTATUS", err.message); }
+    var f = constants.FIELDS;
 
-      socket.emit('change_status', {status: status});
+    var selfProfile = userList[socket.id];
+    selfProfile.setStatus(options[f.status], function (err, status) {
+      if (err) { return new GameError(socket, constants.IO_CHANGE_STATUS, err.message); }
+
+      var result = {};
+      result[f.status] = status;
+      socket.emit(constants.IO_CHANGE_STATUS, result);
     })
   });
 };

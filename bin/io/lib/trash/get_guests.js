@@ -1,5 +1,5 @@
-var GameError = require('../../game_error'),
-    checkInput = require('../../check_input');
+var GameError = require('../../../game_error'),
+    checkInput = require('../../../check_input');
 /*
  Показать свои подарки (полученные)
  - Получаем подарки - массив подарков со всеми свойствами (из БД)

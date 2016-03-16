@@ -1,4 +1,4 @@
-var constants = require('./../constants_io');
+var constants = require('./../constants');
     closeConnection = require('./close_connection');
 
 /*
@@ -10,12 +10,13 @@ var constants = require('./../constants_io');
  - отключаем сокет
  */
 module.exports = function (socket, userList, profiles, roomList, rooms) {
-  socket.on('disconnect', function() {
-    if(userList[socket.id]) {
-      userList[socket.id].setExitTimeout(
+  socket.on(constants.IO_DISCONNECT, function() {
+    var selfProfile = userList[socket.id];
+    if(selfProfile) {
+      selfProfile.setExitTimeout(
         setTimeout(function(){
           closeConnection(socket, userList, profiles, roomList, rooms);
-        }, constants.EXIT_TIMEOUT))
+        }, constants.EXIT_TIMEOUT));
     }
   });
 }; // Выходим из чата

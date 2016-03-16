@@ -1,18 +1,24 @@
 var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+  checkInput = require('../../check_input'),
+  constants = require('./../constants');
 
 module.exports = function(socket, userList, profiles) {
-  socket.on('close_private_chat', function(options) {
-    if (!checkInput('close_private_chat', socket, userList, options))
-      return new GameError(socket, "CLOSEPRIVCHAT", "Верификация не пройдена");
+  socket.on(constants.IO_CLOSE_PRIVATE_CHAT, function(options) {
+    if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, userList, options)) { return; }
 
     var selfProfile = userList[socket.id];
-    if(!selfProfile.isPrivateChat(options.id)) {
-      return new GameError(socket, "CLOSEPRIVCHAT", "Приватного чата с этим пользователем не существует");
+    var f = constants.FIELDS;
+
+    if(!selfProfile.isPrivateChat(options[f.id])) {
+      return new GameError(socket, constants.IO_CLOSE_PRIVATE_CHAT,
+                                   "Приватного чата с этим пользователем не существует");
     }
 
-    selfProfile.deletePrivateChat(options.id);
-    socket.emit('close_private_chat', { id : options.id });
+    selfProfile.deletePrivateChat(options[f.id]);
+
+    var result = {};
+    result[f.id] = options[f.id];
+    socket.emit(constants.IO_CLOSE_PRIVATE_CHAT, result);
 
     //if (profiles[options.id]) { // Если онлайн
     //  var compProfile = profiles[options.id];

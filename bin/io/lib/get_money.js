@@ -1,18 +1,20 @@
 var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+  checkInput = require('../../check_input'),
+  constants = require('./../constants');
 /*
  Показать текущий баланс
  */
 module.exports = function (socket, userList) {
-  socket.on('get_money', function() {
-    if (!checkInput('get_money', socket, userList, null)) {
-      return new GameError(socket, "GETMONEY", "Верификация не пройдена");
-    }
+  socket.on(constants.IO_GET_MONEY, function() {
+    if (!checkInput(constants.IO_GET_MONEY, socket, userList, null)) { return; }
 
+    var f = constants.FIELDS;
     userList[socket.id].getMoney(function (err, money) {
-      if (err) {  return new GameError(socket, "GETMONEY", err.message); }
+      if (err) {  return new GameError(socket, constants.IO_GET_MONEY, err.message); }
 
-      socket.emit('get_money', { money : money });
+      var result = {};
+      result[f.money] = money;
+      socket.emit(constants.IO_GET_MONEY, result);
     });
   });
 };

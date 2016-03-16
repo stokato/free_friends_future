@@ -7,7 +7,8 @@ var profilejs =  require('../../profile/index'),          // Профиль
     autoPlace = require('./auto_place_in_room'),
     getRoomInfo = require('./get_room_info'),
     getLastMessages = require('./get_last_messages'),
-    genDateHistory = require('./gen_date_history');
+    genDateHistory = require('./gen_date_history'),
+    constants = require('./../constants');
 
 /*
  Выполняем инициализацию
@@ -19,21 +20,19 @@ var profilejs =  require('../../profile/index'),          // Профиль
  - Отправляем все клиенту
  */
 module.exports = function (socket, userList, profiles, roomList, rooms) {
-  socket.on('init', function(options) {
-    if (!checkInput('init', socket, userList, options)) {
-      return new GameError(socket, "INIT", "Верификация не пройдена");
-    }
+  socket.on(constants.IO_INIT, function(options) {
+    if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
+    var f = constants.FIELDS;
 
     async.waterfall([///////////////////////////////////////////////////////////
       function (cb) { // Инициализируем профиль пользователя
-        var profile = new profilejs();
+        var selfProfile = new profilejs();
         var newConnect = false;
-        profile.init(socket, options, function (err, info) {
+        selfProfile.init(socket, options, function (err, info) {
           if (err) { return cb(err, null); }
 
-          var oldProfile = profiles[info.id];
+          var oldProfile = profiles[info[f.id]];
           if (oldProfile)  {
-            //cb(new Error("Этот пользователь уже инициализирован"), null);
             oldProfile.clearExitTimeout();
 
             var oldSocket = oldProfile.getSocket();
@@ -47,8 +46,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
             roomList[socket.id] = room;
           }
           else {
-            userList[socket.id] = profile;
-            profiles[info.id] = profile;
+            userList[socket.id] = selfProfile;
+            profiles[selfProfile.getID()] = selfProfile;
 
             newConnect = true;
           }
@@ -73,14 +72,18 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         getRoomInfo(room, function (err, roomInfo) {
           if (err) { return cb(err, null); }
 
-          info['room'] = roomInfo;
+          info[f.room] = roomInfo;
 
           cb(null, info, room);
         });
       },///////////////////////////////////////////////////////////////
       function(info, room, cb) {
-        socket.emit('init', info);
-        socket.broadcast.emit('online', {id: info.id, vid: info.vid});
+        socket.emit(constants.IO_INIT, info);
+
+        var online = {};
+        online[f.id] = info[f.id];
+        online[f.vid] = info[f.vid];
+        socket.broadcast.emit(constants.IO_ONLINE, online);
 
         getLastMessages(socket, room);
 
@@ -89,20 +92,20 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       function (info, room, cb) { // Получаем данные по приватным чатам
         var secondDate = new Date();
         var firstDate = genDateHistory(secondDate);
-        var options = {
-          fdate : firstDate,
-          sdate : secondDate
-        };
-        userList[socket.id].getPrivateChatsWithHistory(options, function(err, history) {
+
+        var period = {};
+        period[f.first_date] = firstDate;
+        period[f.second_date] = secondDate;
+        userList[socket.id].getPrivateChatsWithHistory(period, function(err, history) {
           if(err) { return cb(err, null) }
 
           history = history || [];
           history.sort(compareDates);
 
-          for(var i = 0; i < history.length; i++) {
-            socket.emit('message', history[i]);
+          var i;
+          for(i = 0; i < history.length; i++) {
+            socket.emit(constants.IO_MESSAGE, history[i]);
           }
-
 
           cb(null, null);
         });
@@ -112,8 +115,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         cb(null, null);
       }///////////////////////////////////////////////////////////////
     ], function (err, res) { // Обрабатываем ошибки, либо передаем данные клиенту
-      if (err) { return new GameError(socket, "INIT", err.message); }
-
+      if (err) { return new GameError(socket, constants.IO_INIT, err.message); }
 
     });
   })
@@ -121,7 +123,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
 
 // Для сортировки массива сообщений (получение топа по дате)
 function compareDates(mesA, mesB) {
-  return mesA.date - mesB.date;
+  var f = constants.FIELDS;
+  return mesA[f.date] - mesB[f.date];
 }
 
 

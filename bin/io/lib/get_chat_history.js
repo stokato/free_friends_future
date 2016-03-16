@@ -2,45 +2,45 @@ var async         = require('async');
 var profilejs     =  require('../../profile/index'),
   GameError       = require('../../game_error'),
   checkInput      = require('../../check_input'),
-  sendOne         = require('./send_one');
+  sendOne         = require('./send_one'),
+  constants       = require('./../constants') ;
 
 module.exports = function(socket, userList, profiles) {
-  socket.on('get_chat_history', function(options) {
-    if (!checkInput('get_chat_history', socket, userList, options)) {
-      return new GameError(socket, "GETCHATHISTORY", "Верификация не пройдена");
-    }
-
+  socket.on(constants.IO_GET_CHAT_HISTORY, function(options) {
+    if (!checkInput(constants.IO_GET_CHAT_HISTORY, socket, userList, options)) { return; }
+    var f = constants.FIELDS;
     async.waterfall([ ///////////////////////////////////////////////////////////////////
       function(cb) {
-        var compProfile;
-        if (profiles[options.id]) { // Если онлайн
-          compProfile = profiles[options.id];
-          cb(null, compProfile);
+        var friendProfile;
+        if (profiles[options[f.id]]) { // Если онлайн
+          friendProfile = profiles[options[f.id]];
+          cb(null, friendProfile);
         }
         else {                // Если нет - берем из базы
-          compProfile = new profilejs();
-          compProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile = new profilejs();
+          friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
-            cb(null, compProfile);
+            cb(null, friendProfile);
           });
         }
       }, ////////////////////////////////////////////////////////////////////////
-      function(compProfile, cb) { ////////////////////// Получаем историю
+      function(friendProfile, cb) { ////////////////////// Получаем историю
         var selfProfile = userList[socket.id];
 
-        if(selfProfile.getID() == options.id) {
+        if(selfProfile.getID() == options[f.id]) {
           return cb(new Error("Попытка получить историю от себя"));
         }
 
-        if(selfProfile.isPrivateChat(compProfile.getID())) {
+        if(selfProfile.isPrivateChat(friendProfile.getID())) {
           selfProfile.getHistory(options, function(err, history) {
             if(err) { return cb(err, null); }
 
             history = history || [];
             history.sort(compareDates);
 
-            for(var i = 0; i < history.length; i++) {
+            var i;
+            for(i = 0; i < history.length; i++) {
               sendOne(socket, history[i]);
             }
           });
@@ -50,7 +50,7 @@ module.exports = function(socket, userList, profiles) {
         }
       }
     ], function(err, res) {
-      if (err) { return new GameError(socket, "GETCHATHISTORY", err.message); }
+      if (err) { return new GameError(socket, constants.IO_GET_CHAT_HISTORY, err.message); }
 
     });
   });

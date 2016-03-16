@@ -1,4 +1,7 @@
 var async = require('async');
+
+var constants = require('../constants');
+var buildQuery = require('./build_query');
 /*
  Найти пользователей, с которыми были чаты, показать наличине новых сообщений
  - Проверка ИД
@@ -7,38 +10,45 @@ var async = require('async');
  */
 module.exports = function(uid, callback) {
   var self = this;
+  var f = constants.IO.FIELDS;
+
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
   async.waterfall([ //////////////////////////////////////////////////////////
     function (cb) {
       var params = [uid];
-      var query = "select companionid, isnew FROM user_chats where userid = ?";
+      var fields = [f.companionid, f.isnew];
+      var const_fields = [f.userid];
+      var const_values = [1];
+
+      var query = buildQuery.build(buildQuery.Q_SELECT, fields, constants.T_USERGUESTS,
+                                                                  const_fields,const_values);
 
       self.client.execute(query, params, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
 
         if (result.rows.length == 0) return cb(null, null, null);
 
-        var fields = "?";
         var rows = result.rows;
+        var const_fields = rows.length;
+
         var companions = [];
         var newMessages = {};
 
-        companions.push(rows[0].companionid);
-        newMessages[rows[0].companionid.toString()] = rows[0].isnew;
-        for (var i = 1; i < rows.length; i++) {
+        for (var i = 0; i < rows.length; i++) {
           companions.push(rows[i].companionid);
           newMessages[rows[i].companionid.toString()] = rows[i].isnew;
-          fields = fields + ", ?";
         }
 
-        cb(null, fields, companions, newMessages);
+        cb(null, const_fields, companions, newMessages);
       });
     },////////////////////////////////////////////////////////////////////
-    function (fields, companions, newMessages, cb) {
+    function (const_fields, companions, newMessages, cb) {
       if(!companions) { return cb(null, null, null, null); }
-      var query = "select * FROM users where id in (" + fields + ")";
+
+      var query = buildQuery(buildQuery.Q_SELECT, [buildQuery.ALL_FIELDS], companions.T_USERS,
+                                                                              [f.id], const_fields);
 
       self.client.execute(query, companions, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
@@ -46,22 +56,22 @@ module.exports = function(uid, callback) {
         var users = [];
         for (var i = 0; i < result.rows.length; i++) {
           var row = result.rows[i];
-          var user = {
-            id: row.id.toString(),
-            vid: row.vid,
-            age: row.age,
-            sex: row.sex,
-            city: row.city,
-            country: row.country,
-            points: row.points,
-            isnew: newMessages[row.id.toString()]
-          };
+          var user = {};
+          user[f.id]       = row[f.id].toString();
+          user[f.vid]      = row[f.vid];
+          user[f.age]      = row[f.age];
+          user[f.sex]      = row[f.sex];
+          user[f.city]     = row[f.city];
+          user[f.country]  = row[f.country];
+          user[f.points]   = row[f.points];
+          user[f.isnew]    = newMessages[row[f.id].toString()];
+
           users.push(user);
         }
 
         cb(null, users);
       });
-    }
+    } ////////////////////////////////////////////////////////////////////////////
   ], function(err, users) {
     if(err) { return callback(err, null) }
 

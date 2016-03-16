@@ -1,6 +1,6 @@
 
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input');
+var GameError = require('../../../game_error'),
+  checkInput = require('../../../check_input');
 
 /*
  Показать своих друзей

@@ -1,3 +1,5 @@
+var constants = require('../constants');
+var buildQuery = require('./build_query');
 /*
  Добавить друга в БД: ИД, объект с данными друга
  - Проверка (все поля обязательны)
@@ -5,21 +7,17 @@
  - Строим и выполняем запрос
  - Возвращаем объект обратно
  */
-module.exports = function(uid, frnd, callback) {
-  var friend = frnd || {};
-  var fid   = friend.id;
-  var date = friend.date;
-  var fvid = friend.vid;
+module.exports = function(uid, friend, callback) { friend = friend || {};
+  var f = constants.IO.FIELDS;
 
-  if ( !uid || !fid || !fvid) {
+  if ( !uid || !friend[f.id] || !friend[f.vid]) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var fields = "userid, friendid, friendvid, date";
-  var values = "?, ?, ?, ?";
-  var params = [uid, fid, fvid, date];
-  var query = "INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
+  var fields = [f.userid, f.friendid, f.friendvid, f.date];
+  var query = buildQuery.build(buildQuery.Q_INSERT, fields, constants.T_USERFRIENDS);
 
+  var params = [uid, friend[f.id], friend[f.vid], friend[f.date]];
   this.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 

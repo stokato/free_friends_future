@@ -1,3 +1,4 @@
+var constants = require('../../io/constants');
 /*
  Добавляем очки пользователю
  - Сначала в БД и если успешно
@@ -9,16 +10,17 @@ module.exports = function(num, callback) {
    return callback(new Error("Ошибка при добавлении очков пользователю, количество очков задано некорректно"));
  }
  var self = this;
- var options = {
-   id : self.pID,
-   vid : self.pVID,
-   points : self.pPoints + num
- };
+ var f = constants.FIELDS;
+
+ var options = {};
+ options[f.id] = self.pID;
+ options[f.vid] = self.pVID;
+ options[f.points] = self.pPoints + num;
 
  self.dbManager.updateUser(options, function(err) {
    if (err) {return callback(err, null); }
 
-   self.pPoints = options.points;
+   self.pPoints = options[f.points];
    callback(null, self.pPoints);
  });
 };

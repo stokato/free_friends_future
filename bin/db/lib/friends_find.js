@@ -1,3 +1,5 @@
+var constants = require('../constants');
+var buildQuery = require('./build_query');
 /*
  Найти друзей пользователя: ИД игрока
  - Проверка ИД
@@ -8,7 +10,9 @@ module.exports = function(uid, callback) {
   var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
 
-  var query = "select friendid, friendvid, date FROM user_friends where userid = ?";
+  var f = constants.IO.FIELDS;
+  var fields = [f.friendid, f.friendvid, f.date];
+  query = buildQuery.build(buildQuery.Q_SELECT, fields, constants.T_USERFRIENDS, [f.userid], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -16,21 +20,27 @@ module.exports = function(uid, callback) {
     var friends = [];
     var friend = null;
     var friendList = [];
-    var fields = "";
+    var const_fields = 0;
 
     if(result.rows.length > 0) {
       var i = null;
       var rowsLen = result.rows.length;
+      const_fields = rowsLen;
+
       for(i = 0; i < rowsLen; i++) {
         var row = result.rows[i];
-        friend = { id: row.friendid.toString(), vid: row.friendvid, date: row.date };
+
+        friend = {};
+        friend[f.id] = row[f.friendid].toString();
+        friend[f.vid] = row[f.friendvid];
+        friend[f.date] = row[f.date];
+
         friends.push(friend);
-        friendList.push(row.friendid);
-        if(i == 0) { fields = "?"; }
-        else { fields = fields + ", ?"; }
+        friendList.push(row[f.friendid]);
       }
 
-      var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
+      var fields = [f.id, f.vid, f.age, f.sex, f.city, f.country, f.points];
+      var query = buildQuery.build(buildQuery.Q_SELECT, fields, constants.T_USERS, [f.id], [const_fields])
 
       self.client.execute(query, friendList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
@@ -46,11 +56,11 @@ module.exports = function(uid, callback) {
               index = j;
             }
           }
-          friends[index].age = row.age;
-          friends[index].sex = row.sex;
-          friends[index].city = row.city;
-          friends[index].country = row.country;
-          friends[index].points = row.points;
+          friends[index][f.age]     = row[f.age];
+          friends[index][f.sex]     = row[f.sex];
+          friends[index][f.city]    = row[f.city];
+          friends[index][f.country] = row[f.country];
+          friends[index][f.points]  = row[f.points];
         }
 
         callback(null, friends);

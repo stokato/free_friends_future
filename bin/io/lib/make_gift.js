@@ -1,11 +1,13 @@
 var async      =  require('async');
 // Свои модули
 var profilejs  =  require('../../profile/index'),          // Профиль
-  dbjs         = require('../../db/index'),
   GameError    = require('../../game_error'),
-  checkInput   = require('../../check_input');
+  checkInput   = require('../../check_input'),
+  constants = require('./../constants'),
+  dbjs         = require('../../db');
 
-var db = new dbjs();
+var dbManager = new dbjs();
+
 /*
  Сделать подарок: ИД подарка, объект с инф. о получателе (VID, еще что то?)
  - Ищем подарок по ИД в базе
@@ -14,79 +16,81 @@ var db = new dbjs();
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
 module.exports = function (socket, userList, profiles) {
-  socket.on('make_gift', function(options) {
-    if (!checkInput('make_gift', socket, userList, options)) {
-      return new GameError(socket, "MAKEGIFT", "Верификация не пройдена");
-    }
+  socket.on(constants.IO_MAKE_GIFT, function(options) {
+    if (!checkInput(constants.IO_MAKE_GIFT, socket, userList, options)) { return; }
 
+    var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
 
-    if (selfProfile.getID() == options.id) {
-      return new GameError(socket, "MAKEGIFT", "Нельзя сделать подарок себе");
+    if (selfProfile.getID() == options[f.id]) {
+      return new GameError(socket, constants.IO_MAKE_GIFT, "Нельзя сделать подарок себе");
     }
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Проверяем, купил ли пользователь такой подарок
-        selfProfile.getPurchase(options.giftid, function (err, good) {
+        selfProfile.getPurchase(options[f.giftid], function (err, good) {
           if (err) { return cb(err, null) }
 
           if (good) {
-            cb(null, gift, good);
+            cb(null, good);
           } else {
             cb(new Error("Среди покупок пользователя нет такого товара"), null);
           }
         });
-      },///////////////////////////////////////////////////////////////
-      function (gift, good, cb) { // Получаем профиль адресата
-        var recProfile = null;
+      }, ///////////////////////////////////////////////////////////////
+      function (good, cb) { // Ищем подарок в магазине
+        dbManager.findGood(options[f.giftid], function (err, gift) {
+          if (err) { return cb(err, null) }
 
-        if (profiles[options.id]) { // Если онлайн
-          recProfile = profiles[options.id];
-          cb(null, recProfile, gift);
+          if (gift) {
+            cb(null, gift);
+          } else {
+            cb(new Error("В магазине нет такого товара"), null);
+          }
+        });
+      }, ///////////////////////////////////////////////////////////////
+      function (gift, cb) { // Получаем профиль адресата
+        var friendProfile = null;
+
+        if (profiles[options[f.id]]) { // Если онлайн
+          friendProfile = profiles[options[f.id]];
+          cb(null, friendProfile, gift);
         } else {                // Если нет - берем из базы
-          recProfile = new profilejs();
-          recProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile = new profilejs();
+          friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
-            cb(null, recProfile, gift, good);
+            cb(null, friendProfile, gift);
           });
         }
       },///////////////////////////////////////////////////////////////
-      function (recProfile, gift, good, cb) { // Сохраняем подарок
+      function (friendProfile, gift, cb) { // Сохраняем подарок
         var date = new Date();
-        gift.fromid = selfProfile.getID();
-        gift.fromvid = selfProfile.getVID();
-        gift.date = date;
-        recProfile.addGift(gift, function (err, result) {
+        gift[f.fromid]  = selfProfile.getID();
+        gift[f.fromvid] = selfProfile.getVID();
+        gift[f.date]    = date;
+        friendProfile.addGift(gift, function (err, result) {
           if (err) { return cb(err, null); }
 
-          cb(null, gift, good);
+          cb(null, gift);
         });
       }, /////////////////////////////////////////////////////////////////
-      function (gift, good, cb) { // Удаляем покупку
-        selfProfile.deletePurchase(good.id, function (err, result) {
+      function (gift, cb) { // Удаляем покупку
+        selfProfile.deletePurchase(options[f.id], function (err, result) {
           if (err) { return cb(err, null); }
 
           cb(null, gift);
         });
       } /////////////////////////////////////////////////////////////////
     ], function (err, gift) { // Вызывается последней. Обрабатываем ошибки
-      if (err) { return new GameError(socket, "MAKEGIFT", err.message); }
+      if (err) { return new GameError(socket, constants.IO_MAKE_GIFT, err.message); }
 
-      if (profiles[options.id]) {
-        var recProfile = profiles[options.id];
-        var recSocket = recProfile.getSocket();
-        var info = {
-          giftid  : gift.id,
-          type    : gift.type,
-          data    : gift.data,
-          date    : gift.date,
-          fromid  : gift.fromid,
-          fromvid : gift.fromvid,
-          title   : gift.title
-        };
-        recSocket.emit('make_gift', info);
-        recSocket.emit('get_news', recProfile.getNews());
+      if (profiles[options[f.id]]) {
+        var friendProfile = profiles[options[f.id]];
+        var friendSocket = friendProfile.getSocket();
+
+        friendSocket.emit(constants.IO_MAKE_GIFT, gift);
+        friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }
     }); // waterfall
   });

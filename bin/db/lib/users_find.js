@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, списко искомых полей
  - Проверка
@@ -7,55 +9,53 @@
  - Возвращаем объект с данными игрока (если нет такого - NULL)
  */
 module.exports = function(id, vid, f_list, callback) {
- if (!vid && !id) {
-   return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
- }
- var search = '';
- var param = [];
+  if (!vid && !id) {
+    return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
+  }
+  var f = C.IO.FIELDS;
 
+  var constraint = '';
+  var param = [];
 
- if(id) {
-   search = "id";
-   param.push(id);
- } else {
-   search = "vid";
-   param.push(vid);
- }
+  if(id) {
+    constraint = f.id;
+    param.push(id);
+  } else {
+    constraint = f.vid;
+    param.push(vid);
+  }
 
- var fields = '';
- for(var i = 0; i < f_list.length; i++) {
-   if(f_list[i] == "age")      fields += ", age";
-   if(f_list[i] == "country")  fields += ", country";
-   if(f_list[i] == "city")     fields += ", city";
-   if(f_list[i] == "status")   fields += ", status";
-   if(f_list[i] == "sex")      fields += ", sex";
-   if(f_list[i] == "points")   fields += ", points";
-   if(f_list[i] == "money")    fields += ", money";
- }
+  var i, fields = [f.id, f.vid];
+  for(i = 0; i < f_list.length; i++) {
+    fields.push(f_list[i]);
+  }
 
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, [constraint], [1]);
 
- var query = "select id, vid " + fields + " FROM users where " + search +" = ?";
+  this.client.execute(query,param, {prepare: true }, function(err, result) {
+    if (err) { return callback(err, null); }
 
- this.client.execute(query,param, {prepare: true }, function(err, result) {
-   if (err) { return callback(err, null); }
+    if(result.rows.length > 0) {
+      var row = result.rows[0];
 
-   if(result.rows.length > 0) {
-     var row = result.rows[0];
-     var user = {
-       id      : row.id.toString(),
-       age     : row.age,
-       country : row.country,
-       city    : row.city,
-       sex     : row.sex,
-       points  : row.points || 0,
-       status  : row.status,
-       money   : row.money || 0,
-       vid     : row.vid
-       };
+      var user = {};
+      user[f.id]    = row[f.id].toString();
+      user[f.vid]   = row[f.vid];
+      user[f.age]     = row[f.age];
+      user[f.country] = row[f.country];
+      user[f.city]    = row[f.city];
+      user[f.sex]     = row[f.sex];
+      user[f.points]  = row[f.points];
+      user[f.status]  = row[f.status];
+      user[f.money]   = row[f.money];
+      user[f.newfriends] = row[f.newfriends];
+      user[f.newguests] = row[f.newguests];
+      user[f.newgifts] = row[f.newgifts];
+      user[f.newmessages] = row[f.newmessages];
 
-     callback(null, user);
-   } else {
-     callback(null, null);
-   }
- });
+      callback(null, user);
+    } else {
+      callback(null, null);
+    }
+  });
 };

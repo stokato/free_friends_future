@@ -18,7 +18,7 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList, roomList, rooms, profiles) {
   socket.on(constants.IO_CHOOSE_ROOM, function() {
-    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, null)) { return; }
+    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, {})) { return; }
     var f = constants.FIELDS;
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков

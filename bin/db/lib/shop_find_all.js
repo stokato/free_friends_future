@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Найти все товары: ИД
  - Проверка ИД
@@ -5,30 +7,32 @@
  - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
  */
 module.exports = function(callback) {
- var query = "select id, title, type, price, data FROM shop";
+  var f = C.IO.FIELDS;
 
- this.client.execute(query,[], {prepare: true }, function(err, result) {
-   if (err) { return callback(err, null); }
+  var fields = [f.id, f.title, f.type, f.price, f.data];
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP);
 
-   if(result.rows.length == 0) return callback(null, null);
+  this.client.execute(query,[], {prepare: true }, function(err, result) {
+    if (err) { return callback(err, null); }
 
-   var goods = [];
+    if(result.rows.length == 0) return callback(null, null);
 
-   var i;
-   var rowsLen = result.rows.length;
-   for (i = 0; i < rowsLen; i++) {
-     var row = result.rows[i];
+    var goods = [];
 
-     var good = {
-       giftid: row.id.toString(),
-       title: row.title,
-       type : row.type,
-       price: row.price || 0,
-       data:  row.data
-     };
+    var i;
+    var rowsLen = result.rows.length;
+    for (i = 0; i < rowsLen; i++) {
+      var row = result.rows[i];
 
-     goods.push(good);
-   }
-   callback(null, goods);
- });
+      var good = {};
+      good[f.id]  = row[f.id].toString();
+      good[f.title] = row[f.title];
+      good[f.type]  = row[f.type];
+      good[f.price] = row[f.price];
+      good[f.data]  = row[f.data];
+
+      goods.push(good);
+    }
+    callback(null, goods);
+  });
 };

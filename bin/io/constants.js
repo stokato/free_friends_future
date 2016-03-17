@@ -7,7 +7,6 @@ var Config = require('./../../config.json');
 
     //IO_GET_PRIVATE_CHATS = 'get_private_messages',
 
-
 module.exports.ONE_SEX_IN_ROOM = Config.io.one_sex_in_room; // Макс. количество игроков одного пола в комнате
 module.exports.GUY = Config.user.constants.sex.male;        // Идентификация пола
 module.exports.GIRL = Config.user.constants.sex.female;
@@ -19,45 +18,57 @@ module.exports.NEW_ROOM = "new_room";
 
 // наименования полей
 module.exports.FIELDS = {
-  id : 'id',
-  vid: 'vid',
-  date: 'date',
-  points: 'points',
-  sex : 'sex',
-  age : 'age',
-  city: 'city',
-  bdate: 'bdate',
-  country : 'country',
-  room: 'room',
-  status: 'status',
-  random: 'random',
-  friends: 'friends',
-  chats: 'chats',
-  gifts: 'gifts',
-  guests: 'guests',
-  first_date: 'first_date',
-  second_date: 'second_date',
-  giftid: 'giftid',
-  text: 'text',
-  companionid : 'companionid',
-  companionvid: 'companionvid',
-  incoming   : 'incoming',
-  chat : 'chat',
-  pick : 'pick',
-  newmessages : 'newmessages',
-  newgifts : 'newgifts',
-  newfriends : 'newfriends',
-  newguests : 'newguests',
-  innew : 'isnew',
-  userid : 'userid',
-  friendid : 'friendid',
-  friendvid : 'friendvid',
-  type : 'type',
-  data : 'data',
-  fromid : 'fromid',
-  fromvid : 'fromvid',
-  guestid : 'guestid',
-  guestvid : 'guestvid'
+  id            : 'id',
+  vid           : 'vid',
+  date          : 'date',
+  points        : 'points',
+  sex           : 'sex',
+  age           : 'age',
+  city          : 'city',
+  bdate         : 'bdate',
+  country       : 'country',
+  room          : 'room',
+  status        : 'status',
+  random        : 'random',
+  friends       : 'friends',
+  chats         : 'chats',
+  gifts         : 'gifts',
+  guests        : 'guests',
+  first_date    : 'first_date',
+  second_date   : 'second_date',
+  giftid        : 'giftid',
+  type          : 'type',
+  data          : 'data',
+  text          : 'text',
+  companionid   : 'companionid',
+  companionvid  : 'companionvid',
+  incoming      : 'incoming',
+  chat          : 'chat',
+  pick          : 'pick',
+  fromid        : 'fromid',
+  fromvid       : 'fromvid',
+  isnew         : 'isnew',
+  userid        : 'userid',
+  friendid      : 'friendid',
+  friendvid     : 'friendvid',
+  guestid       : 'guestid',
+  guestvid      : 'guestvid',
+  newmessages   : 'newmessages',
+  newguests     : 'newguests',
+  newfriends    : 'newfriends',
+  newgifts      : 'newgifts',
+  picks         : 'picks',
+  question      : 'question',
+  best          : 'best',
+  players       : 'players',
+  gold          : 'gold',
+  sum           : 'sum',
+  uservid       : 'uservid',
+  money         : 'money',
+  goodid        : 'goodid',
+  orderid       : 'orderid',
+  title         : 'title',
+  price         : 'price'
 };
 
 // емиты
@@ -83,3 +94,5 @@ module.exports.IO_GET_NEWS            = 'get_news';
 module.exports.IO_ONLINE              = 'online';
 module.exports.IO_OFFLINE             = 'offline';
 module.exports.IO_ADD_GUEST           = 'add_guest';
+module.exports.IO_GAME                = 'game';
+module.exports.IO_ERROR               = 'err';

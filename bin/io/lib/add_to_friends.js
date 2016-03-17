@@ -44,8 +44,8 @@ module.exports = function (socket, userList, profiles) {
       },///////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Добавляем первого в друзья
         var user = {};
-        user[f.id] = selfProfile.getID();
-        user[f.vid] = selfProfile.getVID();
+        user[f.friendid] = selfProfile.getID();
+        user[f.friendvid] = selfProfile.getVID();
         user[f.date]= date;
 
         friendProfile.addToFriends(user, function (err, res) {
@@ -57,8 +57,8 @@ module.exports = function (socket, userList, profiles) {
       function (friendProfile, cb) { // Добавляем второго
 
         var user = {};
-        user[f.id] = friendProfile.getID();
-        user[f.vid] = friendProfile.getVID();
+        user[f.friendid] = friendProfile.getID();
+        user[f.friendvid] = friendProfile.getVID();
         user[f.date]= date;
 
         selfProfile.addToFriends(user, function (err, res) {

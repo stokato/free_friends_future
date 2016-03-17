@@ -5,20 +5,25 @@ var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
     setActionsLimit = require('../set_action_limits');
 
+var constants_io = require('../../../io/constants');
+
 module.exports = function(game) {
   return function(timer, id, options) { // Лучший, сообщаем всем их выбор
+    f = constants_io.FIELDS;
     if(id) {
       var player = game.gActivePlayers[id];
 
       var result = {};
 
-      if(!game.gStoredOptions[options.pick]) { // Если нет такого пользоателя среди кандидатов
+      if(!game.gStoredOptions[options[f.pick]]) { // Если нет такого пользоателя среди кандидатов
         game.stop();
-        return new GameError(player.getSocket(), 'GAMEBEST',
+        return new GameError(player.getSocket(), constants.G_BEST,
           "Неверные аргументы: за пользователя с таким ИД нельзя проголосовать");
       }
 
-      result['pick'] = { id : id, pick : options.pick};
+      result[f.pick] = {};
+      result[f.pick][f.id] = id;
+      result[f.pick][f.pick] = options[f.pick];
 
       game.emit(player.getSocket(), result);
     }

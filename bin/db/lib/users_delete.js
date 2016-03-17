@@ -1,16 +1,20 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Удаляем пользователя: ИД
  - Проверка на ИД
  - Возвращаем ИД
  */
 module.exports = function(id, callback) {
- if (!id) { callback(new Error("Задан пустой Id")); }
+  if (!id) { callback(new Error("Задан пустой Id")); }
 
- var query = "DELETE FROM users WHERE id = ?";
+  var f = C.IO.FIELDS;
 
- this.client.execute(query, [id], {prepare: true }, function(err) {
-   if (err) {  return callback(err); }
+  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERS, [f.id], [1]);
 
-   callback(null, id);
- });
+  this.client.execute(query, [id], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
+
+    callback(null, id);
+  });
 };

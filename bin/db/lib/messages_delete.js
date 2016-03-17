@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Удалить все сообщения игрока: ИД
  - Проверка на ИД
@@ -7,29 +9,31 @@
  */
 module.exports = function(uid, callback) {
   var self = this;
+  var f = C.IO.FIELDS;
+
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var query = "select companionid FROM user_chats where userid = ?";
+  //var query = "select companionid FROM user_chats where userid = ?";
+  var query = qBuilder.build(qBuilder.Q_SELECT, [f.companionid], C.T_USERCHATS, [f.userid], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
-    var fields = '';
     var params = [];
-    var i;
-    var rowsLen = result.rows.length;
-    for (i = 0; i < rowsLen-1; i ++) {
-      fields += '?, ';
+
+    var i, rowsLen = result.rows.length;
+    for (i = 0; i < rowsLen; i ++) {
       params.push(result.rows[i]);
     }
-    fields += '?';
-    params.push(rowsLen-1);
 
-    var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
+    //var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
+    query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERMESSAGES,
+                                             [f.userid, f.companionid], [1, rowsLen]);
     self.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
-      query = "DELETE FROM user_chats WHERE userid = ?";
+      //query = "DELETE FROM user_chats WHERE userid = ?";
+      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERCHATS, [f.userid], [1]);
       self.client.execute(query, [uid], {prepare: true }, function(err) {
         if (err) {  return callback(err); }
 

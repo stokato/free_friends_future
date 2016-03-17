@@ -1,4 +1,5 @@
 var constants = require('../../constants');
+var constants_io = require('../../../io/constants');
 
 var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
@@ -7,17 +8,23 @@ var startTimer   = require('../start_timer'),
 // Вопросы, ждем, когда все ответят, потом показываем всем ответы
 module.exports = function(game) {
   return function(timer) {
+    var f = constants_io.FIELDS;
     if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var result = { picks : [] };
+      var result = {};
+      result[f.picks] = [];
+
       var item, player;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
         player = game.gActivePlayers[item];
         var picks = game.gActionsQueue[player.getID()];
 
         if(picks) {
-          result.picks.push({ id : player.getID(), pick : picks[0].pick });
+          var pick = {};
+          pick[f.id] = player.getID();
+          pick[f.pick] = picks[0][f.pick];
+          result.picks.push(pick);
         }
       }
 

@@ -6,7 +6,7 @@ var GameError = require('../../game_error'),      // Ошбики
     defineSex = require('./define_sex');
 
 module.exports = function(socket, userList, profiles, roomList, rooms) {
-  if (!checkInput(constants.IO_DISCONNECT, socket, userList, null)) { return; }
+  if (!checkInput(constants.IO_DISCONNECT, socket, userList, {})) { return; }
 
   var selfProfile = userList[socket.id];
   var f = constants.FIELDS;

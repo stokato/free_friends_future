@@ -1,33 +1,36 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Изменяем данные пользователя: объек с данными
  - Проверка: поле ИД обязательные
  - Строим и выполняем запрос
  - Возвращаем объект обратно
  */
-module.exports = function(options, callback) {
- var user = options || {};
- var id   = user.id;
- var vid  = user.vid;
+module.exports = function(options, callback) { options = options || {};
+  var f = C.IO.FIELDS;
 
- if (!id || !vid) { return callback(new Error("Задан пустй Id пользователя"), null); }
+  if (!options[f.id] || !options[f.vid]) {
+    return callback(new Error("Задан пустй Id пользователя"), null);
+  }
 
- var fields = " vid = ? ";
- var params = [];
- params.push(user.vid);
- if (user.age)       { fields = fields + ", age = ? ";      params.push(user.age); }
- if (user.country)   { fields = fields + ", country = ? ";  params.push(user.country); }
- if (user.city)      { fields = fields + ", city = ? ";     params.push(user.city); }
- if (user.status)    { fields = fields + ", status = ? ";   params.push(user.status); }
- if (user.money)     { fields = fields + ", money = ? ";    params.push(user.money); }
- if (user.sex)       { fields = fields + ", sex = ? ";      params.push(user.sex); }
- if (user.points)    { fields = fields + ", points = ? ";   params.push(user.points); }
+  var fields = [f.vid];
+  var params = [];
+  params.push(options[f.vid]);
+  if (options[f.age])     { fields.push(f.age);      params.push(options[f.age]); }
+  if (options[f.country]) { fields.push(f.country);  params.push(options[f.country]); }
+  if (options[f.city])    { fields.push(f.city);     params.push(options[f.city]); }
+  if (options[f.status])  { fields.push(f.status);   params.push(options[f.status]); }
+  if (options[f.money])   { fields.push(f.money);    params.push(options[f.money]); }
+  if (options[f.sex])     { fields.push(f.sex);      params.push(options[f.sex]); }
+  if (options[f.points])  { fields.push(f.points);   params.push(options[f.points]); }
 
- var query = "update users set " + fields + " where id = ?";
- params.push(id);
+  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERS, [f.id], [1]);
 
- this.client.execute(query, params, {prepare: true }, function(err) {
-   if (err) {  return callback(err); }
+  params.push(options[f.id]);
 
-   callback(null, user);
- });
+  this.client.execute(query, params, {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
+
+    callback(null, options);
+  });
 };

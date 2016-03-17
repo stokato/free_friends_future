@@ -2,6 +2,8 @@ var async = require('async');
 var db = require('./db');
 var dbManager = new db();
 
+var constants = require('./io/constants');
+
 //var secret_key = "hiUl8U4F9q3BcbAl28va"; // Защищенный ключ приложения
 function VK () {
 
@@ -33,6 +35,7 @@ module.exports = VK;
 
 function getItem(request, callback) {
   // Получение информации о товаре
+  var f = constants.FIELDS;
   var goodId = request["item"]; // наименование товара
   var response = {};
   dbManager.findGood(goodId, function (err, goodInfo) {
@@ -50,10 +53,10 @@ function getItem(request, callback) {
       };
     } else {
       response["response"] = {
-        "item_id" : goodInfo.itemId,
-        "title"   : goodInfo.title,
-        "photo_url" : goodInfo.src,
-        "price"   : goodInfo.price
+        "item_id"   : goodInfo[f.id],
+        "title"     : goodInfo[f.title],
+        "photo_url" : goodInfo[f.data],
+        "price"     : goodInfo[f.price]
       };
     }
 
@@ -65,22 +68,24 @@ function getItem(request, callback) {
 function changeOrderStatus(request, callback) {
   // Изменение статуса заказа
   var response = {};
+  var f = constants.FIELDS;
 
   if (request["status"] == "chargeable") {
     var orderId = request["order_id"];
-    var options = {
-      vid: request["user_id"],
-      ordervid : orderId,
-      goodid: request["item"],
-      price: request["item_price"]
-    };
+
+    var options = {};
+    options[f.vid]      = request["user_id"];
+    options[f.ordervid] = orderId;
+    options[f.goodid]   = request["item"];
+    options[f.price]    = request["item_price"];
+
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
         dbManager.findGood(options.goodid, function (err, goodInfo) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
-            if(goodInfo.price != options.price)
+            if(goodInfo[f.price] != options[f.price])
               cb(new Error("Неверно указана цена товара"), null);
             else
               cb(null, goodInfo);
@@ -88,7 +93,7 @@ function changeOrderStatus(request, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        dbManager.findUser(null, options.vid, ["money"], function(err, info) {
+        dbManager.findUser(null, options[f.vid], [f.money], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
@@ -98,38 +103,41 @@ function changeOrderStatus(request, callback) {
       },/////////////////////////////////////////////////////////////////////
       function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        var newMoney = info.money - goodInfo.price;
+        var newMoney = info[f.money] - goodInfo[f.price];
         if(newMoney < 0) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
-        var ordOptions = {
-          vid     : options.ordervid,
-          goodid  : goodInfo.id,
-          userid  : info.id,
-          uservid : info.vid,
-          sum     : goodInfo.price,
-          date    : new Date()
-        };
+        var ordOptions = {};
+        ordOptions[f.vid] = options.ordervid;
+        ordOptions[f.goodid] = goodInfo[f.id];
+        ordOptions[f.userid] = info[f.id];
+        ordOptions[f.uservid] = info[f.vid];
+        ordOptions[f.sum] = goodInfo[f.price];
+        ordOptions[f.date] = new Date();
 
         dbManager.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
 
-          var newMoney = info.money - ordOptions.sum;
+          var newMoney = info[f.money] - ordOptions[f.sum];
 
-          var options = {
-            id       : info.id,
-            vid      : info.vid,
-            money    : newMoney
-          };
+          var options = {};
+          options[f.id] = info[f.id];
+          options[f.vid] = info[f.vid];
+          options[f.money] = newMoney;
+
           dbManager.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }
 
-            var newPurchase = { userid: info.id, goodid: goodInfo.id };
+            var newPurchase = {};
+            newPurchase[f.userid] = info[f.id];
+            newPurchase[f.goodid] = goodInfo[f.id];
             dbManager.addPurchase(newPurchase, function(err, id) {
               if (err) { return cb(err, null); }
 
-              cb(null, {orderid : orderid});
+              var result = {};
+              result[f.orderid] = orderid;
+              cb(null, result);
             });
           });
         });
@@ -144,7 +152,7 @@ function changeOrderStatus(request, callback) {
       } else {
         response["response"] = {
           "order_id": orderId,
-          "app_order_id": res.orderid
+          "app_order_id": res[f.orderid]
         };
       }
 

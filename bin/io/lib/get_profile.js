@@ -83,8 +83,8 @@ module.exports = function (socket, userList, profiles) {
         },///////////////////////////////////////////////////////////////
         function (friendProfile, cb) { // Добавляем себя в гости
           var user = {};
-          user[f.id] = selfProfile.getID();
-          user[f.vid] = selfProfile.getVID();
+          user[f.guestid] = selfProfile.getID();
+          user[f.guestvid] = selfProfile.getVID();
           user[f.date] = new Date();
           friendProfile.addToGuests(user, function (err, res) {
             if (err) { return cb(err, null); }

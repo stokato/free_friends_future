@@ -7,14 +7,18 @@ var startTimer   = require('../start_timer'),
     pushAllPlayers = require('../activate_all_players'),
     setActionsLimit = require('../set_action_limits');
 
+var constants_io = require('../../../io/constants');
+
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
   return function (timer, uid, options) {
-
+    var f = constants_io.FIELDS;
     if(uid) {
       var player = game.gActivePlayers[uid];
 
-      var result = { id: uid, pick: options.pick };
+      var result = {};
+      result[f.id] = uid;
+      result[f.pick] = options[f.pick];
       game.emit(player.getSocket(), result);
     }
 

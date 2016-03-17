@@ -7,7 +7,7 @@ var GameError = require('../../game_error'),              // Ошибки
 // Проверяем - если все готовы - стартуем игру
 module.exports = function (socket, userList, roomList) {
   socket.on(constants.IO_JOIN_GAME, function() {
-    if (!checkInput(constants.IO_JOIN_GAME, socket, userList, null)) { return; }
+    if (!checkInput(constants.IO_JOIN_GAME, socket, userList, {})) { return; }
 
     var f = constants.FIELDS;
     var selfProfile = userList[socket.id];

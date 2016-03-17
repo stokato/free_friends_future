@@ -64,7 +64,7 @@ function GameError(socket, func, message) {
  console.log(err.stack);
 
  if(socket) {
-   socket.emit('err', err);
+   socket.emit(constants_io.IO_ERROR, err);
  }
 
 }

@@ -1,4 +1,4 @@
-var constants = require('../constants');
+var C = require('../constants');
 var buildQuery = require('./build_query');
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
@@ -8,7 +8,7 @@ var buildQuery = require('./build_query');
  - Возвращаем объект подарка
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var f = constants.IO.FIELDS;
+  var f = C.IO.FIELDS;
 
   if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
@@ -19,8 +19,8 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   var id = this.uuid.random();
 
-  var fields = fields = [f.id, f.userid, f.giftid, f.type, f.data, f.date, f.fromid, f.fromvid];
-  var query = buildQuery.build(buildQuery.Q_INSERT, fields, constants.T_USERGIFTS);
+  var fields = [f.id, f.userid, f.giftid, f.type, f.data, f.date, f.fromid, f.fromvid];
+  var query = buildQuery.build(buildQuery.Q_INSERT, fields, C.T_USERGIFTS);
 
   var params = [];
   params.push(id);
@@ -32,7 +32,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   params.push(options[f.fromid]);
   params.push(options[f.fromvid]);
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  this.client.execute(query, params, { prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     callback(null, options);

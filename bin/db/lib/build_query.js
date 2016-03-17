@@ -14,7 +14,7 @@ module.exports.ALL_FIELDS = "*";
 //"INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 //"DELETE FROM user_friends WHERE userid = ?";
 //"update user_messages set " + fields + where userid = ? and companionid = ? and id = ?";
-module.exports.build = function(type, fields, table, const_fields, const_values) {
+module.exports.build = function(type, fields, table, const_fields, const_values, const_more, const_less) {
   var query = type, i;
 
   switch (type) {
@@ -54,25 +54,29 @@ module.exports.build = function(type, fields, table, const_fields, const_values)
       break;
   }
 
-  query = buildConstraints(query, const_fields, const_values);
+  query = buildConstraints(query, const_fields, const_values, const_more, const_less);
 
   return query;
 };
 
-function buildConstraints(query, const_fields, const_values) {
+function buildConstraints(query, const_fields, const_values, const_more, const_less) {
   if(!const_fields) { return query; }
 
   query += " where";
-  for(i = 0; i < const_fields.length; i++) {
+  for(var i = 0; i < const_fields.length; i++) {
     query += " " + const_fields[i];
-    query += (const_values[i] == 0) ? " = ?" : buildPluralConstraintValues(const_values[i]);
+    query += (const_values[i] == 1) ? " = ?" : buildPluralConstraintValues(const_values[i]);
     query += (i < const_fields.length-1) ? " and " : "";
   }
+
+  query += (const_more) ? " and " + const_more + " > ?" : "";
+  query += (const_less) ? " and " + const_less + " < ?" : "";
+
   return query;
 }
 
 function buildPluralConstraintValues(count) {
-  var i, constraint = "in (";
+  var i, constraint = " in (";
   for(i = 0; i < count; i++) {
     constraint += (i < count-1) ? "?, " : "?";
   }

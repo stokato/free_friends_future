@@ -35,7 +35,7 @@ function Game(room) {
 
   this.gStoredOptions  = {};        // опции, сохраненные на предидущих этапах
   this.gActivePlayers  = {};       // Игроки, которые на данном этапе могут ходить
-  this.gNextGame = 'start';        // Игра, которая будет вызвана следующей
+  this.gNextGame = constants.G_START; // Игра, которая будет вызвана следующей
 
   this.gTimer = null;       // Таймер, ограничивает время действия игроков, вызвывает следующую игру
 

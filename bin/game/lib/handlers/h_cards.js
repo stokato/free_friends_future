@@ -6,13 +6,19 @@ var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
     setActionsLimit = require('../set_action_limits');
 
+var constants_io = require('../../../io/constants');
+
 // Карты, ждем, кода все ответят, потом показываем всем их ответы и где золото
 module.exports = function(game) {
   return function (timer) {
+    var f = constants_io.FIELDS;
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var result = { picks: [], gold: Math.floor(Math.random() * constants.CARD_COUNT) };
+      var result = {};
+      result[f.picks] = [];
+      result[f.gold] = Math.floor(Math.random() * constants.CARD_COUNT);
+
       var item, player, picks;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
 
@@ -20,7 +26,10 @@ module.exports = function(game) {
         picks = game.gActionsQueue[player.getID()];
 
         if(picks) {
-          result.picks.push({id: player.getID(), pick: picks[0].pick});
+          var pick = {};
+          pick[f.id] = player.getID();
+          pick[f.pick] = picks[0][f.pick];
+          result.picks.push(pick);
         }
 
       }

@@ -1,4 +1,4 @@
-var constants = require('../constants');
+var C = require('../constants');
 var buildQuery = require('./build_query');
 /*
  Удалить всех друзей игрока: ИД
@@ -10,9 +10,9 @@ var buildQuery = require('./build_query');
 module.exports = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var f = constants.IO.FIELDS;
+  var f = C.IO.FIELDS;
 
-  var query = buildQuery.build(buildQuery.Q_DELETE, [], constants.T_USERFRIENDS, [f.userid], [1]);
+  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, [f.userid], [1]);
   this.client.execute(query, [uid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 

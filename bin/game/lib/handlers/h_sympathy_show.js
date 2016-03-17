@@ -5,24 +5,31 @@ var startTimer         = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
     setActionsLimit    = require('../set_action_limits');
 
+var constants_io = require('../../../io/constants');
+
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
   return function(timer, uid, options) {
+    var f = constants_io.FIELDS;
     if(uid) {
-      var sympathy = game.gStoredOptions[options.pick];
+      var sympathy = game.gStoredOptions[options[f.pick]];
 
-      var result = { picks: [] }, i;
+      var result = {}, i;
+      result[f.picks] = [];
 
       for(i = 0; i < sympathy.length; i ++) {
-        var pickedId = sympathy[i].pick;
+        var pickedId = sympathy[i][f.pick];
 
         if(!game.gRoom.guys[pickedId] && !game.gRoom.girls[pickedId]) {
           game.stop();
           return new GameError(game.gActivePlayers[uid].getSocket(),
-                      'GAMESYMPATHY', "Неверные агрументы: нет игрока с таким ИД");
+                      constants.G_SYMPATHY, "Неверные агрументы: нет игрока с таким ИД");
         }
 
-        result.picks.push({ id : options.pick, pick : pickedId })
+        var pick = {};
+        pick[f.id] = options[f.pick];
+        pick[f.pick] = pickedId;
+        result[f.picks].push(pick);
       }
 
       game.emit(game.gActivePlayers[uid].getSocket(), result, uid);

@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Удалить всех гостей игрока: ИД
  - Проверка на ИД
@@ -6,12 +8,15 @@
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
- if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
+  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
- var query = "DELETE FROM user_guests where user = ?";
- this.client.execute(query, [uid], {prepare: true }, function(err) {
-   if (err) {  return callback(err); }
+  //var query = "DELETE FROM user_guests where user = ?";
+  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGUESTS,
+                                                  [C.IO.FIELDS.userid],[1]);
 
-   callback(null, uid);
- });
+  this.client.execute(query, [uid], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
+
+    callback(null, uid);
+  });
 };

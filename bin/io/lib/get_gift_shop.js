@@ -11,7 +11,7 @@ var db = new dbjs();
  */
 module.exports = function (socket, userList) {
   socket.on(constants.IO_GET_SHOP, function() {
-    if (!checkInput(constants.IO_GET_SHOP, socket, userList, null)) { return; }
+    if (!checkInput(constants.IO_GET_SHOP, socket, userList, {})) { return; }
 
     db.findAllGoods(function (err, goods) {
       if (err) { return new GameError(socket, constants.IO_GET_SHOP, err.message); }

@@ -1,4 +1,4 @@
-var constants = require('../constants');
+var C = require('../constants');
 var qBuilder = require('./build_query');
 /*
  Найти все подарки игрока: ИД игрока
@@ -10,10 +10,10 @@ module.exports = function(uid, callback) {
   var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null);}
 
-  var f = constants.IO.FIELDS;
+  var f = C.IO.FIELDS;
 
   var fields = [f.giftid, f.type, f.data, f.date, f.fromid, f.fromvid];
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, constants.T_USERGIFTS, [f.userid], [1]);
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGIFTS, [f.userid], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -30,21 +30,21 @@ module.exports = function(uid, callback) {
 
         var gift = {};
         gift[f.giftid]  = row[f.giftid].toString();
-        gift[f.type]    = row[f.type];
-        gift[f.data]    = row[f.data];
-        gift[f.date]    = row[f.date];
+        gift[f.type]     = row[f.type];
+        gift[f.data]     = row[f.data];
+        gift[f.date]     = row[f.date];
         gift[f.fromid]  = row[f.fromid].toString();
         gift[f.fromvid] = row[f.fromvid].toString();
 
         gifts.push(gift);
-        if(userList.indexOf(row.fromid) < 0) {
+        if(userList.indexOf(gift[f.fromid]) < 0) {
           const_fields ++;
-          userList.push(row.fromid);
+          userList.push(gift[f.fromid]);
         }
       }
 
       var fields = [f.id, f.vid, f.sex, f.city, f.country, f.points];
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, [f.id], [const_fields]);
+      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, [f.id], [const_fields]);
 
       self.client.execute(query, userList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
@@ -67,17 +67,17 @@ module.exports = function(uid, callback) {
         }
 
         var giftsLen = gifts.length;
-        var usersLen = users.length;
+        var j, usersLen = users.length;
         for(i = 0; i < giftsLen; i++) {
-          for(var j = 0; j < usersLen; j++) {
+          for(j = 0; j < usersLen; j++) {
             if(users[j][f.id] == gifts[i][f.fromid]) {
-              if (!users[j].gifts) users[j].gifts = [];
+              if (!users[j].gifts) { users[j].gifts = []; }
 
               var gift = {};
-              gift[f.id]   = gifts[i].giftid;
-              gift[f.type] = gifts[i].type;
-              gift[f.data] = gifts[i].data;
-              gift[f.date] = gifts[i].date;
+              gift[f.giftid] = gifts[i][f.giftid];
+              gift[f.type]    = gifts[i][f.type];
+              gift[f.data]    = gifts[i][f.data];
+              gift[f.date]    = gifts[i][f.date];
 
               users[j].gifts.push(gift);
             }

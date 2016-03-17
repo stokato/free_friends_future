@@ -1,5 +1,6 @@
 //var random = require('random-js')();
 var constants = require('../../constants');
+var constants_io = require('../../../io/constants');
 
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
@@ -9,6 +10,7 @@ var randomPlayer = require('../random_player'),
 
 module.exports = function(game) {
   return function(timer, uid) {
+    var f = constants_io.FIELDS;
     clearTimeout(game.gTimer);
 
     var rand;
@@ -21,7 +23,9 @@ module.exports = function(game) {
 
     game.gActionsQueue = {};
 
-    var result = { game : game.gNextGame, players: [] };
+    var result = {};
+    result[f.game] = game.gNextGame;
+    result[f.players] = [];
 
     switch (game.gNextGame) {
       /////////////////////// БУТЫЛОЧКА //////////////////////////////////////////
@@ -38,7 +42,7 @@ module.exports = function(game) {
         game.gActionsCount = constants.PLAYERS_COUNT;
 
         rand = Math.floor(Math.random() * constants.GAME_QUESTIONS.length);
-        result['question'] =  constants.GAME_QUESTIONS[rand];
+        result[f.question] =  constants.GAME_QUESTIONS[rand];
         break;
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
@@ -71,7 +75,7 @@ module.exports = function(game) {
         setActionsLimit(game, 1);
         game.gActionsCount = constants.PLAYERS_COUNT-2;
 
-        result['best'] = bestPlayers;
+        result[f.best] = bestPlayers;
         break;
       //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
       case constants.G_SYMPATHY:
@@ -83,7 +87,7 @@ module.exports = function(game) {
         break;
     }
     /////////////////////////////////////////////////////////////////////////////////////
-    result['players'] = getPlayersID(game.gActivePlayers);
+    result[f.players] = getPlayersID(game.gActivePlayers);
 
     var item, player;
     for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {

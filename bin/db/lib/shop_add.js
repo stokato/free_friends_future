@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -5,30 +7,25 @@
  - Строим и выполняем запрос
  - Возвращаем объект обратно
  */
-module.exports = function(options, callback) {
- var good    = options || {};
- var goodId  = good.id;
- var title   = good.title;
- var price   = good.price;
- var data    = good.data;
- var type    = good.type;
+module.exports = function(options, callback) { options    = options || {};
+  var f = C.IO.FIELDS;
 
- if ( !goodId || !title || !price || !data || !type) {
-   return callback(new Error("Не указан Id товара"), null);
- }
+  if ( !options[f.title] || !options[f.price] || !options[f.data] || !options[f.type]) {
+    return callback(new Error("Не указаны необходимые поля товара"), null);
+  }
 
- var id = this.uuid.random();
+  var id = this.uuid.random();
 
- var fields = "id, title, price, data, type";
- var values = "?, ?, ?, ?, ?";
+  var fields = [f.id, f.title, f.price, f.data, f.type];
+  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_SHOP);
 
- var params = [id, goodId, title, price, data, type];
+  var params = [id, options[f.title], options[f.price], options[f.data], options[f.type]];
 
- var query = "INSERT INTO shop (" + fields + ") VALUES (" + values + ")";
+  this.client.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err); }
 
- this.client.execute(query, params, {prepare: true },  function(err) {
-   if (err) {  return callback(err); }
+    options[f.id] = id;
 
-   callback(null, good);
- });
+    callback(null, options);
+  });
 };

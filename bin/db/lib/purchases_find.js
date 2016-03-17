@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Найти все покупки пользователя: ИД
  - Проверка ИД
@@ -8,7 +10,10 @@ module.exports = function(userid, callback) {
 
   if(!userid) { return callback(new Error("Не задан ИД пользователя"), null); }
 
-  var query = "select id, goodid FROM user_goods where userid = ?";
+  var f = C.IO.FIELDS;
+
+  var fields = [f.id, f.goodid];
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields , C.T_USERGOODS, [f.userid], [1]);
 
   this.client.execute(query,[userid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -21,10 +26,9 @@ module.exports = function(userid, callback) {
     for (i = 0; i < result.rows.length; i++) {
       var row = result.rows[i];
 
-      var good = {
-        id: row.id.toString(),
-        goodid: row.goodid.toString()
-      };
+      var good = {};
+      good[f.id] = row[f.id].toString();
+      good[f.goodid] = row[f.goodid].toString();
 
       goods.push(good);
     }

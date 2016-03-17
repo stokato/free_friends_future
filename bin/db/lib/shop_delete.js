@@ -1,3 +1,5 @@
+var C = require('../constants');
+var qBuilder = require('./build_query');
 /*
  Удалить товар из БД: ИД
  - Проверка на ИД
@@ -5,14 +7,13 @@
  - Возвращаем ИД товара
  */
 module.exports = function(goodid, callback) {
- var id = goodid;
- if (!id) { callback(new Error("Задан пустой Id товара")); }
+  if (!goodid) { callback(new Error("Задан пустой Id товара")); }
 
- var query = "DELETE FROM shop WHERE id = ?";
+  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_SHOP, [C.IO.FIELDS.id], [1]);
 
- this.client.execute(query, [id], {prepare: true }, function(err) {
-   if (err) {  return callback(err); }
+  this.client.execute(query, [goodid], {prepare: true }, function(err) {
+    if (err) {  return callback(err); }
 
-   callback(null, id);
- });
+    callback(null, goodid);
+  });
 };

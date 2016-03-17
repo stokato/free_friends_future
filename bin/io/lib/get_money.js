@@ -6,7 +6,7 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList) {
   socket.on(constants.IO_GET_MONEY, function() {
-    if (!checkInput(constants.IO_GET_MONEY, socket, userList, null)) { return; }
+    if (!checkInput(constants.IO_GET_MONEY, socket, userList, {})) { return; }
 
     var f = constants.FIELDS;
     userList[socket.id].getMoney(function (err, money) {

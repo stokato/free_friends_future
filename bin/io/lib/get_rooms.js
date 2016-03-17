@@ -16,7 +16,7 @@ var GameError = require('../../game_error'),
  */
 module.exports = function (socket, userList, rooms) {
   socket.on(constants.IO_GET_ROOMS, function() {
-    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, null)) { return; }
+    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, {})) { return; }
 
     var sex = defineSex(userList[socket.id]);
 

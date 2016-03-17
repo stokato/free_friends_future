@@ -14,7 +14,7 @@ var db = new dbjs();
  */
 module.exports = function (socket, userList) {
   socket.on(constants.IO_GET_TOP, function() {
-    if (!checkInput(constants.IO_GET_TOP, socket, userList, null))  { return; }
+    if (!checkInput(constants.IO_GET_TOP, socket, userList, {}))  { return; }
 
     var fList = [constants.FIELDS.sex, constants.FIELDS.points];
     db.findAllUsers(fList, function (err, users) {

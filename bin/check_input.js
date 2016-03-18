@@ -95,18 +95,28 @@ function checkInput(em, socket, userList, options) {
         new GameError(socket, em, "Некорректно задан ИД");
       }
       break;
+    case constants_io.IO_GET_TOP :
+      if(options[f.points]) {
+        val = options[f.points];
+        isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
+      }
+
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задано количество очков, с которого следует получть топ.");
+      }
+      break;
     case constants_game.G_BEST :
       isValid = checkID(options[f.pick]);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим");
+        new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим. Игра остановлена.");
       }
       break;
     case constants_game.G_BOTTLE_KISSES :
       isValid = (validator.isBoolean(options[f.pick] + "")? isValid : false);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean. Игра остановлена.");
       }
       break;
     case constants_game.G_QUESTIONS :
@@ -114,7 +124,7 @@ function checkInput(em, socket, userList, options) {
       isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть 1, 2 или 3");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть 1, 2 или 3. Игра остановлена.");
       }
       break;
     case constants_game.G_CARDS :
@@ -122,7 +132,7 @@ function checkInput(em, socket, userList, options) {
       isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9. Игра остановлена.");
       }
       break;
     case constants_game.G_SYMPATHY :
@@ -130,7 +140,7 @@ function checkInput(em, socket, userList, options) {
       isValid = checkID(options[f.pick]);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан ИД в выборе игрока");
+        new GameError(socket, em, "Некорректно задан ИД в выборе игрока. Игра остановлена.");
       }
       break;
   }

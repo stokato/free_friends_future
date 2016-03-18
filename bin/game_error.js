@@ -48,15 +48,15 @@ function GameError(socket, func, message) {
      break;
    case constants_io.IO_CLOSE_PRIVATE_CHAT      : err.name = "Ошибка закрытия приватного чата";
      break;
-   case constants_game.G_BOTTLE                 : err.name = "Игра остановлена. Ошибка в игре бутылочка";
+   case constants_game.G_BOTTLE                 : err.name = "Ошибка в игре бутылочка";
      break;
-   case constants_game.G_QUESTIONS              : err.name = "Игра остановлена. Ошибка в игре Вопросы";
+   case constants_game.G_QUESTIONS              : err.name = "Ошибка в игре Вопросы";
      break;
-   case constants_game.G_CARDS                  : err.name = "Игра остановлена. Ошибка в игре Золото";
+   case constants_game.G_CARDS                  : err.name = "Ошибка в игре Золото";
      break;
-   case constants_game.G_BEST                   : err.name = "Игра остановлена. Ошибка в игре Кто больше нравится";
+   case constants_game.G_BEST                   : err.name = "Ошибка в игре Кто больше нравится";
      break;
-   case constants_game.G_SYMPATHY               : err.name = "Игра остановлена. Ошибка в игре Симпатии";
+   case constants_game.G_SYMPATHY               : err.name = "Ошибка в игре Симпатии";
      break;
    default:  err.name =   "Неизвестная ошибка"
  }

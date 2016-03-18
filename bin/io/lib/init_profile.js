@@ -116,7 +116,6 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       }///////////////////////////////////////////////////////////////
     ], function (err, res) { // Обрабатываем ошибки, либо передаем данные клиенту
       if (err) { return new GameError(socket, constants.IO_INIT, err.message); }
-
     });
   })
 };

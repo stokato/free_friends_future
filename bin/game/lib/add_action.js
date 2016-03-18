@@ -1,5 +1,4 @@
-var GameError = require('./../../game_error'),
-    checkInput = require('./../../check_input');
+var checkInput = require('./../../check_input');
 var constants_io = require('../../io/constants');
 var constants = require('../constants');
 
@@ -15,10 +14,9 @@ module.exports = function (socket, userList) {
 
       if (!checkInput(game.gNextGame, socket, userList, options)) {
         game.stop();
-        socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
-          {name: "Игра остановлена всвязи с ошибкой"});
 
-        return new GameError(socket, constants_io.IO_GAME, "Верификация не пройдена");
+        return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
+          {message: "Игра остановлена всвязи с ошибкой"});
       }
 
       if(!game.gActionsQueue[uid]) {

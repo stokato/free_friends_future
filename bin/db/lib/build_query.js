@@ -14,7 +14,9 @@ module.exports.ALL_FIELDS = "*";
 //"INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 //"DELETE FROM user_friends WHERE userid = ?";
 //"update user_messages set " + fields + where userid = ? and companionid = ? and id = ?";
-module.exports.build = function(type, fields, table, const_fields, const_values, const_more, const_less) {
+module.exports.build = function(type, fields, table,
+                                const_fields, const_values, const_more, const_less,
+                                order_by, desc_limit) {
   var query = type, i;
 
   switch (type) {
@@ -55,6 +57,9 @@ module.exports.build = function(type, fields, table, const_fields, const_values,
   }
 
   query = buildConstraints(query, const_fields, const_values, const_more, const_less);
+
+  query += (order_by) ? " order by " + order_by : "";
+  query += (desc_limit) ? " desc limit " + desc_limit : "";
 
   return query;
 };

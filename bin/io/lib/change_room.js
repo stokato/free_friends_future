@@ -62,6 +62,10 @@ module.exports = function (socket, userList, rooms, roomList) {
       return new GameError(socket, constants.IO_CHANGE_ROOM, "Попытка открыть несуществующую комнату")
     }
 
+    if(selfProfile.getReady()) {
+      roomList[socket.id].game.stop();
+    }
+
     newRoom[sex.sexArr][selfProfile.getID()] = selfProfile;
     newRoom[sex.len]++;
 

@@ -36,7 +36,10 @@ var addUser             = require('./lib/users_add'),
   findOrders          = require('./lib/orders_find'),
   addPurchase         = require('./lib/purchases_add'),
   findPurchase        = require('./lib/purchases_find'),
-  deletePurchase      = require('./lib/purchases_delete');
+  deletePurchase      = require('./lib/purchases_delete'),
+  addPoints           = require('./lib/points_add'),
+  findPoints          = require('./lib/points_find'),
+  deletePoints        = require('./lib/points_delete');
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра
@@ -85,5 +88,8 @@ DBManager.prototype.findOrders      = findOrders;
 DBManager.prototype.addPurchase     = addPurchase;
 DBManager.prototype.findPurchase    = findPurchase;
 DBManager.prototype.deletePurchase  = deletePurchase;
+DBManager.prototype.addPoints       = addPoints;
+DBManager.prototype.findPoints      = findPoints;
+DBManager.prototype.deletePoints    = deletePoints;
 
 module.exports = DBManager;

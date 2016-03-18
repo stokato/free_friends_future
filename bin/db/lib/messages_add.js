@@ -9,7 +9,7 @@ var async = require('async');
  - Строим и выполняем запрос
  - Возвращаем объект сообщения
  */
-module.exports = function(uid, options, callback) { options = options = {};
+module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
   var f = C.IO.FIELDS;
 

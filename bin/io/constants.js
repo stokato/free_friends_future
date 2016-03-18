@@ -15,6 +15,7 @@ module.exports.EXIT_TIMEOUT = Config.io.exit_timeout;      // Таймаут о�
 module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут ожидания запроса от клиента перед отключением
 //module.exports.LEN_PRIVATE_HISTORY = LEN_PRIVATE_HISTORY; // Длина истории приватных сообщений в днях
 module.exports.NEW_ROOM = "new_room";
+module.exports.TOP_USERS = 100;
 
 // наименования полей
 module.exports.FIELDS = {
@@ -68,7 +69,10 @@ module.exports.FIELDS = {
   goodid        : 'goodid',
   orderid       : 'orderid',
   title         : 'title',
-  price         : 'price'
+  price         : 'price',
+  game          : 'game',
+  hundreds      : 'hundreds',
+  hundred       : 'hundred'
 };
 
 // емиты

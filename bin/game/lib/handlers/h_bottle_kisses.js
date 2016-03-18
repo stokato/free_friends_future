@@ -1,3 +1,4 @@
+var async = require('async');
 
 var GameError = require('./../../../game_error'),
     checkInput = require('./../../../check_input');
@@ -13,8 +14,9 @@ var constants_io = require('../../../io/constants');
 module.exports = function(game) {
   return function (timer, uid, options) {
     var f = constants_io.FIELDS;
+    var player;
     if(uid) {
-      var player = game.gActivePlayers[uid];
+      player = game.gActivePlayers[uid];
 
       var result = {};
       result[f.id] = uid;
@@ -23,18 +25,53 @@ module.exports = function(game) {
     }
 
     if (game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+      var item, allKissed = true;
+      for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+        player  = game.gActivePlayers[item];
+        if(!game.gActionsQueue[player.getID()][0][f.pick]) {
+          allKissed = false;
+        }
+      }
 
-      game.gNextGame = constants.G_START;
+      if(allKissed) {
+        var players = [];
+        for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+          if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick]) {
+            players.push(game.gActivePlayers[item]);
+          }
+        }
+        async.map(players, function(player, cb) {
+          player.addPoints(1, function(err, res) {
+            if(err) {
+              new GameError(player.getSocket(),
+                constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
+              return cb(err, null);
+            }
 
-      game.gActionsQueue = {};
-      game.gActivePlayers = {};
+            cb(null, null);
+          });
+        },
+        function(err, res) {
+          if(err) { game.stop(); }
 
-      pushAllPlayers(game.gRoom, game.gActivePlayers);
-      setActionsLimit(game, 1);
-      game.gActionsCount = constants.PLAYERS_COUNT;
-
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+          setNextGame(game);
+        })
+      } else { setNextGame(game); }
     }
   }
 };
+
+function setNextGame(game) {
+  if(!timer) { clearTimeout(game.gTimer); }
+
+  game.gNextGame = constants.G_START;
+
+  game.gActionsQueue = {};
+  game.gActivePlayers = {};
+
+  pushAllPlayers(game.gRoom, game.gActivePlayers);
+  setActionsLimit(game, 1);
+  game.gActionsCount = constants.PLAYERS_COUNT;
+
+  game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+}

@@ -11,3 +11,5 @@ module.exports.T_USERNEWMESSAGES = 'user_new_messages';
 module.exports.T_ORDERS          = 'orders';
 module.exports.T_USERGOODS       = 'user_goods';
 module.exports.T_SHOP            = 'shop';
+module.exports.T_USERPOINTS      = 'user_points';
+module.exports.T_MAX_HANDRED     = 'max_hundred';

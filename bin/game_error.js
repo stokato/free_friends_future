@@ -48,6 +48,8 @@ function GameError(socket, func, message) {
      break;
    case constants_io.IO_CLOSE_PRIVATE_CHAT      : err.name = "Ошибка закрытия приватного чата";
      break;
+   case constants_io.IO_ADD_POINTS              : err.name = "Ошибка добавлеия очков пользователю";
+     break;
    case constants_game.G_BOTTLE                 : err.name = "Ошибка в игре бутылочка";
      break;
    case constants_game.G_QUESTIONS              : err.name = "Ошибка в игре Вопросы";

@@ -8,6 +8,7 @@ var qBuilder = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
+  var self = this;
   var f = C.IO.FIELDS;
 
   if ( !options[f.userid] || !options[f.uservid] || !options[f.points]) {
@@ -21,9 +22,14 @@ module.exports = function(options, callback) { options    = options || {};
 
   var params = [hundred, options[f.points], options[f.userid], options[f.uservid]];
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  self.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
-    callback(null, options);
+    var query = qBuilder.build(qBuilder.Q_INSERT, [f.id, f.hundred], C.T_MAX_HANDRED);
+    self.client.execute(query, ["max", hundred],{prepare: true },  function(err) {
+      if (err) {  return callback(err); }
+
+      callback(null, options);
+    });
   });
 };

@@ -20,8 +20,8 @@ module.exports = function(max, callback) {
   async.waterfall([ //////////////////////////////////////////////////////////////
     function(cb) { // Если параметр не задан, берем из БД максимальную сотню
       if(!max) {
-        var query = qBuilder.build(qBuilder.Q_SELECT, [f.hundred], C.T_MAX_HANDRED);
-        self.client.execute(query,[], {prepare: true }, function(err, result) {
+        var query = qBuilder.build(qBuilder.Q_SELECT, [f.hundred], C.T_MAX_HANDRED, [f.id], [1]);
+        self.client.execute(query,["max"], {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
 
           if(result.rows.length == 0) { return cb(null, 0); }
@@ -34,26 +34,27 @@ module.exports = function(max, callback) {
       }
     },/////////////////////////////////////////////////////////////////////
     function(max, cb) { // Получаем топ игроков
-      var hundred = Math.floor(max/100) * 100 + 100;
-      getNextHundred(self.client, query, hundred, users, cb);
+      var hundred = Math.floor(max/100) * 100;
+      getNextHundred(self.client, query, hundred, users, max, cb);
     } ////////////////////////////////////////////////////////////////////////
   ], function(err, res) { // Обрабатываем ошибки, либо возвращаем результат
     if(err) { return callback(err, null); }
 
     callback(null, users);
-  })
+  });
 };
 
 // Рекурсивно читаем из базы пользователей до усановленного количества
-function getNextHundred(client,query, hundred, users, callback) {
+function getNextHundred(client, query, hundred, users, max, callback) {
   client.execute(query, [hundred], {prepare: true }, function(err, result) {
     if (err) { return cb(err, null); }
 
     var f = C.IO.FIELDS;
 
-    var i, user = {}, rows = result.rows;
+    var i, user, rows = result.rows;
     for(i = 0; i < rows.length; i++) {
-      if(C.IO.TOP_USERS < users.length) {
+      if(C.IO.TOP_USERS > users.length && rows[i][f.points] <= max) {
+        user = {};
         user[f.id]      = rows[i][f.userid];
         user[f.vid]     = rows[i][f.uservid];
         user[f.points]  = rows[i][f.points];
@@ -63,9 +64,9 @@ function getNextHundred(client,query, hundred, users, callback) {
     }
 
     if(C.IO.TOP_USERS == users.length || hundred-100 == 0) {
-      callback(null, null);
+      callback(null, users);
     } else {
-      getNextHundred(client, query, hundred-100, users, callback);
+      getNextHundred(client, query, hundred-100, users, max, callback);
     }
   });
 }

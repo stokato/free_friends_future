@@ -98,5 +98,6 @@ module.exports.IO_GET_NEWS            = 'get_news';
 module.exports.IO_ONLINE              = 'online';
 module.exports.IO_OFFLINE             = 'offline';
 module.exports.IO_ADD_GUEST           = 'add_guest';
+module.exports.IO_ADD_POINTS          = 'add_points';
 module.exports.IO_GAME                = 'game';
 module.exports.IO_ERROR               = 'err';

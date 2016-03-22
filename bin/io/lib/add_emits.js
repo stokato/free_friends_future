@@ -5,12 +5,12 @@ var chooseRoom      = require('./choose_room'),
   changeRoom        = require('./change_room'),
   changeStatus      = require('./change_status'),
   getProfile        = require('./get_profile'),
-  getGifts          = require('./trash/get_gifts'),
-  getPrivMes        = require('./trash/get_private_chats'),
+  //getGifts          = require('./get_gifts'),
+  //getPrivMes        = require('./get_private_chats'),
   openPrivateChat   = require('./open_private_chat'),
   closePrivateChat  = require('./close_private_chat'),
-  getFriends        = require('./trash/get_friends'),
-  getGuests         = require('./trash/get_guests'),
+  //getFriends        = require('./get_friends'),
+  //getGuests         = require('./get_guests'),
   addToFriends      = require('./add_to_friends'),
   makeGift          = require('./make_gift'),
   sendMessage       = require('./send_message'),
@@ -20,12 +20,13 @@ var chooseRoom      = require('./choose_room'),
   getGiftShop       = require('./get_gift_shop'),
 //var changeMoney       = require('./money_io/change_money');
   getMoney          = require('./get_money'),
+  addPoints         = require('./add_points'),
   joinGame          = require('./join_game'),
   disconnect        = require('./disconnect');
 
 var addAction       = require('../../game/lib/add_action');
 
-// добавляем слушатели для сокета
+// РќР°Р·РЅР°С‡Р°РµРј СЌРјРёС‚С‹
 module.exports = function(socket, userList, profiles, roomList, rooms) {
 
   //sendPublicMessage(socket, userList, roomList);
@@ -35,12 +36,12 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   changeRoom(socket, userList, rooms, roomList);
   changeStatus(socket, userList);
 
-  // Профиль
+  // РџСЂРѕС„РёР»СЊ
   getProfile(socket, userList, profiles);
-  getGifts(socket, userList);
-  getPrivMes(socket, userList);
-  getFriends(socket, userList);
-  getGuests(socket, userList);
+  //getGifts(socket, userList);
+  //getPrivMes(socket, userList);
+  //getFriends(socket, userList);
+  //getGuests(socket, userList);
   addToFriends(socket, userList, profiles);
   makeGift(socket, userList, profiles);
   sendMessage(socket, userList, profiles, roomList);
@@ -48,16 +49,17 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   getChatHistory(socket, userList, profiles);
   openPrivateChat(socket, userList, profiles);
   closePrivateChat(socket, userList, profiles);
+  addPoints(socket, userList);
   disconnect(socket, userList, profiles, roomList, rooms);
 
-  // Топ
+  // РўРѕРї
   getTop(socket, userList);
-  // Магазин
+  // РњР°РіР°Р·РёРЅ
   getGiftShop(socket, userList);
-  // Деньги
+  // РњРѕРЅРµС‚С‹
   //changeMoney(socket, userList);
   getMoney(socket, userList);
-  // Игра
+  // РРіСЂР°
   joinGame(socket, userList, roomList);
   addAction(socket, userList);
 };

@@ -12,6 +12,7 @@ module.exports = function(num, callback) {
   }
   var self = this;
   var f = constants.FIELDS;
+  self.pPoints = self.pPoints || 0;
 
   async.waterfall([ ////////////////////////////////////////////////////
     function(cb) { // Обновляем очки пользователя в основной таблице
@@ -52,3 +53,7 @@ module.exports = function(num, callback) {
     callback(null, self.pPoints);
   })
 };
+
+function isNumeric(n) { // Проверка - явлеется ли аргумент числом
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}

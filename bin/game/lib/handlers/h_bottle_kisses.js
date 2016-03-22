@@ -55,7 +55,7 @@ module.exports = function(game) {
           if(err) { game.stop(); }
 
           setNextGame(game);
-        })
+        });
       } else { setNextGame(game); }
     }
   }

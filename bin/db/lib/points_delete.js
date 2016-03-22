@@ -8,8 +8,8 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(options, callback) { options = options || {};
   var f = C.IO.FIELDS;
-  if (!options[f.userid] || !options[f.points]) {
-    return callback(new Error("Задан пустой Id игрока или количество очков"));
+  if (!options[f.userid]) {
+    return callback(new Error("Задан пустой Id игрока"));
   }
 
   var hundred = Math.floor(options[f.points]/100) * 100 + 100;

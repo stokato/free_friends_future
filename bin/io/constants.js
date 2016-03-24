@@ -17,6 +17,9 @@ module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут о�
 module.exports.NEW_ROOM = "new_room";
 module.exports.TOP_USERS = 100;
 
+module.exports.GT_GIFT = "gift";
+module.exports.GT_MONEY = "money";
+
 // наименования полей
 module.exports.FIELDS = {
   id            : 'id',
@@ -72,7 +75,9 @@ module.exports.FIELDS = {
   price         : 'price',
   game          : 'game',
   hundreds      : 'hundreds',
-  hundred       : 'hundred'
+  hundred       : 'hundred',
+  goodtype      : 'goodtype',
+  ordervid      : 'ordervid'
 };
 
 // емиты
@@ -81,7 +86,8 @@ module.exports.IO_MESSAGE             = 'message';
 module.exports.IO_PRIVATE_MESSAGE     = 'private_message';
 module.exports.IO_GET_ROOMS           = 'get_rooms';
 module.exports.IO_GET_CHAT_HISTORY    = 'get_chat_history';
-module.exports.IO_GET_SHOP            = 'get_gift_shop';
+module.exports.IO_GET_GIFT_SHOP       = 'get_gift_shop';
+module.exports.IO_GET_MONEY_SHOP      = 'get_money_shop';
 module.exports.IO_GET_MONEY           = 'get_money';
 module.exports.IO_GET_PROFILE         = 'get_profile';
 module.exports.IO_GET_TOP             = 'get_top';

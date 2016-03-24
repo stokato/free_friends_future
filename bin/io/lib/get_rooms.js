@@ -1,4 +1,3 @@
-var async     =  require('async');
 // Свои модули
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
@@ -21,23 +20,37 @@ module.exports = function (socket, userList, rooms) {
     var sex = defineSex(userList[socket.id]);
 
     var resRooms = [];
-    async.map(rooms, function (item, cb) { ///////////////////////////////////////
-      if (item[sex.len] < constants.ONE_SEX_IN_ROOM) {
-        getRoomInfo(item, function (err, info) {
-          if (err) { return cb(err, null); }
-
-          resRooms.push(info);
-
-          cb(null, null);
-        });
-      } else cb(null, null);
-    }, //////////////////////////////////////////////////
-    function (err, results) {
+    var count = 0;
+    pushRoom(rooms, count, resRooms, sex, function(err, res) {
       if (err) { return new GameError(socket, constants.IO_GET_ROOMS, err.message) }
 
       socket.emit(constants.IO_GET_ROOMS, resRooms);
-    }); // map
+    });
   });
 };
 
+function pushRoom(rooms, count, resRooms, sex, callback) {
+  if (rooms[count][sex.len] < constants.ONE_SEX_IN_ROOM) {
+    getRoomInfo(rooms[count], function (err, info) {
+      if (err) { return callback(err, null); }
 
+      resRooms.push(info);
+
+      count++;
+
+      if(count < rooms.length) {
+        pushRoom(rooms, count, resRooms, sex, callback);
+      } else {
+        callback(null, null);
+      }
+    });
+  } else {
+    count++;
+
+    if(count < rooms.length) {
+      pushRoom(rooms, count, resRooms, sex, callback);
+    } else {
+      callback(null, null);
+    }
+  }
+}

@@ -11,7 +11,7 @@ module.exports = function(goodid, callback) {
 
   var f = C.IO.FIELDS;
 
-  var fields = [f.title, f.type, f.price, f.data];
+  var fields = [f.title, f.type, f.price, f.data, f.goodtype];
   var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, [f.id], [1]);
 
   this.client.execute(query,[goodid], {prepare: true }, function(err, result) {
@@ -26,6 +26,7 @@ module.exports = function(goodid, callback) {
     good[f.type]  = row[f.type];
     good[f.price] = row[f.price];
     good[f.data]  = row[f.data];
+    good[f.goodtype] = row[f.goodtype];
 
     callback(null, good);
   });

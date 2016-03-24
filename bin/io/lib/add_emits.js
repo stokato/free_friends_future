@@ -18,6 +18,7 @@ var chooseRoom      = require('./choose_room'),
   getChatHistory    = require('./get_chat_history'),
   getTop            = require('./get_top'),
   getGiftShop       = require('./get_gift_shop'),
+  getMoneyShop      = require('./get_money_shop'),
 //var changeMoney       = require('./money_io/change_money');
   getMoney          = require('./get_money'),
   addPoints         = require('./add_points'),
@@ -56,6 +57,7 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   getTop(socket, userList);
   // Магазин
   getGiftShop(socket, userList);
+  getMoneyShop(socket, userList);
   // Монеты
   //changeMoney(socket, userList);
   getMoney(socket, userList);

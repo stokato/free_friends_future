@@ -104,7 +104,7 @@ function changeOrderStatus(request, callback) {
       function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
         var newMoney = info[f.money] - goodInfo[f.price];
-        if(newMoney < 0) {
+        if(newMoney < 0 && goodInfo[f.goodtype] != constants.GT_MONEY) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
@@ -119,9 +119,14 @@ function changeOrderStatus(request, callback) {
         dbManager.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
 
-          var newMoney = info[f.money] - ordOptions[f.sum];
+          cb(null, goodInfo, info, orderid);
+        });
+      }, ///////////////////////////////////////////////////////////////////////////////
+      function(goodInfo, info, orderid, cb) { // Для всех товаров кроме монет - обновляем баланс в БД
+        var options = {};
+        if(goodInfo[f.goodtype] != constants.GT_MONEY) { // и добавляем себе покупку
+          var newMoney = info[f.money] - goodInfo[f.price];
 
-          var options = {};
           options[f.id] = info[f.id];
           options[f.vid] = info[f.vid];
           options[f.money] = newMoney;
@@ -140,8 +145,20 @@ function changeOrderStatus(request, callback) {
               cb(null, result);
             });
           });
-        });
-      } ///////////////////////////////////////////////////////////////////////////////
+        } else { // пополняем баланс
+          options[f.id] = info[f.id];
+          options[f.vid] = info[f.vid];
+          options[f.money] = info[f.money] + goodInfo[f.price];
+
+          dbManager.updateUser(options, function(err, id) {
+            if (err) { return cb(err, null); }
+
+            var result = {};
+            result[f.orderid] = orderid;
+            cb(null, result);
+          });
+        }
+      } //////////////////////////////////////////////////////////////////////////////////
     ], function(err, res) { // Обрабатываем ошибки и возвращаем результат
       if (err) {
         response["error"] = {

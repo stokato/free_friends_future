@@ -34,7 +34,9 @@ function GameError(socket, func, message) {
      break;
    case constants_io.IO_PRIVATE_MESSAGE         : err.name = "Ошибка отправки личного сообщения";
      break;
-   case constants_io.IO_GET_SHOP                : err.name = "Ошибка открытия окна магазина подарков";
+   case constants_io.IO_GET_GIFT_SHOP           : err.name = "Ошибка открытия окна магазина подарков";
+     break;
+   case constants_io.IO_GET_MONEY_SHOP          : err.name = "Ошибка открытия окна пополения баланса";
      break;
    case constants_io.IO_ADD_FRIEND              : err.name = "Ошибка добавления в друзья";
      break;

@@ -128,22 +128,14 @@ module.exports = function(uid, options, callback) { options = options || {};
       });
     },////////////////////////////////////////////////////////////////////////////////
     function(messages, cb) {
-      async.map(companions, function(companion, cb_map) {
-          //var query = "update user_chats set isnew = ? where userid = ? and companionid = ?";
-          var query = qBuilder.build(qBuilder.Q_UPDATE, [f.isnew], C.T_USERCHATS,
-                                      [f.userid, f.companionid], [1, 1]);
-          var params = [false, uid, companion];
-          self.client.execute(query, params, {prepare: true },  function(err) {
-            if (err) {  return cb_map(err, null); }
 
-            cb_map(null, null);
-          });
-        },
-        function(err, res) {
-          if (err) {  return cb(err, null); }
+      var count = 0;
 
-          cb(null, messages);
-        })
+      updateChat(self.client, uid, companions, count, function(err, res) {
+        if(err) { return cb(err, null); }
+
+        cb(null, messages);
+      });
     }//////////////////////////////////////////////////////////////////////////////////
   ], function(err, messages) {
     if(err) return callback(err, null);
@@ -152,4 +144,24 @@ module.exports = function(uid, options, callback) { options = options || {};
   })
 };
 
+function updateChat(db, uid, companions, count, callback) {
+  //var query = "update user_chats set isnew = ? where userid = ? and companionid = ?";
+  var f = C.IO.FIELDS;
+
+  var query = qBuilder.build(qBuilder.Q_UPDATE, [f.isnew], C.T_USERCHATS,
+    [f.userid, f.companionid], [1, 1]);
+  var params = [false, uid, companions[count]];
+
+  db.execute(query, params, {prepare: true },  function(err) {
+    if (err) {  return callback(err, null); }
+
+    count++;
+
+    if(count < companions.length) {
+      updateChat(db, uid, companions, count, callback);
+    } else {
+      callback(null, null);
+    }
+  });
+}
 

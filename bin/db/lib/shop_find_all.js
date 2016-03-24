@@ -6,13 +6,15 @@ var qBuilder = require('./build_query');
  - Строим запрос (все поля) и выполняем
  - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
  */
-module.exports = function(callback) {
+module.exports = function(goodtype, callback) {
+  if(!goodtype) { return new Error("Не задан тип товаров"); }
+
   var f = C.IO.FIELDS;
 
   var fields = [f.id, f.title, f.type, f.price, f.data];
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP);
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, [f.goodtype], [1]);
 
-  this.client.execute(query,[], {prepare: true }, function(err, result) {
+  this.client.execute(query,[goodtype], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, null);

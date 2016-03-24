@@ -10,13 +10,13 @@ var db = new dbjs();
  - Отправляем клиенту
  */
 module.exports = function (socket, userList) {
-  socket.on(constants.IO_GET_SHOP, function() {
-    if (!checkInput(constants.IO_GET_SHOP, socket, userList, {})) { return; }
+  socket.on(constants.IO_GET_GIFT_SHOP, function() {
+    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, userList, {})) { return; }
 
-    db.findAllGoods(function (err, goods) {
-      if (err) { return new GameError(socket, constants.IO_GET_SHOP, err.message); }
+    db.findAllGoods(constants.GT_GIFT, function (err, goods) {
+      if (err) { return new GameError(socket, constants.IO_GET_GIFT_SHOP, err.message); }
 
-      socket.emit(constants.IO_GET_SHOP, goods);
+      socket.emit(constants.IO_GET_GIFT_SHOP, goods);
     });
   });
 };

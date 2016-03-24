@@ -43,7 +43,11 @@ module.exports = function (socket, userList, profiles) {
           if (err) { return cb(err, null) }
 
           if (gift) {
-            cb(null, gift);
+            if(gift[f.goodtype] != constants.GT_GIFT) {
+              cb(new Error("Этот товар нельзя дарить"), null);
+            } else {
+              cb(null, gift);
+            }
           } else {
             cb(new Error("В магазине нет такого товара"), null);
           }

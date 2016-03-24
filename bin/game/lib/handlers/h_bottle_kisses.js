@@ -1,5 +1,3 @@
-var async = require('async');
-
 var GameError = require('./../../../game_error'),
     checkInput = require('./../../../check_input');
 var constants = require('../../constants');
@@ -40,18 +38,9 @@ module.exports = function(game) {
             players.push(game.gActivePlayers[item]);
           }
         }
-        async.map(players, function(player, cb) {
-          player.addPoints(1, function(err, res) {
-            if(err) {
-              new GameError(player.getSocket(),
-                constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
-              return cb(err, null);
-            }
 
-            cb(null, null);
-          });
-        },
-        function(err, res) {
+        var count = 0;
+        addPoints(players, count, function(err, res) {
           if(err) { game.stop(); }
 
           setNextGame(game);
@@ -74,4 +63,22 @@ function setNextGame(game) {
   game.gActionsCount = constants.PLAYERS_COUNT;
 
   game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+}
+
+function addPoints(players, count, callback) {
+  players[count].addPoints(1, function(err, res) {
+    if(err) {
+      new GameError(players[count].getSocket(),
+        constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
+      return callback(err, null);
+    }
+
+    count++;
+
+    if(count < players.length) {
+      addPoints(players, count, callback);
+    } else {
+      callback(null, null);
+    }
+  });
 }

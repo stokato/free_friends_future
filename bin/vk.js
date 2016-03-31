@@ -9,9 +9,9 @@ function VK () {
 
 }
 
-VK.prototype.handle = function(req, callback) {
+VK.prototype.handle = function(req, callback) { var request = req || {};
 // Сначала проверка
-  var request = JSON.parse(req);
+
   var sig = request["sig"];
 
   //...
@@ -28,6 +28,7 @@ VK.prototype.handle = function(req, callback) {
 
     case "order_status_change_test": changeOrderStatus(request, callback);
       break;
+    default : sendError(callback);
   }
 };
 
@@ -186,4 +187,16 @@ function changeOrderStatus(request, callback) {
     var resJSON = JSON.stringify(response);
     callback(null, resJSON);
   }
+}
+
+function sendError(callback) {
+  var response = {};
+  response["error"] = {
+    "error_code": 100,
+    "error_msg": "Не удалось распознать запрос",
+    "critical": true
+  };
+
+  var resJSON = JSON.stringify(response);
+  callback(null, resJSON);
 }

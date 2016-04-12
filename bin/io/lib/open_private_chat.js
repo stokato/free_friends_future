@@ -34,7 +34,7 @@ module.exports = function(socket, userList, profiles) {
           return cb(new Error("Попытка открыть чат с самим сабой"));
         }
 
-        if(!selfProfile.isPrivateChat(friendProfile.getID())) {
+        //if(!selfProfile.isPrivateChat(friendProfile.getID())) {
           var secondDate = new Date();
           var firstDate = genDateHistory(secondDate);
           var chat = {};
@@ -59,9 +59,9 @@ module.exports = function(socket, userList, profiles) {
             }
         });
           cb(null, null);
-        } else {
-          return cb(new Error("Чат с этим пользователем уже открыт"));
-        }
+        //} else {
+        //  return cb(new Error("Чат с этим пользователем уже открыт"));
+        //}
       }
     ], function(err, res) {
       if (err) { return new GameError(socket, constants.IO_OPEN_PRIVATE_CHAT, err.message); }

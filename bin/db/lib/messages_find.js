@@ -73,6 +73,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     },//////////////////////////////////////////////////////////////////////////////
     function(messages, cb) { // Получаем все непрочитанный сообщения
       //var query = "select * FROM user_new_messages where userid = ? and companionid in (" + fields + ")";
+      messages = messages || [];
       var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERNEWMESSAGES,
                                         [f.userid, f.companionid], [1, companions.length]);
 

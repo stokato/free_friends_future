@@ -88,7 +88,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         getLastMessages(socket, room);
 
         cb(null, info, room);
-      },
+      }, //////////////////////////////////////////////////////////////////
       function (info, room, cb) { // Получаем данные по приватным чатам
         var secondDate = new Date();
         var firstDate = genDateHistory(secondDate);

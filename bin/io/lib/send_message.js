@@ -120,6 +120,7 @@ module.exports = function (socket, userList, profiles, roomList) {
 
             if(friendProfile.isPrivateChat(selfProfile.getID())) {
               info[f.chat] = selfProfile.getID();
+              info[f.chatVID] = selfProfile.getVID();
               sendOne(friendSocket, info);
             } else {
               friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
@@ -140,6 +141,7 @@ module.exports = function (socket, userList, profiles, roomList) {
           if (err) { cb(err, null); }
 
           info[f.chat] = friendProfile.getID();
+          info[f.chatVID] = friendProfile.getVID();
           sendOne(socket, info);
 
           cb(null, null);

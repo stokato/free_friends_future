@@ -48,6 +48,7 @@ module.exports.FIELDS = {
   companionvid  : 'companionvid',
   incoming      : 'incoming',
   chat          : 'chat',
+  chatVID       : 'chatVID',
   pick          : 'pick',
   fromid        : 'fromid',
   fromvid       : 'fromvid',
@@ -77,7 +78,9 @@ module.exports.FIELDS = {
   hundreds      : 'hundreds',
   hundred       : 'hundred',
   goodtype      : 'goodtype',
-  ordervid      : 'ordervid'
+  ordervid      : 'ordervid',
+  name          : 'name',
+  src           : 'src'
 };
 
 // емиты

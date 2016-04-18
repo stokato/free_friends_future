@@ -1,6 +1,6 @@
 var constants = require('../../io/constants');
 /*
-Получить историю приватного чата за заданный период времени
+РџРѕР»СѓС‡РёС‚СЊ РёСЃС‚РѕСЂРёСЋ РїСЂРёРІР°С‚РЅРѕРіРѕ С‡Р°С‚Р° Р·Р° Р·Р°РґР°РЅРЅС‹Р№ РїРµСЂРёРѕРґ РІСЂРµРјРµРЅРё
  */
 module.exports = function(options, callback) {
   var self = this;
@@ -18,7 +18,7 @@ module.exports = function(options, callback) {
     var history = [];
     var message = {};
     for(var i = 0; i < messages.length; i++) {
-      if(messages[i].incoming) { // Если входящее, берем данные собеседника (хранятся в чате) и наоборот
+      if(messages[i].incoming) { // Р•СЃР»Рё РІС…РѕРґСЏС‰РµРµ, Р±РµСЂРµРј РґР°РЅРЅС‹Рµ СЃРѕР±РµСЃРµРґРЅРёРєР° (С…СЂР°РЅСЏС‚СЃСЏ РІ С‡Р°С‚Рµ) Рё РЅР°РѕР±РѕСЂРѕС‚
         message[f.id]      = options[f.id];
         message[f.vid]     = options[f.vid];
         message[f.city]    = options[f.city];
@@ -32,6 +32,7 @@ module.exports = function(options, callback) {
         message[f.sex]     = self.pSex;
       }
       message[f.chat]    = options[f.id];
+      message[f.chatVID] = options[f.vid];
       message[f.date]    = messages[i].date;
       message[f.text]    = messages[i].text;
 

@@ -43,6 +43,7 @@ module.exports = function(options, callback) {
            message[f.sex]     = self.pSex;
          }
          message[f.chat] = currChat[f.id];
+         message[f.chatVID] = currChat[f.vid];
          message[f.date] = messages[i][f.date];
          message[f.text] = messages[i][f.text];
 

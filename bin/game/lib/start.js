@@ -1,5 +1,6 @@
 var constants = require('../constants');
 
+
 // Начинаем игру если есть нужное количество игроков и все они готовы
 module.exports = function() {
 

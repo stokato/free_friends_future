@@ -75,6 +75,7 @@ module.exports.FIELDS = {
   title         : 'title',
   price         : 'price',
   game          : 'game',
+  next_game     : 'next_game',
   hundreds      : 'hundreds',
   hundred       : 'hundred',
   goodtype      : 'goodtype',

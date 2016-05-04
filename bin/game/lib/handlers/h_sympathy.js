@@ -3,6 +3,7 @@ var constants_io = require('../../../io/constants');
 
 var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
+  getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits'),
     GameError = require('./../../../game_error');
 
@@ -23,7 +24,8 @@ module.exports = function(game) {
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var result = { complete: true };
+      var result = {  }; // complete: true
+      //result[f.game] = constants.G_SYMPATHY;
 
       var item, player;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
@@ -44,6 +46,12 @@ module.exports = function(game) {
 
       setActionsLimit(game, constants.PLAYERS_COUNT -1);
       game.gActionsCount = constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
+
+      result[f.next_game] = game.gNextGame;
+      result[f.players] = getPlayersID(game.gActivePlayers);
+
+      game.emit(player.getSocket(), result);
+      game.gameState = result;
 
       game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }

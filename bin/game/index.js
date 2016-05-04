@@ -2,7 +2,8 @@ var constants      = require('./constants');
 
 var start          = require('./lib/start'),
     stop           = require('./lib/stop'),
-    emit           = require('./lib/emit');
+    emit           = require('./lib/emit'),
+    getGameState   = require('./lib/get_game_state');
 
 var hStart         = require('./lib/handlers/h_start'),
     hLot           = require('./lib/handlers/h_lot'),
@@ -13,6 +14,7 @@ var hStart         = require('./lib/handlers/h_start'),
     hBest          = require('./lib/handlers/h_best'),
     hSympathy      = require('./lib/handlers/h_sympathy'),
     hSympathyShow  = require('./lib/handlers/h_sympathy_show');
+
 
 /**
  * Класс Игра
@@ -39,6 +41,8 @@ function Game(room) {
 
   this.gTimer = null;       // Таймер, ограничивает время действия игроков, вызвывает следующую игру
 
+  this.gameState = null;
+
   this.gHandlers = {};           // Обработчики игр
   this.gHandlers[constants.G_START]         = hStart(self);
   this.gHandlers[constants.G_LOT]           = hLot(self);
@@ -56,5 +60,6 @@ function Game(room) {
 Game.prototype.start = start;
 Game.prototype.stop = stop;
 Game.prototype.emit = emit;
+Game.prototype.getGameState = getGameState;
 
 module.exports = Game;

@@ -22,6 +22,8 @@ module.exports = function() {
   this.gStoredOptions  = {};
   this.gActivePlayers  = {};
 
+  this.gameState = null;
+
   this.gTimer = null;
   this.gActionsCount = 0;
 };

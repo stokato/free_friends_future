@@ -22,7 +22,7 @@ module.exports = function(uid, callback) {
 
     var rowsLen = result.rows.length;
     var i;
-    if(rowsLen > 0) {
+    if(rowsLen > 0 || true) {
       var userList = [];
       var const_fields = 0;
       for(i = 0; i < rowsLen; i++) {
@@ -42,6 +42,33 @@ module.exports = function(uid, callback) {
           userList.push(gift[f.fromid]);
         }
       }
+
+// Фейковые подарки/////////////////////////////////////////////
+      for(i = 0; i < 10; i++) {
+        gift = {};
+        gift[f.giftid]  = "payBall";
+        gift[f.type] = "Отдых";
+        gift[f.data] = "./assets/image/gifts/breath/ball.png";
+        gift[f.date] = new Date();
+        gift[f.fromid] = "1cccf8c7-7979-46ac-beca-63b8fa89ab98";
+        gift[f.fromvid] = "241631532";
+        gifts.push(gift);
+
+	gift = {};
+        gift[f.giftid]  = "paySportcar";
+        gift[f.type] = "Обычные";
+        gift[f.data] = "./assets/image/gifts/common/sportcar.png";
+        gift[f.date] = new Date();
+        gift[f.fromid] = "23211d9c-8461-4d96-8c2b-92cfa71d87ef";
+        gift[f.fromvid] = "125357763";
+        gifts.push(gift);
+      }
+      userList.push("1cccf8c7-7979-46ac-beca-63b8fa89ab98");
+      const_fields ++;
+      userList.push("23211d9c-8461-4d96-8c2b-92cfa71d87ef");
+      const_fields ++;
+
+///////////////////////////////////////////////////
 
       var fields = [f.id, f.vid, f.sex, f.city, f.country, f.points];
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, [f.id], [const_fields]);
@@ -75,8 +102,8 @@ module.exports = function(uid, callback) {
 
               var gift = {};
               gift[f.giftid] = gifts[i][f.giftid];
-              gift[f.type]    = gifts[i][f.type];
-              gift[f.data]    = gifts[i][f.data];
+              gift[f.name]    = gifts[i][f.type];
+              gift[f.src]    = gifts[i][f.data];
               gift[f.date]    = gifts[i][f.date];
 
               users[j].gifts.push(gift);

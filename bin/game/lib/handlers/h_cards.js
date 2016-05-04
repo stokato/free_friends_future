@@ -4,6 +4,7 @@ var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
+  getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits');
 
 var constants_io = require('../../../io/constants');
@@ -18,6 +19,7 @@ module.exports = function(game) {
       var result = {};
       result[f.picks] = [];
       result[f.gold] = Math.floor(Math.random() * constants.CARD_COUNT);
+
 
       var item, player, picks;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
@@ -34,8 +36,6 @@ module.exports = function(game) {
 
       }
 
-      game.emit(player.getSocket(), result);
-
       game.gNextGame = constants.G_START;
 
       game.gActivePlayers = {};
@@ -45,6 +45,12 @@ module.exports = function(game) {
 
       setActionsLimit(game, 1);
       game.gActionsCount = constants.PLAYERS_COUNT;
+
+      result[f.next_game] = game.gNextGame;
+      result[f.players] = getPlayersID(game.gActivePlayers);
+
+      game.emit(player.getSocket(), result);
+      game.gameState = result;
 
       game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }

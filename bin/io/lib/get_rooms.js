@@ -21,36 +21,22 @@ module.exports = function (socket, userList, rooms) {
 
     var resRooms = [];
     var count = 0;
-    pushRoom(rooms, count, resRooms, sex, function(err, res) {
-      if (err) { return new GameError(socket, constants.IO_GET_ROOMS, err.message) }
 
-      socket.emit(constants.IO_GET_ROOMS, resRooms);
-    });
+    for(var item in rooms) if(rooms.hasOwnProperty(item)) {
+      if (rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM) {
+        count++;
+        getRoomInfo(rooms[item], function (err, info) {
+          if (err) { return new GameError(socket, constants.IO_GET_ROOMS, err.message) }
+
+          resRooms.push(info);
+
+          count--;
+
+          if(count == 0) {
+            socket.emit(constants.IO_GET_ROOMS, resRooms);
+          }
+        });
+      }
+    }
   });
 };
-
-function pushRoom(rooms, count, resRooms, sex, callback) {
-  if (rooms[count][sex.len] < constants.ONE_SEX_IN_ROOM) {
-    getRoomInfo(rooms[count], function (err, info) {
-      if (err) { return callback(err, null); }
-
-      resRooms.push(info);
-
-      count++;
-
-      if(count < rooms.length) {
-        pushRoom(rooms, count, resRooms, sex, callback);
-      } else {
-        callback(null, null);
-      }
-    });
-  } else {
-    count++;
-
-    if(count < rooms.length) {
-      pushRoom(rooms, count, resRooms, sex, callback);
-    } else {
-      callback(null, null);
-    }
-  }
-}

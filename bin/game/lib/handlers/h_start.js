@@ -1,4 +1,5 @@
 var constants = require('../../constants');
+var constants_io = require('../../../io/constants');
 
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
@@ -9,6 +10,7 @@ var randomPlayer = require('../random_player'),
 // выбираем произвольно одного из них и переходим к розыгышу волчка
 module.exports = function(game) {
   return function(timer) {
+    var f = constants_io.FIELDS;
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
@@ -24,9 +26,13 @@ module.exports = function(game) {
       setActionsLimit(game, 1);
       game.gActionsCount = 1;
 
-      var result = { players: getPlayersID(game.gActivePlayers) };
+      var result = {  }; //players: getPlayersID(game.gActivePlayers)
+      result[f.next_game] = game.gNextGame;
+      result[f.players] = getPlayersID(game.gActivePlayers);
+      //result[f.game] = constants.G_START;
 
       game.emit(player.getSocket(), result);
+      game.gameState = result;
 
       game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }

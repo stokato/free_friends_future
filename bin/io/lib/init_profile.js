@@ -64,6 +64,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
           });
         } else {
           var room = roomList[socket.id];
+          info[f.game] = room.game.getGameState(); // Получаем состояние игры в комнате
+          socket.join(room.name);
 
           cb(null, info, room);
         }
@@ -78,6 +80,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         });
       },///////////////////////////////////////////////////////////////
       function(info, room, cb) {
+
         socket.emit(constants.IO_INIT, info);
 
         var online = {};

@@ -1,4 +1,6 @@
 var constants = require('../../constants');
+var constants_io = require('../../../io/constants');
+
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
@@ -7,6 +9,7 @@ var randomPlayer = require('../random_player'),
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
   return function(timer, uid) {
+    var f = constants_io.FIELDS;
     if(!timer) { clearTimeout(game.gTimer); }
 
     var firstPlayer = null;
@@ -31,9 +34,12 @@ module.exports = function(game) {
 
     game.gNextGame = constants.G_BOTTLE_KISSES;
 
-    var result = { players: getPlayersID(game.gActivePlayers) };
+    var result = { }; // players: getPlayersID(game.gActivePlayers)
+    result[f.players] = getPlayersID(game.gActivePlayers);
+    result[f.next_game] = constants.G_BOTTLE_KISSES;
 
     game.emit(firstPlayer.getSocket(), result);
+    game.gameState = result;
 
     game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
   }

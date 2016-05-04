@@ -17,6 +17,10 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
       info[f.id]  = selfProfile.getID();
       info[f.vid] = selfProfile.getVID();
 
+      if(selfProfile.getReady()) { // Останавливаем игру
+        roomList[socket.id].game.stop();
+      }
+
       socket.broadcast.emit(constants.IO_OFFLINE, info);
 
       cb(null, null);

@@ -4,6 +4,7 @@ var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
     pushAllPlayers = require('../activate_all_players'),
+  getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits');
 
 var constants_io = require('../../../io/constants');
@@ -19,7 +20,12 @@ module.exports = function(game) {
       var result = {};
       result[f.id] = uid;
       result[f.pick] = options[f.pick];
+      //result[f.game] = constants.G_BOTTLE_KISSES;
       game.emit(player.getSocket(), result);
+
+      if(!game.gameState[f.picks]) { game.gameState[f.picks] = []; }
+      game.gameState[f.picks].push(result);
+
     }
 
     if (game.gActionsCount == 0 || timer) {
@@ -53,6 +59,8 @@ module.exports = function(game) {
 function setNextGame(game) {
   if(!timer) { clearTimeout(game.gTimer); }
 
+  var f = constants_io.FIELDS;
+
   game.gNextGame = constants.G_START;
 
   game.gActionsQueue = {};
@@ -61,6 +69,19 @@ function setNextGame(game) {
   pushAllPlayers(game.gRoom, game.gActivePlayers);
   setActionsLimit(game, 1);
   game.gActionsCount = constants.PLAYERS_COUNT;
+
+  var result = {};
+  result[f.next_game] = game.gNextGame;
+  result[f.players] = getPlayersID(game.gActivePlayers);
+
+  var item, player;
+  for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+    player = game.gActivePlayers[item];
+    break;
+  }
+
+  game.emit(player.getSocket(), result);
+  game.gameState = result;
 
   game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
 }

@@ -24,7 +24,8 @@ module.exports = function(game) {
     game.gActionsQueue = {};
 
     var result = {};
-    result[f.game] = game.gNextGame;
+    result[f.next_game] = game.gNextGame;
+   // result[f.game] = constants.G_LOT;
     result[f.players] = [];
 
     switch (game.gNextGame) {
@@ -95,6 +96,7 @@ module.exports = function(game) {
       break;
     }
     game.emit(player.getSocket(), result);
+    game.gameState = result;
     game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
   }
 };

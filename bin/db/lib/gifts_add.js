@@ -12,7 +12,7 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
-  if (!options[f.type] || !options[f.data] || !options[f.date] || !options[f.fromid]
+  if (!options[f.name] || !options[f.src] || !options[f.date] || !options[f.fromid]
     || !options[f.fromvid]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
@@ -26,8 +26,8 @@ module.exports = function(uid, options, callback) { options = options || {};
   params.push(id);
   params.push(uid);
   params.push(options[f.id]);
-  params.push(options[f.type]);
-  params.push(options[f.data]);
+  params.push(options[f.name]);
+  params.push(options[f.src]);
   params.push(options[f.date]);
   params.push(options[f.fromid]);
   params.push(options[f.fromvid]);

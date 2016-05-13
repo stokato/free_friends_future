@@ -10,9 +10,9 @@ var constants_io = require('../../../io/constants');
 
 module.exports = function(game) {
   return function(timer, id, options) { // Лучший, сообщаем всем их выбор
-    var f = constants_io.FIELDS;
+    var f = constants_io.FIELDS, player;
     if(id) {
-      var player = game.gActivePlayers[id];
+      player = game.gActivePlayers[id];
 
       var result = {};
 
@@ -49,11 +49,13 @@ module.exports = function(game) {
       result[f.next_game] = game.gNextGame;
       result[f.players] = getPlayersID(game.gActivePlayers);
 
-      //var item;
-      //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-      //  player = game.gActivePlayers[item];
-      //  break;
-      //}
+      if(!player) {
+        var item;
+        for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+          player = game.gActivePlayers[item];
+          break;
+        }
+      }
 
       game.emit(player.getSocket(), result);
       game.gameState = result;

@@ -12,7 +12,7 @@ var startTimer   = require('../start_timer'),
 module.exports = function(game) {
   return function (timer, uid, options) {
     var f = constants_io.FIELDS;
-    if(uid == options[f.pick]) {
+    if(uid && uid == options[f.pick]) {
       var socket = game.gActivePlayers[uid].getSocket();
       new GameError(socket, constants.G_SYMPATHY, "Нельзя выбирать себя");
       game.stop();
@@ -33,7 +33,7 @@ module.exports = function(game) {
         break;
       }
 
-      game.emit(player.getSocket(), result);
+      //game.emit(player.getSocket(), result);
 
       game.gNextGame = constants.G_SYMPATHY_SHOW;
 

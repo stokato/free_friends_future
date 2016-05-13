@@ -12,7 +12,7 @@ var G_START         = 'start',
 
 var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
 var QUESTIONS = [];
-var TIMEOUT = 115;
+var TIMEOUT = 5;
 var CARD_COUNT = 10;
 var PLAYERS_COUNT = 4;//10;
 var SYMPATHY_LIMIT = 2;

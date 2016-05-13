@@ -13,7 +13,7 @@ module.exports = function(game) {
     if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var result = {};
+      var result = {}, isPicks = false;
       result[f.picks] = [];
       //result[f.game] = constants.G_QUESTIONS;
 
@@ -27,10 +27,14 @@ module.exports = function(game) {
           pick[f.id] = player.getID();
           pick[f.pick] = picks[0][f.pick];
           result.picks.push(pick);
+          isPicks = true;
         }
       }
 
-      game.emit(player.getSocket(), result);
+      if(isPicks) {
+        game.emit(player.getSocket(), result);
+      }
+
 
       game.gNextGame = constants.G_START;
 

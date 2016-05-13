@@ -52,13 +52,17 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
             newConnect = true;
           }
 
-          cb(null, info, newConnect);
+          cb(null, info, newConnect, selfProfile);
         });
       }, ///////////////////////////////////////////////////////////////
-      function (info, newConnect, cb) { // Помещяем в комнату
+      function (info, newConnect, selfProfile, cb) { // Помещяем в комнату
         if(newConnect) {
           autoPlace(socket, userList, roomList, rooms, function (err, room) {
             if (err) { return cb(err, null); }
+
+            //selfProfile.setReady(true);
+
+           // room.game.start(socket);
 
             cb(null, info, room);
           });

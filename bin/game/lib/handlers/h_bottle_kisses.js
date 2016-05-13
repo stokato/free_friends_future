@@ -32,7 +32,7 @@ module.exports = function(game) {
       var item, allKissed = true;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
         player  = game.gActivePlayers[item];
-        if(!game.gActionsQueue[player.getID()][0][f.pick]) {
+        if(!game.gActionsQueue[player.getID()] || !game.gActionsQueue[player.getID()][0][f.pick]) {
           allKissed = false;
         }
       }
@@ -49,14 +49,14 @@ module.exports = function(game) {
         addPoints(players, count, function(err, res) {
           if(err) { game.stop(); }
 
-          setNextGame(game);
+          setNextGame(game, timer);
         });
-      } else { setNextGame(game); }
+      } else { setNextGame(game, timer); }
     }
   }
 };
 
-function setNextGame(game) {
+function setNextGame(game, timer) {
   if(!timer) { clearTimeout(game.gTimer); }
 
   var f = constants_io.FIELDS;

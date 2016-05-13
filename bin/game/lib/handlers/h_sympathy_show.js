@@ -24,9 +24,10 @@ module.exports = function(game) {
       }
 
       var sympathy = game.gStoredOptions[options[f.pick]];
+      var result = {}, i;
 
       if(sympathy) {
-        var result = {}, i;
+        result = {};
         result[f.picks] = [];
         //result[f.game] = constants.G_SYMPATHY_SHOW;
 
@@ -63,6 +64,7 @@ module.exports = function(game) {
       setActionsLimit(game, 1);
       game.gActionsCount = constants.PLAYERS_COUNT;
 
+      result = {};
       result[f.next_game] = game.gNextGame;
       result[f.players] = getPlayersID(game.gActivePlayers);
 

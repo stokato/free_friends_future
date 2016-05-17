@@ -5,7 +5,8 @@ var constants = require('../../constants');
 var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
   getPlayersID = require('../get_players_id'),
-    setActionsLimit = require('../set_action_limits');
+    setActionsLimit = require('../set_action_limits'),
+  randomPlayer = require('../random_player');
 
 var constants_io = require('../../../io/constants');
 
@@ -30,13 +31,14 @@ module.exports = function(game) {
         if(picks) {
           var pick = {};
           pick[f.id] = player.getID();
+          pick[f.vid] = player.getVID();
           pick[f.pick] = picks[0][f.pick];
           result.picks.push(pick);
         }
 
       }
 
-      game.gNextGame = constants.G_START;
+      game.gNextGame = constants.G_LOT;
 
       game.gActivePlayers = {};
       game.gActionsQueue = {};
@@ -46,13 +48,18 @@ module.exports = function(game) {
       setActionsLimit(game, 1);
       game.gActionsCount = constants.PLAYERS_COUNT;
 
-      result[f.next_game] = game.gNextGame;
-      result[f.players] = getPlayersID(game.gActivePlayers);
+      //result[f.next_game] = game.gNextGame;
+      ////result[f.players] = getPlayersID(game.gActivePlayers);
+      //
+      //var nextPlayer = randomPlayer(game.gRoom, null);
+      //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
+      //
+      //game.emit(player.getSocket(), result);
+      //game.gameState = result;
 
-      game.emit(player.getSocket(), result);
-      game.gameState = result;
+      game.restoreGame();
 
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+     /// game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

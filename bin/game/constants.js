@@ -1,18 +1,18 @@
 var Config = require('./../../config.json');
 
 var G_START         = 'start',
-    G_LOT           = 'lot',
-    G_BOTTLE        = 'bottle',
-    G_BOTTLE_KISSES = 'bottle_kisses',
-    G_QUESTIONS     = 'questions',
-    G_CARDS         = 'cards',
-    G_BEST          = 'best',
-    G_SYMPATHY      = 'sympathy',
-    G_SYMPATHY_SHOW = 'sympathy_show';
+  G_LOT           = 'lot',
+  G_BOTTLE        = 'bottle',
+  G_BOTTLE_KISSES = 'bottle_kisses',
+  G_QUESTIONS     = 'questions',
+  G_CARDS         = 'cards',
+  G_BEST          = 'best',
+  G_SYMPATHY      = 'sympathy',
+  G_SYMPATHY_SHOW = 'sympathy_show';
 
 var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
 var QUESTIONS = [];
-var TIMEOUT = 5;
+var TIMEOUT = 10;
 var CARD_COUNT = 10;
 var PLAYERS_COUNT = 4;//10;
 var SYMPATHY_LIMIT = 2;

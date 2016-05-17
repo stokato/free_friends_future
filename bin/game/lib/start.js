@@ -1,4 +1,5 @@
-var constants = require('../constants');
+var constants = require('../constants'),
+  randomPlayer = require('./random_player');
 
 
 // Начинаем игру если есть нужное количество игроков и все они готовы
@@ -21,5 +22,7 @@ module.exports = function() {
 
   if(allReady && countOfPlayers == constants.PLAYERS_COUNT) {
     this.gHandlers.start(null);
+    //var player = randomPlayer(this.gRoom, null);
+    //this.gHandlers.lot(null, player.getID());
   }
 };

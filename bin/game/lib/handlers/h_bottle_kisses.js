@@ -3,6 +3,7 @@ var GameError = require('./../../../game_error'),
 var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
+  randomPlayer = require('../random_player'),
     pushAllPlayers = require('../activate_all_players'),
   getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits');
@@ -19,6 +20,7 @@ module.exports = function(game) {
 
       var result = {};
       result[f.id] = uid;
+      result[f.vid] = player.getVID();
       result[f.pick] = options[f.pick];
       //result[f.game] = constants.G_BOTTLE_KISSES;
       game.emit(player.getSocket(), result);
@@ -40,9 +42,9 @@ module.exports = function(game) {
       if(allKissed) {
         var players = [];
         for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-          if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick]) {
+          //if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick]) {
             players.push(game.gActivePlayers[item]);
-          }
+          //}
         }
 
         var count = 0;
@@ -61,7 +63,7 @@ function setNextGame(game, timer) {
 
   var f = constants_io.FIELDS;
 
-  game.gNextGame = constants.G_START;
+  game.gNextGame = constants.G_LOT;
 
   game.gActionsQueue = {};
   game.gActivePlayers = {};
@@ -70,20 +72,25 @@ function setNextGame(game, timer) {
   setActionsLimit(game, 1);
   game.gActionsCount = constants.PLAYERS_COUNT;
 
-  var result = {};
-  result[f.next_game] = game.gNextGame;
-  result[f.players] = getPlayersID(game.gActivePlayers);
+  //var result = {};
+  //result[f.next_game] = game.gNextGame;
+  ////result[f.players] = getPlayersID(game.gActivePlayers);
+  //
+  //var nextPlayer = randomPlayer(game.gRoom, null);
+  //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
+  //
+  //var item, player;
+  //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+  //  player = game.gActivePlayers[item];
+  //  break;
+  //}
+  //
+  //game.emit(player.getSocket(), result);
+  //game.gameState = result;
 
-  var item, player;
-  for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-    player = game.gActivePlayers[item];
-    break;
-  }
+  game.restoreGame();
 
-  game.emit(player.getSocket(), result);
-  game.gameState = result;
-
-  game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+  //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
 }
 
 function addPoints(players, count, callback) {

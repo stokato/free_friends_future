@@ -34,7 +34,7 @@ module.exports = function(game) {
 
     game.gNextGame = constants.G_BOTTLE_KISSES;
 
-    var result = { }; // players: getPlayersID(game.gActivePlayers)
+    var result = {}; // players: getPlayersID(game.gActivePlayers)
     result[f.players] = getPlayersID(game.gActivePlayers);
     result[f.next_game] = constants.G_BOTTLE_KISSES;
 

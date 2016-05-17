@@ -20,7 +20,7 @@ module.exports = function (socket, userList, rooms) {
     var sex = defineSex(userList[socket.id]);
 
     var resRooms = [];
-    var count = 0;
+    var count = 1;
 
     for(var item in rooms) if(rooms.hasOwnProperty(item)) {
       if (rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM) {
@@ -30,12 +30,23 @@ module.exports = function (socket, userList, rooms) {
 
           resRooms.push(info);
 
-          count--;
-
-          if(count == 0) {
-            socket.emit(constants.IO_GET_ROOMS, resRooms);
-          }
+          //count--;
+          //
+          //if(count == 0) {
+          //  socket.emit(constants.IO_GET_ROOMS, resRooms);
+          //}
+          checkComplete();
         });
+      }
+    }
+
+    checkComplete();
+
+    function checkComplete() {
+      count--;
+
+      if(count == 0) {
+        socket.emit(constants.IO_GET_ROOMS, resRooms);
       }
     }
   });

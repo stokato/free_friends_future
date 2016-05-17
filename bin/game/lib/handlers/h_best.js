@@ -2,6 +2,7 @@ var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
 var startTimer   = require('../start_timer'),
+    randomPlayer = require('../random_player'),
     activateAllPlayers = require('../activate_all_players'),
     getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits');
@@ -25,6 +26,7 @@ module.exports = function(game) {
       //result[f.game] = constants.G_BEST;
       result[f.pick] = {};
       result[f.pick][f.id] = id;
+      result[f.pick][f.vid] = player.getVID();
       result[f.pick][f.pick] = options[f.pick];
 
       game.emit(player.getSocket(), result);
@@ -37,7 +39,7 @@ module.exports = function(game) {
     if(game.gActionsCount == 0 || timer) { // После голосования
       if(!timer) { clearTimeout(game.gTimer); }
 
-      game.gNextGame = constants.G_START;
+      game.gNextGame = constants.G_LOT;
       game.gActivePlayers = {};
       game.gActionsQueue = {};
       activateAllPlayers(game.gRoom, game.gActivePlayers);
@@ -45,22 +47,27 @@ module.exports = function(game) {
       setActionsLimit(game, 1);
       game.gActionsCount = constants.PLAYERS_COUNT;
 
-      result = {};
-      result[f.next_game] = game.gNextGame;
-      result[f.players] = getPlayersID(game.gActivePlayers);
+      //result = {};
+      //result[f.next_game] = game.gNextGame;
+      ////result[f.players] = getPlayersID(game.gActivePlayers);
+      //var nextPlayer = randomPlayer(game.gRoom, null);
+      //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
+      //
+      //
+      //if(!player) {
+      //  var item;
+      //  for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+      //    player = game.gActivePlayers[item];
+      //    break;
+      //  }
+      //}
+      //
+      //game.emit(player.getSocket(), result);
+      //game.gameState = result;
 
-      if(!player) {
-        var item;
-        for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-          player = game.gActivePlayers[item];
-          break;
-        }
-      }
+      game.restoreGame();
 
-      game.emit(player.getSocket(), result);
-      game.gameState = result;
-
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+      //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

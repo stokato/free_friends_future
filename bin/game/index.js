@@ -3,7 +3,8 @@ var constants      = require('./constants');
 var start          = require('./lib/start'),
     stop           = require('./lib/stop'),
     emit           = require('./lib/emit'),
-    getGameState   = require('./lib/get_game_state');
+    getGameState   = require('./lib/get_game_state'),
+    restoreGame    = require('./lib/restore_game');
 
 var hStart         = require('./lib/handlers/h_start'),
     hLot           = require('./lib/handlers/h_lot'),
@@ -61,5 +62,6 @@ Game.prototype.start = start;
 Game.prototype.stop = stop;
 Game.prototype.emit = emit;
 Game.prototype.getGameState = getGameState;
+Game.prototype.restoreGame = restoreGame;
 
 module.exports = Game;

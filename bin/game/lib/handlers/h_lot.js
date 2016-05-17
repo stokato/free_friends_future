@@ -33,6 +33,7 @@ module.exports = function(game) {
       case constants.G_BOTTLE :    // для бутылочки ходит тот же, кто крутил вочек
         game.gActionsCount = 1;
         setActionsLimit(game, 1);
+
         break;
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
@@ -65,6 +66,8 @@ module.exports = function(game) {
         var secondPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.getID()]);
 
         var bestPlayers = [firstPlayer.getID(), secondPlayer.getID()];
+        var bestPlayerInfo = [{id : firstPlayer.getID(), vid : firstPlayer.getVID()},
+                              {id : secondPlayer.getID(), vid : secondPlayer.getVID()}];
 
         game.gStoredOptions = {};
         game.gStoredOptions[firstPlayer.getID()] = firstPlayer;
@@ -76,7 +79,7 @@ module.exports = function(game) {
         setActionsLimit(game, 1);
         game.gActionsCount = constants.PLAYERS_COUNT-2;
 
-        result[f.best] = bestPlayers;
+        result[f.best] = bestPlayerInfo;
         break;
       //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
       case constants.G_SYMPATHY:

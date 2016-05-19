@@ -2,9 +2,9 @@ var constants = require('../../constants');
 var constants_io = require('../../../io/constants');
 
 var randomPlayer = require('../random_player'),
-    startTimer   = require('../start_timer'),
+    //startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
-    getPlayersID = require('../get_players_id'),
+    //getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits');
 
 // Вопросы, ждем, когда все ответят, потом показываем всем ответы
@@ -18,15 +18,15 @@ module.exports = function(game) {
       result[f.picks] = [];
       //result[f.game] = constants.G_QUESTIONS;
 
-      var item, player;
+      var item, playerInfo;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        player = game.gActivePlayers[item];
-        var picks = game.gActionsQueue[player.getID()];
+        playerInfo = game.gActivePlayers[item];
+        var picks = game.gActionsQueue[playerInfo.id];
 
         if(picks) {
           var pick = {};
-          pick[f.id] = player.getID();
-          pick[f.vid] = player.getVID();
+          pick[f.id] = playerInfo.id;
+          pick[f.vid] = playerInfo.vid;
           pick[f.pick] = picks[0][f.pick];
           result.picks.push(pick);
           isPicks = true;
@@ -34,19 +34,19 @@ module.exports = function(game) {
       }
 
       if(isPicks) {
+        var player = randomPlayer(game.gRoom, null);
         game.emit(player.getSocket(), result);
       }
 
-
-      game.gNextGame = constants.G_LOT;
-
-      game.gActivePlayers = {};
-      game.gActionsQueue = {};
-
-      activateAllPlayers(game.gRoom, game.gActivePlayers);
-
-      setActionsLimit(game, 1);
-      game.gActionsCount = constants.PLAYERS_COUNT;
+      //game.gNextGame = constants.G_LOT;
+      //
+      //game.gActivePlayers = {};
+      //game.gActionsQueue = {};
+      //
+      //activateAllPlayers(game.gRoom, game.gActivePlayers);
+      //
+      //setActionsLimit(game, 1);
+      //game.gActionsCount = constants.PLAYERS_COUNT;
 
       //result[f.next_game] = game.gNextGame;
       ////result[f.players] = getPlayersID(game.gActivePlayers);

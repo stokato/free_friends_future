@@ -6,7 +6,8 @@ var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
-    setActionsLimit = require('../set_action_limits');
+    setActionsLimit = require('../set_action_limits'),
+  getPlayerInfo  = require('./../get_player_info');
 
 module.exports = function(game) {
   return function(timer, uid) {
@@ -34,6 +35,14 @@ module.exports = function(game) {
         game.gActionsCount = 1;
         setActionsLimit(game, 1);
 
+        //if(!uid || !this.isPlayerInRoom(uid)) {
+        //  player = randomPlayer(this.gRoom, null);
+        //
+        //  game.gActivePlayers = {};
+        //
+        //  game.gActivePlayers[player.getID()] = game.getPlayerInfo(player);
+        //}
+
         break;
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
@@ -41,7 +50,7 @@ module.exports = function(game) {
         activateAllPlayers(game.gRoom, game.gActivePlayers);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = constants.PLAYERS_COUNT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT;
 
         rand = Math.floor(Math.random() * constants.GAME_QUESTIONS.length);
         result[f.question] =  constants.GAME_QUESTIONS[rand];
@@ -52,32 +61,43 @@ module.exports = function(game) {
         activateAllPlayers(game.gRoom, game.gActivePlayers);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = constants.PLAYERS_COUNT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT;
         break;
       //////////////////// ЛУЧШИЙ ///////////////////////////////////////////////////////
       case constants.G_BEST : // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
-        var firstPlayer;
+
+        //var firstPlayer;
+        //if(!uid ||  !this.isPlayerInRoom(uid)) {
+        //  firstPlayer = randomPlayer(game.gRoom);
+        //} else {
+        //  firstPlayer = game.gActivePlayers[uid].player;
+        //}
+        //
+        var firstPlayer = null;
         if(uid) {
           firstPlayer = game.gActivePlayers[uid];
         } else {
-          firstPlayer = randomPlayer(game.gRoom);
+          for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+            firstPlayer = game.gActivePlayers[item];
+          }
         }
-        var firstGender = firstPlayer.getSex();
-        var secondPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.getID()]);
 
-        var bestPlayers = [firstPlayer.getID(), secondPlayer.getID()];
-        var bestPlayerInfo = [{id : firstPlayer.getID(), vid : firstPlayer.getVID()},
-                              {id : secondPlayer.getID(), vid : secondPlayer.getVID()}];
+        var firstGender = firstPlayer.sex;
+        var secondPlayer = getPlayerInfo(randomPlayer(game.gRoom, firstGender, [firstPlayer.id]));
+
+        var bestPlayers = [firstPlayer.id, secondPlayer.id];
+        var bestPlayerInfo = [{id : firstPlayer.id, vid : firstPlayer.vid},
+                              {id : secondPlayer.id, vid : secondPlayer.vid}];
 
         game.gStoredOptions = {};
-        game.gStoredOptions[firstPlayer.getID()] = firstPlayer;
-        game.gStoredOptions[secondPlayer.getID()] = secondPlayer;
+        game.gStoredOptions[firstPlayer.id] = firstPlayer;
+        game.gStoredOptions[secondPlayer.id] = secondPlayer;
 
         game.gActivePlayers = {};
         activateAllPlayers(game.gRoom, game.gActivePlayers, bestPlayers);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = constants.PLAYERS_COUNT-2;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT-2;
 
         result[f.best] = bestPlayerInfo;
         break;
@@ -87,17 +107,19 @@ module.exports = function(game) {
         activateAllPlayers(game.gRoom, game.gActivePlayers);
 
         setActionsLimit(game, constants.SHOW_SYMPATHY_LIMIT);
-        game.gActionsCount = constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
         break;
     }
     /////////////////////////////////////////////////////////////////////////////////////
     result[f.players] = getPlayersID(game.gActivePlayers);
 
-    var item, player;
-    for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-      player = game.gActivePlayers[item];
-      break;
-    }
+    //var item, player;
+    //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+    //  player = game.gActivePlayers[item];
+    //  break;
+    //}
+    var player = randomPlayer(game.gRoom, null);
+
     game.emit(player.getSocket(), result);
     game.gameState = result;
     game.gTimer = startTimer(game.gHandlers[game.gNextGame]);

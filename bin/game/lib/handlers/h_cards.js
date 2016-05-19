@@ -22,31 +22,31 @@ module.exports = function(game) {
       result[f.gold] = Math.floor(Math.random() * constants.CARD_COUNT);
 
 
-      var item, player, picks;
+      var item, playerInfo, picks;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
 
-        player = game.gActivePlayers[item];
-        picks = game.gActionsQueue[player.getID()];
+        playerInfo = game.gActivePlayers[item];
+        picks = game.gActionsQueue[playerInfo.id];
 
         if(picks) {
           var pick = {};
-          pick[f.id] = player.getID();
-          pick[f.vid] = player.getVID();
+          pick[f.id] = playerInfo.id;
+          pick[f.vid] = playerInfo.vid;
           pick[f.pick] = picks[0][f.pick];
           result.picks.push(pick);
         }
 
       }
 
-      game.gNextGame = constants.G_LOT;
-
-      game.gActivePlayers = {};
-      game.gActionsQueue = {};
-
-      activateAllPlayers(game.gRoom, game.gActivePlayers);
-
-      setActionsLimit(game, 1);
-      game.gActionsCount = constants.PLAYERS_COUNT;
+      //game.gNextGame = constants.G_LOT;
+      //
+      //game.gActivePlayers = {};
+      //game.gActionsQueue = {};
+      //
+      //activateAllPlayers(game.gRoom, game.gActivePlayers);
+      //
+      //setActionsLimit(game, 1);
+      //game.gActionsCount = constants.PLAYERS_COUNT;
 
       //result[f.next_game] = game.gNextGame;
       ////result[f.players] = getPlayersID(game.gActivePlayers);

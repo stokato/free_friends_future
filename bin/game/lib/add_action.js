@@ -10,19 +10,22 @@ module.exports = function (socket, userList) {
     var uid = selfProfile.getID(),
         game = selfProfile.getGame();
 
+    // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
 
       if (!checkInput(game.gNextGame, socket, userList, options)) {
-        game.stop();
 
-        return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
-          {message: "Игра остановлена всвязи с ошибкой"});
+        //game.stop();
+        //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
+        //  {message: "Игра остановлена всвязи с ошибкой"});
+
       }
 
       if(!game.gActionsQueue[uid]) {
         game.gActionsQueue[uid] = [];
       }
 
+      // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
       if(game.gNextGame != constants.G_SYMPATHY || game.gNextGame != constants.G_SYMPATHY_SHOW) {
          var i, actions = game.gActionsQueue[uid];
 
@@ -31,11 +34,13 @@ module.exports = function (socket, userList) {
          }
       }
 
+      // Уменьшаем счетчики ходов одного игрока и всех в текущем раунде
       game.gActionsLimits[uid] --;
 
       game.gActionsQueue[uid].push(options);
       game.gActionsCount--;
 
+      // Вызваем обработчик текущей игры
       game.gHandlers[game.gNextGame](false, uid, options);
     }
   });

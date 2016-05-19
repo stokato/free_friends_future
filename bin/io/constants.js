@@ -111,3 +111,5 @@ module.exports.IO_ADD_GUEST           = 'add_guest';
 module.exports.IO_ADD_POINTS          = 'add_points';
 module.exports.IO_GAME                = 'game';
 module.exports.IO_ERROR               = 'err';
+
+module.exports.IO_ROOM_USERS          = 'room_users';

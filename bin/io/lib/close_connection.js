@@ -3,6 +3,7 @@ var async     =  require('async');
 var GameError = require('../../game_error'),      // Ошбики
     checkInput = require('../../check_input'),    // Верификация
     constants = require('./../constants'),     // Константы
+  getRoomInfo = require('./get_room_info'),
     defineSex = require('./define_sex');
 
 module.exports = function(socket, userList, profiles, roomList, rooms) {
@@ -17,11 +18,12 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
       info[f.id]  = selfProfile.getID();
       info[f.vid] = selfProfile.getVID();
 
-      if(selfProfile.getReady()) { // Останавливаем игру
-        roomList[socket.id].game.stop();
-      }
+      //if(selfProfile.getReady()) { // Останавливаем игру
+      //  roomList[socket.id].game.stop();
+      //}
 
       socket.broadcast.emit(constants.IO_OFFLINE, info);
+
 
       cb(null, null);
     }, ///////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,9 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
 
       var sex = defineSex(selfProfile);
 
-      if (roomList[socket.id]) {
+      var room = roomList[socket.id];
+
+      if (room) {
         var roomName = roomList[socket.id].name;
         delete roomList[socket.id][sex.sexArr][selfProfile.getID()];
         roomList[socket.id][sex.len]--;
@@ -45,10 +49,24 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
         delete profiles[selfProfile.getID()];
         if (rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0) {
           delete rooms[roomName];
+          room = null;
         }
       }
-      cb(null, null);
-    } //////////////////////////////////////////////////////////////////////////////////////
+      cb(null, room);
+    },///////////////////////////////////////////////////////////////
+    function (room, cb) { // Получаем данные по игрокам в комнате (для стола)
+      if(room) {
+        getRoomInfo(room, function (err, roomInfo) {
+          if (err) { return cb(err, null); }
+
+          socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+
+          cb(null, null);
+        });
+      } else {
+        cb(null, null);
+      }
+    }//////////////////////////////////////////////////////////////////////////////////////
   ], function (err) {
     if (err) { new GameError(null, constants.IO_DISCONNECT, err.message)  }
 

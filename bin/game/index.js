@@ -63,5 +63,7 @@ Game.prototype.stop = stop;
 Game.prototype.emit = emit;
 Game.prototype.getGameState = getGameState;
 Game.prototype.restoreGame = restoreGame;
+//Game.prototype.isPlayerInRoom = isPlayerInRoom;
+//Game.prototype.getPlayerInfo = getPlayerInfo;
 
 module.exports = Game;

@@ -22,7 +22,7 @@ var chooseRoom      = require('./choose_room'),
 //var changeMoney       = require('./money_io/change_money');
   getMoney          = require('./get_money'),
   addPoints         = require('./add_points'),
-  joinGame          = require('./join_game'),
+  //joinGame          = require('./join_game'),
   disconnect        = require('./disconnect');
 
 var addAction       = require('../../game/lib/add_action');
@@ -62,6 +62,6 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   //changeMoney(socket, userList);
   getMoney(socket, userList);
   // Игра
-  joinGame(socket, userList, roomList);
+  //joinGame(socket, userList, roomList);
   addAction(socket, userList);
 };

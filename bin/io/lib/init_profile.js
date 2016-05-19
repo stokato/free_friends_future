@@ -80,6 +80,10 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
 
           info[f.room] = roomInfo;
 
+          socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+
+          room.game.start(socket);
+
           cb(null, info, room);
         });
       },///////////////////////////////////////////////////////////////

@@ -62,9 +62,9 @@ module.exports = function (socket, userList, rooms, roomList) {
       return new GameError(socket, constants.IO_CHANGE_ROOM, "Попытка открыть несуществующую комнату")
     }
 
-    if(selfProfile.getReady()) {
-      roomList[socket.id].game.stop();
-    }
+    //if(selfProfile.getReady()) {
+    //  roomList[socket.id].game.stop();
+    //}
 
     newRoom[sex.sexArr][selfProfile.getID()] = selfProfile;
     newRoom[sex.len]++;
@@ -73,9 +73,14 @@ module.exports = function (socket, userList, rooms, roomList) {
 
     roomList[socket.id] = newRoom;
 
+    var isCurrRoom = true;
+
     delete currRoom[sex.sexArr][selfProfile.getID()];
     currRoom[sex.len]--;
-    if (currRoom.guys_count == 0 && currRoom.girls_count == 0) { delete rooms[currRoom.name]; }
+    if (currRoom.guys_count == 0 && currRoom.girls_count == 0) {
+      delete rooms[currRoom.name];
+      isCurrRoom = false;
+    }
 
     getRoomInfo(newRoom, function (err, info) {
       if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
@@ -89,14 +94,27 @@ module.exports = function (socket, userList, rooms, roomList) {
       message[f.country] = selfProfile.getCountry();
       message[f.points]  = selfProfile.getPoints();
 
-      socket.broadcast.in(currRoom.name).emit('leave', message);
+      //socket.broadcast.in(currRoom.name).emit('leave', message);
 
       socket.leave(currRoom.name);
       socket.join(newRoom.name);
 
-      socket.broadcast.in(newRoom.name).emit('join', message);
+      //socket.broadcast.in(newRoom.name).emit('join', message);
 
-      socket.emit(constants.IO_CHANGE_ROOM, info);
+      //socket.emit(constants.IO_CHANGE_ROOM, info);
+
+      socket.broadcast.in(newRoom.name).emit(constants.IO_ROOM_USERS, info);
+      socket.emit(constants.IO_ROOM_USERS, info);
+
+      newRoom.game.start(socket);
+
+      if(isCurrRoom) {
+        getRoomInfo(currRoom, function(err, currRoomInfo) {
+          if(err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
+
+          socket.broadcast.in(currRoom.name).emit(constants.IO_ROOM_USERS, currRoomInfo);
+        });
+      }
     });
   });
 };

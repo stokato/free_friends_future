@@ -14,7 +14,7 @@ var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
 var QUESTIONS = [];
 var TIMEOUT = 10;
 var CARD_COUNT = 10;
-var PLAYERS_COUNT = 4;//10;
+var PLAYERS_COUNT = 2;//10;
 var SYMPATHY_LIMIT = 2;
 
 module.exports.CONFIG = Config.user.constants;

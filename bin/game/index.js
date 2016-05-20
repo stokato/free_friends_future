@@ -28,9 +28,10 @@ var hStart         = require('./lib/handlers/h_start'),
  * Если не все игроки сделали свой ход за установленное время, обработчик срабатывает автоматически
  * Метод stop останавливает игру и сбрасывает у всех играков флаги готовности к игре
  */
-function Game(room) {
+function Game(room, userList) {
   var self = this;
   this.gRoom = room;                 // Стол этой игры
+  this.userList = userList;
 
   this.gActionsQueue = {};          // Очередь действий игроков
   this.gActionsLimits = {};         // Лимиты ответов для игроков

@@ -52,12 +52,12 @@ module.exports = function(game) {
 
           var pick = {};
           pick[f.id] = options[f.pick];
-          pick[f.vid] = game.gActivePlayers[options[f.pick]].id;
-          pick[f.pick] = {id: pickedId, vid: game.gActivePlayers[pickedId].id};
+          pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
+          pick[f.pick] = {id: pickedId, vid: game.gActivePlayers[pickedId].vid};
           result[f.picks].push(pick);
         }
 
-        game.emit(game.gActivePlayers[uid].getSocket(), result, uid);
+        game.emit(game.gActivePlayers[uid].player.getSocket(), result, uid);
       }
     }
 

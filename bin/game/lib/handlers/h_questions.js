@@ -33,10 +33,10 @@ module.exports = function(game) {
         }
       }
 
-      if(isPicks) {
-        var player = randomPlayer(game.gRoom, null);
-        game.emit(player.getSocket(), result);
-      }
+      //if(isPicks) {
+      //  var player = randomPlayer(game.gRoom, null);
+      //  game.emit(player.getSocket(), result);
+      //}
 
       //game.gNextGame = constants.G_LOT;
       //
@@ -57,7 +57,7 @@ module.exports = function(game) {
       //game.emit(player.getSocket(), result);
       //game.gameState = result;
 
-      game.restoreGame();
+      game.restoreGame(result);
 
       //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }

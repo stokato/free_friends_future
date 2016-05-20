@@ -9,7 +9,7 @@ var randomPlayer = require('./random_player'),
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
-module.exports = function() {
+module.exports = function(result) { result = result || {};
   var f = constants_io.FIELDS;
 
   // Если игроков меньше допустимого количества - останавливаем игру
@@ -30,7 +30,7 @@ module.exports = function() {
   setActionsLimit(this, 1);
   this.gActionsCount = 1;
 
-  var result = {};
+  //var result = {};
   result[f.next_game] = this.gNextGame;
   result[f.players] = [{id: playerInfo.id, vid: playerInfo.vid}];
 

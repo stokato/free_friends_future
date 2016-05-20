@@ -3,7 +3,8 @@ var GameError = require('./../../../game_error'),
 var constants = require('../../constants');
 
 var
-    randomPlayer = require('../random_player');
+    randomPlayer = require('../random_player'),
+    profilejs =  require('../../../profile/index');
     // startTimer   = require('../start_timer'),
     //pushAllPlayers = require('../activate_all_players'),
   //getPlayersID = require('../get_players_id'),
@@ -47,12 +48,12 @@ module.exports = function(game) {
         var players = [];
         for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
           //if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick]) {
-            players.push(game.gActivePlayers[item].player);
+            players.push(game.gActivePlayers[item].id);
           //}
         }
 
         var count = 0;
-        addPoints(players, count, function(err, res) {
+        addPoints(game.userList, players, count, function(err, res) {
           if(err) { game.stop(); }
 
           setNextGame(game, timer);
@@ -97,20 +98,48 @@ function setNextGame(game, timer) {
   //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
 }
 
-function addPoints(players, count, callback) {
-  players[count].addPoints(1, function(err, res) {
-    if(err) {
-      new GameError(players[count].getSocket(),
-        constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
-      return callback(err, null);
-    }
+function addPoints(userList, players, count, callback) {
+  var player = userList[players[count]];
+  if(player) {
+    player.addPoints(1, function(err, res) {
+      if(err) {
+        new GameError(players[count].getSocket(),
+          constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
+        return callback(err, null);
+      }
 
-    count++;
+      count++;
 
-    if(count < players.length) {
-      addPoints(players, count, callback);
-    } else {
-      callback(null, null);
-    }
-  });
+      if(count < players.length) {
+        addPoints(userList, players, count, callback);
+      } else {
+        callback(null, null);
+      }
+    });
+  } else {
+    player = new profilejs();
+    player.build(players[count], function (err, info) {
+      if(err) {
+        new GameError(players[count].getSocket(),
+          constants.G_BOTTLE_KISSES, "Ошбика при создании профиля игрока");
+        return callback(err, null);
+      }
+
+      player.addPoints(1, function(err, res) {
+        if(err) {
+          new GameError(players[count].getSocket(),
+            constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
+          return callback(err, null);
+        }
+
+        count++;
+
+        if(count < players.length) {
+          addPoints(userList, players, count, callback);
+        } else {
+          callback(null, null);
+        }
+      });
+    });
+  }
 }

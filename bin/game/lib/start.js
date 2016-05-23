@@ -28,6 +28,6 @@ module.exports = function() {
 
   if(this.gRoom.guys_count >= constants.PLAYERS_COUNT &&
       this.gRoom.girls_count >= constants.PLAYERS_COUNT) {
-    this.gHandlers.start(null);
+    this.gHandlers[constants.G_START](null);
   }
 };

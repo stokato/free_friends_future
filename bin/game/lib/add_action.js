@@ -18,7 +18,7 @@ module.exports = function (socket, userList) {
         //game.stop();
         //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
         //  {message: "Игра остановлена всвязи с ошибкой"});
-
+        return;
       }
 
       if(!game.gActionsQueue[uid]) {

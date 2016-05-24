@@ -1,7 +1,7 @@
 var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
-var randomPlayer = require('../random_player');
+//var randomPlayer = require('../random_player');
 //,
 //    startTimer         = require('../start_timer'),
 //    activateAllPlayers = require('../activate_all_players'),
@@ -17,17 +17,6 @@ module.exports = function(game) {
 
     // Есил обработчик вызван игроком а не таймером
     if(uid) {
-      if(uid == options[f.pick]) {
-        //var socket = game.gActivePlayers[uid].setSocket();
-        new GameError(game.gActivePlayers[uid].setSocket(),
-          constants.G_SYMPATHY, "Попытка выбрать себя");
-        //game.stop();
-
-        //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
-         // {name: "Игра остановлена всвязи с ошибкой"});
-
-        return;
-      }
 
       // Получаем данные интересуемого игрока
       var sympathy = game.gStoredOptions[options[f.pick]];

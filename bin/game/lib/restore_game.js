@@ -14,13 +14,10 @@ var randomPlayer = require('./random_player'),
 module.exports = function(result) { result = result || {};
   var f = constants_io.FIELDS;
 
-  // Если игроков меньше допустимого количества - останавливаем игру
-  if(this.gRoom.guys_count < constants.PLAYERS_COUNT ||
-      this.gRoom.girls_count < constants.PLAYERS_COUNT) {
+  var player = randomPlayer(this.gRoom, null);
+  if(!player) {
     return this.stop();
   }
-
-  var player = randomPlayer(this.gRoom, null);
   this.gNextGame = constants.G_START;
 
   this.gActivePlayers = {};

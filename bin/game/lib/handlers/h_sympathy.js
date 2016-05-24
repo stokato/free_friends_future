@@ -13,14 +13,6 @@ var startTimer   = require('../start_timer'),
 module.exports = function(game) {
   return function (timer, uid, options) {
     var f = constants_io.FIELDS;
-    if(uid && uid == options[f.pick]) {
-      //var socket = game.gActivePlayers[uid].player.getSocket();
-      new GameError(socket, constants.G_SYMPATHY, "Попытка выбирать себя");
-      //game.stop();
-      //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
-      //  {name: "Игра остановлена всвязи с ошибкой"});
-      return;
-    }
 
     // Если все ответили или истеколо время - переходим к следующему этапу
     if (game.gActionsCount == 0 || timer) {
@@ -55,6 +47,9 @@ module.exports = function(game) {
 
       // Отправляем всем
       var player = randomPlayer(game.gRoom, null);
+      if(!player) {
+        return game.stop();
+      }
       game.emit(player.getSocket(), result);
 
       // Сохраняем состояние игры

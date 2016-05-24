@@ -109,14 +109,14 @@ function checkInput(em, socket, userList, options) {
       isValid = checkID(options[f.pick]);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим. Игра остановлена.");
+        new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим.");
       }
       break;
     case constants_game.G_BOTTLE_KISSES :
       isValid = (validator.isBoolean(options[f.pick] + "")? isValid : false);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean. Игра остановлена.");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean.");
       }
       break;
     case constants_game.G_QUESTIONS :
@@ -124,7 +124,7 @@ function checkInput(em, socket, userList, options) {
       isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть 1, 2 или 3. Игра остановлена.");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть 1, 2 или 3.");
       }
       break;
     case constants_game.G_CARDS :
@@ -132,7 +132,7 @@ function checkInput(em, socket, userList, options) {
       isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9. Игра остановлена.");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9.");
       }
       break;
     case constants_game.G_SYMPATHY :
@@ -140,7 +140,7 @@ function checkInput(em, socket, userList, options) {
       isValid = checkID(options[f.pick]);
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан ИД в выборе игрока. Игра остановлена.");
+        new GameError(socket, em, "Некорректно задан ИД в выборе игрока.");
       }
       break;
   }

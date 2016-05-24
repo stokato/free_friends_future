@@ -1,6 +1,7 @@
 var checkInput = require('./../../check_input');
 var constants_io = require('../../io/constants');
 var constants = require('../constants');
+var GameError = require('./../../game_error');
 
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, userList) {
@@ -14,11 +15,22 @@ module.exports = function (socket, userList) {
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
 
       if (!checkInput(game.gNextGame, socket, userList, options)) {
-
         //game.stop();
         //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
         //  {message: "Игра остановлена всвязи с ошибкой"});
         return;
+      }
+
+      if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[options[f.pick]]) { // Если нет такого пользоателя среди кандидатов
+        return new GameError(socket, constants.G_BEST, "Нельзя проголосовать за этого пользователя");
+      }
+
+      if(game.gNextGame == constants.G_SYMPATHY && uid == options[f.pick]) {
+        return new GameError(socket, constants.G_SYMPATHY, "Попытка выбрать себя");
+      }
+
+      if(game.gNextGame == constants.G_SYMPATHY_SHOW && uid == options[f.pick]) {
+        return new GameError(socket, constants.G_SYMPATHY, "Попытка выбрать себя");
       }
 
       if(!game.gActionsQueue[uid]) {

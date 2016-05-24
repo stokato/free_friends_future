@@ -1,8 +1,8 @@
 var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
-var
-    randomPlayer = require('../random_player');
+//var
+//    randomPlayer = require('../random_player');
     //,
     //startTimer   = require('../start_timer'),
     //activateAllPlayers = require('../activate_all_players'),
@@ -18,12 +18,6 @@ module.exports = function(game) {
       playerInfo = game.gActivePlayers[uid];
 
       var result = {};
-
-      if(!game.gStoredOptions[options[f.pick]]) { // Если нет такого пользоателя среди кандидатов
-        //game.stop();
-        return new GameError(playerInfo.player.getSocket(), constants.G_BEST,
-          "Неверные аргументы: за пользователя с таким ИД нельзя проголосовать");
-      }
 
       //result[f.game] = constants.G_BEST;
       result[f.pick] = {};

@@ -2,11 +2,11 @@ var GameError = require('./../../../game_error'),
   checkInput = require('./../../../check_input');
 var constants = require('../../constants');
 
-var startTimer   = require('../start_timer'),
-    activateAllPlayers = require('../activate_all_players'),
-  getPlayersID = require('../get_players_id'),
-    setActionsLimit = require('../set_action_limits'),
-  randomPlayer = require('../random_player');
+//var //startTimer   = require('../start_timer'),
+   // activateAllPlayers = require('../activate_all_players'),
+  //getPlayersID = require('../get_players_id'),
+    //setActionsLimit = require('../set_action_limits'),
+  //randomPlayer = require('../random_player');
 
 var constants_io = require('../../../io/constants');
 

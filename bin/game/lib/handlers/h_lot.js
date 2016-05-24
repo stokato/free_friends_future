@@ -20,7 +20,8 @@ module.exports = function(game) {
     } while(rand == game.gStoredRand);
     game.gStoredRand = rand;
 
-    game.gNextGame = constants.GAMES[rand];
+   // game.gNextGame = constants.GAMES[rand];
+    game.gNextGame = constants.G_QUESTIONS;
 
     game.gActionsQueue = {};
 
@@ -52,8 +53,9 @@ module.exports = function(game) {
         setActionsLimit(game, 1);
         game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT;
 
-        rand = Math.floor(Math.random() * constants.GAME_QUESTIONS.length);
-        result[f.question] =  constants.GAME_QUESTIONS[rand];
+        var questions = game.getQuestions();
+        rand = Math.floor(Math.random() * questions.length);
+        result[f.question] =  questions[rand].text;
         break;
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
@@ -83,7 +85,11 @@ module.exports = function(game) {
         }
 
         var firstGender = firstPlayer.sex;
-        var secondPlayer = getPlayerInfo(randomPlayer(game.gRoom, firstGender, [firstPlayer.id]));
+        var randPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.id]);
+        if(!randPlayer) {
+          return game.stop();
+        }
+        var secondPlayer = getPlayerInfo(randPlayer);
 
         var bestPlayers = [firstPlayer.id, secondPlayer.id];
         var bestPlayerInfo = [{id : firstPlayer.id, vid : firstPlayer.vid},
@@ -119,6 +125,9 @@ module.exports = function(game) {
     //  break;
     //}
     var player = randomPlayer(game.gRoom, null);
+    if(!player) {
+      return game.stop();
+    }
 
     game.emit(player.getSocket(), result);
     game.gameState = result;

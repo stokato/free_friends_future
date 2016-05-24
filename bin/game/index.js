@@ -16,7 +16,10 @@ var hStart         = require('./lib/handlers/h_start'),
     hSympathy      = require('./lib/handlers/h_sympathy'),
     hSympathyShow  = require('./lib/handlers/h_sympathy_show');
 
+var db        = require('./../db/index.js'),
+  dbManager = new db();
 
+var gameQuestions = [];
 /**
  * Класс Игра
  * @param room
@@ -30,6 +33,7 @@ var hStart         = require('./lib/handlers/h_start'),
  */
 function Game(room, userList) {
   var self = this;
+
   this.gRoom = room;                 // Стол этой игры
   this.userList = userList;
 
@@ -64,7 +68,28 @@ Game.prototype.stop = stop;
 Game.prototype.emit = emit;
 Game.prototype.getGameState = getGameState;
 Game.prototype.restoreGame = restoreGame;
+Game.prototype.getQuestions = function() {
+  return gameQuestions;
+};
+
 //Game.prototype.isPlayerInRoom = isPlayerInRoom;
 //Game.prototype.getPlayerInfo = getPlayerInfo;
 
 module.exports = Game;
+
+getQuestionsFromDB();
+
+//setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT * 1000);
+
+function getQuestionsFromDB() {
+  dbManager.findAllQuestions(function(err, questions) {
+    if(err) {
+      console.log("Ошибка при получении вопросов и базы данных");
+      return;
+    }
+
+    gameQuestions = questions;
+
+    setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT * 1000);
+  });
+}

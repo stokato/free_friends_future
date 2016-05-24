@@ -2,9 +2,10 @@ var GameError = require('./../../../game_error'),
     checkInput = require('./../../../check_input');
 var constants = require('../../constants');
 
-var
-    randomPlayer = require('../random_player'),
-    profilejs =  require('../../../profile/index');
+var profilejs =  require('../../../profile/index');
+
+//var
+//    randomPlayer = require('../random_player'),
     // startTimer   = require('../start_timer'),
     //pushAllPlayers = require('../activate_all_players'),
   //getPlayersID = require('../get_players_id'),
@@ -17,7 +18,7 @@ module.exports = function(game) {
   return function (timer, uid, options) {
     var f = constants_io.FIELDS;
     var playerInfo;
-    if(uid) {
+    if(uid) { // Отправляем всем выбор игрока
       playerInfo = game.gActivePlayers[uid];
 
       var result = {};
@@ -30,10 +31,9 @@ module.exports = function(game) {
 
       if(!game.gameState[f.picks]) { game.gameState[f.picks] = []; }
       game.gameState[f.picks].push(result);
-
     }
 
-    // Если все игроки сделали выбор
+    // Если все игроки сделали выбор, проверяем - оба ли поцеловали
     if (game.gActionsCount == 0 || timer) {
       var item, allKissed = true;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
@@ -43,103 +43,80 @@ module.exports = function(game) {
         }
       }
 
-      // Если оба поцеловали друг друга, нужно добавить им очки
+      // Если оба поцеловали друг друга, нужно добавить им очки, получаем данные игроков
       if(allKissed) {
         var players = [];
         for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-          //if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick]) {
-            players.push(game.gActivePlayers[item].id);
+          //if(!game.gActionsQueue[game.gActivePlayers[item].getID()][0][f.pick])
+            players.push(game.gActivePlayers[item]);
           //}
         }
 
-        var count = 0;
+        var count = 0; // Добавляем очки
         addPoints(game.userList, players, count, function(err, res) {
-          if(err) { game.stop(); }
+          if(err) {
+            game.stop();
+            //var player = randomPlayer(game.gRoom, null);
 
-          setNextGame(game, timer);
+            return;// new GameError(player.getSocket(), constants.G_BOTTLE_KISSES,
+              //"Ошибка при начислении очков пользователю");
+          }
+
+          if(!timer) { clearTimeout(game.gTimer); }
+
+          game.restoreGame();
         });
-      } else { setNextGame(game, timer); }
+      } else {
+        if(!timer) { clearTimeout(game.gTimer); }
+
+        game.restoreGame();
+      }
     }
   }
 };
 
-function setNextGame(game, timer) {
-  if(!timer) { clearTimeout(game.gTimer); }
-
-  //var f = constants_io.FIELDS;
-  //
-  //game.gNextGame = constants.G_LOT;
-  //
-  //game.gActionsQueue = {};
-  //game.gActivePlayers = {};
-  //
-  //pushAllPlayers(game.gRoom, game.gActivePlayers);
-  //setActionsLimit(game, 1);
-  //game.gActionsCount = constants.PLAYERS_COUNT;
-
-  //var result = {};
-  //result[f.next_game] = game.gNextGame;
-  ////result[f.players] = getPlayersID(game.gActivePlayers);
-  //
-  //var nextPlayer = randomPlayer(game.gRoom, null);
-  //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
-  //
-  //var item, player;
-  //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-  //  player = game.gActivePlayers[item];
-  //  break;
-  //}
-  //
-  //game.emit(player.getSocket(), result);
-  //game.gameState = result;
-
-  game.restoreGame();
-
-  //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
-}
-
-function addPoints(userList, players, count, callback) {
-  var player = userList[players[count]];
+// Функция проверяет, если игрок не онлайн, создает его профиль.
+// Добавляет всем очки
+function addPoints(userList, playersInfo, count, callback) {
+  var player = userList[playersInfo[count].socketId];
   if(player) {
-    player.addPoints(1, function(err, res) {
-      if(err) {
-        new GameError(players[count].getSocket(),
-          constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
-        return callback(err, null);
-      }
-
-      count++;
-
-      if(count < players.length) {
-        addPoints(userList, players, count, callback);
-      } else {
-        callback(null, null);
-      }
-    });
+    player.addPoints(1, onPoints(userList, playersInfo, count, player, callback));
   } else {
     player = new profilejs();
-    player.build(players[count], function (err, info) {
+    player.build(playersInfo[count].id, function (err, info) {
       if(err) {
-        new GameError(players[count].getSocket(),
-          constants.G_BOTTLE_KISSES, "Ошбика при создании профиля игрока");
+        new GameError(playersInfo[count].getSocket(),
+          constants.G_BOTTLE_KISSES, "Ошибка при создании профиля игрока");
         return callback(err, null);
       }
 
-      player.addPoints(1, function(err, res) {
-        if(err) {
-          new GameError(players[count].getSocket(),
-            constants.G_BOTTLE_KISSES, "Ошбика при начислении очков пользователю");
-          return callback(err, null);
-        }
-
-        count++;
-
-        if(count < players.length) {
-          addPoints(userList, players, count, callback);
-        } else {
-          callback(null, null);
-        }
-      });
+      player.addPoints(constants.KISS_POINTS, onPoints(userList, playersInfo, count, player, callback));
     });
+  }
+}
+
+// Функция обрабатывает результы начисления очков, оповещает игрока
+// Если есть еще игрок, вызвает начисления очков для него
+function onPoints(userList, playersInfo, count, player, callback) {
+  return function(err, res) {
+    if(err) {
+      new GameError(playersInfo[count].getSocket(),
+        constants.G_BOTTLE_KISSES, "Ошибка при начислении очков пользователю");
+      return callback(err, null);
+    }
+
+    count++;
+
+    var options = {};
+    options[constants_io.FIELDS.points] = res;
+
+    var playerSocket = player.getSocket();
+    playerSocket.emit(constants_io.IO_ADD_POINTS, options);
+
+    if(count < playersInfo.length) {
+      addPoints(userList, playersInfo, count, callback);
+    } else {
+      callback(null, null);
+    }
   }
 }

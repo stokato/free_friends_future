@@ -16,6 +16,9 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game.gTimer); }
 
       var player = randomPlayer(game.gRoom, null);
+      if(!player) {
+        return game.stop();
+      }
 
       game.gNextGame = constants.G_LOT;
 

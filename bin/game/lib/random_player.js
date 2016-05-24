@@ -20,7 +20,9 @@ module.exports = function (room, sex, excessIds) {
     }
   }
 
-  if(excessIds.length == allPlayers.length) { return -1; }
+  if(excessIds.length == allPlayers.length) { return null; }
+
+  if(allPlayers.length == 0) { return null; }
 
   var rand = Math.floor(Math.random() * allPlayers.length);
   while(excessIds.indexOf(allPlayers[rand].getID()) > -1) {

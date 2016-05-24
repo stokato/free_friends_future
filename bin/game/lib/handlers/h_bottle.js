@@ -13,10 +13,16 @@ module.exports = function(game) {
     var f = constants_io.FIELDS;
     if(!timer) { clearTimeout(game.gTimer); }
 
+    //// Если игроков меньше допустимого количества - останавливаем игру
+    //if(game.gRoom.guys_count < constants.PLAYERS_COUNT ||
+    //  game.gRoom.girls_count < constants.PLAYERS_COUNT) {
+    //  return game.stop();
+    //}
+
     var firstPlayerInfo = null;
     if(uid) {
       firstPlayerInfo = game.gActivePlayers[uid];
-    } else {
+    } else { // В случае, если игрок так и не покрутил волчек, берем его uid из настроек
       for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
         firstPlayerInfo = game.gActivePlayers[item];
       }
@@ -26,6 +32,10 @@ module.exports = function(game) {
     var secondGender = (firstGender == constants.CONFIG.sex.male)
              ? constants.CONFIG.sex.female : constants.CONFIG.sex.male;
     var secondPlayer = randomPlayer(game.gRoom, secondGender);
+
+    if(!secondPlayer) {
+      return game.stop();
+    }
 
     game.gActivePlayers[secondPlayer.getID()] = getPlayerInfo(secondPlayer);
     game.gActionsQueue = {};
@@ -41,8 +51,11 @@ module.exports = function(game) {
 
 
     var player = randomPlayer(game.gRoom, null);
-    game.emit(player.getSocket(), result);
+    if(!player) {
+      return game.stop();
+    }
 
+    game.emit(player.getSocket(), result);
 
     game.gameState = result;
 

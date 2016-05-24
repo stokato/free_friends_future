@@ -11,14 +11,16 @@ var G_START         = 'results',
   G_SYMPATHY_SHOW = 'sympathy_show';
 
 var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
-var QUESTIONS = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
-var TIMEOUT = 10;
+//var QUESTIONS = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+//                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+//                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+//                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
+var TIMEOUT = 60;
 var CARD_COUNT = 10;
 var PLAYERS_COUNT = 2;//10;
 var SYMPATHY_LIMIT = 2;
+var KISS_POINTS = 1;
+var QUESTIONS_TIMEOUT = 24 * 60 * 60; // Раз в сутки получать из базы список вопросов
 
 module.exports.CONFIG = Config.user.constants;
 
@@ -33,9 +35,11 @@ module.exports.G_SYMPATHY = G_SYMPATHY;
 module.exports.G_SYMPATHY_SHOW = G_SYMPATHY_SHOW;
 
 module.exports.GAMES = GAMES;
-module.exports.GAME_QUESTIONS = QUESTIONS;
+//module.exports.GAME_QUESTIONS = QUESTIONS;
 module.exports.TIMEOUT = TIMEOUT;
 module.exports.CARD_COUNT = CARD_COUNT;
 module.exports.PLAYERS_COUNT = PLAYERS_COUNT;
 module.exports.SHOW_SYMPATHY_LIMIT = SYMPATHY_LIMIT;
+module.exports.KISS_POINTS = KISS_POINTS;
+module.exports.QUESTIONS_TIMEOUT = QUESTIONS_TIMEOUT;
 

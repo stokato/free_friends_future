@@ -13,3 +13,4 @@ module.exports.T_USERGOODS       = 'user_goods';
 module.exports.T_SHOP            = 'shop';
 module.exports.T_USERPOINTS      = 'user_points';
 module.exports.T_MAX_HANDRED     = 'max_hundred';
+module.exports.T_QUESTIONS       = 'questions';

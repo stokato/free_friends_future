@@ -1,11 +1,11 @@
 var constants = require('../../constants');
 var constants_io = require('../../../io/constants');
 
-var randomPlayer = require('../random_player'),
+//var randomPlayer = require('../random_player');
     //startTimer   = require('../start_timer'),
-    activateAllPlayers = require('../activate_all_players'),
+   // activateAllPlayers = require('../activate_all_players'),
     //getPlayersID = require('../get_players_id'),
-    setActionsLimit = require('../set_action_limits');
+   // setActionsLimit = require('../set_action_limits');
 
 // Вопросы, ждем, когда все ответят, потом показываем всем ответы
 module.exports = function(game) {

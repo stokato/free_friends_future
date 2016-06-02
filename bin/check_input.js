@@ -129,7 +129,7 @@ function checkInput(em, socket, userList, options) {
       break;
     case constants_game.G_CARDS :
       val = options[f.pick] + "";
-      isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
+      isValid = (validator.isInt(val) && val <= 6 && val >= 0)? isValid : false;
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9.");

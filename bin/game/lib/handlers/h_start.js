@@ -5,7 +5,8 @@ var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
     setActionsLimit = require('../set_action_limits'),
-  getPlayerInfo  = require('./../get_player_info');
+  //getPlayerInfo  = require('./../get_player_info'),
+  getNextPlayer = require('./../get_next_player');
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
@@ -25,8 +26,19 @@ module.exports = function(game) {
       game.gActivePlayers = {};
       game.gActionsQueue = {};
 
+      var nextPlayerInfo;
+      if(game.currentSex == constants_io.GIRL) { // девочка
+        nextPlayerInfo = getNextPlayer(game.gRoom, game.guysIndex, true);
+        game.guysIndex = nextPlayerInfo.index;
+      } else { // мальчик
+        nextPlayerInfo = getNextPlayer(game.gRoom, game.girlsIndex, false);
+        game.girlsIndex = nextPlayerInfo.index;
+      }
+      game.currentSex = nextPlayerInfo.sex;
 
-      game.gActivePlayers[player.getID()] = getPlayerInfo(player);
+      //game.gActivePlayers[player.getID()] = getPlayerInfo(player);
+
+      game.gActivePlayers[nextPlayerInfo.id] = nextPlayerInfo;
 
       setActionsLimit(game, 1);
       game.gActionsCount = 1;

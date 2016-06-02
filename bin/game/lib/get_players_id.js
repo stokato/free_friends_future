@@ -3,7 +3,7 @@ module.exports = function (players) {
   var arr = [], item, player;
   for(item in players) if(players.hasOwnProperty(item)) {
     player = players[item];
-    arr.push({ id : player.id, vid : player.vid});
+    arr.push({ id : player.id, vid : player.vid, index : player.index});
   }
   return arr;
 };

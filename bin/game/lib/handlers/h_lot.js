@@ -15,13 +15,18 @@ module.exports = function(game) {
     clearTimeout(game.gTimer);
 
     var rand;
-    do {
-      rand = Math.floor(Math.random() * constants.GAMES.length);
-    } while(rand == game.gStoredRand);
-    game.gStoredRand = rand;
+   // do {
+   //   rand = Math.floor(Math.random() * constants.GAMES.length);
+   // } while(rand == game.gStoredRand);
+   // game.gStoredRand = rand;
+   //
+   //game.gNextGame = constants.GAMES[rand];
 
-   // game.gNextGame = constants.GAMES[rand];
-    game.gNextGame = constants.G_QUESTIONS;
+    game.gNextGame = constants.GAMES[game.gameCounter];
+    game.gameCounter++;
+    if(game.gameCounter == constants.GAMES.length) {
+      game.gameCounter = 0;
+    }
 
     game.gActionsQueue = {};
 

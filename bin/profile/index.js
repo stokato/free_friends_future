@@ -38,7 +38,8 @@ var init          = require('./lib/init'),
     getPurchase    = require('./lib/get_purchase'),
     setGame       = require('./lib/set_game'),
     getGame       = require('./lib/get_game'),
-    addPoints     = require('./lib/add_points');
+    setGameIndex  = require('./lib/set_game_index');
+    getGameIndex  = require('./lib/get_game_index');
 
 var setExitTimeout = require('./lib/set_exit_timeout'),
     clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -87,6 +88,8 @@ function Profile() {
   this.gift_2   = null;
 
   this.pGame    = null;
+
+  this.gameIndex = 0;
 }
 
 Profile.prototype.init            = init;
@@ -131,5 +134,7 @@ Profile.prototype.getReady   = getReady;
 Profile.prototype.setGame    = setGame;
 Profile.prototype.getGame    = getGame;
 Profile.prototype.addPoints  = addPoints;
+Profile.prototype.setGameIndex = setGameIndex;
+Profile.prototype.getGameIndex = getGameIndex;
 
 module.exports = Profile;

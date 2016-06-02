@@ -15,8 +15,8 @@ var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
 //                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 //                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
 //                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
-var TIMEOUT = 60;
-var CARD_COUNT = 10;
+var TIMEOUT = 10;
+var CARD_COUNT = 7;
 var PLAYERS_COUNT = 2;//10;
 var SYMPATHY_LIMIT = 2;
 var KISS_POINTS = 1;

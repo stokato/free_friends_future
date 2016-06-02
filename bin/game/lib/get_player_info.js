@@ -5,6 +5,7 @@ module.exports = function(player) {
   playerInfo.vid = player.getVID();
   playerInfo.sex = player.getSex();
   playerInfo.socketId = player.getSocket().id;
+  playerInfo.index = player.getGameIndex();
   playerInfo.player = player;
   return playerInfo;
 };

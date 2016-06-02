@@ -49,6 +49,11 @@ function Game(room, userList) {
 
   this.gameState = null;
 
+  this.gameCounter = 0;
+  this.girlsIndex = 0;
+  this.guysIndex = 0;
+  this.currentSex = 1;
+
   this.gHandlers = {};           // Обработчики игр
   this.gHandlers[constants.G_START]         = hStart(self);
   this.gHandlers[constants.G_LOT]           = hLot(self);

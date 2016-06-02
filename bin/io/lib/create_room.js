@@ -13,7 +13,9 @@ module.exports = function (socket, userList) {
     girls: {},
     girls_count: 0,
     messages: [],
-    game : null
+    game : null,
+    girls_counter : 1,
+    guys_counter : 2
   };
   newRoom.game = new gamejs(newRoom, userList);
   return newRoom;

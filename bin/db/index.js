@@ -42,6 +42,7 @@ var addUser             = require('./lib/users_add'),
   deletePoints        = require('./lib/points_delete');
   findAllQuestions    = require('./lib/questions_find_all');
 
+
 /**
  * Класс, обеспечивающий работу с БД Кассандра
  * содержит методы - добавить пользователя (обязательные поля - ид и имя) - возвращает добавленного

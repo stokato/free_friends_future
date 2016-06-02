@@ -33,9 +33,26 @@ var server = http.createServer( function(req, res) {
       });
     });
   }
+
+  var localPath;
   if(req.method == 'GET' && (req.url.indexOf('well-known') == -1)) {
 
-    var localPath = path.join(__dirname, '/public/', "index.html");
+    localPath = path.join(__dirname, '/public/', "index.html");
+
+    fs.exists(localPath, function(exists) {
+      if(exists) {
+        getFile(localPath, res, "text/html");
+      } else {
+        console.log("File not found: " + localPath);
+        res.writeHead(404);
+        res.end();
+      }
+    });
+  }
+
+  if(req.method == 'GET' && (req.url.indexOf('well-known') != -1)) {
+
+    localPath = path.join(__dirname, req.url);
 
     fs.exists(localPath, function(exists) {
       if(exists) {

@@ -44,6 +44,9 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
 
   newRoom[sex.sexArr][selfProfile.getID()] = selfProfile;
   newRoom[sex.len] ++;
+  var index = newRoom[sex.counter];
+  selfProfile.setGameIndex(index);
+  newRoom[sex.counter] += 2;
 
   var oldRoom = roomList[socket.id];
   if(oldRoom) {

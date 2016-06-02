@@ -70,6 +70,9 @@ module.exports = function (socket, userList, rooms, roomList) {
     newRoom[sex.len]++;
 
     selfProfile.setGame(newRoom.game);
+    var index = newRoom[sex.counter];
+    selfProfile.setGameIndex(index);
+    newRoom[sex.counter] += 2;
 
     roomList[socket.id] = newRoom;
 

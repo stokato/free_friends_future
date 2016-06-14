@@ -33,8 +33,6 @@ var init          = require('./lib/init'),
     getAge        = require('./lib/get_age'),
     getCity       = require('./lib/get_city'),
     getCountry    = require('./lib/get_country'),
-    setReady      = require('./lib/set_ready'),
-    getReady      = require('./lib/get_ready'),
     getPurchase    = require('./lib/get_purchase'),
     setGame       = require('./lib/set_game'),
     getGame       = require('./lib/get_game'),
@@ -73,7 +71,7 @@ function Profile() {
   this.pPoints   = 0;      // очки
   this.pMoney    = 0;      // деньги (БД)
 
-  this.pReady    = false;
+
 
   this.pNewMessages = 0;
   this.pNewGifts    = 0;
@@ -90,6 +88,7 @@ function Profile() {
   this.pGame    = null;
 
   this.gameIndex = 0;
+
 }
 
 Profile.prototype.init            = init;
@@ -129,8 +128,6 @@ Profile.prototype.getPrivateChatsWithHistory = getPrivateChatsWithHistory;
 Profile.prototype.getAge     = getAge;
 Profile.prototype.getCity    = getCity;
 Profile.prototype.getCountry = getCountry;
-Profile.prototype.setReady   = setReady;
-Profile.prototype.getReady   = getReady;
 Profile.prototype.setGame    = setGame;
 Profile.prototype.getGame    = getGame;
 Profile.prototype.addPoints  = addPoints;

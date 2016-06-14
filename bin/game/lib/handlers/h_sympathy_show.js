@@ -20,14 +20,14 @@ module.exports = function(game) {
 
       // Получаем данные интересуемого игрока
       var sympathy = game.gStoredOptions[options[f.pick]];
-      var result = {}, i;
+      var result, i;
 
+      result = {};
+      result[f.picks] = [];
+      var pick;
       // Получаем все его ходы и отправляем
       if(sympathy) {
-        result = {};
-        result[f.picks] = [];
         //result[f.game] = constants.G_SYMPATHY_SHOW;
-
         for(i = 0; i < sympathy.length; i ++) {
           var pickedId = sympathy[i][f.pick];
 
@@ -39,15 +39,21 @@ module.exports = function(game) {
           //  continue;
           //}
 
-          var pick = {};
+          pick = {};
           pick[f.id] = options[f.pick];
           pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
           pick[f.pick] = {id: pickedId, vid: game.gActivePlayers[pickedId].vid};
           result[f.picks].push(pick);
         }
-
-        game.emit(game.gActivePlayers[uid].player.getSocket(), result, uid);
+      } else {
+        pick = {};
+        pick[f.id] = options[f.pick];
+        pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
+        pick[f.pick] = null;
+        result[f.picks].push(pick);
       }
+
+      game.emit(game.gActivePlayers[uid].player.getSocket(), result, uid);
     }
 
     // После истечения времени на просмотр чужих симпатий переходим к следующему раунду

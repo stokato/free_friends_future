@@ -85,7 +85,7 @@ function addPoints(userList, playersInfo, count, callback) {
     player = new profilejs();
     player.build(playersInfo[count].id, function (err, info) {
       if(err) {
-        new GameError(playersInfo[count].getSocket(),
+        new GameError(playersInfo[count].player.getSocket(),
           constants.G_BOTTLE_KISSES, "Ошибка при создании профиля игрока");
         return callback(err, null);
       }
@@ -100,7 +100,7 @@ function addPoints(userList, playersInfo, count, callback) {
 function onPoints(userList, playersInfo, count, player, callback) {
   return function(err, res) {
     if(err) {
-      new GameError(playersInfo[count].getSocket(),
+      new GameError(player.getSocket(),
         constants.G_BOTTLE_KISSES, "Ошибка при начислении очков пользователю");
       return callback(err, null);
     }

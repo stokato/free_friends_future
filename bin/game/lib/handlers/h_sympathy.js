@@ -39,7 +39,7 @@ module.exports = function(game) {
 
       activateAllPlayers(game.gRoom, game.gActivePlayers);
 
-      setActionsLimit(game, constants.PLAYERS_COUNT -1);
+      setActionsLimit(game, game.gRoom.girls_count + game.gRoom.guys_count -1);
       game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count) * 10; //constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
 
       result[f.next_game] = game.gNextGame;

@@ -14,7 +14,7 @@ module.exports = function(game) {
     var f = constants_io.FIELDS;
     clearTimeout(game.gTimer);
 
-    var rand;
+    var rand, item;
    // do {
    //   rand = Math.floor(Math.random() * constants.GAMES.length);
    // } while(rand == game.gStoredRand);
@@ -84,7 +84,7 @@ module.exports = function(game) {
         if(uid) {
           firstPlayer = game.gActivePlayers[uid];
         } else {
-          for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+          for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
             firstPlayer = game.gActivePlayers[item];
           }
         }
@@ -120,6 +120,29 @@ module.exports = function(game) {
         setActionsLimit(game, constants.SHOW_SYMPATHY_LIMIT);
         game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
         break;
+      //////////////////// ТЮРЬМА ///////////////////////////////////////////////////////
+      case constants.G_PRISON:
+
+        player = null;
+        if(uid) {
+          player = game.gActivePlayers[uid];
+        } else {
+          for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+            player = game.gActivePlayers[item];
+          }
+        }
+
+        game.gPrisoners[player.id] = player;
+
+        result = {};
+
+        var prisoner = {id : player.id, vid : player.vid };
+
+        result[f.prison] = prisoner;
+
+        return game.restoreGame(result);
+
+        break;
     }
     /////////////////////////////////////////////////////////////////////////////////////
     result[f.players] = getPlayersID(game.gActivePlayers);
@@ -129,6 +152,7 @@ module.exports = function(game) {
     //  player = game.gActivePlayers[item];
     //  break;
     //}
+
     var player = randomPlayer(game.gRoom, null);
     if(!player) {
       return game.stop();

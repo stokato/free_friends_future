@@ -25,7 +25,8 @@ var chooseRoom      = require('./choose_room'),
   //joinGame          = require('./join_game'),
   disconnect        = require('./disconnect');
 
-var addAction       = require('../../game/lib/add_action');
+var addAction       = require('../../game/lib/add_action'),
+    releasePlayer   = require('../../game/lib/release_player');
 
 // Назначаем эмиты
 module.exports = function(socket, userList, profiles, roomList, rooms) {
@@ -64,4 +65,5 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   // Игра
   //joinGame(socket, userList, roomList);
   addAction(socket, userList);
+  releasePlayer(socket, userList);
 };

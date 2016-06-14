@@ -11,8 +11,8 @@ module.exports = function (socket, userList, roomList) {
 
     var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
-    if(!selfProfile.getReady()) {
-      selfProfile.setReady(true);
+    if(!selfProfile.getInPrison()) {
+      selfProfile.setInPrison(true);
 
       var room = roomList[socket.id];
 

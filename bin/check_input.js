@@ -143,6 +143,13 @@ function checkInput(em, socket, userList, options) {
         new GameError(socket, em, "Некорректно задан ИД в выборе игрока.");
       }
       break;
+    case constants_io.IO_RELEASE_PLAYER :
+      isValid = checkID(options[f.id]);
+
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
   }
 
   return isValid;

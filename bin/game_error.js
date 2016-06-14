@@ -62,6 +62,8 @@ function GameError(socket, func, message) {
      break;
    case constants_game.G_SYMPATHY               : err.name = "Ошибка в игре Симпатии";
      break;
+   case constants_io.IO_RELEASE_PLAYER          : err.name = "Ошибка при выкупе игрока";
+     break;
    default:  err.name =   "Неизвестная ошибка"
  }
  console.log(err.name + " : " + err.message);

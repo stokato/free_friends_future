@@ -9,10 +9,10 @@ module.exports = function() {
   var item;
 
   for (item in guys) if(guys.hasOwnProperty(item)) {
-    guys[item].setReady(false);
+    guys[item].setInPrison(false);
   }
   for (item in girls) if(girls.hasOwnProperty(item)) {
-    girls[item].setReady(false);
+    girls[item].setInPrison(false);
   }
 
   this.gNextGame = constants.G_START;

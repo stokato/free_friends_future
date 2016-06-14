@@ -26,15 +26,18 @@ module.exports = function(game) {
       game.gActivePlayers = {};
       game.gActionsQueue = {};
 
-      var nextPlayerInfo;
-      if(game.currentSex == constants_io.GIRL) { // девочка
-        nextPlayerInfo = getNextPlayer(game.gRoom, game.guysIndex, true);
-        game.guysIndex = nextPlayerInfo.index;
-      } else { // мальчик
-        nextPlayerInfo = getNextPlayer(game.gRoom, game.girlsIndex, false);
-        game.girlsIndex = nextPlayerInfo.index;
+      // Получаем следующего игрока, если он в тюрьме, то передаем ход дальше, а его выпускаем
+      // либо передаем ход ему
+      var nextPlayerInfo = null;
+      var isPlayer = false;
+      while(!isPlayer) {
+        setPlayer(nextPlayerInfo);
+        if(!game.gPrisoners[nextPlayerInfo.id]) {
+          isPlayer = true;
+        } else {
+          game.gPrisoners[nextPlayerInfo.id] = null;
+        }
       }
-      game.currentSex = nextPlayerInfo.sex;
 
       //game.gActivePlayers[player.getID()] = getPlayerInfo(player);
 
@@ -52,6 +55,18 @@ module.exports = function(game) {
       game.gameState = result;
 
       game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+
+      //-------------------
+      function setPlayer (nextPlayerInfo) {
+        if(game.currentSex == constants_io.GIRL) { // девочка
+          nextPlayerInfo = getNextPlayer(game.gRoom, game.guysIndex, true);
+          game.guysIndex = nextPlayerInfo.index;
+        } else { // мальчик
+          nextPlayerInfo = getNextPlayer(game.gRoom, game.girlsIndex, false);
+          game.girlsIndex = nextPlayerInfo.index;
+        }
+        game.currentSex = nextPlayerInfo.sex;
+      }
     }
   }
 };

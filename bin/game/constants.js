@@ -11,13 +11,13 @@ var G_START         = 'results',
   G_SYMPATHY_SHOW = 'sympathy_show',
   G_PRISON        = 'prison';
 
-var GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
+var GAMES = [ G_BOTTLE, G_PRISON, G_QUESTIONS, G_PRISON, G_CARDS, G_PRISON, G_BEST, G_PRISON, G_SYMPATHY, G_PRISON];
 //var GAMES = [ G_BOTTLE ];
 //var QUESTIONS = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
 //                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 //                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
 //                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
-var TIMEOUT = 60;
+var TIMEOUT = 10;
 var CARD_COUNT = 7;
 var PLAYERS_COUNT = 2;//10;
 var SYMPATHY_LIMIT = 2;

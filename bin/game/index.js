@@ -14,7 +14,8 @@ var hStart         = require('./lib/handlers/h_start'),
     hCards         = require('./lib/handlers/h_cards'),
     hBest          = require('./lib/handlers/h_best'),
     hSympathy      = require('./lib/handlers/h_sympathy'),
-    hSympathyShow  = require('./lib/handlers/h_sympathy_show');
+    hSympathyShow  = require('./lib/handlers/h_sympathy_show'),
+    hPrison        = require('./lib/handlers/h_prison');
 
 var db        = require('./../db/index.js'),
   dbManager = new db();
@@ -51,6 +52,7 @@ function Game(room, userList) {
 
   this.gameState = null;
 
+  this.countPrisoners = 0;  // Количество папавших в тюрьму
   this.gameCounter = 0;
   this.girlsIndex = 0;
   this.guysIndex = 0;
@@ -66,6 +68,7 @@ function Game(room, userList) {
   this.gHandlers[constants.G_BEST]          = hBest(self);
   this.gHandlers[constants.G_SYMPATHY]      = hSympathy(self);
   this.gHandlers[constants.G_SYMPATHY_SHOW] = hSympathyShow(self);
+  this.gHandlers[constants.G_PRISON]        = hPrison(self);
 
   this.gStoredRand = 5;
 }

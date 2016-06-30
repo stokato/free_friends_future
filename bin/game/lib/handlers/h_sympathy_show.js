@@ -12,7 +12,7 @@ var constants_io = require('../../../io/constants');
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
-  return function(timer, uid, options) {
+  return function(timer, uid, options) { options = options || {};
     var f = constants_io.FIELDS;
 
     // Есил обработчик вызван игроком а не таймером
@@ -48,7 +48,10 @@ module.exports = function(game) {
       } else {
         pick = {};
         pick[f.id] = options[f.pick];
-        pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
+
+        if(options[f.pick]) {
+          pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
+        }
         pick[f.pick] = null;
         result[f.picks].push(pick);
       }

@@ -35,6 +35,7 @@ module.exports = function (socket, userList) {
 
       // Снимаем блокировку
       game.gPrisoners[prisonerInfo.id] = null;
+      game.countPrisoners--;
 
       var options = {};
       options[f.id] = prisonerInfo.id;

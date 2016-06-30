@@ -38,13 +38,18 @@ module.exports = function (socket, userList) {
       }
 
       // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
-      if(game.gNextGame != constants.G_SYMPATHY || game.gNextGame != constants.G_SYMPATHY_SHOW) {
+      // И выбрать того, кого нет
+      if(game.gNextGame == constants.G_SYMPATHY || game.gNextGame == constants.G_SYMPATHY_SHOW) {
          var i, actions = game.gActionsQueue[uid];
 
          for( i = 0; i < actions.length; i++) {
            if(actions[i][f.pick] == options[f.pick]) { return; }
          }
+
+        if(!game.gActivePlayers[options[f.pick]]) { return; }
       }
+
+
 
       // Уменьшаем счетчики ходов одного игрока и всех в текущем раунде
       game.gActionsLimits[uid] --;

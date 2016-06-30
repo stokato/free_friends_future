@@ -113,6 +113,7 @@ function checkInput(em, socket, userList, options) {
       }
       break;
     case constants_game.G_BOTTLE_KISSES :
+      isValid = (options[f.pick])? isValid : false;
       isValid = (validator.isBoolean(options[f.pick] + "")? isValid : false);
 
       if(!isValid) {
@@ -121,6 +122,7 @@ function checkInput(em, socket, userList, options) {
       break;
     case constants_game.G_QUESTIONS :
       val = options[f.pick] + "";
+      isValid = (options[f.pick])? isValid : false;
       isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
       if(!isValid) {
@@ -129,10 +131,11 @@ function checkInput(em, socket, userList, options) {
       break;
     case constants_game.G_CARDS :
       val = options[f.pick] + "";
+      isValid = (options[f.pick])? isValid : false;
       isValid = (validator.isInt(val) && val <= 6 && val >= 0)? isValid : false;
 
       if(!isValid) {
-        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 9.");
+        new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть от 1 до 7.");
       }
       break;
     case constants_game.G_SYMPATHY :

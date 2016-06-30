@@ -37,16 +37,30 @@ module.exports = function(game) {
       game.gActivePlayers = {};
       game.gActionsQueue = {};
 
-      activateAllPlayers(game.gRoom, game.gActivePlayers);
+      activateAllPlayers(game.gRoom, game.gActivePlayers, null, game.gPrisoners);
 
       setActionsLimit(game, game.gRoom.girls_count + game.gRoom.guys_count -1);
-      game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count) * 10; //constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
+      game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners) * 10; //constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
 
       result[f.next_game] = game.gNextGame;
       result[f.players] = getPlayersID(game.gActivePlayers);
 
+      /////////////////////
+      var inPrison = null;
+
+      for(var item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
+        if(game.gPrisoners[item]) {
+          inPrison = {};
+          inPrison.id = game.gPrisoners[item].id;
+          inPrison.vid = game.gPrisoners[item].vid;
+        }
+      }
+
+      result.prison = inPrison;
+      ////////////////
+
       // Отправляем всем
-      var player = randomPlayer(game.gRoom, null);
+      var player = randomPlayer(game.gRoom, null, [], game.gPrisoners);
       if(!player) {
         return game.stop();
       }

@@ -16,7 +16,7 @@ module.exports = function(game) {
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var player = randomPlayer(game.gRoom, null);
+      var player = randomPlayer(game.gRoom, null, [], game.gPrisoners);
       if(!player) {
         return game.stop();
       }
@@ -31,11 +31,12 @@ module.exports = function(game) {
       var nextPlayerInfo = null;
       var isPlayer = false;
       while(!isPlayer) {
-        setPlayer(nextPlayerInfo);
+        nextPlayerInfo = setPlayer();
         if(!game.gPrisoners[nextPlayerInfo.id]) {
           isPlayer = true;
         } else {
           game.gPrisoners[nextPlayerInfo.id] = null;
+          game.countPrisoners--;
         }
       }
 
@@ -51,21 +52,37 @@ module.exports = function(game) {
       result[f.players] = getPlayersID(game.gActivePlayers);
       //result[f.game] = constants.G_START;
 
+
+      /////////////////////
+      var inPrison = null;
+
+      for(var item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
+        if(game.gPrisoners[item]) {
+          inPrison = {};
+          inPrison.id = game.gPrisoners[item].id;
+          inPrison.vid = game.gPrisoners[item].vid;
+        }
+      }
+
+      result.prison = inPrison;
+      ////////////////
+
       game.emit(player.getSocket(), result);
       game.gameState = result;
 
       game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
 
       //-------------------
-      function setPlayer (nextPlayerInfo) {
+      function setPlayer () {
         if(game.currentSex == constants_io.GIRL) { // девочка
-          nextPlayerInfo = getNextPlayer(game.gRoom, game.guysIndex, true);
+          var nextPlayerInfo = getNextPlayer(game.gRoom, game.guysIndex, true);
           game.guysIndex = nextPlayerInfo.index;
         } else { // мальчик
           nextPlayerInfo = getNextPlayer(game.gRoom, game.girlsIndex, false);
           game.girlsIndex = nextPlayerInfo.index;
         }
         game.currentSex = nextPlayerInfo.sex;
+        return nextPlayerInfo;
       }
     }
   }

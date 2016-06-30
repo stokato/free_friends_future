@@ -1,7 +1,7 @@
 var constants = require('../constants');
 
 // Выбрать произвольного игрока любого, или указанного пола
-module.exports = function (room, sex, excessIds) {
+module.exports = function (room, sex, excessIds, prisoners) {
   excessIds = excessIds || [];
 
   var guys = room.guys;
@@ -25,7 +25,7 @@ module.exports = function (room, sex, excessIds) {
   if(allPlayers.length == 0) { return null; }
 
   var rand = Math.floor(Math.random() * allPlayers.length);
-  while(excessIds.indexOf(allPlayers[rand].getID()) > -1) {
+  while(excessIds.indexOf(allPlayers[rand].getID()) > -1 || prisoners[allPlayers[rand].getID()]) {
     rand = Math.floor(Math.random() * allPlayers.length);
   }
 

@@ -17,16 +17,31 @@ module.exports = function(game) {
     var rand, item;
    // do {
    //   rand = Math.floor(Math.random() * constants.GAMES.length);
-   // } while(rand == game.gStoredRand);
+   // } while(rand == game.gStoredRand || (game.gRoom.guys_count + game.gRoom.girls_count);
    // game.gStoredRand = rand;
    //
    //game.gNextGame = constants.GAMES[rand];
 
-    game.gNextGame = constants.GAMES[game.gameCounter];
-    game.gameCounter++;
-    if(game.gameCounter == constants.GAMES.length) {
-      game.gameCounter = 0;
+    var ok = false;
+    while(!ok) {
+      ok = true;
+      game.gNextGame = constants.GAMES[game.gameCounter];
+      game.gameCounter++;
+      if(game.gameCounter == constants.GAMES.length) {
+        game.gameCounter = 0;
+      }
+
+      if(game.gNextGame == constants.G_PRISON) {
+        if(game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners <= 4) {
+          ok = false;
+        }
+        if(game.countPrisoners > 0) {
+          ok = false;
+        }
+      }
     }
+
+
 
     game.gActionsQueue = {};
 
@@ -53,10 +68,10 @@ module.exports = function(game) {
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
         game.gActivePlayers = {};
-        activateAllPlayers(game.gRoom, game.gActivePlayers);
+        activateAllPlayers(game.gRoom, game.gActivePlayers, null, game.gPrisoners);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners; // constants.PLAYERS_COUNT;
 
         var questions = game.getQuestions();
         rand = Math.floor(Math.random() * questions.length);
@@ -65,10 +80,10 @@ module.exports = function(game) {
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
         game.gActivePlayers = {};
-        activateAllPlayers(game.gRoom, game.gActivePlayers);
+        activateAllPlayers(game.gRoom, game.gActivePlayers, null, game.gPrisoners);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners; // constants.PLAYERS_COUNT;
         break;
       //////////////////// ЛУЧШИЙ ///////////////////////////////////////////////////////
       case constants.G_BEST : // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
@@ -90,7 +105,7 @@ module.exports = function(game) {
         }
 
         var firstGender = firstPlayer.sex;
-        var randPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.id]);
+        var randPlayer = randomPlayer(game.gRoom, firstGender, [firstPlayer.id], game.gPrisoners);
         if(!randPlayer) {
           return game.stop();
         }
@@ -105,47 +120,43 @@ module.exports = function(game) {
         game.gStoredOptions[secondPlayer.id] = secondPlayer;
 
         game.gActivePlayers = {};
-        activateAllPlayers(game.gRoom, game.gActivePlayers, bestPlayers);
+        activateAllPlayers(game.gRoom, game.gActivePlayers, bestPlayers, game.gPrisoners);
 
         setActionsLimit(game, 1);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT-2;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners; // constants.PLAYERS_COUNT-2;
 
         result[f.best] = bestPlayerInfo;
         break;
       //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
       case constants.G_SYMPATHY:
         game.gActivePlayers = {};
-        activateAllPlayers(game.gRoom, game.gActivePlayers);
+        activateAllPlayers(game.gRoom, game.gActivePlayers, null, game.gPrisoners);
 
         setActionsLimit(game, constants.SHOW_SYMPATHY_LIMIT);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count; // constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners; // constants.PLAYERS_COUNT * constants.SHOW_SYMPATHY_LIMIT;
         break;
       //////////////////// ТЮРЬМА ///////////////////////////////////////////////////////
       case constants.G_PRISON:
 
-        player = null;
-        if(uid) {
-          player = game.gActivePlayers[uid];
-        } else {
-          for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-            player = game.gActivePlayers[item];
-          }
-        }
-
-        game.gPrisoners[player.id] = player;
-
-        result = {};
-
-        var prisoner = {id : player.id, vid : player.vid };
-
-        result[f.prison] = prisoner;
-
-        return game.restoreGame(result);
+        game.gActionsCount = 1;
+        setActionsLimit(game, 1);
 
         break;
     }
     /////////////////////////////////////////////////////////////////////////////////////
     result[f.players] = getPlayersID(game.gActivePlayers);
+
+    var inPrison = null;
+
+    for(item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
+      if(game.gPrisoners[item]) {
+        inPrison = {};
+        inPrison.id = game.gPrisoners[item].id;
+        inPrison.vid = game.gPrisoners[item].vid;
+      }
+    }
+
+    result.prison = inPrison;
 
     //var item, player;
     //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
@@ -153,7 +164,7 @@ module.exports = function(game) {
     //  break;
     //}
 
-    var player = randomPlayer(game.gRoom, null);
+    var player = randomPlayer(game.gRoom, null, null, game.gPrisoners);
     if(!player) {
       return game.stop();
     }

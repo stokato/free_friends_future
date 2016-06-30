@@ -31,7 +31,7 @@ module.exports = function(game) {
     var firstGender = firstPlayerInfo.sex;
     var secondGender = (firstGender == constants.CONFIG.sex.male)
              ? constants.CONFIG.sex.female : constants.CONFIG.sex.male;
-    var secondPlayer = randomPlayer(game.gRoom, secondGender);
+    var secondPlayer = randomPlayer(game.gRoom, secondGender, null, game.gPrisoners);
 
     if(!secondPlayer) {
       return game.stop();
@@ -49,8 +49,21 @@ module.exports = function(game) {
     result[f.players] = getPlayersID(game.gActivePlayers);
     result[f.next_game] = constants.G_BOTTLE_KISSES;
 
+    var inPrison = null;
 
-    var player = randomPlayer(game.gRoom, null);
+    for(item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
+      if(game.gPrisoners[item]) {
+        inPrison = {};
+        inPrison.id = game.gPrisoners[item].id;
+        inPrison.vid = game.gPrisoners[item].vid;
+      }
+
+    }
+
+    result.prison = inPrison;
+
+
+    var player = randomPlayer(game.gRoom, null, null, game.gPrisoners);
     if(!player) {
       return game.stop();
     }

@@ -5,7 +5,7 @@ var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
     startTimer   = require('../start_timer'),
     setActionsLimit = require('../set_action_limits'),
-  //getPlayerInfo  = require('./../get_player_info'),
+  getPrison  = require('./../get_prison'),
   getNextPlayer = require('./../get_next_player');
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
@@ -52,20 +52,7 @@ module.exports = function(game) {
       result[f.players] = getPlayersID(game.gActivePlayers);
       //result[f.game] = constants.G_START;
 
-
-      /////////////////////
-      var inPrison = null;
-
-      for(var item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
-        if(game.gPrisoners[item]) {
-          inPrison = {};
-          inPrison.id = game.gPrisoners[item].id;
-          inPrison.vid = game.gPrisoners[item].vid;
-        }
-      }
-
-      result.prison = inPrison;
-      ////////////////
+      result.prison = getPrison(game.gPrisoners);
 
       game.emit(player.getSocket(), result);
       game.gameState = result;

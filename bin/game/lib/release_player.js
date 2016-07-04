@@ -22,28 +22,29 @@ module.exports = function (socket, userList) {
     }
 
     // Проверяем - хватает ли монет у того, кто выкупает
-    var money = selfProfile.getMoney();
-    if(money - constants.RANSOM < 0) {
-      return new GameError(socket, constants_io.IO_RELEASE_PLAYER, "Недостаточно монет для выкупа");
-    }
-
-    // Снимаем монеты
-    selfProfile.setMoney(money - constants.RANSOM, function(err, money) {
-      if(err) {
-        return new GameError(socket, constants_io.IO_RELEASE_PLAYER, err.message);
+    selfProfile.getMoney(function(err, money) {
+      if(money - constants.RANSOM < 0) {
+        //return new GameError(socket, constants_io.IO_RELEASE_PLAYER, "Недостаточно монет для выкупа");
       }
 
-      // Снимаем блокировку
-      game.gPrisoners[prisonerInfo.id] = null;
-      game.countPrisoners--;
+      // Снимаем монеты
+      selfProfile.setMoney(money, function(err, money) { // money - constants.RANSOM
+        if(err) {
+          return new GameError(socket, constants_io.IO_RELEASE_PLAYER, err.message);
+        }
 
-      var options = {};
-      options[f.id] = prisonerInfo.id;
-      options[f.vid] = prisonerInfo.vid;
+        // Снимаем блокировку
+        game.gPrisoners[prisonerInfo.id] = null;
+        game.countPrisoners--;
 
-      // Оповещаем игроков в комнате
-      socket.emit(constants_io.IO_RELEASE_PLAYER, options);
-      socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_RELEASE_PLAYER, options);
+        var options = {};
+        options[f.id] = prisonerInfo.id;
+        options[f.vid] = prisonerInfo.vid;
+
+        // Оповещаем игроков в комнате
+        socket.emit(constants_io.IO_RELEASE_PLAYER, options);
+        socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_RELEASE_PLAYER, options);
+      });
     });
   });
 };

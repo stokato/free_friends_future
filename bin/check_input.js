@@ -96,10 +96,15 @@ function checkInput(em, socket, userList, options) {
       }
       break;
     case constants_io.IO_GET_TOP :
-      if(options[f.points]) {
-        val = options[f.points];
-        isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
-      }
+      //if(options[f.points]) {
+      //  val = options[f.points];
+      //  isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
+      //}
+
+      //if(options[f.sex]) {
+      //  val = options[f.sex];
+      //  isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
+      //}
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задано количество очков, с которого следует получть топ.");

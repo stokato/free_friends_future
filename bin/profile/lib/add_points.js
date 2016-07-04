@@ -13,6 +13,7 @@ module.exports = function(num, callback) {
   var self = this;
   var f = constants.FIELDS;
   self.pPoints = self.pPoints || 0;
+  var oldPoints = self.pPoints;
 
   async.waterfall([ ////////////////////////////////////////////////////
     function(cb) { // Обновляем очки пользователя в основной таблице
@@ -27,12 +28,14 @@ module.exports = function(num, callback) {
         cb(null, null);
       });
     },////////////////////////////////////////////////////////////////////
-    function(res, cb) { // Удаляем старые данные по пользователю из таблице очков
+    function(res, cb) { // Удаляем старые данные по пользователю из таблицы очков
       var options = {};
       options[f.userid] = self.pID;
       options[f.uservid] = self.pVID;
-      options[f.points] = self.pPoints;
+      options[f.points] = oldPoints;
+      options[f.sex] = self.pSex;
       self.dbManager.deletePoints(options, function(err) {
+        //console.log(options);
         if(err) { return cb(err, null); }
 
         self.pPoints += num;
@@ -48,7 +51,8 @@ module.exports = function(num, callback) {
       });
     }//////////////////////////////////////////////////////////
   ], function(err, res) { // Обрабатываем ошибки или возвращаем результаты
-    if(err) { return callback(err, null); }
+    if(err) {
+      return callback(err, null); }
 
     callback(null, self.pPoints);
   })

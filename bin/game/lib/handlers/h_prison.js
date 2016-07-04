@@ -5,6 +5,7 @@ var randomPlayer = require('../random_player'),
   getPlayersID = require('../get_players_id'),
   startTimer   = require('../start_timer'),
   setActionsLimit = require('../set_action_limits'),
+  getPrison = require('../get_prison'),
   getNextPlayer = require('./../get_next_player');
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
@@ -52,21 +53,7 @@ module.exports = function(game) {
       result[f.next_game] = game.gNextGame;
       result[f.players] = getPlayersID(game.gActivePlayers);
 
-
-      /////////////////////
-      var inPrison = null;
-
-      for(var item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
-        inPrison = null;
-        if(game.gPrisoners[item]) {
-            inPrison = {};
-            inPrison.id = game.gPrisoners[item].id;
-            inPrison.vid = game.gPrisoners[item].vid;
-        }
-      }
-
-      result.prison = inPrison;
-      ////////////////
+      result.prison = getPrison(game.gPrisoners);
 
       game.emit(player.getSocket(), result);
       game.gameState = result;

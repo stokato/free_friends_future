@@ -85,7 +85,17 @@ module.exports = function(socket, options, callback) {
 
           self.pID = user[f.id];
 
-          cb(null, null);
+          /////////////////////////////////////
+          var rand = Math.floor(Math.random()  * 100);
+
+          self.addPoints(rand, function(err, res) {
+            if(err) { cb (err, null); }
+
+            cb(null, null);
+          });
+
+          ////////////////////////////////////
+          //cb(null, null);
         });
       } else cb(null, null);
     }

@@ -59,7 +59,7 @@ module.exports.build = function(type, fields, table,
   query = buildConstraints(query, const_fields, const_values, const_more, const_less);
 
   query += (order_by) ? " order by " + order_by : "";
-  query += (desc_limit) ? " desc limit " + desc_limit : "";
+  query += (desc_limit) ? " limit " + desc_limit : "";
 
   return query;
 };

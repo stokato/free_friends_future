@@ -9,7 +9,12 @@ var qBuilder = require('./build_query');
 module.exports = function(f_list, callback) {
   var f = C.IO.FIELDS;
 
- var query = qBuilder.build(qBuilder.Q_SELECT, f_list, C.T_USERS);
+  var i, fields = [f.id, f.vid];
+  for(i = 0; i < f_list.length; i++) {
+    fields.push(f_list[i]);
+  }
+
+ var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS);
 
  this.client.execute(query,[], {prepare: true }, function(err, result) {
    if (err) { return callback(err, null);}

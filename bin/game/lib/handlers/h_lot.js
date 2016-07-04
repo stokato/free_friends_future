@@ -7,7 +7,8 @@ var randomPlayer = require('../random_player'),
     startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
     setActionsLimit = require('../set_action_limits'),
-  getPlayerInfo  = require('./../get_player_info');
+  getPlayerInfo  = require('./../get_player_info'),
+  getPrison  = require('./../get_prison');
 
 module.exports = function(game) {
   return function(timer, uid) {
@@ -146,17 +147,7 @@ module.exports = function(game) {
     /////////////////////////////////////////////////////////////////////////////////////
     result[f.players] = getPlayersID(game.gActivePlayers);
 
-    var inPrison = null;
-
-    for(item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
-      if(game.gPrisoners[item]) {
-        inPrison = {};
-        inPrison.id = game.gPrisoners[item].id;
-        inPrison.vid = game.gPrisoners[item].vid;
-      }
-    }
-
-    result.prison = inPrison;
+    result.prison = getPrison(game.gPrisoners);
 
     //var item, player;
     //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {

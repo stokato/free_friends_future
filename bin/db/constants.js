@@ -12,5 +12,10 @@ module.exports.T_ORDERS          = 'orders';
 module.exports.T_USERGOODS       = 'user_goods';
 module.exports.T_SHOP            = 'shop';
 module.exports.T_USERPOINTS      = 'user_points';
-module.exports.T_MAX_HANDRED     = 'max_hundred';
+module.exports.T_POINTS          = 'points';
+module.exports.T_POINTS_GIRLS    = 'points_girls';
+module.exports.T_POINTS_GUYS     = 'points_guys';
+module.exports.T_MAX_HANDRED     = 'hundreds';
 module.exports.T_QUESTIONS       = 'questions';
+
+module.exports.POINTS_LIMIT      = 100;

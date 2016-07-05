@@ -33,7 +33,7 @@ module.exports = function(game) {
       }
 
       if(game.gNextGame == constants.G_PRISON) {
-        if(game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners <= 4) {
+        if(game.gRoom.girls_count <= 2 ||  game.gRoom.guys_count <= 2) {
           ok = false;
         }
         if(game.countPrisoners > 0) {

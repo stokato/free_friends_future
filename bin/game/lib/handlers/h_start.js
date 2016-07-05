@@ -16,10 +16,11 @@ module.exports = function(game) {
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      var player = randomPlayer(game.gRoom, null, [], game.gPrisoners);
-      if(!player) {
+      if(game.gRoom.guys_count < 2 || game.gRoom.girls_count < 2) {
         return game.stop();
       }
+
+      var player = randomPlayer(game.gRoom, null, [], game.gPrisoners);
 
       game.gNextGame = constants.G_LOT;
 

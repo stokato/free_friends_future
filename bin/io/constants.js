@@ -82,7 +82,8 @@ module.exports.FIELDS = {
   ordervid      : 'ordervid',
   name          : 'name',
   src           : 'src',
-  prison        : 'prison'
+  prison        : 'prison',
+  messageid     : 'messageid'
 };
 
 // емиты

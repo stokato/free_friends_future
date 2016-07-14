@@ -9,6 +9,9 @@ var profilejs       = require('../../profile/index'), // Профиль
     genDateHistory  = require('./gen_date_history'),
     constants       = require('./../constants');
 
+var cassandra = require('cassandra-driver');
+var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassandra
+
 /*
  Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
  - Получаем свой профиль
@@ -29,6 +32,8 @@ module.exports = function (socket, userList, profiles, roomList) {
 
     var isChat = options[f.id] || false;
 
+    var date = new Date();
+
     var info = {};
     info[f.id]      = selfProfile.getID();
     info[f.vid]     = selfProfile.getVID();
@@ -37,10 +42,12 @@ module.exports = function (socket, userList, profiles, roomList) {
     info[f.city]    = selfProfile.getCity();
     info[f.country] = selfProfile.getCountry();
     info[f.text]    = options[f.text];
-    info[f.date]    = new Date();
+    info[f.date]    = date;
 
     if(!isChat) {
       var currRoom = roomList[socket.id];
+
+      info[f.messageid] = TimeUuid.fromDate(date);
 
       return sendInRoom(socket, currRoom, info);
     }
@@ -112,7 +119,7 @@ module.exports = function (socket, userList, profiles, roomList) {
         savingMessage[f.incoming]     = true;
         savingMessage[f.text]         = options[f.text];
 
-        friendProfile.addMessage(savingMessage, function (err, result) {
+        friendProfile.addMessage(savingMessage, function (err, message) {
           if (err) { return cb(err, null); }
 
           if (profiles[options[f.id]]) {
@@ -121,6 +128,7 @@ module.exports = function (socket, userList, profiles, roomList) {
             if(friendProfile.isPrivateChat(selfProfile.getID())) {
               info[f.chat] = selfProfile.getID();
               info[f.chatVID] = selfProfile.getVID();
+              info[f.messageid] = message[f.messageid];
               sendOne(friendSocket, info);
             } else {
               friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
@@ -137,11 +145,12 @@ module.exports = function (socket, userList, profiles, roomList) {
         savingMessage[f.incoming]     = false;
         //savingMessage[f.text]         = options[f.text];
 
-        selfProfile.addMessage(savingMessage, function (err, res) {
+        selfProfile.addMessage(savingMessage, function (err, message) {
           if (err) { cb(err, null); }
 
           info[f.chat] = friendProfile.getID();
           info[f.chatVID] = friendProfile.getVID();
+          info[f.messageid] = message[f.messageid];
           sendOne(socket, info);
 
           cb(null, null);

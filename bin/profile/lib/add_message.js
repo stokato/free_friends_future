@@ -16,8 +16,8 @@ module.exports = function(message, callback) {
       self.save(function(err) {
         if (err) { return callback(err, null); }
 
-        callback(null, null);
+        callback(null, message);
       });
-    } else callback(null, null);
+    } else callback(null, message);
   });
 };

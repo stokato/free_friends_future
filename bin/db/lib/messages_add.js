@@ -20,9 +20,10 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
+  var id = self.timeUuid.fromDate(date);
+
   async.waterfall([
     function(cb) {/////////////////////////////////////////////////////////////////////
-      var id = self.timeUuid.fromDate(date);
 
       var fields = [f.id, f.userid, f.date, f.companionid, f.companionvid, f.incoming, f.text];
       //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
@@ -64,6 +65,8 @@ module.exports = function(uid, options, callback) { options = options || {};
     }//////////////////////////////////////////////////////////////////////////////////////////
   ], function(err, res) {
     if (err) {  return callback(err); }
+
+    options[f.messageid] = id.toString();
 
     callback(null, options);
   });

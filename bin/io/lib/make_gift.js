@@ -27,18 +27,7 @@ module.exports = function (socket, userList, profiles) {
     }
 
     async.waterfall([///////////////////////////////////////////////////////////////////
-      function (cb) { // Проверяем, купил ли пользователь такой подарок
-        selfProfile.getPurchase(options[f.giftid], function (err, good) {
-          if (err) { return cb(err, null) }
-
-          if (good) {
-            cb(null, good);
-          } else {
-            cb(new Error("Среди покупок пользователя нет такого товара"), null);
-          }
-        });
-      }, ///////////////////////////////////////////////////////////////
-      function (good, cb) { // Ищем подарок в магазине
+      function (cb) { // Ищем подарок в магазине
         dbManager.findGood(options[f.giftid], function (err, gift) {
           if (err) { return cb(err, null) }
 
@@ -53,35 +42,61 @@ module.exports = function (socket, userList, profiles) {
           }
         });
       }, ///////////////////////////////////////////////////////////////
-      function (gift, cb) { // Получаем профиль адресата
+      function (gift, cb) { // Проверяем, достаточно ли денег у пользователя
+        selfProfile.getMoney(function (err, money) {
+          if (err) { return cb(err, null) }
+
+          if (gift[f.price] <= money) {
+            cb(null, gift, money);
+          } else {
+            cb(new Error("У вас недостаточно монет для покупки подарка"), null);
+          }
+        });
+      }, ///////////////////////////////////////////////////////////////
+      function (gift, money, cb) { // Получаем профиль адресата
         var friendProfile = null;
 
         if (profiles[options[f.id]]) { // Если онлайн
           friendProfile = profiles[options[f.id]];
-          cb(null, friendProfile, gift);
+          cb(null, friendProfile, gift, money);
         } else {                // Если нет - берем из базы
           friendProfile = new profilejs();
           friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
-            cb(null, friendProfile, gift);
+            cb(null, friendProfile, gift, money);
           });
         }
       },///////////////////////////////////////////////////////////////
-      function (friendProfile, gift, cb) { // Сохраняем подарок
+      function (friendProfile, gift, money, cb) { // Сохраняем подарок
         var date = new Date();
-        gift[f.fromid]  = selfProfile.getID();
-        gift[f.fromvid] = selfProfile.getVID();
-        gift[f.date]    = date;
-        friendProfile.addGift(gift, function (err, result) {
+        //gift[f.fromid]  = selfProfile.getID();
+        //gift[f.fromvid] = selfProfile.getVID();
+        //gift[f.date]    = date;
+
+        var params = {};
+        params[f.fromid]  = selfProfile.getID();
+        params[f.fromvid] = selfProfile.getVID();
+        params[f.date]    = date;
+        params[f.data]    = gift[f.data];
+        params[f.giftid]  = gift[f.id];
+        params[f.type]    = gift[f.type];
+        params[f.title]   = gift[f.title];
+
+        friendProfile.addGift(params, function (err, result) {
           if (err) { return cb(err, null); }
 
-          cb(null, gift);
+          cb(null, gift, money);
         });
       }, /////////////////////////////////////////////////////////////////
-      function (gift, cb) { // Удаляем покупку
-        selfProfile.deletePurchase(options[f.id], function (err, result) {
+      function (gift, money, cb) { // Снимаем деньги с пользователя
+        var newMoney = money - gift[f.price];
+        selfProfile.setMoney(newMoney, function (err, money) {
           if (err) { return cb(err, null); }
+
+          var result = {};
+          result[f.money] = money;
+          socket.emit(constants.IO_GET_MONEY, result);
 
           cb(null, gift);
         });

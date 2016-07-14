@@ -12,7 +12,7 @@ module.exports = function(uid, callback) {
 
   var f = C.IO.FIELDS;
 
-  var fields = [f.giftid, f.type, f.data, f.date, f.fromid, f.fromvid];
+  var fields = [f.giftid, f.type, f.data, f.date, f.title, f.fromid, f.fromvid];
   var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGIFTS, [f.userid], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
@@ -33,6 +33,7 @@ module.exports = function(uid, callback) {
         gift[f.type]     = row[f.type];
         gift[f.data]     = row[f.data];
         gift[f.date]     = row[f.date];
+        gift[f.title]    = row[f.title];
         gift[f.fromid]  = row[f.fromid].toString();
         gift[f.fromvid] = row[f.fromvid].toString();
 
@@ -50,20 +51,22 @@ module.exports = function(uid, callback) {
         gift[f.type] = "Отдых";
         gift[f.data] = "./assets/image/gifts/breath/ball.png";
         gift[f.date] = new Date();
+        gift[f.title] = "Мяч";
         gift[f.fromid] = "1cccf8c7-7979-46ac-beca-63b8fa89ab98";
         gift[f.fromvid] = "241631532";
         gifts.push(gift);
 
-	gift = {};
+	      gift = {};
         gift[f.giftid]  = "paySportcar";
         gift[f.type] = "Обычные";
         gift[f.data] = "./assets/image/gifts/common/sportcar.png";
         gift[f.date] = new Date();
+        gift[f.title] = "Машина";
         gift[f.fromid] = "23211d9c-8461-4d96-8c2b-92cfa71d87ef";
         gift[f.fromvid] = "125357763";
         gifts.push(gift);
       }
-      userList.push("1cccf8c7-7979-46ac-beca-63b8fa89ab98");
+      userList.push("3499220e-823d-4248-bd85-e244d76ef757");
       const_fields ++;
       userList.push("23211d9c-8461-4d96-8c2b-92cfa71d87ef");
       const_fields ++;
@@ -102,7 +105,8 @@ module.exports = function(uid, callback) {
 
               var gift = {};
               gift[f.giftid] = gifts[i][f.giftid];
-              gift[f.name]    = gifts[i][f.type];
+              gift[f.type]    = gifts[i][f.type];
+              gift[f.title]   = gifts[i][f.title];
               gift[f.src]    = gifts[i][f.data];
               gift[f.date]    = gifts[i][f.date];
 

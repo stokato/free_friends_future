@@ -21,6 +21,6 @@
   "io" : {
     "len_room_history" : "5",
     "one_sex_in_room"  : "5",
-    "exit_timeout"  : "3000"
+    "exit_timeout"  : "30000"
   }
 }

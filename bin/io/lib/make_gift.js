@@ -23,8 +23,15 @@ module.exports = function (socket, userList, profiles) {
     var selfProfile = userList[socket.id];
 
     if (selfProfile.getID() == options[f.id]) {
+      options[f.rep_status] = f.fail;
+      options[f.error] = 402;
+
+      socket.emit(constants.IO_MAKE_GIFT, options);
+
       return new GameError(socket, constants.IO_MAKE_GIFT, "Нельзя сделать подарок себе");
     }
+
+    var date = new Date();
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Ищем подарок в магазине
@@ -33,11 +40,21 @@ module.exports = function (socket, userList, profiles) {
 
           if (gift) {
             if(gift[f.goodtype] != constants.GT_GIFT) {
+              options[f.rep_status] = f.fail;
+              options[f.error] = 401;
+
+              socket.emit(constants.IO_MAKE_GIFT, options);
+
               cb(new Error("Этот товар нельзя дарить"), null);
             } else {
               cb(null, gift);
             }
           } else {
+            options[f.rep_status] = f.fail;
+            options[f.error] = 401;
+
+            socket.emit(constants.IO_MAKE_GIFT, options);
+
             cb(new Error("В магазине нет такого товара"), null);
           }
         });
@@ -49,6 +66,11 @@ module.exports = function (socket, userList, profiles) {
           if (gift[f.price] <= money) {
             cb(null, gift, money);
           } else {
+            options[f.rep_status] = f.fail;
+            options[f.error] = 405;
+
+            socket.emit(constants.IO_MAKE_GIFT, options);
+
             cb(new Error("У вас недостаточно монет для покупки подарка"), null);
           }
         });
@@ -69,7 +91,7 @@ module.exports = function (socket, userList, profiles) {
         }
       },///////////////////////////////////////////////////////////////
       function (friendProfile, gift, money, cb) { // Сохраняем подарок
-        var date = new Date();
+
         //gift[f.fromid]  = selfProfile.getID();
         //gift[f.fromvid] = selfProfile.getVID();
         //gift[f.date]    = date;
@@ -104,11 +126,25 @@ module.exports = function (socket, userList, profiles) {
     ], function (err, gift) { // Вызывается последней. Обрабатываем ошибки
       if (err) { return new GameError(socket, constants.IO_MAKE_GIFT, err.message); }
 
+      options[f.rep_status] = f.succes;
+      options[f.error] = null;
+
+      socket.emit(constants.IO_MAKE_GIFT, options);
+
       if (profiles[options[f.id]]) {
         var friendProfile = profiles[options[f.id]];
         var friendSocket = friendProfile.getSocket();
 
-        friendSocket.emit(constants.IO_MAKE_GIFT, gift);
+        //var result = {};
+        //result[f.id]      = selfProfile.getID();
+        //result[f.giftid]  = gift[f.id];
+        //result[f.src]     = gift[f.data];
+        //result[f.type]    = gift[f.type];
+        //result[f.title]   = gift[f.title];
+        //result[f.date]    = date;
+
+        //friendSocket.emit(constants.IO_MAKE_GIFT, result);
+
         friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }
     }); // waterfall

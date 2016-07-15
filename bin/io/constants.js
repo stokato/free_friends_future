@@ -83,7 +83,11 @@ module.exports.FIELDS = {
   name          : 'name',
   src           : 'src',
   prison        : 'prison',
-  messageid     : 'messageid'
+  messageid     : 'messageid',
+  rep_status    : 'status',
+  succes        : 'succes',
+  fail          : 'fail',
+  error         : 'error'
 };
 
 // емиты

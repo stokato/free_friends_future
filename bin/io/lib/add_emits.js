@@ -34,7 +34,7 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   //sendPublicMessage(socket, userList, roomList);
   //exit(socket, userList, profiles, roomList, rooms);
   chooseRoom(socket, userList, roomList, rooms, profiles);
-  getRooms(socket, userList, rooms);
+  getRooms(socket, userList, rooms, roomList);
   changeRoom(socket, userList, rooms, roomList);
   changeStatus(socket, userList);
 

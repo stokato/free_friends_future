@@ -71,17 +71,35 @@ module.exports = function (socket, userList, profiles) {
           var friendProfile = null;
           if (isOnline) { // Если онлайн
             friendProfile = profiles[options.id];
-            cb(null, friendProfile);
+            var friendInfo = fillInfo(friendProfile);
+            cb(null, friendProfile, friendInfo);
           } else {                // Если нет - берем из базы
             friendProfile = new profilejs();
             friendProfile.build(options[f.id], function (err, info) {
               if (err) { return cb(err, null); }
 
-              cb(null, friendProfile);
+              var friendInfo = fillInfo(friendProfile);
+              cb(null, friendProfile, friendInfo);
             });
           }
         },///////////////////////////////////////////////////////////////
-        function (friendProfile, cb) { // Добавляем себя в гости
+        function (friendProfile, friendInfo, cb) { // Получаем подарки
+          friendProfile.getGifts(function (err, gifts) {
+            if (err) {  return cb(err, null); }
+
+            friendInfo[f.gifts] = gifts;
+            cb(null, friendProfile, friendInfo);
+          });
+        },/////////////////////////////////////////////////////////////////////
+        function (friendProfile, friendInfo, cb) { // Получаем друзей
+          friendProfile.getFriends(function (err, friends) {
+            if (err) {  return cb(err, null); }
+
+            friendInfo[f.friends] = friends;
+            cb(null, friendProfile, friendInfo);
+          });
+        },/////////////////////////////////////////////////////////////////////
+        function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
           var user = {};
           user[f.guestid] = selfProfile.getID();
           user[f.guestvid] = selfProfile.getVID();
@@ -89,12 +107,12 @@ module.exports = function (socket, userList, profiles) {
           friendProfile.addToGuests(user, function (err, res) {
             if (err) { return cb(err, null); }
 
-            cb(null, friendProfile);
+            cb(null, friendProfile, friendInfo);
           });//////////////////////////////////////////////////////////////
-        }], function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+        }], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
         if (err) { return new GameError(socket, constants.IO_GET_PROFILE, err.message); }
 
-        var friendInfo = fillInfo(friendProfile);
+        //var friendInfo = fillInfo(friendProfile);
         socket.emit(constants.IO_GET_PROFILE, friendInfo); // Отправляем инфу
 
         if (isOnline) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении

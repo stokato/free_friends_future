@@ -91,6 +91,14 @@ module.exports = function (socket, userList, profiles) {
             cb(null, friendProfile, friendInfo);
           });
         },/////////////////////////////////////////////////////////////////////
+        function (friendProfile, friendInfo, cb) { // Проверяем, наш ли это друг
+          friendProfile.isFriend(selfProfile.getID(), function (err, res) {
+            if (err) {  return cb(err, null); }
+
+            friendInfo[f.is_friend] = res[f.is_friend];
+            cb(null, friendProfile, friendInfo);
+          });
+        },/////////////////////////////////////////////////////////////////////
         function (friendProfile, friendInfo, cb) { // Получаем друзей
           friendProfile.getFriends(function (err, friends) {
             if (err) {  return cb(err, null); }

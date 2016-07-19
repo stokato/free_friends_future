@@ -6,7 +6,8 @@ var randomPlayer = require('../random_player'),
     startTimer   = require('../start_timer'),
     setActionsLimit = require('../set_action_limits'),
   getPrison  = require('./../get_prison'),
-  getNextPlayer = require('./../get_next_player');
+  getNextPlayer = require('./../get_next_player'),
+  isPlayerInRoom = require('./../is_player_in_room');
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
@@ -26,6 +27,13 @@ module.exports = function(game) {
 
       game.gActivePlayers = {};
       game.gActionsQueue = {};
+
+      for(var item in game.gPrisoners) if(game.gPrisoners.hasOwnProperty(item)) {
+        if(!isPlayerInRoom(game.gRoom, item)) {
+          game.gPrisoners[item] = null;
+          game.countPrisoners--;
+        }
+      }
 
       // Получаем следующего игрока, если он в тюрьме, то передаем ход дальше, а его выпускаем
       // либо передаем ход ему

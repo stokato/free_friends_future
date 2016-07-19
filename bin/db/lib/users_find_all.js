@@ -41,6 +41,7 @@ module.exports = function(f_list, callback) {
        user[f.newguests] = row[f.newguests];
        user[f.newgifts] = row[f.newgifts];
        user[f.newmessages] = row[f.newmessages];
+       user[f.is_in_menu] = row[f.is_in_menu];
 
        users.push(user);
      }

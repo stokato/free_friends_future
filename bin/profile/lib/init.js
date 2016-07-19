@@ -31,7 +31,7 @@ module.exports = function(socket, options, callback) {
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      var fList = [f.sex, f.points, f.money, f.age, f.country, f.city, f.status];
+      var fList = [f.sex, f.points, f.money, f.age, f.country, f.city, f.status, f.is_in_menu];
       self.dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
@@ -44,6 +44,7 @@ module.exports = function(socket, options, callback) {
           self.pSex     = (self.pSex)     ? self.pSex     : foundUser[f.sex];
           self.pCountry = (self.pCountry) ? self.pCountry : foundUser[f.country];
           self.pCity    = (self.pCity)    ? self.pCity    : foundUser[f.city];
+          self.pIsInMenu = foundUser[f.is_in_menu] || false;
 
           self.pNewMessages = foundUser.newmessages || 0;
           self.pNewGifts    = foundUser.newgifts    || 0;
@@ -79,6 +80,7 @@ module.exports = function(socket, options, callback) {
         newUser[f.city]     = self.pCity;
         newUser[f.sex]      = self.pSex;
         newUser[f.money]    = self.pMoney = Config.settings.start_money;
+        newUser[f.is_in_menu] = self.pIsInMenu;
 
         self.dbManager.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }

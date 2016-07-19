@@ -6,15 +6,27 @@ var buildQuery = require('./build_query');
  - Строим запрос (все поля) и выполняем
  - Возвращаем массив объектв с данными друзей (если ничгео нет - NULL)
  */
-module.exports = function(uid, callback) {
+module.exports = function(uid, fid, callback) {
   var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
 
   var f = C.IO.FIELDS;
-  var fields = [f.friendid, f.friendvid, f.date];
-  var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERFRIENDS, [f.userid], [1]);
 
-  self.client.execute(query,[uid], {prepare: true }, function(err, result) {
+  var constFields = [f.userid];
+  var constCount = [1];
+  var params = [uid];
+
+  if(fid) {
+    constFields.push(f.friendid);
+    constCount.push(1);
+    params.push(fid);
+  }
+
+
+  var fields = [f.friendid, f.friendvid, f.date];
+  var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERFRIENDS, constFields, constCount);
+
+  self.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var friends = [];

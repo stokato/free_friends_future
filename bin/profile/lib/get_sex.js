@@ -1,4 +1,4 @@
-// Получить пол
+// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»
 module.exports = function() {
   return this.pSex;
 };

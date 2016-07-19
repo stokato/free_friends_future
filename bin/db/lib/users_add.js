@@ -25,6 +25,7 @@ module.exports = function(options, callback) { options = options || {};
   if (options[f.money])   { fields.push(f.money);   params.push(options[f.money]); }
   if (options[f.sex])     { fields.push(f.sex);     params.push(options[f.sex]); }
   if (options[f.points])  { fields.push(f.points);  params.push(options[f.points]); }
+  if (options[f.is_in_menu])  { fields.push(f.is_in_menu);  params.push(options[f.is_in_menu]); }
 
   var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERS);
 

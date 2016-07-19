@@ -14,7 +14,7 @@ module.exports = function(id, callback) {
 
  if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
 
- var fList = [f.sex, f.points, f.status, f.country, f.city, f.age];
+ var fList = [f.sex, f.points, f.status, f.country, f.city, f.age, f.is_in_menu];
  self.dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
@@ -26,6 +26,7 @@ module.exports = function(id, callback) {
    self.pCountry = foundUser[f.country];
    self.pCity    = foundUser[f.city];
    self.pAge     = foundUser[f.age];
+   self.pIsInMenu = foundUser[f.is_in_menu];
 
    self.pNewMessages = foundUser[f.newmessages] || 0;
    self.pNewGifts    = foundUser[f.newgifts]    || 0;
@@ -47,6 +48,7 @@ module.exports = function(id, callback) {
    info[f.gifts]    = self.pNewGifts;
    info[f.friends]  = self.pNewFriends;
    info[f.guests]   = self.pNewGifts;
+   info[f.is_in_menu] = self.pIsInMenu;
 
    callback(null, info);
  });

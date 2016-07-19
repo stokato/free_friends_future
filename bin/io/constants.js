@@ -16,6 +16,7 @@ module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут о�
 //module.exports.LEN_PRIVATE_HISTORY = LEN_PRIVATE_HISTORY; // Длина истории приватных сообщений в днях
 module.exports.NEW_ROOM = "new_room";
 module.exports.TOP_USERS = 100;
+module.exports.MENU_BONUS = 5;
 
 module.exports.GT_GIFT = "gift";
 module.exports.GT_MONEY = "money";
@@ -87,7 +88,10 @@ module.exports.FIELDS = {
   rep_status    : 'status',
   succes        : 'succes',
   fail          : 'fail',
-  error         : 'error'
+  error         : 'error',
+  is_friend     : 'friend',
+  is_in_menu    : 'ismenu',
+  uid           : 'uid'
 };
 
 // емиты
@@ -120,3 +124,4 @@ module.exports.IO_RELEASE_PLAYER      = 'release';
 module.exports.IO_ERROR               = 'err';
 
 module.exports.IO_ROOM_USERS          = 'room_users';
+module.exports.IO_ADD_TO_MENU         = 'add_to_menu';

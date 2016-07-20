@@ -7,13 +7,23 @@ var buildQuery = require('./build_query');
  - По каждому найденному выполняем запрос на его удаление (параллельно)
  - Возвращаем ИД игрока
  */
-module.exports = function(uid, callback) {
+module.exports = function(uid, fid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   var f = C.IO.FIELDS;
 
-  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, [f.userid], [1]);
-  this.client.execute(query, [uid], {prepare: true }, function(err) {
+  var fields = [f.userid];
+  var constFields = [1];
+  var params = [uid];
+
+  if(fid) {
+    fields.push([f.friendid]);
+    constFields.push(1);
+    params.push(fid);
+  }
+
+  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, fields, constFields);
+  this.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, uid);

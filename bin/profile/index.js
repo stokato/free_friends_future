@@ -40,7 +40,8 @@ var init          = require('./lib/init'),
     getGameIndex  = require('./lib/get_game_index'),
     isFriend      = require('./lib/is_friend'),
     isInMenu      = require('./lib/is_in_menu'),
-    setInMenu     = require('./lib/set_in_menu');
+    setInMenu     = require('./lib/set_in_menu'),
+    delFromFriends = require('./lib/del_from_friends');
 
 var setExitTimeout = require('./lib/set_exit_timeout'),
     clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -142,5 +143,6 @@ Profile.prototype.getGameIndex = getGameIndex;
 Profile.prototype.isFriend = isFriend;
 Profile.prototype.isInMenu = isInMenu;
 Profile.prototype.setInMenu = setInMenu;
+Profile.prototype.delFromFriends = delFromFriends;
 
 module.exports = Profile;

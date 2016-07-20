@@ -30,14 +30,22 @@ VK.prototype.handle = function(req, callback) { var request = req || {};
       break;
     default : sendError(callback);
   }
+
+  console.log(request);
 };
 
 module.exports = VK;
 
+
+
 function getItem(request, callback) {
   // Получение информации о товаре
   var f = constants.FIELDS;
-  var goodId = request["item"]; // наименование товара
+
+  var payInfo = request["item"].split("_");
+
+  var goodId = payInfo[0]; // наименование товара
+
   var response = {};
   dbManager.findGood(goodId, function (err, goodInfo) {
     if(err) {
@@ -74,10 +82,12 @@ function changeOrderStatus(request, callback) {
   if (request["status"] == "chargeable") {
     var orderId = request["order_id"];
 
+    var payInfo = request["item"].split("_");
+
     var options = {};
     options[f.vid]      = request["user_id"];
     options[f.ordervid] = orderId;
-    options[f.goodid]   = request["item"];
+    options[f.goodid]   = payInfo[0];
     options[f.price]    = request["item_price"];
 
     async.waterfall([ /////////////////////////////////////////////////////
@@ -123,30 +133,30 @@ function changeOrderStatus(request, callback) {
           cb(null, goodInfo, info, orderid);
         });
       }, ///////////////////////////////////////////////////////////////////////////////
-      function(goodInfo, info, orderid, cb) { // Для всех товаров кроме монет - обновляем баланс в БД
+      function(goodInfo, info, orderid, cb) { // пополняем баланс, себе или другому пользователю
         var options = {};
-        if(goodInfo[f.goodtype] != constants.GT_MONEY) { // и добавляем себе покупку
-          var newMoney = info[f.money] - goodInfo[f.price];
 
-          options[f.id] = info[f.id];
-          options[f.vid] = info[f.vid];
-          options[f.money] = newMoney;
+        if(payInfo[1]) {
+          dbManager.findUser(null, payInfo[1], [f.money], function(err, info) {
+            if(err) { return cb(err, null); }
 
-          dbManager.updateUser(options, function(err, id) {
-            if (err) { return cb(err, null); }
+            if (info) {
+              //cb(null, goodInfo, info);
 
-            var newPurchase = {};
-            newPurchase[f.userid] = info[f.id];
-            newPurchase[f.goodid] = goodInfo[f.id];
-            dbManager.addPurchase(newPurchase, function(err, id) {
-              if (err) { return cb(err, null); }
+              options[f.id] = info[f.id];
+              options[f.vid] = info[f.vid];
+              options[f.money] = info[f.money] + goodInfo[f.price];
 
-              var result = {};
-              result[f.orderid] = orderid;
-              cb(null, result);
-            });
+              dbManager.updateUser(options, function(err, id) {
+                if (err) { return cb(err, null); }
+
+                var result = {};
+                result[f.orderid] = orderid;
+                cb(null, result);
+              });
+            } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
-        } else { // пополняем баланс
+        } else {
           options[f.id] = info[f.id];
           options[f.vid] = info[f.vid];
           options[f.money] = info[f.money] + goodInfo[f.price];

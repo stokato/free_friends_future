@@ -17,6 +17,7 @@ module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут о�
 module.exports.NEW_ROOM = "new_room";
 module.exports.TOP_USERS = 100;
 module.exports.MENU_BONUS = 5;
+module.exports.GIFT_MONEY = 10;
 
 module.exports.GT_GIFT = "gift";
 module.exports.GT_MONEY = "money";
@@ -125,3 +126,5 @@ module.exports.IO_ERROR               = 'err';
 
 module.exports.IO_ROOM_USERS          = 'room_users';
 module.exports.IO_ADD_TO_MENU         = 'add_to_menu';
+module.exports.IO_DEL_FROM_FRIENDS    = 'del_from_friends';
+module.exports.IO_GIVE_MONEY          = 'give_money';

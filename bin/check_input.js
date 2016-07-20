@@ -61,7 +61,21 @@ function checkInput(em, socket, userList, options) {
     case constants_io.IO_MAKE_GIFT :
 
       break;
+    case constants_io.IO_GIVE_MONEY :
+      isValid = checkID(options[f.id]);
+
+      if(!isValid) {
+        new GameError(socket, em, "Некорректно задан ИД");
+      }
+      break;
     case constants_io.IO_ADD_FRIEND :
+    isValid = checkID(options[f.id]);
+
+    if(!isValid) {
+      new GameError(socket, em, "Некорректно задан ИД");
+    }
+    break;
+    case constants_io.IO_DEL_FROM_FRIENDS :
       isValid = checkID(options[f.id]);
 
       if(!isValid) {

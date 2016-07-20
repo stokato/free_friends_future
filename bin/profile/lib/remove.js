@@ -27,7 +27,7 @@ module.exports = function(callback) {
     if(err) { return callback(err, null); }
     self.dbManager.deleteMessages(id, function(err, id) { // и историю
       if(err) { return callback(err, null) }
-      self.dbManager.deleteFriends(id, function(err, id) { // и друзей
+      self.dbManager.deleteFriends(id, null, function(err, id) { // и друзей
         if(err) { return callback(err, null) }
         self.dbManager.deleteGuests(id, function(err, id) { // и гостей
           if(err) { return callback(err, null) }

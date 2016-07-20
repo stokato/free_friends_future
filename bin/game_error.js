@@ -63,6 +63,10 @@ function GameError(socket, func, message) {
    case constants_game.G_SYMPATHY               : err.name = "Ошибка в игре Симпатии";
      break;
    case constants_io.IO_RELEASE_PLAYER          : err.name = "Ошибка при выкупе игрока";
+   break;
+   case constants_io.IO_DEL_FROM_FRIENDS        : err.name = "Ошибка при удалении пользователя";
+   case constants_io.IO_GIVE_MONEY              : err.name = "Ошибка при передаче монет";
+     break;
      break;
    default:  err.name =   "Неизвестная ошибка"
  }

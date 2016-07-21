@@ -11,7 +11,7 @@ var randomPlayer = require('./random_player'),
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
-module.exports = function(result) { result = result || {};
+module.exports = function(result, isTimeout) { result = result || {}; isTimeout = isTimeout || false;
   var f = constants_io.FIELDS;
 
   var player = randomPlayer(this.gRoom, null, null, this.gPrisoners);
@@ -23,18 +23,15 @@ module.exports = function(result) { result = result || {};
   this.gActivePlayers = {};
   this.gActionsQueue = {};
 
-  //var playerInfo = getPlayerInfo(player);
-  //this.gActivePlayers[playerInfo.id] = playerInfo;
 
   activateAllPlayers(this.gRoom, this.gActivePlayers, null, this.gPrisoners);
 
   setActionsLimit(this, 1);
-  //this.gActionsCount = 1;
+
   this.gActionsCount = this.gRoom.girls_count + this.gRoom.guys_count - this.countPrisoners;
 
-  //var result = {};
   result[f.next_game] = this.gNextGame;
-  //result[f.players] = [{id: playerInfo.id, vid: playerInfo.vid}];
+
   result[f.players] = getPlayersID(this.gActivePlayers);
 
   result.prison = getPrison(this.gPrisoners);
@@ -42,7 +39,8 @@ module.exports = function(result) { result = result || {};
   this.emit(player.getSocket(), result);
   this.gameState = result;
 
-  //this.gHandlers.lot(null, player.getID());
 
-  this.gTimer = startTimer(this.gHandlers[this.gNextGame]);
+  var timeout = (isTimeout)? constants.TIMEOUT * 1000 : 0;
+
+  this.gTimer = startTimer(this.gHandlers[this.gNextGame], timeout);
 };

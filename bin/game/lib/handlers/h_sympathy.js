@@ -20,15 +20,6 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game.gTimer); }
 
       var result = {}; // complete: true
-      //result[f.game] = constants.G_SYMPATHY;
-
-      //var item, player;
-      //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-      //  player = game.gActivePlayers[item];
-      //  break;
-      //}
-
-      //game.emit(player.getSocket(), result);
 
       game.gNextGame = constants.G_SYMPATHY_SHOW;
 
@@ -58,7 +49,7 @@ module.exports = function(game) {
       // Сохраняем состояние игры
       game.gameState = result;
 
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
     }
   }
 };

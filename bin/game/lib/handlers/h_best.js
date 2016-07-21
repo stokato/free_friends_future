@@ -1,13 +1,6 @@
 var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
-//var
-//    randomPlayer = require('../random_player');
-    //,
-    //startTimer   = require('../start_timer'),
-    //activateAllPlayers = require('../activate_all_players'),
-    //getPlayersID = require('../get_players_id'),
-    //setActionsLimit = require('../set_action_limits');
 
 var constants_io = require('../../../io/constants');
 
@@ -38,35 +31,12 @@ module.exports = function(game) {
     if(game.gActionsCount == 0 || timer) { // После голосования
       if(!timer) { clearTimeout(game.gTimer); }
 
-      //game.gNextGame = constants.G_LOT;
-      //game.gActivePlayers = {};
-      //game.gActionsQueue = {};
-      //activateAllPlayers(game.gRoom, game.gActivePlayers);
-      //
-      //setActionsLimit(game, 1);
-      //game.gActionsCount = constants.PLAYERS_COUNT;
+      if(game.gActionsCount == 0) {
+        game.restoreGame(null, true);
+      } else {
+        game.restoreGame(null, false);
+      }
 
-      //result = {};
-      //result[f.next_game] = game.gNextGame;
-      ////result[f.players] = getPlayersID(game.gActivePlayers);
-      //var nextPlayer = randomPlayer(game.gRoom, null);
-      //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
-      //
-      //
-      //if(!player) {
-      //  var item;
-      //  for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-      //    player = game.gActivePlayers[item];
-      //    break;
-      //  }
-      //}
-      //
-      //game.emit(player.getSocket(), result);
-      //game.gameState = result;
-
-      game.restoreGame();
-
-      //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

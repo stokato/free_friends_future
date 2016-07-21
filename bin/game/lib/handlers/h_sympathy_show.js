@@ -31,14 +31,6 @@ module.exports = function(game) {
         for(i = 0; i < sympathy.length; i ++) {
           var pickedId = sympathy[i][f.pick];
 
-          // Есил в комнате нет такого игрока
-          //if(!game.gRoom.guys[pickedId] && !game.gRoom.girls[pickedId]) {
-          //  //game.stop();
-          //  //return new GameError(game.gActivePlayers[uid].getSocket(),
-          //  //  constants.G_SYMPATHY, "Неверные агрументы: нет игрока с таким ИД");
-          //  continue;
-          //}
-
           pick = {};
           pick[f.id] = options[f.pick];
           pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
@@ -63,37 +55,8 @@ module.exports = function(game) {
     if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      //game.gNextGame = constants.G_LOT;
-      //
-      //game.gActivePlayers = {};
-      //game.gActionsQueue = {};
-      //game.gStoredOptions = {};
-      //
-      //activateAllPlayers(game.gRoom, game.gActivePlayers);
-      //
-      //setActionsLimit(game, 1);
-      //game.gActionsCount = constants.PLAYERS_COUNT;
+      game.restoreGame(null, true);
 
-      //result = {};
-      //result[f.next_game] = game.gNextGame;
-      ////result[f.players] = getPlayersID(game.gActivePlayers);
-      //
-      //var nextPlayer = randomPlayer(game.gRoom, null);
-      //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
-      //
-      //
-      //var item, player;
-      //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-      //  player = game.gActivePlayers[item];
-      //  break;
-      //}
-      //
-      //game.emit(player.getSocket(), result);
-      //game.gameState = result;
-
-      game.restoreGame();
-
-      //game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

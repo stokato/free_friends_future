@@ -25,8 +25,8 @@ var chooseRoom      = require('./choose_room'),
   //joinGame          = require('./join_game'),
   disconnect        = require('./disconnect'),
   addToMenu         = require('./add_to_menu'),
-  delFromFriends    = require('./del_from_friends');
-  //giveMoney         = require('./give_money');
+  delFromFriends    = require('./del_from_friends'),
+  giveMoney         = require('./give_money');
 
 var addAction       = require('../../game/lib/add_action'),
     releasePlayer   = require('../../game/lib/release_player');
@@ -50,7 +50,7 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   addToFriends(socket, userList, profiles);
   delFromFriends(socket, userList, profiles);
   makeGift(socket, userList, profiles);
-  //giveMoney(socket, userList, profiles);
+  giveMoney(socket, userList, profiles);
   sendMessage(socket, userList, profiles, roomList);
   //openPrivMes(socket, userList);
   getChatHistory(socket, userList, profiles);

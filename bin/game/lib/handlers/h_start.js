@@ -66,7 +66,7 @@ module.exports = function(game) {
       game.emit(player.getSocket(), result);
       game.gameState = result;
 
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
 
       //-------------------
       function setPlayer () {

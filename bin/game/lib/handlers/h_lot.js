@@ -56,15 +56,6 @@ module.exports = function(game) {
       case constants.G_BOTTLE :    // для бутылочки ходит тот же, кто крутил вочек
         game.gActionsCount = 1;
         setActionsLimit(game, 1);
-
-        //if(!uid || !this.isPlayerInRoom(uid)) {
-        //  player = randomPlayer(this.gRoom, null);
-        //
-        //  game.gActivePlayers = {};
-        //
-        //  game.gActivePlayers[player.getID()] = game.getPlayerInfo(player);
-        //}
-
         break;
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
@@ -89,13 +80,6 @@ module.exports = function(game) {
       //////////////////// ЛУЧШИЙ ///////////////////////////////////////////////////////
       case constants.G_BEST : // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
 
-        //var firstPlayer;
-        //if(!uid ||  !this.isPlayerInRoom(uid)) {
-        //  firstPlayer = randomPlayer(game.gRoom);
-        //} else {
-        //  firstPlayer = game.gActivePlayers[uid].player;
-        //}
-        //
         var firstPlayer = null;
         if(uid) {
           firstPlayer = game.gActivePlayers[uid];
@@ -113,8 +97,8 @@ module.exports = function(game) {
         var secondPlayer = getPlayerInfo(randPlayer);
 
         var bestPlayers = [firstPlayer.id, secondPlayer.id];
-        var bestPlayerInfo = [{id : firstPlayer.id, vid : firstPlayer.vid},
-                              {id : secondPlayer.id, vid : secondPlayer.vid}];
+        var bestPlayerInfo = [{id : firstPlayer.id, vid : firstPlayer.vid, sex : firstPlayer.sex },
+                              {id : secondPlayer.id, vid : secondPlayer.vid, sex : secondPlayer.sex }];
 
         game.gStoredOptions = {};
         game.gStoredOptions[firstPlayer.id] = firstPlayer;
@@ -149,12 +133,6 @@ module.exports = function(game) {
 
     result.prison = getPrison(game.gPrisoners);
 
-    //var item, player;
-    //for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-    //  player = game.gActivePlayers[item];
-    //  break;
-    //}
-
     var player = randomPlayer(game.gRoom, null, null, game.gPrisoners);
     if(!player) {
       return game.stop();
@@ -162,6 +140,6 @@ module.exports = function(game) {
 
     game.emit(player.getSocket(), result);
     game.gameState = result;
-    game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+    game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
   }
 };

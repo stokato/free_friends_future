@@ -11,11 +11,11 @@ module.exports = function(room, uid) {
 
   for (item in guys) if(guys.hasOwnProperty(item)) {
     guy = guys[item];
-    if (!guy.getID() == uid) { return true; }
+    if (guy.getID() == uid) { return true; }
   }
   for (item in girls) if(girls.hasOwnProperty(item)) {
     girl = girls[item];
-    if (!girl.getID() == uid) { return true; }
+    if (girl.getID() == uid) { return true; }
   }
 
  return false;

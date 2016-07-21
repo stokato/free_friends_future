@@ -38,33 +38,8 @@ module.exports = function(game) {
 
       }
 
-      //if(picks) {
-      //  var player = randomPlayer(game.gRoom, null);
-      //  game.emit(player.getSocket(), result);
-      //}
+      game.restoreGame(result, true);
 
-      //game.gNextGame = constants.G_LOT;
-      //
-      //game.gActivePlayers = {};
-      //game.gActionsQueue = {};
-      //
-      //activateAllPlayers(game.gRoom, game.gActivePlayers);
-      //
-      //setActionsLimit(game, 1);
-      //game.gActionsCount = constants.PLAYERS_COUNT;
-
-      //result[f.next_game] = game.gNextGame;
-      ////result[f.players] = getPlayersID(game.gActivePlayers);
-      //
-      //var nextPlayer = randomPlayer(game.gRoom, null);
-      //result[f.players] = [{id: nextPlayer.getID(), vid: nextPlayer.getVID()}];
-      //
-      //game.emit(player.getSocket(), result);
-      //game.gameState = result;
-
-      game.restoreGame(result);
-
-     /// game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
     }
   }
 };

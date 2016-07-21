@@ -92,7 +92,8 @@ module.exports.FIELDS = {
   error         : 'error',
   is_friend     : 'friend',
   is_in_menu    : 'ismenu',
-  uid           : 'uid'
+  uid           : 'uid',
+  price2        : 'price2'
 };
 
 // емиты

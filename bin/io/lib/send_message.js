@@ -30,6 +30,8 @@ module.exports = function (socket, userList, profiles, roomList) {
       return new GameError(socket, constants.IO_MESSAGE, "Нельзя отправлять сообщения себе");
     }
 
+    var text = options[f.text].replace(/<[^>]+>/g,'');
+
     var isChat = options[f.id] || false;
 
     var date = new Date();
@@ -41,7 +43,7 @@ module.exports = function (socket, userList, profiles, roomList) {
     info[f.sex]     = selfProfile.getSex();
     info[f.city]    = selfProfile.getCity();
     info[f.country] = selfProfile.getCountry();
-    info[f.text]    = options[f.text];
+    info[f.text]    = text;
     info[f.date]    = date;
 
     if(!isChat) {
@@ -117,7 +119,7 @@ module.exports = function (socket, userList, profiles, roomList) {
         savingMessage[f.companionid]  = selfProfile.getID();
         savingMessage[f.companionvid] = selfProfile.getVID();
         savingMessage[f.incoming]     = true;
-        savingMessage[f.text]         = options[f.text];
+        savingMessage[f.text]         = text;
 
         friendProfile.addMessage(savingMessage, function (err, message) {
           if (err) { return cb(err, null); }

@@ -145,7 +145,7 @@ function changeOrderStatus(request, callback) {
 
               options[f.id] = info[f.id];
               options[f.vid] = info[f.vid];
-              options[f.money] = info[f.money] + goodInfo[f.price];
+              options[f.money] = info[f.money] + goodInfo[f.price2];
 
               dbManager.updateUser(options, function(err, id) {
                 if (err) { return cb(err, null); }
@@ -159,7 +159,7 @@ function changeOrderStatus(request, callback) {
         } else {
           options[f.id] = info[f.id];
           options[f.vid] = info[f.vid];
-          options[f.money] = info[f.money] + goodInfo[f.price];
+          options[f.money] = info[f.money] + goodInfo[f.price2];
 
           dbManager.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }

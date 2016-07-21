@@ -14,12 +14,6 @@ module.exports = function(game) {
     var f = constants_io.FIELDS;
     if(!timer) { clearTimeout(game.gTimer); }
 
-    //// Если игроков меньше допустимого количества - останавливаем игру
-    //if(game.gRoom.guys_count < constants.PLAYERS_COUNT ||
-    //  game.gRoom.girls_count < constants.PLAYERS_COUNT) {
-    //  return game.stop();
-    //}
-
     var firstPlayerInfo = null;
     if(uid) {
       firstPlayerInfo = game.gActivePlayers[uid];
@@ -61,6 +55,6 @@ module.exports = function(game) {
 
     game.gameState = result;
 
-    game.gTimer = startTimer(game.gHandlers[game.gNextGame]);
+    game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
   }
 };

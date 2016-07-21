@@ -69,7 +69,7 @@ module.exports = function(game) {
       } else {
         if(!timer) { clearTimeout(game.gTimer); }
 
-        game.restoreGame();
+        game.restoreGame(null, true);
       }
     }
   }

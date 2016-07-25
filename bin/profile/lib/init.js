@@ -31,7 +31,9 @@ module.exports = function(socket, options, callback) {
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      var fList = [f.sex, f.points, f.money, f.age, f.country, f.city, f.status, f.is_in_menu];
+      var fList = [f.sex, f.points, f.money, f.age, f.country, f.city, f.status,
+        f.is_in_menu, f.newfriends, f.newguests, f.newgifts, f.newmessages];
+
       self.dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
@@ -118,7 +120,7 @@ module.exports = function(socket, options, callback) {
     info[f.newmessages] = self.pNewMessages;
     info[f.newgifts]    = self.pNewGifts;
     info[f.newfriends]  = self.pNewFriends;
-    info[f.newguests]   = self.pNewGifts;
+    info[f.newguests]   = self.pNewGuests;
 
     callback(null, info);
   }); // waterfall

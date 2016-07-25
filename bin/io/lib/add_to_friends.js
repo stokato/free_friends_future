@@ -3,6 +3,7 @@ var async     =  require('async');
 var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),              // Ошибки
     checkInput = require('../../check_input'),            // Верификация
+    sanitize        = require('../../sanitizer'),
     constants  = require('../constants');
 
 /*
@@ -23,6 +24,8 @@ module.exports = function (socket, userList, profiles) {
     if (selfProfile.getID() == options[f.id]) {
       return new GameError(socket, constants.IO_ADD_FRIEND, "Попытка добавить в друзья себя");
     }
+
+    options[f.id] = sanitize(options[f.id]);
 
     var date = new Date();
 

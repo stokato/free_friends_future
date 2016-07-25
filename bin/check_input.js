@@ -7,7 +7,12 @@ var constants_game = require('./game/constants');
 var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
 var ID_LEN = 36;
 
-function checkInput(em, socket, userList, options) {
+function checkInput(em, socket, userList, options, serverProfile) {
+
+  if(serverProfile && socket.id == serverProfile.id) {
+    return true;
+  }
+
   if(em == constants_io.IO_INIT && userList[socket.id] ) {
     new GameError(socket, em, "Пользователь уже инициализирован");
     return false;

@@ -4,6 +4,7 @@ var profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
   constants = require('./../constants'),
+  sanitize        = require('../../sanitizer'),
   dbjs         = require('../../db');
 
 var dbManager = new dbjs();
@@ -15,12 +16,14 @@ var dbManager = new dbjs();
  - Добавляем адресату подарок (пишем сразу в БД)
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
-module.exports = function (socket, userList, profiles) {
+module.exports = function (socket, userList, profiles, roomList) {
   socket.on(constants.IO_MAKE_GIFT, function(options) {
     if (!checkInput(constants.IO_MAKE_GIFT, socket, userList, options)) { return; }
 
     var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
+
+    options[f.id] = sanitize(options[f.id]);
 
     if (selfProfile.getID() == options[f.id]) {
       options[f.rep_status] = f.fail;
@@ -135,15 +138,21 @@ module.exports = function (socket, userList, profiles) {
         var friendProfile = profiles[options[f.id]];
         var friendSocket = friendProfile.getSocket();
 
-        //var result = {};
-        //result[f.id]      = selfProfile.getID();
-        //result[f.giftid]  = gift[f.id];
-        //result[f.src]     = gift[f.data];
-        //result[f.type]    = gift[f.type];
-        //result[f.title]   = gift[f.title];
-        //result[f.date]    = date;
+        var result = {};
+        result[f.fromid]  = selfProfile.getID();
+        result[f.fromvid] = selfProfile.getVID();
+        result[f.id]      = friendProfile.getID();
+        result[f.vid]     = friendProfile.getVID();
+        result[f.giftid]  = gift[f.id];
+        result[f.src]     = gift[f.data];
+        result[f.type]    = gift[f.type];
+        result[f.title]   = gift[f.title];
+        result[f.date]    = date;
 
-        //friendSocket.emit(constants.IO_MAKE_GIFT, result);
+        var room = roomList[socket.id];
+
+        friendSocket.emit(constants.IO_NEW_GIFT, result);
+        socket.broadcast.in(room.name).emit(constants.IO_NEW_GIFT, result);
 
         friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }

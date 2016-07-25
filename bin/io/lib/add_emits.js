@@ -49,8 +49,8 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   //getGuests(socket, userList);
   addToFriends(socket, userList, profiles);
   delFromFriends(socket, userList, profiles);
-  makeGift(socket, userList, profiles);
-  giveMoney(socket, userList, profiles);
+  makeGift(socket, userList, profiles, roomList);
+  //giveMoney(socket, userList, profiles, serverProfile);
   sendMessage(socket, userList, profiles, roomList);
   //openPrivMes(socket, userList);
   getChatHistory(socket, userList, profiles);

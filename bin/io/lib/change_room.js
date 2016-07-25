@@ -5,6 +5,7 @@ var GameError = require('../../game_error'),      // Ошибки
     defineSex = require ('./define_sex'),
     createRoom = require('./create_room'),
     getLastMessages = require('./get_last_messages'),
+    sanitize        = require('../../sanitizer'),
     getRoomInfo = require('./get_room_info');
 /*
  Сменить комнату: Идентификатор новой комнаты
@@ -33,6 +34,8 @@ module.exports = function (socket, userList, rooms, roomList) {
       return new GameError(socket, constants.IO_CHANGE_ROOM,
                                                       "Пользователь уже находится в этой комнате");
     }
+
+    options[f.room] = sanitize(options[f.room]);
 
     var newRoom = null;
     var currRoom = roomList[socket.id];

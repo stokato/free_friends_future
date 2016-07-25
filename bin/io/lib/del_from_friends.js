@@ -3,6 +3,7 @@ var async     =  require('async');
 var profilejs =  require('../../profile/index'),          // Профиль
   GameError = require('../../game_error'),              // Ошибки
   checkInput = require('../../check_input'),            // Верификация
+  sanitize        = require('../../sanitizer'),
   constants  = require('../constants');
 
 /*
@@ -20,9 +21,13 @@ module.exports = function (socket, userList, profiles) {
     var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
 
+    options[f.id] = sanitize(options[f.id]);
+
     if (selfProfile.getID() == options[f.id]) {
       return new GameError(socket, constants.IO_DEL_FROM_FRIENDS, "Попытка удалить из друзей себя");
     }
+
+
 
     var date = new Date();
 

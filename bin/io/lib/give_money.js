@@ -4,6 +4,7 @@ var profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
   constants = require('./../constants'),
+  sanitize        = require('../../sanitizer'),
   dbjs         = require('../../db');
 
 var dbManager = new dbjs();
@@ -16,22 +17,11 @@ var dbManager = new dbjs();
  - Снимаем моенты со своего баланса
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
-module.exports = function (socket, userList, profiles) {
+module.exports = function (socket, userList, profiles, serverProfile) {
   socket.on(constants.IO_GIVE_MONEY, function(options) {
-    if (!checkInput(constants.IO_GIVE_MONEY, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GIVE_MONEY, socket, userList, options, serverProfile)) { return; }
 
     var f = constants.FIELDS;
-    var selfProfile = userList[socket.id];
-
-    if (selfProfile.getID() == options[f.id]) {
-      options[f.rep_status] = f.fail;
-      options[f.error] = 402;
-
-      socket.emit(constants.IO_GIVE_MONEY, options);
-
-      return new GameError(socket, constants.IO_GIVE_MONEY, "Нельзя сделать подарок себе");
-    }
-
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль адресата
@@ -61,12 +51,7 @@ module.exports = function (socket, userList, profiles) {
         var friendProfile = profiles[options[f.id]];
         var friendSocket = friendProfile.getSocket();
 
-        var result = {};
-        result[f.id] = selfProfile.getID();
-        result[f.vid] = selfProfile.getVID();
-        result[f.money] = options[f.money];
-
-        friendSocket.emit(constants.IO_GIVE_MONEY, result);
+        friendSocket.emit(constants.IO_GIVE_MONEY, options);
       }
     }); // waterfall
   });

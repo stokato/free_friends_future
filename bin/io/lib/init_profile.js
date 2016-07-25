@@ -10,6 +10,8 @@ var profilejs =  require('../../profile/index'),          // Профиль
     genDateHistory = require('./gen_date_history'),
     constants = require('./../constants');
 
+var giveMoney         = require('./give_money');
+
 /*
  Выполняем инициализацию
  - Создаем профиль
@@ -19,7 +21,13 @@ var profilejs =  require('../../profile/index'),          // Профиль
  - Получаем данные профилей игроков в комнате (для игрового стола)
  - Отправляем все клиенту
  */
-module.exports = function (socket, userList, profiles, roomList, rooms) {
+module.exports = function (socket, userList, profiles, roomList, rooms, serverProfile) {
+  socket.on(constants.IO_SERVER_INIT, function() {
+    serverProfile.id = socket.id;
+
+    giveMoney(socket, userList, profiles, serverProfile);
+  });
+
   socket.on(constants.IO_INIT, function(options) {
     if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
     var f = constants.FIELDS;

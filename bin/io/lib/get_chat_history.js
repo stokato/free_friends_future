@@ -3,12 +3,16 @@ var profilejs     =  require('../../profile/index'),
   GameError       = require('../../game_error'),
   checkInput      = require('../../check_input'),
   sendOne         = require('./send_one'),
+  sanitize        = require('../../sanitizer'),
   constants       = require('./../constants') ;
 
 module.exports = function(socket, userList, profiles) {
   socket.on(constants.IO_GET_CHAT_HISTORY, function(options) {
     if (!checkInput(constants.IO_GET_CHAT_HISTORY, socket, userList, options)) { return; }
     var f = constants.FIELDS;
+
+    options[f.id] = sanitize(options[f.id]);
+
     async.waterfall([ ///////////////////////////////////////////////////////////////////
       function(cb) {
         var friendProfile;

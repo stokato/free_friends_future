@@ -3,6 +3,7 @@ var async     =  require('async');
 // Свои модули
 var profilejs       = require('../../profile/index'), // Профиль
     GameError       = require('../../game_error'),
+    sanitize        = require('../../sanitizer'),
     checkInput      = require('../../check_input'),
     sendInRoom      = require('./send_in_room'),
     sendOne         = require('./send_one'),
@@ -30,7 +31,7 @@ module.exports = function (socket, userList, profiles, roomList) {
       return new GameError(socket, constants.IO_MESSAGE, "Нельзя отправлять сообщения себе");
     }
 
-    var text = options[f.text].replace(/<[^>]+>/g,'');
+    var text = sanitize(options[f.text]);
 
     var isChat = options[f.id] || false;
 
@@ -53,6 +54,8 @@ module.exports = function (socket, userList, profiles, roomList) {
 
       return sendInRoom(socket, currRoom, info);
     }
+
+    options[f.id] = sanitize(options[f.id]);
 
     if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, userList, options)){ return; }
 

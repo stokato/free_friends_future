@@ -1,5 +1,6 @@
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
+    sanitize        = require('../../sanitizer'),
     constants = require('./../constants');
 /*
  Отправить изменить статус игрока: Статус
@@ -14,6 +15,8 @@ module.exports = function (socket, userList) {
     }
 
     var f = constants.FIELDS;
+
+    options[f.status] = sanitize(options[f.status]);
 
     var selfProfile = userList[socket.id];
     selfProfile.setStatus(options[f.status], function (err, status) {

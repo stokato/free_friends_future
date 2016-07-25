@@ -1,5 +1,6 @@
 var GameError = require('../../game_error'),
   checkInput = require('../../check_input'),
+  sanitize        = require('../../sanitizer'),
   constants = require('./../constants');
 
 module.exports = function(socket, userList, profiles) {
@@ -8,6 +9,8 @@ module.exports = function(socket, userList, profiles) {
 
     var selfProfile = userList[socket.id];
     var f = constants.FIELDS;
+
+    options[f.id] = sanitize(options[f.id]);
 
     if(!selfProfile.isPrivateChat(options[f.id])) {
       return new GameError(socket, constants.IO_CLOSE_PRIVATE_CHAT,

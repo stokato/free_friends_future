@@ -3,6 +3,7 @@ var async     =  require('async');
 var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
+    sanitize        = require('../../sanitizer'),
     constants = require('./../constants');
 
 /*
@@ -22,6 +23,8 @@ module.exports = function (socket, userList, profiles) {
     var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
     var selfInfo = fillInfo(selfProfile);
+
+    options[f.id] = sanitize(options[f.id]);
 
     if (selfProfile.getID() == options[f.id]) { // Если открываем свой профиль
       async.waterfall([

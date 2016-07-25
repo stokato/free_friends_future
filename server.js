@@ -3,10 +3,14 @@ var Config = require('./config.json').server;
 var path = require("path");
 var fs = require("fs");
 
+var socketio = require('socket.io-client');
+
 var vk = require('./bin/vk');
 var vkManager = new vk();
 
 var qs = require('querystring');
+
+var socket;
 
 var server = http.createServer( function(req, res) {
 
@@ -25,7 +29,7 @@ var server = http.createServer( function(req, res) {
     req.on('end', function () {
       var post = qs.parse(body);
 
-      vkManager.handle(post, function(err, response) {
+      vkManager.handle(post, socket, function(err, response) {
         if (err) { return console.log(err.message); }
 
         res.end(response);
@@ -69,6 +73,9 @@ var server = http.createServer( function(req, res) {
 server.listen(Config.port, function() {
   require('./bin/io').listen(server, function(err){
     if(err) return console.log(err.message);
+
+    socket = socketio.connect('http://localhost:3000');
+    socket.emit('server_init');
 
     console.log('server running at: ' + Config.host + ':' + Config.port);
   });

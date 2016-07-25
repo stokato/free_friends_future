@@ -1,6 +1,7 @@
 var async = require('async');
 var db = require('./db');
 var dbManager = new db();
+var sanitize        = require('./sanitizer');
 
 var constants = require('./io/constants');
 
@@ -9,7 +10,7 @@ function VK () {
 
 }
 
-VK.prototype.handle = function(req, callback) { var request = req || {};
+VK.prototype.handle = function(req, socket, callback) { var request = req || {};
 // Сначала проверка
 
   var sig = request["sig"];
@@ -23,10 +24,10 @@ VK.prototype.handle = function(req, callback) { var request = req || {};
     case "get_item_test": getItem(request, callback);
       break;
 
-    case "order_status_change": changeOrderStatus(request, callback);
+    case "order_status_change": changeOrderStatus(request, socket, callback);
       break;
 
-    case "order_status_change_test": changeOrderStatus(request, callback);
+    case "order_status_change_test": changeOrderStatus(request, socket, callback);
       break;
     default : sendError(callback);
   }
@@ -44,7 +45,7 @@ function getItem(request, callback) {
 
   var payInfo = request["item"].split("_");
 
-  var goodId = payInfo[0]; // наименование товара
+  var goodId = sanitize(payInfo[0]); // наименование товара
 
   var response = {};
   dbManager.findGood(goodId, function (err, goodInfo) {
@@ -74,7 +75,7 @@ function getItem(request, callback) {
   });
 }
 
-function changeOrderStatus(request, callback) {
+function changeOrderStatus(request, socket, callback) {
   // Изменение статуса заказа
   var response = {};
   var f = constants.FIELDS;
@@ -85,10 +86,10 @@ function changeOrderStatus(request, callback) {
     var payInfo = request["item"].split("_");
 
     var options = {};
-    options[f.vid]      = request["user_id"];
+    options[f.vid]      = sanitize(request["user_id"]);
     options[f.ordervid] = orderId;
     options[f.goodid]   = payInfo[0];
-    options[f.price]    = request["item_price"];
+    options[f.price]    = sanitize(request["item_price"]);
 
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
@@ -150,6 +151,9 @@ function changeOrderStatus(request, callback) {
               dbManager.updateUser(options, function(err, id) {
                 if (err) { return cb(err, null); }
 
+                options[f.money] = goodInfo[f.price2];
+                socket.emit('give_money', options);
+
                 var result = {};
                 result[f.orderid] = orderid;
                 cb(null, result);
@@ -163,6 +167,9 @@ function changeOrderStatus(request, callback) {
 
           dbManager.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }
+
+            options[f.money] = goodInfo[f.price2];
+            socket.emit('give_money', options);
 
             var result = {};
             result[f.orderid] = orderid;

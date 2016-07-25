@@ -127,5 +127,8 @@ module.exports.IO_ERROR               = 'err';
 
 module.exports.IO_ROOM_USERS          = 'room_users';
 module.exports.IO_ADD_TO_MENU         = 'add_to_menu';
-module.exports.IO_DEL_FROM_FRIENDS    = 'del_from_friends';
+module.exports.IO_DEL_FROM_FRIENDS    = 'del_friend';
 module.exports.IO_GIVE_MONEY          = 'give_money';
+
+module.exports.IO_SERVER_INIT         = 'server_init';
+module.exports.IO_NEW_GIFT            = 'new_gift';

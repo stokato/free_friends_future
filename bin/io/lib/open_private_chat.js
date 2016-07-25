@@ -4,6 +4,7 @@ var profilejs       = require('../../profile/index'),
     checkInput      = require('../../check_input'),
     genDateHistory  = require('./gen_date_history'),
     sendOne         = require('./send_one'),
+    sanitize        = require('../../sanitizer'),
     constants       = require('./../constants');
 
 module.exports = function(socket, userList, profiles) {
@@ -11,6 +12,9 @@ module.exports = function(socket, userList, profiles) {
     if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket, userList, options)) { return; }
 
     var f = constants.FIELDS;
+
+    options[f.id] = sanitize(options[f.id]);
+
     async.waterfall([ ///////////////////////////////////////////////////////////////////
       function(cb) {
         var friendProfile;

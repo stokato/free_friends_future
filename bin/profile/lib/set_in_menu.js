@@ -11,12 +11,12 @@ module.exports = function(isInMenu, callback) {
 
   var self = this;
 
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   var options = {};
-  options[f.id] = self.pID;
-  options[f.vid] = self.pVID;
-  options[f.is_in_menu] = isInMenu;
+  options.id = self.pID;
+  options.vid = self.pVID;
+  options.ismenu = isInMenu;
 
   self.dbManager.updateUser(options, function(err) {
     if (err) {return callback(err, null); }

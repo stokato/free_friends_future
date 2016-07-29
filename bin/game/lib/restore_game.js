@@ -12,7 +12,7 @@ var randomPlayer = require('./random_player'),
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
 module.exports = function(result, isTimeout) { result = result || {}; isTimeout = isTimeout || false;
-  var f = constants_io.FIELDS;
+  //var f = constants_io.FIELDS;
 
   var player = randomPlayer(this.gRoom, null, null, this.gPrisoners);
   if(!player) {
@@ -30,9 +30,9 @@ module.exports = function(result, isTimeout) { result = result || {}; isTimeout 
 
   this.gActionsCount = this.gRoom.girls_count + this.gRoom.guys_count - this.countPrisoners;
 
-  result[f.next_game] = this.gNextGame;
+  result.next_game = this.gNextGame;
 
-  result[f.players] = getPlayersID(this.gActivePlayers);
+  result.players = getPlayersID(this.gActivePlayers);
 
   result.prison = getPrison(this.gPrisoners);
 
@@ -40,7 +40,7 @@ module.exports = function(result, isTimeout) { result = result || {}; isTimeout 
   this.gameState = result;
 
 
-  var timeout = (isTimeout)? constants.TIMEOUT * 1000 : 0;
+  var timeout = (isTimeout)? 5 * 1000 : 0;
 
   this.gTimer = startTimer(this.gHandlers[this.gNextGame], timeout);
 };

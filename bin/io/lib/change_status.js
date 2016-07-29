@@ -14,16 +14,16 @@ module.exports = function (socket, userList) {
       return;
     }
 
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
-    options[f.status] = sanitize(options[f.status]);
+    options.status = sanitize(options.status);
 
     var selfProfile = userList[socket.id];
-    selfProfile.setStatus(options[f.status], function (err, status) {
+    selfProfile.setStatus(options.status, function (err, status) {
       if (err) { return new GameError(socket, constants.IO_CHANGE_STATUS, err.message); }
 
       var result = {};
-      result[f.status] = status;
+      result.status = status;
       socket.emit(constants.IO_CHANGE_STATUS, result);
     })
   });

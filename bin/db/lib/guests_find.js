@@ -9,19 +9,19 @@ var qBuilder = require('./build_query');
 module.exports = function(uid, callback) {
   var self = this;
 
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
   if (!uid ) { return callback(new Error("Задан пустой Id"), null); }
 
-  var fields = [f.guestid, f.guestvid, f.date];
+  var fields = ["guestid", "guestvid", "date"];
   //var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGUESTS, [f.userid], [1]);
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGUESTS, ["userid"], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var guests = [];
-    var guest = null;
+    //var guest = null;
     var guestList = [];
     var i, rowsLen = result.rows.length;
 
@@ -30,18 +30,21 @@ module.exports = function(uid, callback) {
       for(i = 0; i < rowsLen; i++) {
         row = result.rows[i];
 
-        guest = {};
-        guest[f.guestid]      = row[f.guestid].toString();
-        guest[f.guestvid]     = row[f.guestvid];
-        guest[f.date]         = row[f.date];
+        var guest = {};
+        guest["id"]      = row["guestid"].toString();
+        guest["vid"]     = row["guestvid"];
+        guest["date"]    = row["date"];
+
+        //var guest = result.rows[i];
+        //guest.guestid = guest.guestid.toString();
 
         guests.push(guest);
-        guestList.push(guest[f.guestid]);
+        guestList.push(guest["id"]);
       }
 
-      var fields = [f.id, f.vid, f.age, f.sex, f.city, f.country, f.points];
+      var fields = ["id", "vid", "age", "sex", "city", "country", "points"]; //"id", "vid",
       //var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, [f.id], [rowsLen]);
+      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, ["id"], [rowsLen]);
 
       self.client.execute(query, guestList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
@@ -51,15 +54,16 @@ module.exports = function(uid, callback) {
           var row = result.rows[i];
           var index, j, guestLen = guestList.length;
           for(j = 0; j < guestLen; j++) {
-            if(guestList[j] == row[f.id]) {
+            if(guestList[j] == row["id"]) {
               index = j;
             }
           }
-          guests[index][f.age]     = row[f.age];
-          guests[index][f.sex]     = row[f.sex];
-          guests[index][f.city]    = row[f.city];
-          guests[index][f.country] = row[f.country];
-          guests[index][f.points]  = row[f.points];
+          guests[index]["age"]     = row["age"];
+          guests[index]["sex"]     = row["sex"];
+          guests[index]["city"]    = row["city"];
+          guests[index]["country"] = row["country"];
+          guests[index]["points"]  = row["points"];
+          //guests[index] = row;
         }
         callback(null, guests);
       });

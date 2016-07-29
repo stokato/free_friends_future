@@ -9,7 +9,7 @@ var qBuilder = require('./build_query');
 module.exports = function(id, callback) {
   if (!id) { callback(new Error("Задан пустой Id покупки")); }
 
-  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGOODS, [C.IO.FIELDS.id], [1]);
+  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGOODS, ["id"], [1]);
 
   this.client.execute(query, [id], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

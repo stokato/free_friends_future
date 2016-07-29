@@ -11,10 +11,10 @@ module.exports = function (socket, userList) {
       return;
     }
 
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
     var selfProfile = userList[socket.id];
     var game = selfProfile.getGame();
-    var prisonerInfo = game.gPrisoners[options[f.id]];
+    var prisonerInfo = game.gPrisoners[options.id];
 
     // Если серди заблокированных игроков такого нет, выдаем ошибку
     if(!prisonerInfo) {
@@ -38,8 +38,8 @@ module.exports = function (socket, userList) {
         game.countPrisoners--;
 
         var options = {};
-        options[f.id] = prisonerInfo.id;
-        options[f.vid] = prisonerInfo.vid;
+        options.id = prisonerInfo.id;
+        options.vid = prisonerInfo.vid;
 
         // Оповещаем игроков в комнате
         socket.emit(constants_io.IO_RELEASE_PLAYER, options);

@@ -2,29 +2,29 @@ var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
 
-var constants_io = require('../../../io/constants');
+//var constants_io = require('../../../io/constants');
 
 module.exports = function(game) {
   return function(timer, uid, options) { // Лучший, сообщаем всем их выбор
-    var f = constants_io.FIELDS, playerInfo;
+    //var f = constants_io.FIELDS, playerInfo;
     if(uid) {
       playerInfo = game.gActivePlayers[uid];
 
       var result = {};
 
       //result[f.game] = constants.G_BEST;
-      result[f.pick] = {};
-      result[f.pick][f.id] = uid;
-      result[f.pick][f.vid] = playerInfo.vid;
-      result[f.pick][f.pick] = options[f.pick];
+      result.pick = {};
+      result.pick.id = uid;
+      result.pick.vid = playerInfo.vid;
+      result.pick.pick = options.pick;
 
       game.emit(playerInfo.player.getSocket(), result);
 
       // Сохраняем состояние игры
-      if(!game.gameState[f.picks]) {
-        game.gameState[f.picks] = [];
+      if(!game.gameState.picks) {
+        game.gameState.picks = [];
       }
-      game.gameState[f.picks].push(result[f.pick]);
+      game.gameState.picks.push(result.pick);
 
     }
 

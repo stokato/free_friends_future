@@ -13,7 +13,7 @@ module.exports = function(game) {
   return function(timer, uid) {
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
-      var f = constants_io.FIELDS;
+      //var f = constants_io.FIELDS;
 
       var prisoner = null;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
@@ -50,8 +50,8 @@ module.exports = function(game) {
       game.gActionsCount = 1;
 
       var result = {};
-      result[f.next_game] = game.gNextGame;
-      result[f.players] = getPlayersID(game.gActivePlayers);
+      result.next_game = game.gNextGame;
+      result.players = getPlayersID(game.gActivePlayers);
 
       result.prison = getPrison(game.gPrisoners);
 

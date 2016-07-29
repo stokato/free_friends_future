@@ -4,22 +4,26 @@ var constants = require('../../io/constants');
  */
 module.exports = function(callback) {
  var self = this;
- var f = constants.FIELDS;
+ //var f = constants.FIELDS;
 
  var options = {};
- options[f.id]          = self.pID;
- options[f.vid]         = self.pVID;
- options[f.age]         = self.pAge;
- options[f.country]     = self.pCountry;
- options[f.city]        = self.pCity;
- options[f.sex]         = self.pSex;
- options[f.status]      = self.pStatus;
- options[f.points]      = self.pPoints;
- options[f.money]       = self.pMoney;
- options[f.newmessages] = self.pNewMessages;
- options[f.newgifts]    = self.pNewGifts;
- options[f.newfriends]  = self.pNewFriends;
- options[f.newguests]   = self.pNewGuests;
+ options.id          = self.pID;
+ options.vid         = self.pVID;
+ options.age         = self.pAge;
+ options.country     = self.pCountry;
+ options.city        = self.pCity;
+ options.sex         = self.pSex;
+ options.status      = self.pStatus;
+ options.points      = self.pPoints;
+ options.money       = self.pMoney;
+ options.newmessages = self.pNewMessages;
+ options.newgifts    = self.pNewGifts;
+ options.newfriends  = self.pNewFriends;
+ options.newguests   = self.pNewGuests;
+ if(self.pGift1) {
+   options.gift1     = self.pGift1.gid;
+ }
+
 
   self.dbManager.updateUser(options, function(err, id) {
    if (err) { return callback(err, null); }

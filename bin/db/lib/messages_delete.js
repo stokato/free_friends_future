@@ -9,12 +9,12 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(uid, callback) {
   var self = this;
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   //var query = "select companionid FROM user_chats where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, [f.companionid], C.T_USERCHATS, [f.userid], [1]);
+  var query = qBuilder.build(qBuilder.Q_SELECT, ["companionid"], C.T_USERCHATS, ["userid"], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -28,12 +28,12 @@ module.exports = function(uid, callback) {
 
     //var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
     query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERMESSAGES,
-                                             [f.userid, f.companionid], [1, rowsLen]);
+                                             ["userid", "companionid"], [1, rowsLen]);
     self.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       //query = "DELETE FROM user_chats WHERE userid = ?";
-      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERCHATS, [f.userid], [1]);
+      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERCHATS, ["userid"], [1]);
       self.client.execute(query, [uid], {prepare: true }, function(err) {
         if (err) {  return callback(err); }
 

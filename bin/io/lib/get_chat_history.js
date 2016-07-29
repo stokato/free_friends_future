@@ -9,20 +9,20 @@ var profilejs     =  require('../../profile/index'),
 module.exports = function(socket, userList, profiles) {
   socket.on(constants.IO_GET_CHAT_HISTORY, function(options) {
     if (!checkInput(constants.IO_GET_CHAT_HISTORY, socket, userList, options)) { return; }
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
-    options[f.id] = sanitize(options[f.id]);
+    options.id = sanitize(options.id);
 
     async.waterfall([ ///////////////////////////////////////////////////////////////////
       function(cb) {
         var friendProfile;
-        if (profiles[options[f.id]]) { // Если онлайн
-          friendProfile = profiles[options[f.id]];
+        if (profiles[options.id]) { // Если онлайн
+          friendProfile = profiles[options.id];
           cb(null, friendProfile);
         }
         else {                // Если нет - берем из базы
           friendProfile = new profilejs();
-          friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
             cb(null, friendProfile);
@@ -32,7 +32,7 @@ module.exports = function(socket, userList, profiles) {
       function(friendProfile, cb) { ////////////////////// Получаем историю
         var selfProfile = userList[socket.id];
 
-        if(selfProfile.getID() == options[f.id]) {
+        if(selfProfile.getID() == options.id) {
           return cb(new Error("Попытка получить историю от себя"));
         }
 

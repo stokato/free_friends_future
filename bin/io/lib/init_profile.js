@@ -25,12 +25,12 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
   socket.on(constants.IO_SERVER_INIT, function() {
     serverProfile.id = socket.id;
 
-    giveMoney(socket, userList, profiles, serverProfile);
+    giveMoney(socket, userList, profiles, roomList, serverProfile);
   });
 
   socket.on(constants.IO_INIT, function(options) {
     if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
     async.waterfall([///////////////////////////////////////////////////////////
       function (cb) { // Инициализируем профиль пользователя
@@ -39,7 +39,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         selfProfile.init(socket, options, function (err, info) {
           if (err) { return cb(err, null); }
 
-          var oldProfile = profiles[info[f.id]];
+          var oldProfile = profiles[info.id];
           if (oldProfile)  {
             oldProfile.clearExitTimeout();
 
@@ -76,7 +76,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
           });
         } else {
           var room = roomList[socket.id];
-          info[f.game] = room.game.getGameState(); // Получаем состояние игры в комнате
+          info.game = room.game.getGameState(); // Получаем состояние игры в комнате
           socket.join(room.name);
 
           cb(null, info, room);
@@ -86,7 +86,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         getRoomInfo(room, function (err, roomInfo) {
           if (err) { return cb(err, null); }
 
-          info[f.room] = roomInfo;
+          info.room = roomInfo;
 
           socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
 
@@ -100,8 +100,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         socket.emit(constants.IO_INIT, info);
 
         var online = {};
-        online[f.id] = info[f.id];
-        online[f.vid] = info[f.vid];
+        online.id = info.id;
+        online.vid = info.vid;
         socket.broadcast.emit(constants.IO_ONLINE, online);
 
         getLastMessages(socket, room);
@@ -113,8 +113,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         var firstDate = genDateHistory(secondDate);
 
         var period = {};
-        period[f.first_date] = firstDate;
-        period[f.second_date] = secondDate;
+        period.first_date = firstDate;
+        period.second_date = secondDate;
         userList[socket.id].getPrivateChatsWithHistory(period, function(err, history) {
           if(err) { return cb(err, null) }
 
@@ -141,8 +141,8 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
 
 // Для сортировки массива сообщений (получение топа по дате)
 function compareDates(mesA, mesB) {
-  var f = constants.FIELDS;
-  return mesA[f.date] - mesB[f.date];
+  //var f = constants.FIELDS;
+  return mesA.date - mesB.date;
 }
 
 

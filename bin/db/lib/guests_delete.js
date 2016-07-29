@@ -12,7 +12,7 @@ module.exports = function(uid, callback) {
 
   //var query = "DELETE FROM user_guests where user = ?";
   var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGUESTS,
-                                                  [C.IO.FIELDS.userid],[1]);
+                                                  ["userid"],[1]);
 
   this.client.execute(query, [uid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

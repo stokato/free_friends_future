@@ -19,7 +19,7 @@ var GameError = require('../../game_error'),
 module.exports = function (socket, userList, roomList, rooms, profiles) {
   socket.on(constants.IO_CHOOSE_ROOM, function() {
     if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, {})) { return; }
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков
       function (cb) {
@@ -65,27 +65,27 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         allFriends = allFriends || [];
         var i;
         for (i = 0; i < allFriends.length; i++) {
-          var currFriend = profiles[allFriends[i][f.id]];
+          var currFriend = profiles[allFriends[i]["id"]];
           if (currFriend) {
             var friendSocket = currFriend.getSocket();
-            var friendsRoom = roomList[friendSocket[f.id]];
+            var friendsRoom = roomList[friendSocket["id"]];
             if (friendsRoom[len] < constants.ONE_SEX_IN_ROOM) {
               var currInfo = {};
-              currInfo[f.id]      = currFriend.getID();
-              currInfo[f.vid]     = currFriend.getVID();
-              currInfo[f.age]     = currFriend.getAge();
-              currInfo[f.sex]     = currFriend.getSex();
-              currInfo[f.city]    = currFriend.getCity();
-              currInfo[f.country] = currFriend.getCountry();
-              currInfo[f.room]    = friendsRoom.name;
+              currInfo.id      = currFriend.getID();
+              currInfo.vid     = currFriend.getVID();
+              currInfo.age     = currFriend.getAge();
+              currInfo.sex     = currFriend.getSex();
+              currInfo.city    = currFriend.getCity();
+              currInfo.country = currFriend.getCountry();
+              currInfo.room    = friendsRoom.name;
 
               friendList.push(currInfo);
             }
           }
         }
         var result = {};
-        result[f.random] = roomInfo;
-        result[f.friends] = friendList;
+        result.random = roomInfo;
+        result.friends = friendList;
 
         socket.emit(constants.IO_CHOOSE_ROOM, result);
 

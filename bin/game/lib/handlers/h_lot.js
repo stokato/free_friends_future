@@ -1,6 +1,6 @@
 //var random = require('random-js')();
 var constants = require('../../constants');
-var constants_io = require('../../../io/constants');
+//var constants_io = require('../../../io/constants');
 
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),
@@ -12,7 +12,7 @@ var randomPlayer = require('../random_player'),
 
 module.exports = function(game) {
   return function(timer, uid) {
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
     clearTimeout(game.gTimer);
 
     var rand, item;
@@ -47,9 +47,9 @@ module.exports = function(game) {
     game.gActionsQueue = {};
 
     var result = {};
-    result[f.next_game] = game.gNextGame;
+    result.next_game = game.gNextGame;
    // result[f.game] = constants.G_LOT;
-    result[f.players] = [];
+    result.players = [];
 
     switch (game.gNextGame) {
       /////////////////////// БУТЫЛОЧКА //////////////////////////////////////////
@@ -67,7 +67,7 @@ module.exports = function(game) {
 
         var questions = game.getQuestions();
         rand = Math.floor(Math.random() * questions.length);
-        result[f.question] =  questions[rand].text;
+        result.question =  questions[rand].text;
         break;
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
@@ -110,7 +110,7 @@ module.exports = function(game) {
         setActionsLimit(game, 1);
         game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners; // constants.PLAYERS_COUNT-2;
 
-        result[f.best] = bestPlayerInfo;
+        result.best = bestPlayerInfo;
         break;
       //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
       case constants.G_SYMPATHY:
@@ -129,7 +129,7 @@ module.exports = function(game) {
         break;
     }
     /////////////////////////////////////////////////////////////////////////////////////
-    result[f.players] = getPlayersID(game.gActivePlayers);
+    result.players = getPlayersID(game.gActivePlayers);
 
     result.prison = getPrison(game.gPrisoners);
 

@@ -1,5 +1,5 @@
 var constants = require('../../constants');
-var constants_io = require('../../../io/constants');
+//var constants_io = require('../../../io/constants');
 
 var startTimer   = require('../start_timer'),
     activateAllPlayers = require('../activate_all_players'),
@@ -13,7 +13,7 @@ var startTimer   = require('../start_timer'),
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
   return function (timer, uid, options) {
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
 
     // Если все ответили или истеколо время - переходим к следующему этапу
     if (game.gActionsCount == 0 || timer) {
@@ -34,8 +34,8 @@ module.exports = function(game) {
       setActionsLimit(game, game.gRoom.girls_count + game.gRoom.guys_count -1);
       game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - game.countPrisoners) * 10; //constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
 
-      result[f.next_game] = game.gNextGame;
-      result[f.players] = getPlayersID(game.gActivePlayers);
+      result.next_game = game.gNextGame;
+      result.players = getPlayersID(game.gActivePlayers);
 
       result.prison = getPrison(game.gPrisoners);
 

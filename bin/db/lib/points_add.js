@@ -10,18 +10,18 @@ var async = require('async');
  */
 module.exports = function(options, callback) { options    = options || {};
   var self = this;
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  if ( !options[f.userid] || !options[f.uservid] || !options[f.points] || !options[f.sex]) {
+  if ( !options["userid"] || !options["uservid"] || !options["points"] || !options["sex"]) {
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
 
   async.waterfall([
     function(cb) {
-      var fields = [f.id, f.points, f.userid, f.uservid, f.sex, f.uid];
+      var fields = ["id", "points", "userid", "uservid", "sex", "uid"];
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_POINTS);
 
-      var params = ["max", options[f.points], options[f.userid], options[f.uservid], options[f.sex], options[f.userid]];
+      var params = ["max", options["points"], options["userid"], options["uservid"], options["sex"], options["userid"]];
 
       self.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -30,9 +30,9 @@ module.exports = function(options, callback) { options    = options || {};
       });
     },
     function(fields, params, cb) {
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_POINTS, [f.uid], [1]);
+      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_POINTS, ["uid"], [1]);
 
-      var paramsF = [options[f.userid]];
+      var paramsF = [options["userid"]];
 
       self.client.execute(query, paramsF, {prepare: true },  function(err, result) {
         if (err) {  return cb(err); }
@@ -40,10 +40,10 @@ module.exports = function(options, callback) { options    = options || {};
         result.rows.sort(comparePoints);
 
         for(var i = 1; i < result.rows.length; i++) {
-          var points = result.rows[i][f.points];
-          var userid = result.rows[i][f.userid];
+          var points = result.rows[i]["points"];
+          var userid = result.rows[i]["userid"];
 
-          var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, [f.id, f.points, f.userid], [1, 1, 1]);
+          var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, ["id", "points", "userid"], [1, 1, 1]);
 
           var paramsD = ["max", points, userid];
 
@@ -59,7 +59,7 @@ module.exports = function(options, callback) { options    = options || {};
     },
     function(fields, params, cb) {
 
-      var db = (options[f.sex] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
+      var db = (options["sex"] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, db);
 
       self.client.execute(query, params, {prepare: true },  function(err) {
@@ -69,11 +69,11 @@ module.exports = function(options, callback) { options    = options || {};
       });
     },
     function(fields, params, cb) {
-      var db = (options[f.sex] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
+      var db = (options["sex"] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, [f.uid], [1]);
+      var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
 
-      var paramsF = [options[f.userid]];
+      var paramsF = [options["userid"]];
 
       self.client.execute(query, paramsF, {prepare: true },  function(err, result) {
         if (err) {  return cb(err); }
@@ -81,10 +81,10 @@ module.exports = function(options, callback) { options    = options || {};
         result.rows.sort(comparePoints);
 
         for(var i = 1; i < result.rows.length; i++) {
-          var points = result.rows[i][f.points];
-          var userid = result.rows[i][f.userid];
+          var points = result.rows[i]["points"];
+          var userid = result.rows[i]["userid"];
 
-          var query = qBuilder.build(qBuilder.Q_DELETE, [], db, [f.id, f.points, f.userid], [1, 1, 1]);
+          var query = qBuilder.build(qBuilder.Q_DELETE, [], db, ["id", "points", "userid"], [1, 1, 1]);
 
           var paramsF = ["max", points, userid];
 
@@ -112,9 +112,9 @@ function comparePoints(user1, user2) {
 //function deletePoints(points, pos) {
 //  var f = C.IO.FIELDS;
 //
-//  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, [f.id, f.points, f.userid], [1, 1, 1]);
+//  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, ["id, "points, "userid], [1, 1, 1]);
 //
-//  var params = ["max", options[f.points], options[f.userid]];
+//  var params = ["max", options["points], options["userid]];
 //
 //
 //  self.client.execute(query, params, {prepare: true }, function(err) {
@@ -139,21 +139,21 @@ function comparePoints(user1, user2) {
 //  var self = this;
 //  var f = C.IO.FIELDS;
 //
-//  if ( !options[f.userid] || !options[f.uservid] || !options[f.points]) {
+//  if ( !options["userid] || !options["uservid] || !options["points]) {
 //    return callback(new Error("Не указан ИД, ВИД или количество очков игрока"), null);
 //  }
 //
-//  var hundred = Math.floor(options[f.points]/100) * 100 + 100;
+//  var hundred = Math.floor(options["points]/100) * 100 + 100;
 //
-//  var fields = [f.hundreds, f.points, f.userid, f.uservid];
+//  var fields = ["hundreds, "points, "userid, "uservid];
 //  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERPOINTS);
 //
-//  var params = [hundred, options[f.points], options[f.userid], options[f.uservid]];
+//  var params = [hundred, options["points], options["userid], options["uservid]];
 //
 //  self.client.execute(query, params, {prepare: true },  function(err) {
 //    if (err) {  return callback(err); }
 //
-//    var query = qBuilder.build(qBuilder.Q_INSERT, [f.id, f.hundred], C.T_MAX_HANDRED);
+//    var query = qBuilder.build(qBuilder.Q_INSERT, ["id, "hundred], C.T_MAX_HANDRED);
 //    self.client.execute(query, [hundred, hundred],{prepare: true },  function(err) {
 //      if (err) {  return callback(err); }
 //

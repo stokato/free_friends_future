@@ -26,16 +26,16 @@ module.exports = function (socket, userList, rooms, roomList) {
     if (!checkInput(constants.IO_CHANGE_ROOM, socket, userList, options)) {
       return;
     }
-    var f = constants.FIELDS;
-    if(!rooms[options.room] && options[f.room] != constants.NEW_ROOM) {
+    //var f = constants.FIELDS;
+    if(!rooms[options.room] && options.room != constants.NEW_ROOM) {
       return new GameError(socket, constants.IO_CHANGE_ROOM, "Некорректный идентификатор комнаты");
     }
-    if(roomList[socket.id].name == options[f.room]){
+    if(roomList[socket.id].name == options.room){
       return new GameError(socket, constants.IO_CHANGE_ROOM,
                                                       "Пользователь уже находится в этой комнате");
     }
 
-    options[f.room] = sanitize(options[f.room]);
+    options.room = sanitize(options.room);
 
     var newRoom = null;
     var currRoom = roomList[socket.id];
@@ -43,13 +43,13 @@ module.exports = function (socket, userList, rooms, roomList) {
 
     var sex = defineSex(selfProfile);
 
-    if (options[f.room] == constants.NEW_ROOM) { // Либо создаем новую комнату
+    if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
       newRoom = createRoom(socket, userList);
       rooms[newRoom.name] = newRoom;
     } else {                                  // Либо ищем указанную
       var item;
       for (item in rooms) if (rooms.hasOwnProperty(item)) {
-        if (rooms[item].name == options[f.room]) {
+        if (rooms[item].name == options.room) {
           if (rooms[item][sex.len] >= constants.ONE_SEX_IN_ROOM) {
             return new GameError(socket, constants.IO_CHANGE_ROOM,
                                                   "Попытка открыть комнату в которой нет места");
@@ -92,13 +92,13 @@ module.exports = function (socket, userList, rooms, roomList) {
       if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
 
       var message = {};
-      message[f.id]      = selfProfile.getID();
-      message[f.vid]     = selfProfile.getVID();
-      message[f.age]     = selfProfile.getAge();
-      message[f.sex]     = selfProfile.getSex();
-      message[f.city]    = selfProfile.getCity();
-      message[f.country] = selfProfile.getCountry();
-      message[f.points]  = selfProfile.getPoints();
+      message.id      = selfProfile.getID();
+      message.vid     = selfProfile.getVID();
+      message.age     = selfProfile.getAge();
+      message.sex     = selfProfile.getSex();
+      message.city    = selfProfile.getCity();
+      message.country = selfProfile.getCountry();
+      message.points  = selfProfile.getPoints();
 
       //socket.broadcast.in(currRoom.name).emit('leave', message);
 

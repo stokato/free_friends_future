@@ -41,7 +41,8 @@ var init          = require('./lib/init'),
     isFriend      = require('./lib/is_friend'),
     isInMenu      = require('./lib/is_in_menu'),
     setInMenu     = require('./lib/set_in_menu'),
-    delFromFriends = require('./lib/del_from_friends');
+    delFromFriends = require('./lib/del_from_friends'),
+    getGift1      = require('./lib/get_gift_1');
 
 var setExitTimeout = require('./lib/set_exit_timeout'),
     clearExitTimeout = require('./lib/clear_exit_timeout');
@@ -86,8 +87,8 @@ function Profile() {
 
   this.pExitTimeout;
 
-  this.gift_1   = null;    // На игрвом столе на аватарах игроков весят подарки, по ним не ясно
-  this.gift_2   = null;
+  this.pGift1   = null;    // На игрвом столе на аватарах игроков весят подарки
+  this.pGift2   = null;
 
   this.pGame    = null;
 
@@ -144,5 +145,7 @@ Profile.prototype.isFriend = isFriend;
 Profile.prototype.isInMenu = isInMenu;
 Profile.prototype.setInMenu = setInMenu;
 Profile.prototype.delFromFriends = delFromFriends;
+
+Profile.prototype.getGift1  = getGift1;
 
 module.exports = Profile;

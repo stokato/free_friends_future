@@ -8,25 +8,25 @@ var qBuilder = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  if ( !options[f.title] || !options[f.price] || !options[f.data]
-                                       || !options[f.goodtype]) {
+  if ( !options["title"] || !options["price"] || !options["data"]
+                                       || !options["goodtype"]) {
     return callback(new Error("Не указаны необходимые поля товара"), null);
   }
 
   var id = this.uuid.random();
 
-  var fields = [f.id, f.title, f.price, f.data, f.type, f.goodtype];
+  var fields = ["id", "title", "price", "data", "type", "goodtype"];
   var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_SHOP);
 
-  var params = [id, options[f.title], options[f.price], options[f.data],
-                                                            options[f.type], options[f.goodtype]];
+  var params = [id, options["title"], options["price"], options["data"],
+                                                            options["type"], options["goodtype"]];
 
   this.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
-    options[f.id] = id;
+    options["id"] = id;
 
     callback(null, options);
   });

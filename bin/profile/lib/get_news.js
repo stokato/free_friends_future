@@ -1,15 +1,15 @@
-var constants = require('../../io/constants');
+//var constants = require('../../io/constants');
 /*
  Поулчаем сведения о новых сообщениях, подарках, гостях, дурзьях
  */
 module.exports = function() {
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   var news = {};
-  news[f.newmessages] = this.pNewMessages;
-  news[f.newfriends]  = this.pNewFriends;
-  news[f.newguests]   = this.pNewGuests;
-  news[f.newgifts]    = this.pNewGifts;
+  news.newmessages = this.pNewMessages;
+  news.newfriends  = this.pNewFriends;
+  news.newguests   = this.pNewGuests;
+  news.newgifts    = this.pNewGifts;
 
   return news;
 };

@@ -9,22 +9,20 @@ module.exports = function (socket, userList, roomList) {
   socket.on(constants.IO_JOIN_GAME, function() {
     if (!checkInput(constants.IO_JOIN_GAME, socket, userList, {})) { return; }
 
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
-    if(!selfProfile.getInPrison()) {
-      selfProfile.setInPrison(true);
 
-      var room = roomList[socket.id];
+    var room = roomList[socket.id];
 
-      var info = {};
-      info[f.id]  = selfProfile.getID();
-      info[f.vid] = selfProfile.getVID();
+    var info = {};
+    info.id  = selfProfile.getID();
+    info.vid = selfProfile.getVID();
 
-      socket.emit(constants.IO_JOIN_GAME, info);
-      socket.in(room.name).emit(constants.IO_JOIN_GAME, info);
+    socket.emit(constants.IO_JOIN_GAME, info);
+    socket.in(room.name).emit(constants.IO_JOIN_GAME, info);
 
-      room.game.start(socket);
-    }
+    room.game.start(socket);
+
   });
 };
 

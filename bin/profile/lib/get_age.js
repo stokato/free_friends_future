@@ -1,4 +1,4 @@
-// Получить возраст
+// РџРѕР»СѓС‡РёС‚СЊ РІРѕР·СЂР°СЃС‚
 module.exports = function() {
   return this.pAge;
 };

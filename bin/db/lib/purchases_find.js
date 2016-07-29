@@ -10,10 +10,10 @@ module.exports = function(userid, callback) {
 
   if(!userid) { return callback(new Error("Не задан ИД пользователя"), null); }
 
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  var fields = [f.id, f.goodid];
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields , C.T_USERGOODS, [f.userid], [1]);
+  var fields = ["id", "goodid"];
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields , C.T_USERGOODS, ["userid"], [1]);
 
   this.client.execute(query,[userid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -27,8 +27,8 @@ module.exports = function(userid, callback) {
       var row = result.rows[i];
 
       var good = {};
-      good[f.id] = row[f.id].toString();
-      good[f.goodid] = row[f.goodid].toString();
+      good["id"] = row["id"].toString();
+      good["goodid"] = row["goodid"].toString();
 
       goods.push(good);
     }

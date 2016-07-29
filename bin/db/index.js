@@ -39,8 +39,9 @@ var addUser             = require('./lib/users_add'),
   deletePurchase      = require('./lib/purchases_delete'),
   addPoints           = require('./lib/points_add'),
   findPoints          = require('./lib/points_find'),
-  deletePoints        = require('./lib/points_delete');
-  findAllQuestions    = require('./lib/questions_find_all');
+  deletePoints        = require('./lib/points_delete'),
+  findAllQuestions    = require('./lib/questions_find_all'),
+  findGift            = require('./lib/gifts_find_one');
 
 
 /**
@@ -94,5 +95,6 @@ DBManager.prototype.addPoints       = addPoints;
 DBManager.prototype.findPoints      = findPoints;
 DBManager.prototype.deletePoints    = deletePoints;
 DBManager.prototype.findAllQuestions = findAllQuestions;
+DBManager.prototype.findGift        = findGift;
 
 module.exports = DBManager;

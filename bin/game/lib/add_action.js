@@ -7,12 +7,12 @@ var sanitize        = require('../../sanitizer');
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, userList) {
   socket.on(constants_io.IO_GAME, function(options) {
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
     var selfProfile = userList[socket.id];
     var uid = selfProfile.getID(),
         game = selfProfile.getGame();
 
-    var pick = sanitize(options[f.pick]);
+    var pick = sanitize(options.pick);
 
     // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
@@ -46,7 +46,7 @@ module.exports = function (socket, userList) {
          var i, actions = game.gActionsQueue[uid];
 
          for( i = 0; i < actions.length; i++) {
-           if(actions[i][f.pick] == pick) { return; }
+           if(actions[i]["pick"] == pick) { return; }
          }
 
         if(!game.gActivePlayers[pick]) { return; }

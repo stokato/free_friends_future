@@ -9,47 +9,66 @@ var constants = require('../../io/constants');
  */
 module.exports = function(id, callback) {
  var self = this;
- var f = constants.FIELDS;
+ //var f = constants.FIELDS;
  self.pID = id;
 
  if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
 
- var fList = [f.sex, f.points, f.status, f.country, f.city, f.age, f.is_in_menu];
+ var fList = ["sex", "points", "status", "country", "city", "age", "ismenu", "gift1"];
  self.dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
 
-   self.pVID     = foundUser[f.vid];
-   self.pStatus  = foundUser[f.status];
-   self.pPoints  = foundUser[f.points];
-   self.pSex     = foundUser[f.sex];
-   self.pCountry = foundUser[f.country];
-   self.pCity    = foundUser[f.city];
-   self.pAge     = foundUser[f.age];
-   self.pIsInMenu = foundUser[f.is_in_menu];
+   self.pVID     = foundUser.vid;
+   self.pStatus  = foundUser.status;
+   self.pPoints  = foundUser.points;
+   self.pSex     = foundUser.sex;
+   self.pCountry = foundUser.country;
+   self.pCity    = foundUser.city;
+   self.pAge     = foundUser.age;
+   self.pIsInMenu = foundUser.ismenu;
 
-   self.pNewMessages = foundUser[f.newmessages] || 0;
-   self.pNewGifts    = foundUser[f.newgifts]    || 0;
-   self.pNewFriends  = foundUser[f.newfriends]  || 0;
-   self.pNewGuests   = foundUser[f.newguests]   || 0;
-   self.pMoney       = foundUser[f.money]       || 0;
+   self.pNewMessages = foundUser.newmessages || 0;
+   self.pNewGifts    = foundUser.newgifts    || 0;
+   self.pNewFriends  = foundUser.newfriends  || 0;
+   self.pNewGuests   = foundUser.newguests   || 0;
+   self.pMoney       = foundUser.money       || 0;
 
-   var info = {};
-   info[f.id]       = self.pID;
-   info[f.vid]      = self.pVID;
-   info[f.age]      = self.pAge;
-   info[f.country]  = self.pCountry;
-   info[f.city]     = self.pCity;
-   info[f.status]   = self.pStatus;
-   info[f.points]   = self.pPoints;
-   info[f.money]    = self.pMoney;
-   info[f.sex]      = self.pSex;
-   info[f.messages] = self.pNewMessages;
-   info[f.gifts]    = self.pNewGifts;
-   info[f.friends]  = self.pNewFriends;
-   info[f.guests]   = self.pNewGifts;
-   info[f.is_in_menu] = self.pIsInMenu;
+   if(foundUser.gift1) {
+     self.dbManager.findGift(foundUser.gift1, function(err, gift) {
+       if (err) { return  callback(err, null); }
 
-   callback(null, info);
+       self.pGift1 = gift || null;
+
+       var info = pullInfo(self);
+
+       callback(null, info);
+     });
+   } else {
+     var info = pullInfo(self);
+     callback(null, info);
+   }
  });
 };
+
+function pullInfo(profile) {
+  //var f = constants.FIELDS;
+  var info = {};
+  info.id       = profile.pID;
+  info.vid      = profile.pVID;
+  info.age      = profile.pAge;
+  info.country  = profile.pCountry;
+  info.city     = profile.pCity;
+  info.status   = profile.pStatus;
+  info.points   = profile.pPoints;
+  info.money    = profile.pMoney;
+  info.sex      = profile.pSex;
+  info.messages = profile.pNewMessages;
+  info.gifts    = profile.pNewGifts;
+  info.friends  = profile.pNewFriends;
+  info.guests   = profile.pNewGifts;
+  info.ismenu   = profile.pIsInMenu;
+  info.gift1    = profile.pGift1;
+
+  return info;
+}

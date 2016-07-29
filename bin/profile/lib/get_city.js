@@ -1,4 +1,4 @@
-// Получить город
+// РџРѕР»СѓС‡РёС‚СЊ РіРѕСЂРѕРґ
 module.exports = function() {
   return this.pCity;
 };

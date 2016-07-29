@@ -11,12 +11,12 @@ module.exports = function(num, callback) {
   }
   var self = this;
 
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   var options = {};
-  options[f.id] = self.pID;
-  options[f.vid] = self.pVID;
-  options[f.money] = num;
+  options.id = self.pID;
+  options.vid = self.pVID;
+  options.money = num;
 
   self.dbManager.updateUser(options, function(err) {
     if (err) {return callback(err, null); }

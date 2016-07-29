@@ -8,16 +8,16 @@ var buildQuery = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(uid, friend, callback) { friend = friend || {};
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  if ( !uid || !friend[f.friendid] || !friend[f.friendvid]) {
+  if ( !uid || !friend["friendid"] || !friend["friendvid"]) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
-  var fields = [f.userid, f.friendid, f.friendvid, f.date];
+  var fields = ["userid", "friendid", "friendvid", "date"];
   var query = buildQuery.build(buildQuery.Q_INSERT, fields, C.T_USERFRIENDS);
 
-  var params = [uid, friend[f.friendid], friend[f.friendvid], friend[f.date]];
+  var params = [uid, friend["friendid"], friend["friendvid"], friend["date"]];
   this.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 

@@ -10,13 +10,13 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   if (!checkInput(constants.IO_DISCONNECT, socket, userList, {})) { return; }
 
   var selfProfile = userList[socket.id];
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
   async.waterfall([
     ///////////////////////////////////////////////////////////////////////////////////
     function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
       var info = {};
-      info[f.id]  = selfProfile.getID();
-      info[f.vid] = selfProfile.getVID();
+      info.id  = selfProfile.getID();
+      info.vid = selfProfile.getVID();
 
       //if(selfProfile.getReady()) { // Останавливаем игру
       //  roomList[socket.id].game.stop();

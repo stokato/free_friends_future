@@ -10,7 +10,7 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(uid, callback) {
   var self = this;
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
@@ -18,8 +18,8 @@ module.exports = function(uid, callback) {
   async.waterfall([ //////////////////////////////////////////////////////////
     function (cb) {
       var params = [uid];
-      var fields = [f.companionid, f.isnew];
-      var const_fields = [f.userid];
+      var fields = ["companionid", "isnew"];
+      var const_fields = ["userid"];
       var const_values = [1];
 
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERCHATS,
@@ -37,8 +37,8 @@ module.exports = function(uid, callback) {
         var newMessages = {};
 
         for (var i = 0; i < rows.length; i++) {
-          companions.push(rows[i][f.companionid].toString());
-          newMessages[rows[i][f.companionid].toString()] = rows[i][f.isnew];
+          companions.push(rows[i]["companionid"].toString());
+          newMessages[rows[i]["companionid"].toString()] = rows[i]["isnew"];
         }
 
         cb(null, const_fields, companions, newMessages);
@@ -47,24 +47,28 @@ module.exports = function(uid, callback) {
     function (const_fields, companions, newMessages, cb) {
       if(!companions) { return cb(null, null, null, null); }
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERS,
-                                                                              [f.id], [const_fields]);
+      var query = qBuilder.build(qBuilder.Q_SELECT, ["id", "vid", "age", "sex", "city", "country", "points"], C.T_USERS,
+                                                                              ["id"], [const_fields]);
 
       self.client.execute(query, companions, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
 
         var users = [];
         for (var i = 0; i < result.rows.length; i++) {
-          var row = result.rows[i];
-          var user = {};
-          user[f.id]        = row[f.id].toString();
-          user[f.vid]       = row[f.vid];
-          user[f.age]       = row[f.age];
-          user[f.sex]       = row[f.sex];
-          user[f.city]      = row[f.city];
-          user[f.country]   = row[f.country];
-          user[f.points]    = row[f.points];
-          user[f.isnew]     = newMessages[row[f.id].toString()];
+          //var row = result.rows[i];
+          //var user = {};
+          //user["id"]        = row[f.id].toString();
+          //user["vid"]       = row[f.vid];
+          //user[f.age]       = row[f.age];
+          //user[f.sex]       = row[f.sex];
+          //user[f.city]      = row[f.city];
+          //user[f.country]   = row[f.country];
+          //user[f.points]    = row[f.points];
+          //user[f.isnew]     = newMessages[row[f.id].toString()];
+
+          var user = result.rows[i];
+          user.id = user.id.toString();
+          user.isnew = newMessages[user.id];
 
           users.push(user);
         }

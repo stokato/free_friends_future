@@ -11,7 +11,7 @@ var db = new dbjs();
  */
 module.exports = function (socket, userList) {
   socket.on(constants.IO_GET_GIFT_SHOP, function() {
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
     if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, userList, {})) { return; }
 
@@ -24,24 +24,24 @@ module.exports = function (socket, userList) {
 
       var types = {};
       for(i = 0; i < goods.length; i++) {
-        type = goods[i][f.type];
+        type = goods[i]["type"];
         if(!types[type]) {
           types[type] = {};
-          types[type][f.gifts] = [];
-          types[type][f.type] = type;
+          types[type].gifts = [];
+          types[type].type = type;
         }
       }
 
       for(i = 0; i < goods.length; i++) {
         gift = {};
-        type = goods[i][f.type];
-        gift[f.id]   = goods[i][f.id];
-        gift[f.src]  = goods[i][f.data];
-        gift[f.type] = type;
-        gift[f.price] = 30;
-        gift[f.title] = goods[i][f.title];
+        type = goods[i]["type"];
+        gift.id   = goods[i]["id"];
+        gift.src  = goods[i]["src"];
+        gift.type = type;
+        gift.price = 30;
+        gift.title = goods[i].title;
 
-        types[type][f.gifts].push(gift);
+        types[type].gifts.push(gift);
       }
 
       var gifts = [];
@@ -77,7 +77,7 @@ module.exports = function (socket, userList) {
 
 function compareGiftsOnTypes(gift1, gift2) {
   //return gift1[constants.FIELDS.type] > gift2[constants.FIELDS.type];
-  if(gift1[constants.FIELDS.type] < gift2[constants.FIELDS.type]) return -1;
-  if(gift2[constants.FIELDS.type] < gift1[constants.FIELDS.type]) return 1;
+  if(gift1["type"] < gift2["type"]) return -1;
+  if(gift2["type"] < gift1[".type"]) return 1;
   return 0;
 };

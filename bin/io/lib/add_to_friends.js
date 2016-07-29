@@ -18,27 +18,27 @@ module.exports = function (socket, userList, profiles) {
     if (!checkInput(constants.IO_ADD_FRIEND, socket, userList, options)) {
       return;
     }
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
 
-    if (selfProfile.getID() == options[f.id]) {
+    if (selfProfile.getID() == options.id) {
       return new GameError(socket, constants.IO_ADD_FRIEND, "Попытка добавить в друзья себя");
     }
 
-    options[f.id] = sanitize(options[f.id]);
+    options.id = sanitize(options.id);
 
     var date = new Date();
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль друга
         var friendProfile = null;
-        if (profiles[options[f.id]]) {      // Если онлайн
-          friendProfile = profiles[options[f.id]];
+        if (profiles[options.id]) {      // Если онлайн
+          friendProfile = profiles[options.id];
           cb(null, friendProfile);
         }
         else {                           // Если нет - берем из базы
           friendProfile = new profilejs();
-          friendProfile.build(options[f.id], function (err, info) {  // Нужен VID и все поля, как при подключении
+          friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
             cb(null, friendProfile);
@@ -47,9 +47,9 @@ module.exports = function (socket, userList, profiles) {
       },///////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Добавляем первого в друзья
         var user = {};
-        user[f.friendid] = selfProfile.getID();
-        user[f.friendvid] = selfProfile.getVID();
-        user[f.date]= date;
+        user.friendid = selfProfile.getID();
+        user.friendvid = selfProfile.getVID();
+        user.date = date;
 
         friendProfile.addToFriends(user, function (err, res) {
           if (err) { return cb(err, null); }
@@ -60,35 +60,35 @@ module.exports = function (socket, userList, profiles) {
       function (friendProfile, cb) { // Добавляем второго
 
         var user = {};
-        user[f.friendid] = friendProfile.getID();
-        user[f.friendvid] = friendProfile.getVID();
-        user[f.date]= date;
+        user.friendid = friendProfile.getID();
+        user.friendvid = friendProfile.getVID();
+        user.date= date;
 
         selfProfile.addToFriends(user, function (err, res) {
           if (err) { return cb(err, null); }
 
           var friendInfo = {};
-          friendInfo[f.id]      = friendProfile.getID();
-          friendInfo[f.vid]     = friendProfile.getVID();
-          friendInfo[f.date]    = date;
-          friendInfo[f.points]  = friendProfile.getPoints();
-          friendInfo[f.age]     = friendProfile.getAge();
-          friendInfo[f.city]    = friendProfile.getCity();
-          friendInfo[f.country] = friendProfile.getCountry();
-          friendInfo[f.sex]     = friendProfile.getSex();
+          friendInfo.id      = friendProfile.getID();
+          friendInfo.vid     = friendProfile.getVID();
+          friendInfo.date    = date;
+          friendInfo.points  = friendProfile.getPoints();
+          friendInfo.age     = friendProfile.getAge();
+          friendInfo.city    = friendProfile.getCity();
+          friendInfo.country = friendProfile.getCountry();
+          friendInfo.sex     = friendProfile.getSex();
 
           socket.emit(constants.IO_ADD_FRIEND, friendInfo);
 
           if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
             var selfInfo = {};
-            selfInfo[f.id]      = selfProfile.getID();
-            selfInfo[f.vid]     = selfProfile.getVID();
-            selfInfo[f.date]    = date;
-            selfInfo[f.points]  = selfProfile.getPoints();
-            selfInfo[f.age]     = selfProfile.getAge();
-            selfInfo[f.city]    = selfProfile.getCity();
-            selfInfo[f.country] = selfProfile.getCountry();
-            selfInfo[f.sex]     = selfProfile.getSex();
+            selfInfo.id      = selfProfile.getID();
+            selfInfo.vid     = selfProfile.getVID();
+            selfInfo.date    = date;
+            selfInfo.points  = selfProfile.getPoints();
+            selfInfo.age     = selfProfile.getAge();
+            selfInfo.city    = selfProfile.getCity();
+            selfInfo.country = selfProfile.getCountry();
+            selfInfo.sex     = selfProfile.getSex();
 
             var friendSocket = friendProfile.getSocket();
             friendSocket.emit(constants.IO_ADD_FRIEND, selfInfo);

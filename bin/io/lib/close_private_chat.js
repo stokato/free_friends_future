@@ -8,19 +8,19 @@ module.exports = function(socket, userList, profiles) {
     if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, userList, options)) { return; }
 
     var selfProfile = userList[socket.id];
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
 
-    options[f.id] = sanitize(options[f.id]);
+    options.id = sanitize(options.id);
 
-    if(!selfProfile.isPrivateChat(options[f.id])) {
+    if(!selfProfile.isPrivateChat(options.id)) {
       return new GameError(socket, constants.IO_CLOSE_PRIVATE_CHAT,
                                    "Приватного чата с этим пользователем не существует");
     }
 
-    selfProfile.deletePrivateChat(options[f.id]);
+    selfProfile.deletePrivateChat(options.id);
 
     var result = {};
-    result[f.id] = options[f.id];
+    result.id = options.id;
     socket.emit(constants.IO_CLOSE_PRIVATE_CHAT, result);
 
     //if (profiles[options.id]) { // Если онлайн

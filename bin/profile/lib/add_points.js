@@ -11,16 +11,16 @@ module.exports = function(num, callback) {
     return callback(new Error("Ошибка при добавлении очков пользователю, количество очков задано некорректно"));
   }
   var self = this;
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
   self.pPoints = self.pPoints || 0;
   var oldPoints = self.pPoints;
 
   async.waterfall([ ////////////////////////////////////////////////////
     function(cb) { // Обновляем очки пользователя в основной таблице
       var options = {};
-      options[f.id] = self.pID;
-      options[f.vid] = self.pVID;
-      options[f.points] = self.pPoints + num;
+      options.id = self.pID;
+      options.vid = self.pVID;
+      options.points = self.pPoints + num;
 
       self.dbManager.updateUser(options, function(err) {
         if (err) {return cb(err, null); }
@@ -44,11 +44,11 @@ module.exports = function(num, callback) {
     //}, //////////////////////////////////////////////////////////////////////
     function(res, cb) { // Добавляем новые данные в таблицу очков
         var options = {};
-        options[f.userid] = self.pID;
-        options[f.uservid] = self.pVID;
-        options[f.sex] = self.pSex;
+        options.userid = self.pID;
+        options.uservid = self.pVID;
+        options.sex = self.pSex;
       //options[f.uid] = self.pID;
-      options[f.points] = self.pPoints + num;
+      options.points = self.pPoints + num;
       self.dbManager.addPoints(options, function(err) {
         if(err) { return cb(err, null); }
 

@@ -13,39 +13,39 @@ var constants_io = require('../../../io/constants');
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
   return function(timer, uid, options) { options = options || {};
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
 
     // Есил обработчик вызван игроком а не таймером
     if(uid) {
 
       // Получаем данные интересуемого игрока
-      var sympathy = game.gStoredOptions[options[f.pick]];
+      var sympathy = game.gStoredOptions[options["pick"]];
       var result, i;
 
       result = {};
-      result[f.picks] = [];
+      result.picks = [];
       var pick;
       // Получаем все его ходы и отправляем
       if(sympathy) {
         //result[f.game] = constants.G_SYMPATHY_SHOW;
         for(i = 0; i < sympathy.length; i ++) {
-          var pickedId = sympathy[i][f.pick];
+          var pickedId = sympathy[i]["pick"];
 
           pick = {};
-          pick[f.id] = options[f.pick];
-          pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
-          pick[f.pick] = {id: pickedId, vid: game.gActivePlayers[pickedId].vid};
-          result[f.picks].push(pick);
+          pick.id = options.pick;
+          pick.vid = game.gActivePlayers[options.pick].vid;
+          pick.pick = {id: pickedId, vid: game.gActivePlayers[pickedId].vid};
+          result.picks.push(pick);
         }
       } else {
         pick = {};
-        pick[f.id] = options[f.pick];
+        pick.id = options.pick;
 
-        if(options[f.pick]) {
-          pick[f.vid] = game.gActivePlayers[options[f.pick]].vid;
+        if(options.pick) {
+          pick.vid = game.gActivePlayers[options.pick].vid;
         }
-        pick[f.pick] = null;
-        result[f.picks].push(pick);
+        pick.pick = null;
+        result.picks.push(pick);
       }
 
       game.emit(game.gActivePlayers[uid].player.getSocket(), result, uid);

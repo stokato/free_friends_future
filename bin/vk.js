@@ -41,7 +41,7 @@ module.exports = VK;
 
 function getItem(request, callback) {
   // Получение информации о товаре
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   var payInfo = request["item"].split("_");
 
@@ -63,10 +63,10 @@ function getItem(request, callback) {
       };
     } else {
       response["response"] = {
-        "item_id"   : goodInfo[f.id],
-        "title"     : goodInfo[f.title],
-        "photo_url" : goodInfo[f.data],
-        "price"     : goodInfo[f.price]
+        "item_id"   : goodInfo.id,
+        "title"     : goodInfo.title,
+        "photo_url" : goodInfo.data,
+        "price"     : goodInfo.price
       };
     }
 
@@ -78,7 +78,7 @@ function getItem(request, callback) {
 function changeOrderStatus(request, socket, callback) {
   // Изменение статуса заказа
   var response = {};
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   if (request["status"] == "chargeable") {
     var orderId = request["order_id"];
@@ -86,10 +86,10 @@ function changeOrderStatus(request, socket, callback) {
     var payInfo = request["item"].split("_");
 
     var options = {};
-    options[f.vid]      = sanitize(request["user_id"]);
-    options[f.ordervid] = orderId;
-    options[f.goodid]   = payInfo[0];
-    options[f.price]    = sanitize(request["item_price"]);
+    options.vid      = sanitize(request["user_id"]);
+    options.ordervid = orderId;
+    options.goodid   = payInfo[0];
+    options.price    = sanitize(request["item_price"]);
 
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
@@ -97,7 +97,7 @@ function changeOrderStatus(request, socket, callback) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
-            if(goodInfo[f.price] != options[f.price])
+            if(goodInfo.price != options.price)
               cb(new Error("Неверно указана цена товара"), null);
             else
               cb(null, goodInfo);
@@ -105,7 +105,7 @@ function changeOrderStatus(request, socket, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        dbManager.findUser(null, options[f.vid], [f.money], function(err, info) {
+        dbManager.findUser(null, options.vid, ["money"], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
@@ -115,18 +115,18 @@ function changeOrderStatus(request, socket, callback) {
       },/////////////////////////////////////////////////////////////////////
       function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        var newMoney = info[f.money] - goodInfo[f.price];
-        if(newMoney < 0 && goodInfo[f.goodtype] != constants.GT_MONEY) {
+        var newMoney = info.money - goodInfo.price;
+        if(newMoney < 0 && goodInfo.goodtype != constants.GT_MONEY) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
         var ordOptions = {};
-        ordOptions[f.vid] = options.ordervid;
-        ordOptions[f.goodid] = goodInfo[f.id];
-        ordOptions[f.userid] = info[f.id];
-        ordOptions[f.uservid] = info[f.vid];
-        ordOptions[f.sum] = goodInfo[f.price];
-        ordOptions[f.date] = new Date();
+        ordOptions.vid = options.ordervid;
+        ordOptions.goodid = goodInfo.id;
+        ordOptions.userid = info.id;
+        ordOptions.uservid = info.vid;
+        ordOptions.sum = goodInfo.price;
+        ordOptions.date = new Date();
 
         dbManager.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
@@ -138,41 +138,41 @@ function changeOrderStatus(request, socket, callback) {
         var options = {};
 
         if(payInfo[1]) {
-          dbManager.findUser(null, payInfo[1], [f.money], function(err, info) {
+          dbManager.findUser(null, payInfo[1], ["money"], function(err, info) {
             if(err) { return cb(err, null); }
 
             if (info) {
               //cb(null, goodInfo, info);
 
-              options[f.id] = info[f.id];
-              options[f.vid] = info[f.vid];
-              options[f.money] = info[f.money] + goodInfo[f.price2];
+              options.id = info.id;
+              options.vid = info.vid;
+              options.money = info.money + goodInfo.price2;
 
               dbManager.updateUser(options, function(err, id) {
                 if (err) { return cb(err, null); }
 
-                options[f.money] = goodInfo[f.price2];
+                options.money = goodInfo.price2;
                 socket.emit('give_money', options);
 
                 var result = {};
-                result[f.orderid] = orderid;
+                result.orderid = orderid;
                 cb(null, result);
               });
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options[f.id] = info[f.id];
-          options[f.vid] = info[f.vid];
-          options[f.money] = info[f.money] + goodInfo[f.price2];
+          options.id = info.id;
+          options.vid = info.vid;
+          options.money = info.money + goodInfo.price2;
 
           dbManager.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }
 
-            options[f.money] = goodInfo[f.price2];
+            options.money = goodInfo.price2;
             socket.emit('give_money', options);
 
             var result = {};
-            result[f.orderid] = orderid;
+            result.orderid = orderid;
             cb(null, result);
           });
         }
@@ -187,7 +187,7 @@ function changeOrderStatus(request, socket, callback) {
       } else {
         response["response"] = {
           "order_id": orderId,
-          "app_order_id": res[f.orderid]
+          "app_order_id": res.orderid
         };
       }
 

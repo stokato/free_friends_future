@@ -10,10 +10,10 @@ module.exports = function(uid, callback) {
     if (err) { return callback(err, null); }
 
     var result = {};
-    result[constants.FIELDS.is_friend] = false;
+    result["friend"] = false;
 
     if(friend) {
-      result[constants.FIELDS.is_friend] = true;
+      result["friend"] = true;
     }
 
     callback(null, result);

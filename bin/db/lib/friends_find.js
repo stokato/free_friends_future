@@ -10,20 +10,20 @@ module.exports = function(uid, fid, callback) {
   var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
 
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  var constFields = [f.userid];
+  var constFields = ["userid"];
   var constCount = [1];
   var params = [uid];
 
   if(fid) {
-    constFields.push(f.friendid);
+    constFields.push("friendid");
     constCount.push(1);
     params.push(fid);
   }
 
 
-  var fields = [f.friendid, f.friendvid, f.date];
+  var fields = ["friendid", "friendvid", "date"];
   var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERFRIENDS, constFields, constCount);
 
   self.client.execute(query, params, {prepare: true }, function(err, result) {
@@ -42,16 +42,17 @@ module.exports = function(uid, fid, callback) {
         var row = result.rows[i];
 
         friend = {};
-        friend[f.id] = row[f.friendid].toString();
-        friend[f.vid] = row[f.friendvid];
-        friend[f.date] = row[f.date];
+        friend["id"] = row["friendid"].toString();
+        friend["vid"] = row["friendvid"];
+        friend["date"] = row["date"];
+
 
         friends.push(friend);
-        friendList.push(friend[f.id]);
+        friendList.push(friend["id"]);
       }
 
-      var fields = [f.id, f.vid, f.age, f.sex, f.city, f.country, f.points];
-      var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERS, [f.id], [const_fields]);
+      var fields = ["id", "vid", "age", "sex", "city", "country", "points"]; // "id", "vid",
+      var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERS, ["id"], [const_fields]);
 
       self.client.execute(query, friendList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
@@ -62,15 +63,15 @@ module.exports = function(uid, fid, callback) {
           var index, j;
           var friendsLen = friendList.length;
           for(j = 0; j < friendsLen; j++) {
-            if(friendList[j] == row[f.id].toString()) {
+            if(friendList[j] == row["id"].toString()) {
               index = j;
             }
           }
-          friends[index][f.age]     = row[f.age];
-          friends[index][f.sex]     = row[f.sex];
-          friends[index][f.city]    = row[f.city];
-          friends[index][f.country] = row[f.country];
-          friends[index][f.points]  = row[f.points];
+          friends[index]["age"]     = row["age"];
+          friends[index]["sex"]     = row["sex"];
+          friends[index]["city"]    = row["city"];
+          friends[index]["country"] = row["country"];
+          friends[index]["points"]  = row["points"];
         }
 
         callback(null, friends);

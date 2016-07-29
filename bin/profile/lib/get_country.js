@@ -1,4 +1,4 @@
-// Получить страну
+// РџРѕР»СѓС‡РёС‚СЊ СЃС‚СЂР°РЅСѓ
 module.exports = function() {
   return this.pCountry;
 };

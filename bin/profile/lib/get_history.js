@@ -4,12 +4,12 @@ var constants = require('../../io/constants');
  */
 module.exports = function(options, callback) {
   var self = this;
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
 
   var params = {};
-  params.id_list        = [options[f.id]];
-  params[f.first_date]  = options[f.first_date];
-  params[f.second_date] = options[f.second_date];
+  params.id_list        = [options.id];
+  params.first_date  = options.first_date;
+  params.second_date = options.second_date;
 
   self.dbManager.findMessages(self.pID, params, function(err, messages) {
     if (err) { return callback(err, null); }
@@ -20,23 +20,23 @@ module.exports = function(options, callback) {
     for(var i = 0; i < messages.length; i++) {
       message = {};
       if(messages[i].incoming) { // Если входящее, берем данные собеседника (хранятся в чате) и наоборот
-        message[f.id]      = options[f.id];
-        message[f.vid]     = options[f.vid];
-        message[f.city]    = options[f.city];
-        message[f.country] = options[f.country];
-        message[f.sex]     = options[f.sex];
+        message.id      = options.id;
+        message.vid     = options.vid;
+        message.city    = options.city;
+        message.country = options.country;
+        message.sex     = options.sex;
       } else {
-        message[f.id]      = self.pID;
-        message[f.vid]     = self.pVID;
-        message[f.city]    = self.pCity;
-        message[f.country] = self.pCountry;
-        message[f.sex]     = self.pSex;
+        message.id      = self.pID;
+        message.vid     = self.pVID;
+        message.city    = self.pCity;
+        message.country = self.pCountry;
+        message.sex     = self.pSex;
       }
-      message[f.chat]      = options[f.id];
-      message[f.chatVID]   = options[f.vid];
-      message[f.date]      = messages[i][f.date];
-      message[f.text]      = messages[i][f.text];
-      message[f.messageid] = messages[i][f.id];
+      message.chat      = options.id;
+      message.chatVID   = options.vid;
+      message.date      = messages[i]["date"];
+      message.text      = messages[i]["text"];
+      message.messageid = messages[i]["id"];
 
       history.push(message);
     }

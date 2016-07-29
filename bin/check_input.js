@@ -28,15 +28,15 @@ function checkInput(em, socket, userList, options, serverProfile) {
 
   var isValid = true;
   var val;
-  var f = constants_io.FIELDS;
+  //var f = constants_io.FIELDS;
 
   switch (em) {
     case constants_io.IO_INIT :
-      isValid = (validator.isInt(options[f.country] + ""))? isValid : false;
-      isValid = (validator.isInt(options[f.city] + ""))? isValid : false;
-      isValid = (options[f.sex] + "" == constants_io.GUY ||
-                 options[f.sex] + "" == constants_io.GIRL) ? isValid : false;
-      isValid = (validator.isDate(options[f.bdate] + "")? isValid : false);
+      isValid = (validator.isInt(options.country + ""))? isValid : false;
+      isValid = (validator.isInt(options.city + ""))? isValid : false;
+      isValid = (options.sex + "" == constants_io.GUY ||
+                 options.sex + "" == constants_io.GIRL) ? isValid : false;
+      isValid = (validator.isDate(options.bdate + "")? isValid : false);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно заданы поля: страна, город, пол, дата рождения");
@@ -50,14 +50,14 @@ function checkInput(em, socket, userList, options, serverProfile) {
       //isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
       break;
     case constants_io.IO_GET_PROFILE :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
       }
       break;
     case constants_io.IO_PRIVATE_MESSAGE :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
@@ -67,28 +67,28 @@ function checkInput(em, socket, userList, options, serverProfile) {
 
       break;
     case constants_io.IO_GIVE_MONEY :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
       }
 
-      isValid = (f.money in options)? isValid : false;
-      isValid = (validator.isInt(options[f.money]))? isValid : false;
+      isValid = ("money" in options)? isValid : false;
+      isValid = (validator.isInt(option.money))? isValid : false;
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задано количество монет");
       }
       break;
     case constants_io.IO_ADD_FRIEND :
-    isValid = checkID(options[f.id]);
+    isValid = checkID(options.id);
 
     if(!isValid) {
       new GameError(socket, em, "Некорректно задан ИД");
     }
     break;
     case constants_io.IO_DEL_FROM_FRIENDS :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
@@ -99,23 +99,23 @@ function checkInput(em, socket, userList, options, serverProfile) {
       //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
       break;
     case constants_io.IO_OPEN_PRIVATE_CHAT :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
       }
       break;
     case constants_io.IO_GET_CHAT_HISTORY :
-      isValid = checkID(options[f.id]);
-      isValid = (validator.isDate(options[f.first_date] + "")? isValid : false);
-      isValid = (validator.isDate(options[f.second_date] + "")? isValid : false);
+      isValid = checkID(options.id);
+      isValid = (validator.isDate(options.first_date + "")? isValid : false);
+      isValid = (validator.isDate(options.second_date + "")? isValid : false);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно заданы поля: ИД, минимальная и максимальная даты выборки");
       }
       break;
     case constants_io.IO_CLOSE_PRIVATE_CHAT :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");
@@ -137,23 +137,23 @@ function checkInput(em, socket, userList, options, serverProfile) {
       }
       break;
     case constants_game.G_BEST :
-      isValid = checkID(options[f.pick]);
+      isValid = checkID(options.pick);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД игрока, выбранного лучшим.");
       }
       break;
     case constants_game.G_BOTTLE_KISSES :
-      isValid = (options[f.pick])? isValid : false;
-      isValid = (validator.isBoolean(options[f.pick] + "")? isValid : false);
+      isValid = (options.pick)? isValid : false;
+      isValid = (validator.isBoolean(options.pick + "")? isValid : false);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean.");
       }
       break;
     case constants_game.G_QUESTIONS :
-      val = options[f.pick] + "";
-      isValid = (options[f.pick])? isValid : false;
+      val = options.pick + "";
+      isValid = (options.pick)? isValid : false;
       isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
       if(!isValid) {
@@ -161,8 +161,8 @@ function checkInput(em, socket, userList, options, serverProfile) {
       }
       break;
     case constants_game.G_CARDS :
-      val = options[f.pick] + "";
-      isValid = (f.pick in options)? isValid : false;
+      val = options.pick + "";
+      isValid = ("pick" in options)? isValid : false;
       isValid = (validator.isInt(val) && val <= 6 && val >= 0)? isValid : false;
 
       if(!isValid) {
@@ -171,14 +171,14 @@ function checkInput(em, socket, userList, options, serverProfile) {
       break;
     case constants_game.G_SYMPATHY :
     case constants_game.G_SYMPATHY_SHOW :
-      isValid = checkID(options[f.pick]);
+      isValid = checkID(options.pick);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД в выборе игрока.");
       }
       break;
     case constants_io.IO_RELEASE_PLAYER :
-      isValid = checkID(options[f.id]);
+      isValid = checkID(options.id);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан ИД");

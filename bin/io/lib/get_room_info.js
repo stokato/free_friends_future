@@ -22,15 +22,37 @@ module.exports = function (room, callback) {
 };
 
 function fillInfo(profile) {
-  var f = constants.FIELDS;
+  //var f = constants.FIELDS;
   var info = {};
-  info[f.id]      = profile.getID();
-  info[f.vid]     = profile.getVID();
-  info[f.age]     = profile.getAge();
-  info[f.sex]     = profile.getSex();
-  info[f.city]    = profile.getCity();
-  info[f.country] = profile.getCountry();
-  info[f.points]  = profile.getPoints();
+  info.id      = profile.getID();
+  info.vid     = profile.getVID();
+  info.age     = profile.getAge();
+  info.sex     = profile.getSex();
+  info.city    = profile.getCity();
+  info.country = profile.getCountry();
+  info.points  = profile.getPoints();
+
+  var gift = profile.getGift1();
+
+  if(gift) {
+
+    var result = {};
+    result.fromid  = profile.getID();
+    result.fromvid = profile.getVID();
+    result.id      = profile.getID();
+    result.vid     = profile.getVID();
+    result.giftid  = gift.giftid;
+    result.src     = gift.src;
+    result.type    = gift.type;
+    result.title   = gift.title;
+    result.date    = gift.date;
+    result.gid     = gift.gid;
+
+    info.gift1 = result;
+  } else {
+    info.gift1 = null;
+  }
+
 
   return info;
 }

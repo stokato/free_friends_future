@@ -8,12 +8,12 @@ module.exports = function (socket, userList) {
   socket.on(constants.IO_GET_MONEY, function() {
     if (!checkInput(constants.IO_GET_MONEY, socket, userList, {})) { return; }
 
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
     userList[socket.id].getMoney(function (err, money) {
       if (err) {  return new GameError(socket, constants.IO_GET_MONEY, err.message); }
 
       var result = {};
-      result[f.money] = money;
+      result.money = money;
       socket.emit(constants.IO_GET_MONEY, result);
     });
   });

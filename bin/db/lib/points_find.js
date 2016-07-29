@@ -11,10 +11,10 @@ var qBuilder = require('./build_query');
 
 module.exports = function(sex, callback) {
   var self = this;
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
   var users = [];
-  var fields = [f.points, f.userid, f.uservid, f.sex];
+  var fields = ["points", "userid", "uservid", "sex"];
 
   var db = C.T_POINTS;
   if(sex == C.IO.GIRL) {
@@ -28,17 +28,20 @@ module.exports = function(sex, callback) {
   this.client.execute(query, [], {prepare: true }, function(err, result) {
     if (err) { return cb(err, null); }
 
-    var f = C.IO.FIELDS;
+    //var f = C.IO.FIELDS;
 
-    var i, user, rows = result.rows;
+    var i, rows = result.rows;
     var counter = 1;
     for(i = 0; i < rows.length; i++) {
-      user = {};
+      //user = {};
+      //
+      //user[f.id]      = rows[i][f.userid];
+      //user[f.vid]     = rows[i][f.uservid];
+      //user[f.points]  = rows[i][f.points];
+      //user[f.sex]     = rows[i][f.sex];
 
-      user[f.id]      = rows[i][f.userid];
-      user[f.vid]     = rows[i][f.uservid];
-      user[f.points]  = rows[i][f.points];
-      user[f.sex]     = rows[i][f.sex];
+      var user = rows[i];
+      user.userid = user.userid.toString();
       user.number     = counter++;
       users.push(user);
     }

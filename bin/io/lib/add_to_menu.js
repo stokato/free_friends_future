@@ -16,7 +16,7 @@ module.exports = function(socket, userList) {
     var result = {};
 
     if(selfProfile.isInMenu()) {
-      result[constants.FIELDS.status] = 'fail';
+      result["status"] = 'fail';
       socket.emit(constants.IO_ADD_TO_MENU, result);
 
       return new GameError(socket, constants.IO_ADD_POINTS,
@@ -50,12 +50,12 @@ module.exports = function(socket, userList) {
       if(err) { new GameError(socket, constants.IO_ADD_POINTS,
         "Ошибка при добавлении в меню");}
 
-      result[constants.FIELDS.status] = 'success';
+      result["status"] = 'success';
 
       socket.emit(constants.IO_ADD_POINTS, result);
 
       result = {};
-      result[constants.FIELDS.money] = money;
+      result["money"] = money;
 
       socket.emit(constants.IO_GET_MONEY, result);
     });///////////////////////////////////////////////////////

@@ -16,21 +16,21 @@ var constants_io = require('../../../io/constants');
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
   return function (timer, uid, options) {
-    var f = constants_io.FIELDS;
+    //var f = constants_io.FIELDS;
     var playerInfo;
     if(uid) { // Отправляем всем выбор игрока
       playerInfo = game.gActivePlayers[uid];
 
       var result = {};
-      result[f.id] = uid;
-      result[f.vid] = playerInfo.vid;
-      result[f.pick] = options[f.pick];
+      result.id = uid;
+      result.vid = playerInfo.vid;
+      result.pick = options.pick;
       //result[f.game] = constants.G_BOTTLE_KISSES;
 
       game.emit(playerInfo.player.getSocket(), result);
 
-      if(!game.gameState[f.picks]) { game.gameState[f.picks] = []; }
-      game.gameState[f.picks].push(result);
+      if(!game.gameState.picks) { game.gameState.picks = []; }
+      game.gameState.picks.push(result);
     }
 
     // Если все игроки сделали выбор, проверяем - оба ли поцеловали
@@ -38,7 +38,7 @@ module.exports = function(game) {
       var item, allKissed = true;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
         playerInfo  = game.gActivePlayers[item];
-        if(!game.gActionsQueue[playerInfo.id] || !game.gActionsQueue[playerInfo.id][0][f.pick]) {
+        if(!game.gActionsQueue[playerInfo.id] || !game.gActionsQueue[playerInfo.id][0]["pick"]) {
           allKissed = false;
         }
       }
@@ -108,7 +108,7 @@ function onPoints(userList, playersInfo, count, player, callback) {
     count++;
 
     var options = {};
-    options[constants_io.FIELDS.points] = res;
+    options.points = res;
 
     var playerSocket = player.getSocket();
     playerSocket.emit(constants_io.IO_ADD_POINTS, options);

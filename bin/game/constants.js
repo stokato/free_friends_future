@@ -17,7 +17,7 @@ var GAMES = [ G_BOTTLE, G_PRISON, G_QUESTIONS, G_PRISON, G_CARDS, G_PRISON, G_BE
 //                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 //                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
 //                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
-var TIMEOUT = 10;
+var TIMEOUT = 16;
 var CARD_COUNT = 7;
 var PLAYERS_COUNT = 2;//10;
 var SYMPATHY_LIMIT = 2;

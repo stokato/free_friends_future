@@ -20,19 +20,19 @@ module.exports = function (socket, userList, profiles) {
   socket.on(constants.IO_GET_PROFILE, function(options) {
     if (!checkInput(constants.IO_GET_PROFILE, socket, userList, options)) { return; }
 
-    var f = constants.FIELDS;
+    //var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
     var selfInfo = fillInfo(selfProfile);
 
-    options[f.id] = sanitize(options[f.id]);
+    options.id = sanitize(options.id);
 
-    if (selfProfile.getID() == options[f.id]) { // Если открываем свой профиль
+    if (selfProfile.getID() == options.id) { // Если открываем свой профиль
       async.waterfall([
         function (cb) { // Получаем историю чатов
           selfProfile.getPrivateChats(function (err, chats) {
             if (err) {  return cb(err, null); }
 
-            selfInfo[f.chats] = chats;
+            selfInfo.chats = chats;
             cb(null, null);
           });
         }, /////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ module.exports = function (socket, userList, profiles) {
           selfProfile.getGifts(function (err, gifts) {
             if (err) {  return cb(err, null); }
 
-            selfInfo[f.gifts] = gifts;
+            selfInfo.gifts = gifts;
             cb(null, null);
           });
         },/////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ module.exports = function (socket, userList, profiles) {
           selfProfile.getFriends(function (err, friends) {
             if (err) {  return cb(err, null); }
 
-            selfInfo[f.friends] = friends;
+            selfInfo.friends = friends;
             cb(null, null);
           });
         },/////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ module.exports = function (socket, userList, profiles) {
           selfProfile.getGuests(function (err, guests) {
             if (err) { return cb(err, null); }
 
-            selfInfo[f.guests] = guests;
+            selfInfo.guests = guests;
             cb(null, null);
           });
         }/////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ module.exports = function (socket, userList, profiles) {
       });
     } else {
       var isOnline = false;
-      if(profiles[options[f.id]]) { isOnline = true }
+      if(profiles[options.id]) { isOnline = true }
 
       async.waterfall([///////////////////////////////////////////////////////////////////
         function (cb) { // Получаем профиль того, чей просматриваем
@@ -78,7 +78,7 @@ module.exports = function (socket, userList, profiles) {
             cb(null, friendProfile, friendInfo);
           } else {                // Если нет - берем из базы
             friendProfile = new profilejs();
-            friendProfile.build(options[f.id], function (err, info) {
+            friendProfile.build(options.id, function (err, info) {
               if (err) { return cb(err, null); }
 
               var friendInfo = fillInfo(friendProfile);
@@ -90,7 +90,7 @@ module.exports = function (socket, userList, profiles) {
           friendProfile.getGifts(function (err, gifts) {
             if (err) {  return cb(err, null); }
 
-            friendInfo[f.gifts] = gifts;
+            friendInfo.gifts = gifts;
             cb(null, friendProfile, friendInfo);
           });
         },/////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ module.exports = function (socket, userList, profiles) {
           friendProfile.isFriend(selfProfile.getID(), function (err, res) {
             if (err) {  return cb(err, null); }
 
-            friendInfo[f.is_friend] = res[f.is_friend];
+            friendInfo.is_friend = res.is_friend;
             cb(null, friendProfile, friendInfo);
           });
         },/////////////////////////////////////////////////////////////////////
@@ -106,15 +106,15 @@ module.exports = function (socket, userList, profiles) {
           friendProfile.getFriends(function (err, friends) {
             if (err) {  return cb(err, null); }
 
-            friendInfo[f.friends] = friends;
+            friendInfo.friends = friends;
             cb(null, friendProfile, friendInfo);
           });
         },/////////////////////////////////////////////////////////////////////
         function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
           var user = {};
-          user[f.guestid] = selfProfile.getID();
-          user[f.guestvid] = selfProfile.getVID();
-          user[f.date] = new Date();
+          user.guestid = selfProfile.getID();
+          user.guestvid = selfProfile.getVID();
+          user.date = new Date();
           friendProfile.addToGuests(user, function (err, res) {
             if (err) { return cb(err, null); }
 
@@ -137,16 +137,15 @@ module.exports = function (socket, userList, profiles) {
 };
 
 function fillInfo(profile) {
-  var f = constants.FIELDS;
   var info = {};
-  info[f.id]      = profile.getID();
-  info[f.vid]     = profile.getVID();
-  info[f.age]     = profile.getAge();
-  info[f.sex]     = profile.getSex();
-  info[f.city]    = profile.getCity();
-  info[f.country] = profile.getCountry();
-  info[f.status]  = profile.getStatus();
-  info[f.points]  = profile.getPoints();
+  info.id      = profile.getID();
+  info.vid     = profile.getVID();
+  info.age     = profile.getAge();
+  info.sex     = profile.getSex();
+  info.city    = profile.getCity();
+  info.country = profile.getCountry();
+  info.status  = profile.getStatus();
+  info.points  = profile.getPoints();
 
   return  info;
 }

@@ -11,11 +11,11 @@ var qBuilder = require('./build_query');
 module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
 
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
   var companions = options.id_list || [];
-  var firstDate =  options[f.first_date];
-  var secondDate = options[f.second_date];
+  var firstDate =  options["first_date"];
+  var secondDate = options["second_date"];
 
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
   if (!companions[0]) { return callback(new Error("Задан пустой Id собеседника"), null); }
@@ -36,13 +36,13 @@ module.exports = function(uid, options, callback) { options = options || {};
       var const_more, const_less;
       var params2 = params.slice(0);
       if (firstDate) {
-        const_more = const_less = f.id;
+        const_more = const_less = "id";
         params2.push(self.timeUuid.fromDate(firstDate));
         params2.push(self.timeUuid.fromDate(secondDate));
       }
 
       var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERMESSAGES,
-                     [f.userid, f.companionid],[1, companions.length], const_more, const_less);
+                     ["userid", "companionid"],[1, companions.length], const_more, const_less);
 
       self.client.execute(query, params2, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
@@ -51,17 +51,23 @@ module.exports = function(uid, options, callback) { options = options || {};
         var i, rowsLen = result.rows.length;
         if(rowsLen > 0) {
           for(i = 0; i < rowsLen; i++) {
-            var row = result.rows[i];
+            //var row = result.rows[i];
+            //
+            //var message = {};
+            //message["id"]        = row["id].toString();
+            //message["date"]        = row["date];
+            //message["companionid"] = row["companionid].toString();
+            //message["companionvid"]    = row["companionvid];
+            //message["incoming"]    = row["incoming];
+            //message["text"]        = row["text];
+            //message["opened"]    = true;
+            //message["userid"] = uid;
 
-            var message = {};
-            message[f.id]        = row[f.id].toString();
-            message[f.date]        = row[f.date];
-            message[f.companionid] = row[f.companionid].toString();
-            message[f.companionvid]    = row[f.companionvid];
-            message[f.incoming]    = row[f.incoming];
-            message[f.text]        = row[f.text];
-            message[f.opened]    = true;
-            message[f.userid] = uid;
+            var message = result.rows[i];
+            message.opened = true;
+            message.userid = uid;
+            message.id = message.id.toString();
+            message.companionid = message.companionid.toString();
 
             messages.push(message);
           }
@@ -71,11 +77,11 @@ module.exports = function(uid, options, callback) { options = options || {};
         }
       });
     },//////////////////////////////////////////////////////////////////////////////
-    function(messages, cb) { // Получаем все непрочитанный сообщения
+    function(messages, cb) { // Получаем все непрочитанные сообщения
       //var query = "select * FROM user_new_messages where userid = ? and companionid in (" + fields + ")";
       messages = messages || [];
       var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERNEWMESSAGES,
-                                        [f.userid, f.companionid], [1, companions.length]);
+                                        ["userid", "companionid"], [1, companions.length]);
 
       self.client.execute(query, params, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
@@ -84,17 +90,23 @@ module.exports = function(uid, options, callback) { options = options || {};
         var rowsLen = result.rows.length;
         if(rowsLen > 0) {
           for(i = 0; i < rowsLen; i++) {
-            var row = result.rows[i];
+            //var row = result.rows[i];
+            //
+            //var message = {};
+            //message["id]           = row["id].toString();
+            //message["date]         = row["date];
+            //message["companionid]  = row["companionid].toString();
+            //message["companionvid] = row["companionvid];
+            //message["incoming]     = row["incoming];
+            //message["text]         = row["text];
+            //message["opened]       = false;
+            //message["userid]       = uid;
 
-            var message = {};
-            message[f.id]           = row[f.id].toString();
-            message[f.date]         = row[f.date];
-            message[f.companionid]  = row[f.companionid].toString();
-            message[f.companionvid] = row[f.companionvid];
-            message[f.incoming]     = row[f.incoming];
-            message[f.text]         = row[f.text];
-            message[f.opened]       = false;
-            message[f.userid]       = uid;
+            var message = result.rows[i];
+            message.opened = false;
+            message.userid = uid;
+            message.id = message.id.toString();
+            message.companionid = message.companionid.toString();
 
             newMessages.push(message);
           }
@@ -105,7 +117,7 @@ module.exports = function(uid, options, callback) { options = options || {};
           for(i = 0; i < newMesLen; i++) {
             var noSuch = true;
             for(j = 0; j < len; j++) {
-              if(newMessages[i][f.id] == messages[j][f.id]) {
+              if(newMessages[i]["id"] == messages[j]["id"]) {
                 noSuch = false;
               }
             }
@@ -120,7 +132,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     function(messages, cb) {
       //var query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
       var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERNEWMESSAGES,
-                          [f.userid, f.companionid], [1, companions.length]);
+                          ["userid", "companionid"], [1, companions.length]);
 
       self.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err, null); }
@@ -147,10 +159,10 @@ module.exports = function(uid, options, callback) { options = options || {};
 
 function updateChat(db, uid, companions, count, callback) {
   //var query = "update user_chats set isnew = ? where userid = ? and companionid = ?";
-  var f = C.IO.FIELDS;
+  //var f = C.IO.FIELDS;
 
-  var query = qBuilder.build(qBuilder.Q_UPDATE, [f.isnew], C.T_USERCHATS,
-    [f.userid, f.companionid], [1, 1]);
+  var query = qBuilder.build(qBuilder.Q_UPDATE, ["isnew"], C.T_USERCHATS,
+    ["userid", "companionid"], [1, 1]);
   var params = [false, uid, companions[count]];
 
   db.execute(query, params, {prepare: true },  function(err) {

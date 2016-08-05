@@ -44,7 +44,7 @@ function Game(room, userList) {
 
   this.gStoredOptions  = {};        // опции, сохраненные на предидущих этапах
   this.gActivePlayers  = {};       // Игроки, которые на данном этапе могут ходить
-  this.gPrisoners = {};           // Игроки, попавшие в тюрьму
+  this.gPrisoner = null;
 
   this.gNextGame = constants.G_START; // Игра, которая будет вызвана следующей
 
@@ -52,7 +52,6 @@ function Game(room, userList) {
 
   this.gameState = null;
 
-  this.countPrisoners = 0;  // Количество папавших в тюрьму
   this.gameCounter = 0;
   this.girlsIndex = 0;
   this.guysIndex = 0;
@@ -69,8 +68,6 @@ function Game(room, userList) {
   this.gHandlers[constants.G_SYMPATHY]      = hSympathy(self);
   this.gHandlers[constants.G_SYMPATHY_SHOW] = hSympathyShow(self);
   this.gHandlers[constants.G_PRISON]        = hPrison(self);
-
-  this.gStoredRand = 5;
 }
 
 Game.prototype.start = start;
@@ -82,15 +79,11 @@ Game.prototype.getQuestions = function() {
   return gameQuestions;
 };
 
-//Game.prototype.isPlayerInRoom = isPlayerInRoom;
-//Game.prototype.getPlayerInfo = getPlayerInfo;
-
 module.exports = Game;
 
 getQuestionsFromDB();
 
-//setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT * 1000);
-
+// --------------------
 function getQuestionsFromDB() {
   dbManager.findAllQuestions(function(err, questions) {
     if(err) {

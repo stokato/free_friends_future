@@ -45,7 +45,7 @@ module.exports = function (socket, userList, profiles) {
           });
         },/////////////////////////////////////////////////////////////////////
         function (res, cb) { // Получаем друзей
-          selfProfile.getFriends(function (err, friends) {
+          selfProfile.getFriends(true, function (err, friends) {
             if (err) {  return cb(err, null); }
 
             selfInfo.friends = friends;
@@ -53,7 +53,7 @@ module.exports = function (socket, userList, profiles) {
           });
         },/////////////////////////////////////////////////////////////////////
         function (res, cb) { // Получаем гостей
-          selfProfile.getGuests(function (err, guests) {
+          selfProfile.getGuests(true, function (err, guests) {
             if (err) { return cb(err, null); }
 
             selfInfo.guests = guests;
@@ -103,7 +103,7 @@ module.exports = function (socket, userList, profiles) {
           });
         },/////////////////////////////////////////////////////////////////////
         function (friendProfile, friendInfo, cb) { // Получаем друзей
-          friendProfile.getFriends(function (err, friends) {
+          friendProfile.getFriends(false, function (err, friends) {
             if (err) {  return cb(err, null); }
 
             friendInfo.friends = friends;
@@ -119,8 +119,17 @@ module.exports = function (socket, userList, profiles) {
             if (err) { return cb(err, null); }
 
             cb(null, friendProfile, friendInfo);
-          });//////////////////////////////////////////////////////////////
-        }], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
+          });
+        },/////////////////////////////////////////////////////////////////////
+        function (friendProfile, friendInfo, cb) { // Получаем гостей
+          friendProfile.getGuests(false, function (err, guests) {
+            if (err) { return cb(err, null); }
+
+            friendInfo.guests = guests;
+            cb(null, friendProfile, friendInfo);
+          });
+        }/////////////////////////////////////////////////////////////////////
+      ], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
         if (err) { return new GameError(socket, constants.IO_GET_PROFILE, err.message); }
 
         //var friendInfo = fillInfo(friendProfile);

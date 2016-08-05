@@ -1,21 +1,18 @@
 var GameError = require('./../../../game_error'),
-  checkInput = require('./../../../check_input');
+  checkInput = require('./../../../check_input'),
+  checkCountPlayers = require('./../check_count_players');
 var constants = require('../../constants');
-
-//var //startTimer   = require('../start_timer'),
-   // activateAllPlayers = require('../activate_all_players'),
-  //getPlayersID = require('../get_players_id'),
-    //setActionsLimit = require('../set_action_limits'),
-  //randomPlayer = require('../random_player');
-
-//var constants_io = require('../../../io/constants');
 
 // Карты, ждем, кода все ответят, потом показываем всем их ответы и где золото
 module.exports = function(game) {
   return function (timer) {
-    //var f = constants_io.FIELDS;
+
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
+
+      if(!checkCountPlayers(game)) {
+        return game.stop();
+      }
 
       var result = {};
       result.picks = [];
@@ -39,7 +36,6 @@ module.exports = function(game) {
       }
 
       game.restoreGame(result, true);
-
     }
   }
 };

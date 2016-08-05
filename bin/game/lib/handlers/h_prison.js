@@ -5,26 +5,19 @@ var randomPlayer = require('../random_player'),
   getPlayersID = require('../get_players_id'),
   startTimer   = require('../start_timer'),
   setActionsLimit = require('../set_action_limits'),
-  getPrison = require('../get_prison'),
   getNextPlayer = require('./../get_next_player');
 
-// Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
+
 module.exports = function(game) {
   return function(timer, uid) {
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
-      //var f = constants_io.FIELDS;
 
-      var prisoner = null;
-      for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        prisoner = game.gActivePlayers[item];
+      for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
+        game.gPrisoner = game.gActivePlayers[item];
       }
 
-      game.gPrisoners[prisoner.id] = prisoner;
-
-      game.countPrisoners++;
-
-      var player = randomPlayer(game.gRoom, null, [], game.gPrisoners);
+      var player = randomPlayer(game.gRoom, null, [], game.gPrisoner);
       if(!player) {
         return game.stop();
       }
@@ -39,7 +32,7 @@ module.exports = function(game) {
       var isPlayer = false;
       while(!isPlayer) {
         nextPlayerInfo = setPlayer();
-        if(!game.gPrisoners[nextPlayerInfo.id]) {
+        if(game.gPrisoner.id != nextPlayerInfo.id) {
           isPlayer = true;
         }
       }
@@ -53,12 +46,16 @@ module.exports = function(game) {
       result.next_game = game.gNextGame;
       result.players = getPlayersID(game.gActivePlayers);
 
-      result.prison = getPrison(game.gPrisoners);
+      result.prison = {
+        id : game.gPrisoner.id,
+        vid: game.gPrisoner.vid,
+        sex: game.gPrisoner.sex
+      };
 
       game.emit(player.getSocket(), result);
       game.gameState = result;
 
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
+      game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
 
     }
 

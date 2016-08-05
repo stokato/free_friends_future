@@ -1,4 +1,5 @@
 var constants = require('../../constants');
+var checkCountPlayers = require('./../check_count_players');
 //var constants_io = require('../../../io/constants');
 
 //var randomPlayer = require('../random_player');
@@ -13,6 +14,10 @@ module.exports = function(game) {
     //var f = constants_io.FIELDS;
     if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
+
+      if(!checkCountPlayers(game)) {
+        return game.stop();
+      }
 
       var result = {}, isPicks = false;
       result.picks = [];

@@ -6,13 +6,17 @@ var randomPlayer = require('../random_player'),
     startTimer   = require('../start_timer'),
     setActionsLimit = require('../set_action_limits'),
   getPlayerInfo  = require('./../get_player_info'),
-  getPrison  = require('./../get_prison');
+  checkCountPrisoners = require('./../check_count_players');
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
   return function(timer, uid) {
     //var f = constants_io.FIELDS;
     if(!timer) { clearTimeout(game.gTimer); }
+
+    if(!checkCountPrisoners(game)) {
+      return game.stop();
+    }
 
     var firstPlayerInfo = null;
     if(uid) {
@@ -24,8 +28,10 @@ module.exports = function(game) {
     }
 
     var firstGender = firstPlayerInfo.sex;
-    var secondGender = (firstGender == constants.CONFIG.sex.male)
-             ? constants.CONFIG.sex.female : constants.CONFIG.sex.male;
+    var male = constants.CONFIG.sex.male;
+    var female = constants.CONFIG.sex.female;
+
+    var secondGender = (firstGender == male)? female : male;
     var secondPlayer = randomPlayer(game.gRoom, secondGender, null, game.gPrisoners);
 
     if(!secondPlayer) {
@@ -44,9 +50,16 @@ module.exports = function(game) {
     result.players = getPlayersID(game.gActivePlayers);
     result.next_game = constants.G_BOTTLE_KISSES;
 
-    result.prison = getPrison(game.gPrisoners);
+    result.prison = null;
+    if(game.gPrisoner !== null) {
+      result.prison = {
+        id : game.gPrisoner.id,
+        vid: game.gPrisoner.vid,
+        sex: game.gPrisoner.sex
+      }
+    }
 
-    var player = randomPlayer(game.gRoom, null, null, game.gPrisoners);
+    var player = randomPlayer(game.gRoom, null, null, game.gPrisoner);
     if(!player) {
       return game.stop();
     }
@@ -55,6 +68,6 @@ module.exports = function(game) {
 
     game.gameState = result;
 
-    game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT * 1000);
+    game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
   }
 };

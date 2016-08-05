@@ -1,7 +1,3 @@
-var constants = require('../constants'),
-  randomPlayer = require('./random_player');
-
-
 // Проверяем - есть ли в комнате игрок с таким uid
 module.exports = function(room, uid) {
 

@@ -33,15 +33,15 @@ module.exports = function(sex, callback) {
     var i, rows = result.rows;
     var counter = 1;
     for(i = 0; i < rows.length; i++) {
-      //user = {};
-      //
-      //user[f.id]      = rows[i][f.userid];
-      //user[f.vid]     = rows[i][f.uservid];
-      //user[f.points]  = rows[i][f.points];
-      //user[f.sex]     = rows[i][f.sex];
+      var user = {};
 
-      var user = rows[i];
-      user.userid = user.userid.toString();
+      user["id"]      = rows[i]["userid"].toString();
+      user["vid"]     = rows[i]["uservid"];
+      user["points"]  = rows[i]["points"];
+      user["sex"]     = rows[i]["sex"];
+
+      //var user = rows[i];
+      //user.userid = user.userid.toString();
       user.number     = counter++;
       users.push(user);
     }

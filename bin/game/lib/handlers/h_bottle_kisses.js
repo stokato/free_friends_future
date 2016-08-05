@@ -1,6 +1,7 @@
 var GameError = require('./../../../game_error'),
     checkInput = require('./../../../check_input');
 var constants = require('../../constants');
+var checkCountPlayers = require('./../check_count_players');
 
 var profilejs =  require('../../../profile/index');
 
@@ -15,30 +16,25 @@ var constants_io = require('../../../io/constants');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
-  return function (timer, uid, options) {
+  return function (timer, uid) {
     //var f = constants_io.FIELDS;
     var playerInfo;
     if(uid) { // Отправляем всем выбор игрока
-      playerInfo = game.gActivePlayers[uid];
-
-      var result = {};
-      result.id = uid;
-      result.vid = playerInfo.vid;
-      result.pick = options.pick;
-      //result[f.game] = constants.G_BOTTLE_KISSES;
-
-      game.emit(playerInfo.player.getSocket(), result);
-
-      if(!game.gameState.picks) { game.gameState.picks = []; }
-      game.gameState.picks.push(result);
+      broadcastPick(game, uid);
     }
 
     // Если все игроки сделали выбор, проверяем - оба ли поцеловали
     if (game.gActionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game.gTimer); }
+
+      if(!checkCountPlayers(game)) {
+        return game.stop();
+      }
+
       var item, allKissed = true;
       for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
         playerInfo  = game.gActivePlayers[item];
-        if(!game.gActionsQueue[playerInfo.id] || !game.gActionsQueue[playerInfo.id][0]["pick"]) {
+        if(!game.gActionsQueue[playerInfo.id] || !game.gActionsQueue[playerInfo.id][0]["pick"] == true) {
           allKissed = false;
         }
       }
@@ -54,26 +50,37 @@ module.exports = function(game) {
 
         var count = 0; // Добавляем очки
         addPoints(game.userList, players, count, function(err, res) {
-          if(err) {
-            game.stop();
-            //var player = randomPlayer(game.gRoom, null);
-
-            return;// new GameError(player.getSocket(), constants.G_BOTTLE_KISSES,
-              //"Ошибка при начислении очков пользователю");
-          }
-
-          if(!timer) { clearTimeout(game.gTimer); }
+          if(err) { return game.stop(); }
 
           game.restoreGame();
         });
       } else {
         if(!timer) { clearTimeout(game.gTimer); }
 
+        if(!checkCountPlayers(game)) {
+          return game.stop();
+        }
+
         game.restoreGame(null, true);
       }
     }
   }
 };
+
+//----------------
+function broadcastPick(game, uid) {
+  var playerInfo = game.gActivePlayers[uid];
+
+  var result = {};
+  result.id = uid;
+  result.vid = playerInfo.vid;
+  result.pick = options.pick;
+
+  game.emit(playerInfo.player.getSocket(), result);
+
+  if(!game.gameState.picks) { game.gameState.picks = []; }
+  game.gameState.picks.push(result);
+}
 
 // Функция проверяет, если игрок не онлайн, создает его профиль.
 // Добавляет всем очки

@@ -1,14 +1,8 @@
 var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 
-//var randomPlayer = require('../random_player');
-//,
-//    startTimer         = require('../start_timer'),
-//    activateAllPlayers = require('../activate_all_players'),
-//    setActionsLimit    = require('../set_action_limits'),
-//  getPlayersID = require('../get_players_id');
-
 var constants_io = require('../../../io/constants');
+var checkCountPlayers = require('./../check_count_players');
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
@@ -19,13 +13,13 @@ module.exports = function(game) {
     if(uid) {
 
       // Получаем данные интересуемого игрока
-      var sympathy = game.gStoredOptions[options["pick"]];
       var result, i;
 
       result = {};
       result.picks = [];
       var pick;
       // Получаем все его ходы и отправляем
+      var sympathy = game.gStoredOptions[options["pick"]];
       if(sympathy) {
         //result[f.game] = constants.G_SYMPATHY_SHOW;
         for(i = 0; i < sympathy.length; i ++) {
@@ -48,15 +42,19 @@ module.exports = function(game) {
         result.picks.push(pick);
       }
 
-      game.emit(game.gActivePlayers[uid].player.getSocket(), result, uid);
+      var socket = game.gActivePlayers[uid].player.getSocket();
+      game.emit(socket, result, uid);
     }
 
     // После истечения времени на просмотр чужих симпатий переходим к следующему раунду
     if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      game.restoreGame(null, true);
+      if(!checkCountPlayers(game)) {
+        return game.stop();
+      }
 
+      game.restoreGame(null, true);
     }
   }
 };

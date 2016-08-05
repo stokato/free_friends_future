@@ -12,11 +12,6 @@ var G_START         = 'results',
   G_PRISON        = 'prison';
 
 var GAMES = [ G_BOTTLE, G_PRISON, G_QUESTIONS, G_PRISON, G_CARDS, G_PRISON, G_BEST, G_PRISON, G_SYMPATHY, G_PRISON];
-//var GAMES = [ G_BOTTLE ];
-//var QUESTIONS = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-//                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-//                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-//                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];
 var TIMEOUT = 16;
 var CARD_COUNT = 7;
 var PLAYERS_COUNT = 2;//10;
@@ -48,3 +43,14 @@ module.exports.KISS_POINTS = KISS_POINTS;
 module.exports.QUESTIONS_TIMEOUT = QUESTIONS_TIMEOUT;
 module.exports.RANSOM = RANSOM;
 
+module.exports.TIMEOUT_LOT = 5 * 1000;
+module.exports.TIMEOUT_GAME = 16 * 1000;
+module.exports.TIMEOUT_BOTTLE = 7 * 1000;
+module.exports.TIMEOUT_RESULTS = 5 * 1000;
+module.exports.TIMEOUT_PRISON = 2 * 1000;
+
+//var GAMES = [ G_BOTTLE ];
+//var QUESTIONS = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+//                "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+//                "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+//                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."];

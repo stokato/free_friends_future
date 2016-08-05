@@ -7,7 +7,6 @@ var sanitize        = require('../../sanitizer');
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, userList) {
   socket.on(constants_io.IO_GAME, function(options) {
-    //var f = constants_io.FIELDS;
     var selfProfile = userList[socket.id];
     var uid = selfProfile.getID(),
         game = selfProfile.getGame();
@@ -17,12 +16,7 @@ module.exports = function (socket, userList) {
     // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
 
-      if (!checkInput(game.gNextGame, socket, userList, options)) {
-        //game.stop();
-        //return socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_ERROR,
-        //  {message: "Игра остановлена всвязи с ошибкой"});
-        return;
-      }
+      if (!checkInput(game.gNextGame, socket, userList, options)) { return; }
 
       if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[pick]) { // Если нет такого пользоателя среди кандидатов
         return new GameError(socket, constants.G_BEST, "Нельзя проголосовать за этого пользователя");

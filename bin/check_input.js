@@ -144,8 +144,9 @@ function checkInput(em, socket, userList, options, serverProfile) {
       }
       break;
     case constants_game.G_BOTTLE_KISSES :
-      isValid = (options.pick)? isValid : false;
-      isValid = (validator.isBoolean(options.pick + "")? isValid : false);
+      isValid = ("pick" in options)? isValid : false;
+      //isValid = (options.pick == "false" || options.pick == "true")? isValid : false;
+      isValid = (validator.isBoolean(options.pick)? isValid : false);
 
       if(!isValid) {
         new GameError(socket, em, "Некорректно задан выбор игрока, значение должно быть типа boolean.");
@@ -153,7 +154,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
       break;
     case constants_game.G_QUESTIONS :
       val = options.pick + "";
-      isValid = (options.pick)? isValid : false;
+      isValid = ("pick" in options)? isValid : false;
       isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
 
       if(!isValid) {

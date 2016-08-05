@@ -1,5 +1,4 @@
-var constants = require('../constants'),
-  randomPlayer = require('./random_player');
+var constants = require('../constants');
 
 
 // Начинаем игру если есть нужное количество игроков и все они готовы

@@ -15,4 +15,8 @@ module.exports = function() {
 
   this.gTimer = null;
   this.gActionsCount = 0;
+
+  this.gPrisoner = null;
+
+  this.start();
 };

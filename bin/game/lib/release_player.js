@@ -14,7 +14,11 @@ module.exports = function (socket, userList) {
     //var f = constants_io.FIELDS;
     var selfProfile = userList[socket.id];
     var game = selfProfile.getGame();
-    var prisonerInfo = game.gPrisoners[options.id];
+    var prisonerInfo = game.gPrisoner;
+
+    if(selfProfile.getID() == prisonerInfo.id) {
+      return new GameError(socket, constants_io.IO_RELEASE_PLAYER, "Нельзя выкупить себя из тюрьмы");
+    }
 
     // Если серди заблокированных игроков такого нет, выдаем ошибку
     if(!prisonerInfo) {
@@ -34,8 +38,7 @@ module.exports = function (socket, userList) {
         }
 
         // Снимаем блокировку
-        game.gPrisoners[prisonerInfo.id] = null;
-        game.countPrisoners--;
+        game.gPrisoner = null;
 
         var options = {};
         options.id = prisonerInfo.id;

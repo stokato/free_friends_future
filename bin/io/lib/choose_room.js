@@ -54,7 +54,7 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         //}
       },////////////////////////////////// Получаем всех друзей пользователя
       function (selfProfile, roomInfo, genArr, len, cb) {
-        selfProfile.getFriends(function (err, allFriends) {
+        selfProfile.getFriends(false, function (err, allFriends) {
           if (err) { return cb(err, null); }
 
           cb(null, roomInfo, len, allFriends);

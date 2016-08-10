@@ -22,23 +22,28 @@ var giveMoney         = require('./give_money');
  - Отправляем все клиенту
  */
 module.exports = function (socket, userList, profiles, roomList, rooms, serverProfile) {
+  // Подключение сервера
   socket.on(constants.IO_SERVER_INIT, function() {
     serverProfile.id = socket.id;
 
+    // Сообщяем о начислении денег (себе или другому пользователю)
     giveMoney(socket, userList, profiles, roomList, serverProfile);
   });
 
+
   socket.on(constants.IO_INIT, function(options) {
+
     if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
-    //var f = constants.FIELDS;
 
     async.waterfall([///////////////////////////////////////////////////////////
       function (cb) { // Инициализируем профиль пользователя
+
         var selfProfile = new profilejs();
         var newConnect = false;
         selfProfile.init(socket, options, function (err, info) {
           if (err) { return cb(err, null); }
 
+          // Если присутствует старый профиль этого пользователя, меняем его на новый
           var oldProfile = profiles[info.id];
           if (oldProfile)  {
             oldProfile.clearExitTimeout();
@@ -53,6 +58,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
             delete  roomList[oldSocket.id];
             roomList[socket.id] = room;
           }
+                  // либо сохраняем новый
           else {
             userList[socket.id] = selfProfile;
             profiles[selfProfile.getID()] = selfProfile;
@@ -67,10 +73,6 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         if(newConnect) {
           autoPlace(socket, userList, roomList, rooms, function (err, room) {
             if (err) { return cb(err, null); }
-
-            //selfProfile.setReady(true);
-
-           // room.game.start(socket);
 
             cb(null, info, room);
           });
@@ -95,14 +97,20 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
           cb(null, info, room);
         });
       },///////////////////////////////////////////////////////////////
-      function(info, room, cb) {
+      function(info, room, cb) {  // Уведомляем всех о входе пользователя
 
+        var online = {
+          id        : info.id,
+          vid       : info.vid
+        };
+
+        for(var r in rooms) if(rooms.hasOwnProperty(r)) {
+          socket.broadcast.in(room.name).emit(constants.IO_OFFLINE, online);
+        }
+        //socket.broadcast.emit(constants.IO_ONLINE, online);
+
+        info.operation_status = constants.errors.RS_GOODSTATUS;
         socket.emit(constants.IO_INIT, info);
-
-        var online = {};
-        online.id = info.id;
-        online.vid = info.vid;
-        socket.broadcast.emit(constants.IO_ONLINE, online);
 
         getLastMessages(socket, room);
 
@@ -130,19 +138,34 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         });
       }, ////////////////////////////////////////////////////////////
       function(res, cb) { // добавляем слушатели
+
         addEmits(socket, userList, profiles, roomList, rooms);
+
         cb(null, null);
       }///////////////////////////////////////////////////////////////
     ], function (err, res) { // Обрабатываем ошибки, либо передаем данные клиенту
-      if (err) { return new GameError(socket, constants.IO_INIT, err.message); }
+      if (err) { return handError(err); }
+
     });
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_INIT, res);
+
+      new GameError(socket, constants.IO_INIT, err.message || constants.errors.OTHER.message);
+    }
+
+    // Для сортировки массива сообщений (получение топа по дате)
+    function compareDates(mesA, mesB) {
+      //var f = constants.FIELDS;
+      return mesA.date - mesB.date;
+    }
   })
 };
 
-// Для сортировки массива сообщений (получение топа по дате)
-function compareDates(mesA, mesB) {
-  //var f = constants.FIELDS;
-  return mesA.date - mesB.date;
-}
+
 
 

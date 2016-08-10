@@ -6,6 +6,7 @@ var GameError = require('../../game_error'),
     defineSex = require('./define_sex'),
     //createRoom = require('./create_room'),
     getRoomInfo = require('./get_room_info');
+
 /*
  Предлагаем способ смены комнаты
  - Получаем профиль
@@ -17,9 +18,8 @@ var GameError = require('../../game_error'),
  - Отправляем клиенту случайную комнату и список друзей (какие данные нужны ???)
  */
 module.exports = function (socket, userList, roomList, rooms, profiles) {
-  socket.on(constants.IO_CHOOSE_ROOM, function() {
-    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, {})) { return; }
-    //var f = constants.FIELDS;
+  socket.on(constants.IO_CHOOSE_ROOM, function(options) {
+    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, options)) { return; }
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков
       function (cb) {
@@ -83,17 +83,27 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
             }
           }
         }
-        var result = {};
-        result.random = roomInfo;
-        result.friends = friendList;
 
-        socket.emit(constants.IO_CHOOSE_ROOM, result);
-
-        cb(null, result);
+        cb(null, roomInfo, friendList);
       }////////////////////////////////// Обрабатываем ошибки или отравляем результат
-    ], function (err, res) {
-      if (err) { return new GameError(socket, constants.IO_CHOOSE_ROOM, err.message); }
+    ], function (err, roomInfo, friendList) {
+      if (err) { return handError(err); }
 
-    })
+      socket.emit(constants.IO_CHOOSE_ROOM, {
+        random : roomInfo,
+        friends : friendList,
+        operation_status : constants.RS_GOODSTATUS
+      });
+    });
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_CHOOSE_ROOM, res);
+
+      new GameError(socket, constants.IO_CHOOSE_ROOM, err.message || constants.errors.OTHER.message);
+    }
   });
 };

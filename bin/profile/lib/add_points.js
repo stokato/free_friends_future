@@ -27,21 +27,7 @@ module.exports = function(num, callback) {
 
         cb(null, null);
       });
-    },////////////////////////////////////////////////////////////////////
-    //function(res, cb) { // Удаляем старые данные по пользователю из таблицы очков
-    //  var options = {};
-    //  options[f.userid] = self.pID;
-    //  options[f.uservid] = self.pVID;
-    //  options[f.points] = oldPoints;
-    //  options[f.sex] = self.pSex;
-    //  self.dbManager.deletePoints(options, function(err) {
-    //    //console.log(options);
-    //    if(err) { return cb(err, null); }
-    //
-    //    self.pPoints += num;
-    //    cb(null, options);
-    //  });
-    //}, //////////////////////////////////////////////////////////////////////
+    }, /////////////////////////////////////////////////////////////////
     function(res, cb) { // Добавляем новые данные в таблицу очков
         var options = {};
         options.userid = self.pID;

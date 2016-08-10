@@ -2,9 +2,6 @@ var GameError = require('./../../../game_error');
 var constants = require('../../constants');
 var checkCountPlayers = require('./../check_count_players');
 
-
-//var constants_io = require('../../../io/constants');
-
 module.exports = function(game) {
   return function(timer, uid, options) { // Лучший, сообщаем всем их выбор
     //var f = constants_io.FIELDS, playerInfo;

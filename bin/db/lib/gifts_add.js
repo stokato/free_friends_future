@@ -12,14 +12,14 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
-  if (!options["giftid"] || !options["data"] || !options["date"] || !options["fromid"]
+  if (!options["giftid"] || !options["src"] || !options["date"] || !options["fromid"]
     || !options["fromvid"]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
   var id = this.uuid.random();
 
-  var fields = ["id", "userid", "giftid", "type", "data", "date", "title", "fromid", "fromvid"];
+  var fields = ["id", "userid", "giftid", "type", "src", "date", "title", "fromid", "fromvid"];
   var query = buildQuery.build(buildQuery.Q_INSERT, fields, C.T_USERGIFTS);
 
   var params = [];
@@ -27,7 +27,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   params.push(uid);
   params.push(options["giftid"]);
   params.push(options["type"]);
-  params.push(options["data"]);
+  params.push(options["src"]);
   params.push(options["date"]);
   params.push(options["title"]);
   params.push(options["fromid"]);
@@ -39,7 +39,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     var result = {};
     result["giftid"]  = options["giftid"];
     result["type"]    = options["type"];
-    result["src"]     = options["data"];
+    result["src"]     = options["src"];
     result["date"]    = options["date"];
     result["title"]   = options["title"];
     result["fromid"]  = options["fromid"];

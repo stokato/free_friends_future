@@ -1,6 +1,6 @@
-var GameError = require('../../game_error'),              // Ошибки
-  checkInput = require('../../check_input'),            // Верификация
-  constants  = require('../constants');
+var GameError = require('../../../game_error'),              // Ошибки
+  checkInput = require('../../../check_input'),            // Верификация
+  constants  = require('../../constants');
 
 
 module.exports = function(socket, userList) {

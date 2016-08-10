@@ -7,32 +7,38 @@ var GameError = require('../../game_error'),      // Ошбики
     defineSex = require('./define_sex');
 
 module.exports = function(socket, userList, profiles, roomList, rooms) {
-  if (!checkInput(constants.IO_DISCONNECT, socket, userList, {})) { return; }
+  //if (!checkInput(constants.IO_DISCONNECT, socket, userList, {})) { return; }
 
   var selfProfile = userList[socket.id];
-  //var f = constants.FIELDS;
+
   async.waterfall([
     ///////////////////////////////////////////////////////////////////////////////////
     function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
-      var info = {};
-      info.id  = selfProfile.getID();
-      info.vid = selfProfile.getVID();
+      var info = {
+        id  : selfProfile.getID(),
+        vid : selfProfile.getVID()
+      };
 
       //if(selfProfile.getReady()) { // Останавливаем игру
       //  roomList[socket.id].game.stop();
       //}
 
-      socket.broadcast.emit(constants.IO_OFFLINE, info);
+      //socket.broadcast.emit(constants.IO_OFFLINE, info);
 
+      for(var r in rooms) if(rooms.hasOwnProperty(r)) {
+        socket.broadcast.in(r.name).emit(constants.IO_OFFLINE, info);
+      }
 
       cb(null, null);
     }, ///////////////////////////////////////////////////////////////////////////////////////
     function (res, cb) { // сохраняем профиль в базу
+
       selfProfile.save(function (err) {
         if (err) {  return cb(err, null);  }
 
         cb(null, null);
       });
+
     }, /////////////////////////////////////////////////////////////////////////////////////
     function (res, cb) { // удалеяем профиль и сокет из памяти
       delete userList[socket.id];

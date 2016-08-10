@@ -2,6 +2,7 @@ var async = require('async');
 var db = require('./db');
 var dbManager = new db();
 var sanitize        = require('./sanitizer');
+var md5 = require('md5');
 
 var constants = require('./io/constants');
 
@@ -11,12 +12,33 @@ function VK () {
 }
 
 VK.prototype.handle = function(req, socket, callback) { var request = req || {};
-// Сначала проверка
 
+// Сначала проверка
   var sig = request["sig"];
 
-  //...
+  var fields= [];
+  for(var key in request) /* if(request.hasOwnProperty(key)) */{
+    if(key === "sig") {  continue; }
 
+    fields.push(key + "=" + request[key]);
+  }
+  fields.sort();
+  var authStr = fields.join("") + constants.api_secret;
+
+  if (sig !== md5(authStr)) {
+    var response = {};
+    response['error'] = {
+      "error_code" : 10,
+      "error_msg"  : 'Несовпадение вычисленной и переданной подписи запроса.',
+      "critical"   : true
+    };
+
+    var resJSON = JSON.stringify(response);
+    return callback(null, resJSON);
+  }
+
+
+  // Обрабатываем запрос
   switch (request["notification_type"]) {
     case "get_item":      getItem(request, callback);
       break;
@@ -37,7 +59,7 @@ VK.prototype.handle = function(req, socket, callback) { var request = req || {};
 
 module.exports = VK;
 
-
+//--------------------------
 
 function getItem(request, callback) {
   // Получение информации о товаре
@@ -122,7 +144,7 @@ function changeOrderStatus(request, socket, callback) {
 
         var ordOptions = {};
         ordOptions.vid = options.ordervid;
-        ordOptions.goodid = goodInfo.id;
+        ordOptions.goodid = goodInfo.goodid;
         ordOptions.userid = info.id;
         ordOptions.uservid = info.vid;
         ordOptions.sum = goodInfo.price;

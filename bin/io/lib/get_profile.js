@@ -3,7 +3,7 @@ var async     =  require('async');
 var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
-    sanitize        = require('../../sanitizer'),
+    //sanitize        = require('../../sanitizer'),
     constants = require('./../constants');
 
 /*
@@ -20,11 +20,10 @@ module.exports = function (socket, userList, profiles) {
   socket.on(constants.IO_GET_PROFILE, function(options) {
     if (!checkInput(constants.IO_GET_PROFILE, socket, userList, options)) { return; }
 
-    //var f = constants.FIELDS;
     var selfProfile = userList[socket.id];
     var selfInfo = fillInfo(selfProfile);
 
-    options.id = sanitize(options.id);
+    //options.id = sanitize(options.id);
 
     if (selfProfile.getID() == options.id) { // Если открываем свой профиль
       async.waterfall([
@@ -61,21 +60,25 @@ module.exports = function (socket, userList, profiles) {
           });
         }/////////////////////////////////////////////////////////////////////
       ], function(err, res) {
-        if (err) { return new GameError(socket, constants.IO_GET_PROFILE, err.message); }
+        if (err) { return handError(err); }
 
+        selfInfo.operation_status = constants.RS_GOODSTATUS;
         socket.emit(constants.IO_GET_PROFILE, selfInfo);
       });
+
     } else {
       var isOnline = false;
       if(profiles[options.id]) { isOnline = true }
 
       async.waterfall([///////////////////////////////////////////////////////////////////
         function (cb) { // Получаем профиль того, чей просматриваем
+
           var friendProfile = null;
           if (isOnline) { // Если онлайн
             friendProfile = profiles[options.id];
             var friendInfo = fillInfo(friendProfile);
             cb(null, friendProfile, friendInfo);
+
           } else {                // Если нет - берем из базы
             friendProfile = new profilejs();
             friendProfile.build(options.id, function (err, info) {
@@ -130,9 +133,12 @@ module.exports = function (socket, userList, profiles) {
           });
         }/////////////////////////////////////////////////////////////////////
       ], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
-        if (err) { return new GameError(socket, constants.IO_GET_PROFILE, err.message); }
+        if (err) { return handError(options, err.message); }
+
 
         //var friendInfo = fillInfo(friendProfile);
+
+        friendInfo.operation_status = constants.RS_GOODSTATUS;
         socket.emit(constants.IO_GET_PROFILE, friendInfo); // Отправляем инфу
 
         if (isOnline) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
@@ -142,20 +148,32 @@ module.exports = function (socket, userList, profiles) {
         }
       }); // waterfall
     }
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_GET_PROFILE, res);
+
+      new GameError(socket, constants.IO_GET_PROFILE, err.message || constants.errors.OTHER.message);
+    }
+
+    function fillInfo(profile) {
+      var info = {};
+      info.id      = profile.getID();
+      info.vid     = profile.getVID();
+      info.age     = profile.getAge();
+      info.sex     = profile.getSex();
+      info.city    = profile.getCity();
+      info.country = profile.getCountry();
+      info.status  = profile.getStatus();
+      info.points  = profile.getPoints();
+
+      return  info;
+    }
+
   });
 };
 
-function fillInfo(profile) {
-  var info = {};
-  info.id      = profile.getID();
-  info.vid     = profile.getVID();
-  info.age     = profile.getAge();
-  info.sex     = profile.getSex();
-  info.city    = profile.getCity();
-  info.country = profile.getCountry();
-  info.status  = profile.getStatus();
-  info.points  = profile.getPoints();
-
-  return  info;
-}
 

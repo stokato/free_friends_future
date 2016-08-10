@@ -1,4 +1,8 @@
 {
+  "auth" : {
+    "api_id" : "4853914",
+    "api_secret" : "06G0eKuPliE1M4mHQU3S"
+  },
   "server" : {
     "host": "localhost",
     "port": 3000

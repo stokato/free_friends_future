@@ -6,7 +6,6 @@ var constants = require('../../io/constants');
 module.exports = function(id) {
   var ok = false;
   var i, chats = this.pPrivateChats;
-  //var f = constants.FIELDS;
 
   for(i = 0; i < chats.length; i++) {
     if(chats[i]["id"] == id) { ok = true; }

@@ -10,6 +10,10 @@ var Config = require('./../../config.json');
 module.exports.ONE_SEX_IN_ROOM = Config.io.one_sex_in_room; // Макс. количество игроков одного пола в комнате
 module.exports.GUY = Config.user.constants.sex.male;        // Идентификация пола
 module.exports.GIRL = Config.user.constants.sex.female;
+
+module.exports.api_id = Config.auth.api_id;
+module.exports.api_secret = Config.auth.api_secret;
+
 module.exports.LEN_ROOM_HISTORY = Config.io.len_room_history;
 module.exports.EXIT_TIMEOUT = Config.io.exit_timeout;      // Таймаут отключения при вызове клиентом exit
 module.exports.REQUEST_TIMEOUT = 3600000;                  // Таймаут ожидания запроса от клиента перед отключением
@@ -21,6 +25,26 @@ module.exports.GIFT_MONEY = 10;
 
 module.exports.GT_GIFT = "gift";
 module.exports.GT_MONEY = "money";
+
+module.exports.RS_GOODSTATUS = "success";
+module.exports.RS_BADSTATUS = "fail";
+
+module.exports.errors = {
+  NO_SUCH_GOOD        : { message: "Нет такого товара",                                                   code : 401},
+  SELF_ILLEGAL        : { message: "Нельзя выполнить это действие в свой адрес",                          code : 410 },
+  TOO_LITTLE_MONEY    : { message: "Недостаточно монет",                                                  code : 405 },
+  ONLY_FRIEND         : { message: "Подарок можно сделать только другу (монеты)",                         code : 406 },
+  ALREADY_IS_MENU     : { message: "Добавить в меню - этот пользователь уже добавил приложение в меню",   code : 415 },
+  NO_SUCH_ROOM        : { message: "Нет комнаты с таким идентификатором",                                 code : 420 },
+  ALREADY_IN_ROOM     : { message: "Пользователь уже в этой комнате",                                     code : 421 },
+  ROOM_IS_FULL        : { message: "Попытка перейти в комнату, в которой нет свободных мест",             code : 422 },
+  NO_SUCH_CHAT        : { message: "Чат с этим пользователем не существует",                              code : 430 },
+  NO_THAT_PLAYER      : { message: "Нельзя выбрать этого игрока",                                         code : 440 },
+  NOT_IN_PRISON       : { message: "Этот игрок не находится в тюрьме",                                    code : 441 },
+  NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },
+  NO_AUTH             : { message: "Ошибка авторизации",                                                  code : 490 },
+  OTHER               : { message: "Неизвестная ошибка",                                                  code : 400 }
+};
 
 //// наименования полей
 //module.exports.FIELDS = {
@@ -111,6 +135,7 @@ module.exports.IO_GET_MONEY           = 'get_money';
 module.exports.IO_GET_PROFILE         = 'get_profile';
 module.exports.IO_GET_TOP             = 'get_top';
 module.exports.IO_ADD_FRIEND          = 'add_friend';
+module.exports.IO_NEW_FRIEND          = 'new_friend';
 module.exports.IO_CHANGE_ROOM         = 'change_room';
 module.exports.IO_CHANGE_STATUS       = 'change_status';
 module.exports.IO_CHOOSE_ROOM         = 'choose_room';
@@ -131,6 +156,7 @@ module.exports.IO_ERROR               = 'err';
 module.exports.IO_ROOM_USERS          = 'room_users';
 module.exports.IO_ADD_TO_MENU         = 'add_to_menu';
 module.exports.IO_DEL_FROM_FRIENDS    = 'del_friend';
+module.exports.IO_NO_FRIEND           = 'no_friend';
 module.exports.IO_GIVE_MONEY          = 'give_money';
 
 module.exports.IO_SERVER_INIT         = 'server_init';

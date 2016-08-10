@@ -17,6 +17,8 @@ module.exports = function(game) {
     }
   }
 
+
+
   var guysCount = game.gRoom.guys_count - guysInPrison;
   var girlsCount = game.gRoom.girls_count - girlsInPrison;
 

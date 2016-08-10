@@ -20,31 +20,18 @@ module.exports = function(game) {
       return game.stop();
     }
 
-   // do {
-   //   rand = Math.floor(Math.random() * constants.GAMES.length);
-   // } while(rand == game.gStoredRand || (game.gRoom.guys_count + game.gRoom.girls_count);
-   // game.gStoredRand = rand;
-   //
-   //game.gNextGame = constants.GAMES[rand];
+    var rand;
+    var games = (game.gPrisoner !== null ||
+                  game.gRoom.girls_count <= 2 ||
+                    game.gRoom.guys_count <= 2)? constants.GAMES_WITHOUT_PRISON : constants.GAMES;
 
-    var ok = false;
-    while(!ok) {
-      ok = true;
-      game.gNextGame = constants.GAMES[game.gameCounter];
-      game.gameCounter++;
-      if(game.gameCounter == constants.GAMES.length) {
-        game.gameCounter = 0;
-      }
+    do {
+      rand = Math.floor(Math.random() * games.length);
+    } while(rand == game.gStoredRand);
 
-      if(game.gNextGame == constants.G_PRISON) {
-        if(game.gRoom.girls_count <= 2 ||  game.gRoom.guys_count <= 2) {
-          ok = false;
-        }
-        if(game.gPrisoner !== null) {
-          ok = false;
-        }
-      }
-    }
+    game.gStoredRand = rand;
+
+    game.gNextGame = games[rand];
 
     game.gActionsQueue = {};
 

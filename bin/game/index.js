@@ -87,7 +87,7 @@ getQuestionsFromDB();
 function getQuestionsFromDB() {
   dbManager.findAllQuestions(function(err, questions) {
     if(err) {
-      console.log("Ошибка при получении вопросов и базы данных");
+      console.log("Ошибка при получении вопросов из базы данных");
       return;
     }
 

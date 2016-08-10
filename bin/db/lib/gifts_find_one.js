@@ -9,7 +9,7 @@ module.exports = function(id, callback) {
 
   //var f = C.IO.FIELDS;
 
-  var fields = ["giftid", "type", "data", "date", "title", "fromid", "fromvid"];
+  var fields = ["giftid", "type", "src", "date", "title", "fromid", "fromvid"];
   var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGIFTS, ["id"], [1]);
 
   self.client.execute(query,[id], {prepare: true }, function(err, result) {
@@ -26,7 +26,7 @@ module.exports = function(id, callback) {
       gift["gid"]     = id;
       gift["giftid"]  = row["giftid"].toString();
       gift["type"]    = row["type"];
-      gift["src"]     = row["data"];
+      gift["src"]     = row["src"];
       gift["date"]    = row["date"];
       gift["title"]   = row["title"];
       gift["fromid"]  = row["fromid"].toString();

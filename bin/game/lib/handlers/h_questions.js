@@ -1,12 +1,6 @@
 var constants = require('../../constants');
 var checkCountPlayers = require('./../check_count_players');
-//var constants_io = require('../../../io/constants');
 
-//var randomPlayer = require('../random_player');
-    //startTimer   = require('../start_timer'),
-   // activateAllPlayers = require('../activate_all_players'),
-    //getPlayersID = require('../get_players_id'),
-   // setActionsLimit = require('../set_action_limits');
 
 // Вопросы, ждем, когда все ответят, потом показываем всем ответы
 module.exports = function(game) {
@@ -21,7 +15,6 @@ module.exports = function(game) {
 
       var result = {}, isPicks = false;
       result.picks = [];
-      //result[f.game] = constants.G_QUESTIONS;
 
       var item, playerInfo;
       for (item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {

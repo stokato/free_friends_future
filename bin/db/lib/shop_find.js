@@ -11,7 +11,7 @@ module.exports = function(goodid, callback) {
 
   //var f = C.IO.FIELDS;
 
-  var fields = ["title", "type", "price", "data", "goodtype", "price2"];
+  var fields = ["title", "type", "price", "src", "goodtype", "price2"];
   var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, ["id"], [1]);
 
   this.client.execute(query,[goodid], {prepare: true }, function(err, result) {

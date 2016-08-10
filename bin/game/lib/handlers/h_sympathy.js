@@ -6,7 +6,6 @@ var startTimer   = require('../start_timer'),
     getPlayersID = require('../get_players_id'),
     setActionsLimit = require('../set_action_limits'),
     randomPlayer = require('../random_player'),
-    getPrison = require('../get_prison'),
     GameError = require('./../../../game_error');
 var checkCountPlayers = require('./../check_count_players');
 

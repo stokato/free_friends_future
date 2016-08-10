@@ -14,7 +14,7 @@ var constants = require('./../constants'),
 module.exports = function (socket, userList, roomList, rooms, callback) {
   var selfProfile = userList[socket.id];
   var newRoom = null;
-  var count = constants.ONE_SEX_IN_ROOM +1;
+  var count = constants.ONE_SEX_IN_ROOM;
 
   var sex = defineSex(selfProfile);
 
@@ -28,7 +28,7 @@ module.exports = function (socket, userList, roomList, rooms, callback) {
     if(item != selfRoomName) {
       var need = constants.ONE_SEX_IN_ROOM - rooms[item][sex.len];
 
-      if(need > 0 && need < count) {
+      if(need > 0 && need <= count) {
         count = need;
         newRoom = rooms[item];
       }

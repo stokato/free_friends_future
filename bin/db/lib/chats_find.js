@@ -10,7 +10,6 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(uid, callback) {
   var self = this;
-  //var f = C.IO.FIELDS;
 
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);

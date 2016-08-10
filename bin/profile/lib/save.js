@@ -4,7 +4,6 @@ var constants = require('../../io/constants');
  */
 module.exports = function(callback) {
  var self = this;
- //var f = constants.FIELDS;
 
  var options = {};
  options.id          = self.pID;

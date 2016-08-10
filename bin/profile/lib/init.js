@@ -25,7 +25,7 @@ module.exports = function(socket, options, callback) {
 
       if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
       if (!self.pVID ||  !self.pAge || !self.pCountry || !self.pCity || !self.pSex) {
-        return cb(new Error("На задана одна из опций"), null);
+        return cb(new Error("Не задана одна из опций"), null);
       }
 
       cb(null, null);
@@ -103,17 +103,17 @@ module.exports = function(socket, options, callback) {
 
           self.pID = user.id;
 
-          /////////////////////////////////////
-          var rand = Math.floor(Math.random()  * 100);
-
-          self.addPoints(rand, function(err, res) {
-            if(err) { cb (err, null); }
-
-            cb(null, null);
-          });
-
-          ////////////////////////////////////
-          //cb(null, null);
+          ///////////////////////////////////////
+          //var rand = Math.floor(Math.random()  * 100);
+          //
+          //self.addPoints(rand, function(err, res) {
+          //  if(err) { cb (err, null); }
+          //
+          //  cb(null, null);
+          //});
+          //
+          //////////////////////////////////////
+          cb(null, null);
         });
       } else cb(null, null);
     }

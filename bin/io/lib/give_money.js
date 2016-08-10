@@ -4,8 +4,8 @@ var profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
   constants = require('./../constants'),
-  sanitize        = require('../../sanitizer'),
-  dbjs         = require('../../db');
+  //sanitize        = require('../../sanitizer'),
+  dbjs         = require('../../db/index');
 
 var dbManager = new dbjs();
 
@@ -21,7 +21,6 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
   socket.on(constants.IO_GIVE_MONEY, function(options) {
     if (!checkInput(constants.IO_GIVE_MONEY, socket, userList, options, serverProfile)) { return; }
 
-    //var f = constants.FIELDS;
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль адресата
@@ -30,6 +29,7 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
         if (profiles[options.id]) { // Если онлайн
           friendProfile = profiles[options.id];
           cb(null, friendProfile);
+
         } else {                // Если нет - берем из базы
           friendProfile = new profilejs();
           friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
@@ -40,12 +40,11 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
         }
       }///////////////////////////////////////////////////////////////
     ], function (err, res) { // Вызывается последней. Обрабатываем ошибки
-      if (err) { return new GameError(socket, constants.IO_GIVE_MONEY, err.message); }
+      if (err) { return handError(err); }
 
-      options.status = "succes";
-      options.error = null;
-
-      //socket.emit(constants.IO_GIVE_MONEY, options);
+      socket.emit(constants.IO_GIVE_MONEY, {
+        operation_status : constants.RS_GOODSTATUS
+      });
 
       if (profiles[options.id]) {
         var friendProfile = profiles[options.id];
@@ -54,6 +53,17 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
         friendSocket.emit(constants.IO_GIVE_MONEY, options);
       }
     }); // waterfall
+
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_GIVE_MONEY, res);
+
+      new GameError(socket, constants.IO_GIVE_MONEY, err.message || constants.errors.OTHER.message);
+    }
   });
 };
 

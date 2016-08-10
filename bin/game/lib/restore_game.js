@@ -11,7 +11,6 @@ var randomPlayer     = require('./random_player'),
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
 module.exports = function(result, isTimeout) { result = result || {}; isTimeout = isTimeout || false;
-  //var f = constants_io.FIELDS;
 
   var player = randomPlayer(this.gRoom, null, null, this.gPrisoner);
   if(!player) {

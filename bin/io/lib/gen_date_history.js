@@ -1,5 +1,6 @@
 var constants = require('./../constants');
 
+// Получаем дату начала недели
 module.exports = function(date) {
   //var len = constants.LEN_PRIVATE_HISTORY;
   var day = date.getDay();

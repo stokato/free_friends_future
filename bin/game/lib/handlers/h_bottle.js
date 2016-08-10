@@ -1,5 +1,4 @@
 var constants = require('../../constants');
-//var constants_io = require('../../../io/constants');
 
 var randomPlayer = require('../random_player'),
     getPlayersID = require('../get_players_id'),

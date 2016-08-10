@@ -10,13 +10,11 @@ var db = new dbjs();
  - Отправляем клиенту
  */
 module.exports = function (socket, userList) {
-  socket.on(constants.IO_GET_GIFT_SHOP, function() {
-    //var f = constants.FIELDS;
-
-    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, userList, {})) { return; }
+  socket.on(constants.IO_GET_GIFT_SHOP, function(options) {
+    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, userList, options)) { return; }
 
     db.findAllGoods(constants.GT_GIFT, function (err, goods) {
-      if (err) { return new GameError(socket, constants.IO_GET_GIFT_SHOP, err.message); }
+      if (err) { return handError(err); }
 
       var i, type, gift;
 
@@ -48,36 +46,30 @@ module.exports = function (socket, userList) {
       for(i in types) if(types.hasOwnProperty(i)) {
         gifts.push(types[i]);
       }
+      ;
 
-      //
-      //var gifts = [], gift;
-      //var oldType = null;
-      //for(var i = 0; i < goods.length; i++) {
-      //
-      //  if(goods[i][f.type] != oldType) {
-      //    gifts.push({});
-      //    gifts[gifts.length-1][f.name] = goods[i][f.type];
-      //    gifts[gifts.length-1][f.gifts] = [];
-      //    oldType = goods[i][f.type];
-      //  }
-      //
-      //  gift = {};
-      //  gift[f.id]   = goods[i][f.id];
-      //  gift[f.src]  = goods[i][f.data];
-      //  gift[f.type] = goods[i][f.type];
-      //  gift[f.price] = 30;
-      //  gift[f.title] = goods[i][f.title];
-      //  gifts[gifts.length-1][f.gifts].push(gift);
-      //}
-
-      socket.emit(constants.IO_GET_GIFT_SHOP, gifts);
+      socket.emit(constants.IO_GET_GIFT_SHOP, {
+        gifts : gifts,
+        operation_status : constants.RS_GOODSTATUS
+      });
     });
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_GET_GIFT_SHOP, res);
+
+      new GameError(socket, constants.IO_GET_GIFT_SHOP, err.message || constants.errors.OTHER.message);
+    }
+
+    function compareGiftsOnTypes(gift1, gift2) {
+      //return gift1[constants.FIELDS.type] > gift2[constants.FIELDS.type];
+      if(gift1["type"] < gift2["type"]) return -1;
+      if(gift2["type"] < gift1[".type"]) return 1;
+      return 0;
+    };
   });
 };
 
-function compareGiftsOnTypes(gift1, gift2) {
-  //return gift1[constants.FIELDS.type] > gift2[constants.FIELDS.type];
-  if(gift1["type"] < gift2["type"]) return -1;
-  if(gift2["type"] < gift1[".type"]) return 1;
-  return 0;
-};

@@ -7,12 +7,13 @@ var constants = require('../../io/constants');
  */
 module.exports = function(status, callback) {
   var self = this;
-  //var f = constants.FIELDS;
 
   var options = {};
   options.id     = self.pID;
   options.vid    = self.pVID;
   options.status = status;
+
+  self.pStatus = status;
 
   self.dbManager.updateUser(options, function(err) {
     if (err) {return callback(err, null); }

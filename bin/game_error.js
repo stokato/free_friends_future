@@ -73,9 +73,9 @@ function GameError(socket, func, message) {
  console.log(err.name + " : " + err.message);
  console.log(err.stack);
 
- if(socket) {
-   socket.emit(constants_io.IO_ERROR, err);
- }
+ //if(socket) {
+ //  socket.emit(constants_io.IO_ERROR, err);
+ //}
 
 }
 GameError.prototype = Object.create(Error.prototype);

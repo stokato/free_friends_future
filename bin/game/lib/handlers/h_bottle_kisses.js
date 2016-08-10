@@ -5,18 +5,11 @@ var checkCountPlayers = require('./../check_count_players');
 
 var profilejs =  require('../../../profile/index');
 
-//var
-//    randomPlayer = require('../random_player'),
-    // startTimer   = require('../start_timer'),
-    //pushAllPlayers = require('../activate_all_players'),
-  //getPlayersID = require('../get_players_id'),
-    //setActionsLimit = require('../set_action_limits');
-
 var constants_io = require('../../../io/constants');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
-  return function (timer, uid) {
+  return function (timer, uid, options) {
     //var f = constants_io.FIELDS;
     var playerInfo;
     if(uid) { // Отправляем всем выбор игрока
@@ -64,23 +57,25 @@ module.exports = function(game) {
         game.restoreGame(null, true);
       }
     }
+
+    //----------------
+    function broadcastPick(game, uid) {
+      var playerInfo = game.gActivePlayers[uid];
+
+      var result = {};
+      result.id = uid;
+      result.vid = playerInfo.vid;
+      result.pick = options.pick;
+
+      game.emit(playerInfo.player.getSocket(), result);
+
+      if(!game.gameState.picks) { game.gameState.picks = []; }
+      game.gameState.picks.push(result);
+    }
   }
 };
 
-//----------------
-function broadcastPick(game, uid) {
-  var playerInfo = game.gActivePlayers[uid];
 
-  var result = {};
-  result.id = uid;
-  result.vid = playerInfo.vid;
-  result.pick = options.pick;
-
-  game.emit(playerInfo.player.getSocket(), result);
-
-  if(!game.gameState.picks) { game.gameState.picks = []; }
-  game.gameState.picks.push(result);
-}
 
 // Функция проверяет, если игрок не онлайн, создает его профиль.
 // Добавляет всем очки

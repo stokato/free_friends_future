@@ -3,51 +3,55 @@ var async     =  require('async');
 var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),              // Ошибки
     checkInput = require('../../check_input'),            // Верификация
-    sanitize        = require('../../sanitizer'),
+    //sanitize        = require('../../sanitizer'),
     constants  = require('../constants');
 
 /*
- Добавить пользователя в друзья: Информация о друге (VID, или что то еще?)
+ Добавить пользователя в друзья: Информация о друге (VID)
  - Получаем свой профиль
  - Получаем профиль друга (из ОЗУ или БД)
  - Добдавляем друг другу в друзья (Сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн) ???
+ - Сообщаем клиену (и второму, если он онлайн)
  */
 module.exports = function (socket, userList, profiles) {
   socket.on(constants.IO_ADD_FRIEND, function(options) {
-    if (!checkInput(constants.IO_ADD_FRIEND, socket, userList, options)) {
-      return;
-    }
-    //var f = constants.FIELDS;
+    if (!checkInput(constants.IO_ADD_FRIEND, socket, userList, options)) {  return; }
+
     var selfProfile = userList[socket.id];
 
     if (selfProfile.getID() == options.id) {
-      return new GameError(socket, constants.IO_ADD_FRIEND, "Попытка добавить в друзья себя");
+      return handError(constants.errors.SELF_ILLEGAL);
     }
 
-    options.id = sanitize(options.id);
+    //options.id = sanitize(options.id);
 
     var date = new Date();
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль друга
+
         var friendProfile = null;
-        if (profiles[options.id]) {      // Если онлайн
+        if (profiles[options.id]) {        // Если онлайн
+
           friendProfile = profiles[options.id];
+
           cb(null, friendProfile);
-        }
-        else {                           // Если нет - берем из базы
+        } else {                           // Если нет - берем из базы
+
           friendProfile = new profilejs();
           friendProfile.build(options.id, function (err, info) {  // Нужен VID и все поля, как при подключении
             if (err) { return cb(err, null); }
 
             cb(null, friendProfile);
           });
+
         }
+
       },///////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Добавляем первого в друзья
+
         var user = {};
-        user.friendid = selfProfile.getID();
+        user.friendid  = selfProfile.getID();
         user.friendvid = selfProfile.getVID();
         user.date = date;
 
@@ -56,6 +60,7 @@ module.exports = function (socket, userList, profiles) {
 
           cb(null, friendProfile);
         })
+
       },///////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Добавляем второго
 
@@ -67,41 +72,68 @@ module.exports = function (socket, userList, profiles) {
         selfProfile.addToFriends(user, function (err, res) {
           if (err) { return cb(err, null); }
 
-          var friendInfo = {};
-          friendInfo.id      = friendProfile.getID();
-          friendInfo.vid     = friendProfile.getVID();
-          friendInfo.date    = date;
-          friendInfo.points  = friendProfile.getPoints();
-          friendInfo.age     = friendProfile.getAge();
-          friendInfo.city    = friendProfile.getCity();
-          friendInfo.country = friendProfile.getCountry();
-          friendInfo.sex     = friendProfile.getSex();
+          //var friendInfo = fillInfo(friendProfile, date);
+          //
+          //friendInfo.operation_status = constants.RS_GOODSTATUS;
+          //socket.emit(constants.IO_ADD_FRIEND, friendInfo);
+          //
+          //if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+          //  var selfInfo = fillInfo(selfProfile, date);
+          //
+          //  var friendSocket = friendProfile.getSocket();
+          //  friendSocket.emit(constants.IO_NEW_FRIEND, selfInfo);
+          //
+          //  friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+          //}
 
-          socket.emit(constants.IO_ADD_FRIEND, friendInfo);
-
-          if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
-            var selfInfo = {};
-            selfInfo.id      = selfProfile.getID();
-            selfInfo.vid     = selfProfile.getVID();
-            selfInfo.date    = date;
-            selfInfo.points  = selfProfile.getPoints();
-            selfInfo.age     = selfProfile.getAge();
-            selfInfo.city    = selfProfile.getCity();
-            selfInfo.country = selfProfile.getCountry();
-            selfInfo.sex     = selfProfile.getSex();
-
-            var friendSocket = friendProfile.getSocket();
-            friendSocket.emit(constants.IO_ADD_FRIEND, selfInfo);
-
-            friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
-          }
-
-          cb(null, null);
+          cb(null, friendProfile);
         })
-      }], function (err, res) { // Вызывается последней. Обрабатываем ошибки
-      if (err) { return new GameError(socket, constants.IO_ADD_FRIEND, err.message); }
+      }], function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+      if (err) {
+        return handError(err);
+      }
+
+      var friendInfo = fillInfo(friendProfile, date);
+
+      friendInfo.operation_status = constants.RS_GOODSTATUS;
+      socket.emit(constants.IO_ADD_FRIEND, friendInfo);
+
+      if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+        var selfInfo = fillInfo(selfProfile, date);
+
+        var friendSocket = friendProfile.getSocket();
+        friendSocket.emit(constants.IO_NEW_FRIEND, selfInfo);
+
+        friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+      }
     }); // waterfall
+
+    //--------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_ADD_FRIEND, res);
+
+      new GameError(socket, constants.IO_ADD_FRIEND, err.message || constants.errors.OTHER.message);
+    }
+
+    function fillInfo(profile, date) {
+      var info = {};
+      info.id      = profile.getID();
+      info.vid     = profile.getVID();
+      info.date    = date;
+      info.points  = profile.getPoints();
+      info.age     = profile.getAge();
+      info.city    = profile.getCity();
+      info.country = profile.getCountry();
+      info.sex     = profile.getSex();
+
+      return info;
+    }
   });
 };
+
+
 
 

@@ -5,8 +5,9 @@ var GameError = require('../../game_error'),      // Ошибки
     defineSex = require ('./define_sex'),
     createRoom = require('./create_room'),
     getLastMessages = require('./get_last_messages'),
-    sanitize        = require('../../sanitizer'),
+    //sanitize        = require('../../sanitizer'),
     getRoomInfo = require('./get_room_info');
+
 /*
  Сменить комнату: Идентификатор новой комнаты
  - Получаем свой профиль
@@ -23,19 +24,17 @@ var GameError = require('../../game_error'),      // Ошибки
  */
 module.exports = function (socket, userList, rooms, roomList) {
   socket.on(constants.IO_CHANGE_ROOM, function(options) {
-    if (!checkInput(constants.IO_CHANGE_ROOM, socket, userList, options)) {
-      return;
-    }
-    //var f = constants.FIELDS;
+    if (!checkInput(constants.IO_CHANGE_ROOM, socket, userList, options)) { return; }
+
     if(!rooms[options.room] && options.room != constants.NEW_ROOM) {
-      return new GameError(socket, constants.IO_CHANGE_ROOM, "Некорректный идентификатор комнаты");
-    }
-    if(roomList[socket.id].name == options.room){
-      return new GameError(socket, constants.IO_CHANGE_ROOM,
-                                                      "Пользователь уже находится в этой комнате");
+      return handError(constants.errors.NO_SUCH_ROOM);
     }
 
-    options.room = sanitize(options.room);
+    if(roomList[socket.id].name == options.room){
+      return handError(constants.errors.ALREADY_IN_ROOM);
+    }
+
+    //options.room = sanitize(options.room);
 
     var newRoom = null;
     var currRoom = roomList[socket.id];
@@ -46,13 +45,13 @@ module.exports = function (socket, userList, rooms, roomList) {
     if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
       newRoom = createRoom(socket, userList);
       rooms[newRoom.name] = newRoom;
+
     } else {                                  // Либо ищем указанную
       var item;
       for (item in rooms) if (rooms.hasOwnProperty(item)) {
         if (rooms[item].name == options.room) {
           if (rooms[item][sex.len] >= constants.ONE_SEX_IN_ROOM) {
-            return new GameError(socket, constants.IO_CHANGE_ROOM,
-                                                  "Попытка открыть комнату в которой нет места");
+            return handError(constants.errors.ROOM_IS_FULL);
           }
           newRoom = rooms[item];
 
@@ -62,7 +61,7 @@ module.exports = function (socket, userList, rooms, roomList) {
     }
 
     if (!newRoom) {
-      return new GameError(socket, constants.IO_CHANGE_ROOM, "Попытка открыть несуществующую комнату")
+      return handError(options, "Попытка открыть несуществующую комнату", 422);
     }
 
     //if(selfProfile.getReady()) {
@@ -114,14 +113,27 @@ module.exports = function (socket, userList, rooms, roomList) {
 
       newRoom.game.start(socket);
 
+
+      socket.emit(constants.IO_CHANGE_ROOM, { operation_status : constants.RS_GOODSTATUS });
+
       if(isCurrRoom) {
         getRoomInfo(currRoom, function(err, currRoomInfo) {
-          if(err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
+          if(err) { return handError(err); }
 
           socket.broadcast.in(currRoom.name).emit(constants.IO_ROOM_USERS, currRoomInfo);
         });
       }
     });
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_CHANGE_ROOM, res);
+
+      new GameError(socket, constants.IO_CHANGE_ROOM, err.message || constants.errors.OTHER.message);
+    }
   });
 };
 

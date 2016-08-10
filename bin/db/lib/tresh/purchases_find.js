@@ -1,5 +1,5 @@
-var C = require('../constants');
-var qBuilder = require('./build_query');
+var C = require('../../constants');
+var qBuilder = require('./../build_query');
 /*
  Найти все покупки пользователя: ИД
  - Проверка ИД

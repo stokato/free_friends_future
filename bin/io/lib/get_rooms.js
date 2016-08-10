@@ -14,8 +14,8 @@ var GameError = require('../../game_error'),
  - Передаем клиенту
  */
 module.exports = function (socket, userList, rooms, roomList) {
-  socket.on(constants.IO_GET_ROOMS, function() {
-    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, {})) { return; }
+  socket.on(constants.IO_GET_ROOMS, function(options) {
+    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, options)) { return; }
 
     var sex = defineSex(userList[socket.id]);
 
@@ -26,9 +26,10 @@ module.exports = function (socket, userList, rooms, roomList) {
 
     for(var item in rooms) if(rooms.hasOwnProperty(item)) {
       if (rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM && rooms[item].name != selfRoom.name) {
+
         count++;
         getRoomInfo(rooms[item], function (err, info) {
-          if (err) { return new GameError(socket, constants.IO_GET_ROOMS, err.message) }
+          if (err) { return handError(options, err.message); }
 
           resRooms.push(info);
 
@@ -39,17 +40,35 @@ module.exports = function (socket, userList, rooms, roomList) {
           //}
           checkComplete();
         });
+
       }
     }
 
     checkComplete();
 
+    //-------------------------
     function checkComplete() {
       count--;
 
       if(count == 0) {
-        socket.emit(constants.IO_GET_ROOMS, resRooms);
+
+        socket.emit(constants.IO_GET_ROOMS, {
+          rooms : resRooms,
+          operation_status : constants.RS_GOODSTATUS
+        });
+
       }
+    }
+
+
+    //-------------------------
+    function handError(err, res) { res = res || {};
+      res.operation_status = constants.RS_BADSTATUS;
+      res.operation_error = err.code || constants.errors.OTHER.code;
+
+      socket.emit(constants.IO_GET_ROOMS, res);
+
+      new GameError(socket, constants.IO_GET_ROOMS, err.message || constants.errors.OTHER.message);
     }
   });
 };

@@ -11,8 +11,6 @@ module.exports = function(num, callback) {
   }
   var self = this;
 
-  //var f = constants.FIELDS;
-
   var options = {};
   options.id = self.pID;
   options.vid = self.pVID;

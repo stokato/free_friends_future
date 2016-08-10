@@ -1,5 +1,5 @@
-var C = require('../constants');
-var qBuilder = require('./build_query');
+var C = require('../../constants');
+var qBuilder = require('./../build_query');
 /*
  Удалить товар из товаров пользователя: ИД
  - Проверка на ИД

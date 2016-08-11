@@ -4,7 +4,7 @@ var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     //sanitize        = require('../../sanitizer'),
-    constants = require('./../constants');
+    constants = require('./../../constants');
 
 /*
  Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,

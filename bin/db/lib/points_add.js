@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 var async = require('async');
 /*
@@ -59,7 +59,7 @@ module.exports = function(options, callback) { options    = options || {};
     },
     function(fields, params, cb) {
 
-      var db = (options["sex"] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
+      var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, db);
 
       self.client.execute(query, params, {prepare: true },  function(err) {
@@ -69,7 +69,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     },
     function(fields, params, cb) {
-      var db = (options["sex"] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
+      var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
 
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
 

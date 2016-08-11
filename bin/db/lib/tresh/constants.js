@@ -1,5 +1,5 @@
 
-module.exports.IO = require('../io/constants');
+module.exports.IO = require('../../../constants');
 
 module.exports.T_USERS           = 'users';
 module.exports.T_USERCHATS       = 'user_chats';

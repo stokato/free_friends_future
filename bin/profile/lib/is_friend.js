@@ -2,7 +2,7 @@
  Проверяем, является ли пользватель другом
  */
 
-var constants = require('./../../io/constants');
+var constants = require('./../../constants');
 
 module.exports = function(uid, callback) {
   var self = this;

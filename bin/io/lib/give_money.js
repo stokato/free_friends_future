@@ -3,7 +3,7 @@ var async      =  require('async');
 var profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
-  constants = require('./../constants'),
+  constants = require('./../../constants'),
   //sanitize        = require('../../sanitizer'),
   dbjs         = require('../../db/index');
 
@@ -42,9 +42,9 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
     ], function (err, res) { // Вызывается последней. Обрабатываем ошибки
       if (err) { return handError(err); }
 
-      socket.emit(constants.IO_GIVE_MONEY, {
-        operation_status : constants.RS_GOODSTATUS
-      });
+      //socket.emit(constants.IO_GIVE_MONEY, {
+      //  operation_status : constants.RS_GOODSTATUS
+      //});
 
       if (profiles[options.id]) {
         var friendProfile = profiles[options.id];

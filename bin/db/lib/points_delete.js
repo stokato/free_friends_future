@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 var async = require('async');
 
@@ -30,7 +30,7 @@ module.exports = function(options, callback) { options = options || {};
       });
     },
     function(params, cb) {
-      var db = (options["sex"] == C.IO.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
+      var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
       var query = qBuilder.build(qBuilder.Q_DELETE, [], db, ["id", "points", "userid"], [1, 1, 1]);
       self.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err); }

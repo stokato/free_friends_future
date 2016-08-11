@@ -4,7 +4,7 @@ var profilejs     =  require('../../profile/index'),
   checkInput      = require('../../check_input'),
   sendOne         = require('./send_one'),
   //sanitize        = require('../../sanitizer'),
-  constants       = require('./../constants') ;
+  constants       = require('./../../constants') ;
 
 module.exports = function(socket, userList, profiles) {
   socket.on(constants.IO_GET_CHAT_HISTORY, function(options) {

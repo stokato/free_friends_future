@@ -1,21 +1,19 @@
-var GameError = require('./../../../game_error');
-var constants = require('../../constants');
-var checkCountPlayers = require('./../check_count_players');
+var constants = require('../../../constants');
 
+// Игра - кто лучший, рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
 module.exports = function(game) {
-  return function(timer, uid, options) { // Лучший, сообщаем всем их выбор
-    //var f = constants_io.FIELDS, playerInfo;
-    if(uid) {
-      broadcastPick(game, uid);
-    }
+  return function(timer, uid, options) {
+    if(uid) { broadcastPick(game, uid);  }
 
-    if(game.gActionsCount == 0 || timer) { // После голосования
+    // После голосования
+    if(game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      if(!checkCountPlayers(game)) {
+      if(!game.checkCountPlayers()) {
         return game.stop();
       }
 
+      // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
       if(game.gActionsCount == 0) {
         game.restoreGame(null, true);
       } else {
@@ -27,13 +25,14 @@ module.exports = function(game) {
     function broadcastPick(game, uid) {
       var playerInfo = game.gActivePlayers[uid];
 
-      var result = {};
-      result.pick = {};
-      result.pick.id = uid;
-      result.pick.vid = playerInfo.vid;
-      result.pick.pick = options.pick;
-
-      game.emit(playerInfo.player.getSocket(), result);
+      var result = {
+        pick : {
+          id    : uid,
+          vid   : playerInfo.vid,
+          pick  : options.pick
+        }
+      };
+      game.emit(result);
 
       // Сохраняем состояние игры
       if(!game.gameState.picks) {

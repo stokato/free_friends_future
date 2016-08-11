@@ -1,6 +1,6 @@
 var async = require('async');
 
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Найти следующие 100 пользователей по набранным очкам
@@ -11,19 +11,18 @@ var qBuilder = require('./build_query');
 
 module.exports = function(sex, callback) {
   var self = this;
-  //var f = C.IO.FIELDS;
 
   var users = [];
   var fields = ["points", "userid", "uservid", "sex"];
 
   var db = C.T_POINTS;
-  if(sex == C.IO.GIRL) {
+  if(sex == C.GIRL) {
     db = C.T_POINTS_GIRLS;
-  } else if(sex == C.IO.GUY) {
+  } else if(sex == C.GUY) {
     db = C.T_POINTS_GUYS;
   }
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, null, null, null, null, null, C.POINTS_LIMIT);
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, null, null, null, null, null, C.TOP_USERS);
 
   this.client.execute(query, [], {prepare: true }, function(err, result) {
     if (err) { return cb(err, null); }

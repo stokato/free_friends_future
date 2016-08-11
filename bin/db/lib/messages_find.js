@@ -1,6 +1,6 @@
 var async = require('async');
 
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока

@@ -1,8 +1,7 @@
 var validator = require('validator');
 
 var GameError = require('./game_error');
-var constants_io = require('./io/constants');
-var constants_game = require('./game/constants');
+var constants = require('./constants');
 var sanitize        = require('./sanitizer');
 
 var md5 = require('md5');
@@ -19,26 +18,26 @@ function checkInput(em, socket, userList, options, serverProfile) {
 
 
   // Попытка повторного подключения
-  if(em == constants_io.IO_INIT && userList[socket.id] ) {
-    handError(constants_io.errors.NO_AUTH, em);
+  if(em == constants.IO_INIT && userList[socket.id] ) {
+    handError(constants.errors.NO_AUTH, em);
     return false;
   }
 
   // Такого пользователя нет
-  if(em != constants_io.IO_INIT && !userList[socket.id] ) {
-    handError(constants_io.errors.NO_AUTH, em);
+  if(em != constants.IO_INIT && !userList[socket.id] ) {
+    handError(constants.errors.NO_AUTH, em);
     return false;
   }
 
   // Не переданы опции
   if(!checkOptionsType(options)) {
-    handError(constants_io.errors.NO_PARAMS, em);
+    handError(constants.errors.NO_PARAMS, em);
     return false;
   }
 
   // Проверка подписи
   //if(!checkAuth(em, socket, userList, options)) {
-  //  handError(constants_io.errors.NO_AUTH, em);
+  //  handError(constants.errors.NO_AUTH, em);
   //  return false;
   //}
 
@@ -46,12 +45,11 @@ function checkInput(em, socket, userList, options, serverProfile) {
   var val;
 
   switch (em) {
-    case constants_io.IO_INIT :
-
+    case constants.IO_INIT :
                         isValid = (validator.isInt(options.country + ""))?  isValid : false;
                         isValid = (validator.isInt(options.city + ""))?     isValid : false;
-                        isValid = (options.sex + "" == constants_io.GUY ||
-                                   options.sex + "" == constants_io.GIRL)?  isValid : false;
+                        isValid = (options.sex + "" == constants.GUY ||
+                                   options.sex + "" == constants.GIRL)?  isValid : false;
                         isValid = (validator.isDate(options.bdate + "")?    isValid : false);
 
                         if(!isValid) {
@@ -59,9 +57,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_MESSAGE :
-
-
+    case constants.IO_MESSAGE :
                         options.text = sanitize(options.text);
 
                         if("id" in options) {
@@ -69,13 +65,12 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_CHANGE_ROOM :
-
+    case constants.IO_CHANGE_ROOM :
                         //isValid = (validator.isAlphanumeric(options.room + ""))? isValid : false;
                         options.room = sanitize(options.room);
                         break;
 
-    case constants_io.IO_GET_PROFILE :
+    case constants.IO_GET_PROFILE :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -85,7 +80,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_PRIVATE_MESSAGE :
+    case constants.IO_PRIVATE_MESSAGE :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -93,12 +88,12 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_MAKE_GIFT :
+    case constants.IO_MAKE_GIFT :
 
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_GIVE_MONEY :
+    case constants.IO_GIVE_MONEY :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -113,7 +108,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_ADD_FRIEND :
+    case constants.IO_ADD_FRIEND :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -123,7 +118,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_DEL_FROM_FRIENDS :
+    case constants.IO_DEL_FROM_FRIENDS :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -133,13 +128,12 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_CHANGE_STATUS :
-
+    case constants.IO_CHANGE_STATUS :
                         //isValid = (validator.isAlphanumeric(options.status))? isValid : false;
                         options.status = sanitize(options.status);
                         break;
 
-    case constants_io.IO_OPEN_PRIVATE_CHAT :
+    case constants.IO_OPEN_PRIVATE_CHAT :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -149,7 +143,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_GET_CHAT_HISTORY :
+    case constants.IO_GET_CHAT_HISTORY :
                         isValid = checkID(options.id);
                         isValid = (validator.isDate(options.first_date + "")?   isValid : false);
                         isValid = (validator.isDate(options.second_date + "")?  isValid : false);
@@ -161,7 +155,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_CLOSE_PRIVATE_CHAT :
+    case constants.IO_CLOSE_PRIVATE_CHAT :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -171,7 +165,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants_io.IO_GET_TOP :
+    case constants.IO_GET_TOP :
                         //if(options[f.points]) {
                         //  val = options[f.points];
                         //  isValid = (validator.isInt(val) && val <= 9 && val >= 0)? isValid : false;
@@ -187,7 +181,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_game.G_BEST :
+    case constants.G_BEST :
                         isValid = checkID(options.pick);
 
                         if(!isValid) {
@@ -195,7 +189,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_game.G_BOTTLE_KISSES :
+    case constants.G_BOTTLE_KISSES :
                         isValid = ("pick" in options)? isValid : false;
                         //isValid = (options.pick == "false" || options.pick == "true")? isValid : false;
                         isValid = (validator.isBoolean(options.pick)? isValid : false);
@@ -205,7 +199,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_game.G_QUESTIONS :
+    case constants.G_QUESTIONS :
                         val = options.pick + "";
                         isValid = ("pick" in options)? isValid : false;
                         isValid = (val == "1" || val == "2" || val == "3")? isValid : false;
@@ -215,7 +209,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_game.G_CARDS :
+    case constants.G_CARDS :
                         val = options.pick + "";
                         isValid = ("pick" in options)? isValid : false;
                         isValid = (validator.isInt(val) && val <= 6 && val >= 0)? isValid : false;
@@ -225,8 +219,8 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_game.G_SYMPATHY :
-    case constants_game.G_SYMPATHY_SHOW :
+    case constants.G_SYMPATHY :
+    case constants.G_SYMPATHY_SHOW :
                         isValid = checkID(options.pick);
 
                         if(!isValid) {
@@ -234,7 +228,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_RELEASE_PLAYER :
+    case constants.IO_RELEASE_PLAYER :
                         isValid = checkID(options.id);
 
                         if(!isValid) {
@@ -242,7 +236,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
                         break;
 
-    case constants_io.IO_GAME :
+    case constants.IO_GAME :
                         //isValid = ("pick" in options)? isValid : false;
 
                         if(!isValid) {
@@ -257,7 +251,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
   }
 
   if(!isValid) {
-    handError(constants_io.errors.NO_PARAMS, em);
+    handError(constants.errors.NO_PARAMS, em);
   }
 
   return isValid;
@@ -265,12 +259,12 @@ function checkInput(em, socket, userList, options, serverProfile) {
 
   //-------------------------
   function handError(err, em, res) { res = res || {};
-    res.operation_status = constants_io.RS_BADSTATUS;
-    res.operation_error = err.code || constants_io.errors.OTHER.code;
+    res.operation_status = constants.RS_BADSTATUS;
+    res.operation_error = err.code || constants.errors.OTHER.code;
 
     socket.emit(em, res);
 
-    new GameError(socket, em, err.message || constants_io.errors.OTHER.message);
+    new GameError(socket, em, err.message || constants.errors.OTHER.message);
   }
 }
 
@@ -292,7 +286,7 @@ function checkAuth(em, socket, userList, options) {
   if(("auth_key" in options) == false) {
     new GameError(socket, em, "Отсутствует подпись запроса");
     return false;
-  } else if (em == constants_io.IO_INIT) {
+  } else if (em == constants.IO_INIT) {
     return compareAuthKey(options.vid);
   } else {
     var vid = userList[socket.id].getVID();
@@ -301,7 +295,7 @@ function checkAuth(em, socket, userList, options) {
 
   //--------------
   function compareAuthKey(vid) {
-    if(options.auth_key === md5(constants_io.api_id + "_" + vid + "_" + constants_io.api_secret)) {
+    if(options.auth_key === md5(constants.api_id + "_" + vid + "_" + constants.api_secret)) {
       return true;
     } else {
       new GameError(socket, em, "Несовпадение вычисленной и переданной подписи запроса.");

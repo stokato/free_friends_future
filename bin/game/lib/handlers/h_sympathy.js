@@ -1,25 +1,12 @@
-var constants = require('../../constants');
-//var constants_io = require('../../../io/constants');
-
-var startTimer   = require('../start_timer'),
-    activateAllPlayers = require('../activate_all_players'),
-    getPlayersID = require('../get_players_id'),
-    setActionsLimit = require('../set_action_limits'),
-    randomPlayer = require('../random_player'),
-    GameError = require('./../../../game_error');
-var checkCountPlayers = require('./../check_count_players');
-
+var constants = require('../../../constants');
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
   return function (timer) {
-    //var f = constants_io.FIELDS;
-
-    // Если все ответили или истеколо время - переходим к следующему этапу
     if (game.gActionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game.gTimer); }
 
-      if(!checkCountPlayers(game)) {
+      if(!game.checkCountPlayers()) {
         return game.stop();
       }
 
@@ -28,20 +15,23 @@ module.exports = function(game) {
       // Сохраняем выбор игроков
       game.gStoredOptions = game.gActionsQueue;
 
+      // Очищаем настройки
       game.gActivePlayers = {};
       game.gActionsQueue = {};
 
-      activateAllPlayers(game.gRoom, game.gActivePlayers, null, game.gPrisoner);
-
-      setActionsLimit(game, game.gRoom.girls_count + game.gRoom.guys_count -1);
-
+      // Все игроки могут посмотреть результаты всех
+      game.activateAllPlayers();
       var countPrisoners = (game.gPrisoner === null)? 0 : 1;
-      game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners) * 10; //constants.PLAYERS_COUNT * (constants.PLAYERS_COUNT -1);
 
-      var result = {}; // complete: true
-      result.next_game = game.gNextGame;
-      result.players = getPlayersID(game.gActivePlayers);
-      result.prison = null;
+      game.setActionLimit(game.gRoom.girls_count + game.gRoom.guys_count - 1 - countPrisoners);
+      game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners) * 10;
+
+      // Отправляем результаты
+      var result = {
+        next_game   : game.gNextGame,
+        players     : game.getPlayersID,
+        prison      : null
+      };
       if(game.gPrisoner !== null) {
         result.prison = {
           id : game.gPrisoner.id,
@@ -50,17 +40,13 @@ module.exports = function(game) {
         }
       }
 
-      // Отправляем всем
-      var player = randomPlayer(game.gRoom, null, [], game.gPrisoner);
-      if(!player) {
-        return game.stop();
-      }
-      game.emit(player.getSocket(), result);
+      game.emit(result);
 
       // Сохраняем состояние игры
       game.gameState = result;
 
-      game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
+      // Устанавливаем таймер
+      game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
     }
   }
 };

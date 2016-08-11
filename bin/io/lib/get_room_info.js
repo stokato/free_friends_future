@@ -1,4 +1,4 @@
-var constants = require('./../constants');
+var constants = require('./../../constants');
 /*
  Подготовить данные по комнате
  - По каждому игроку в комнате

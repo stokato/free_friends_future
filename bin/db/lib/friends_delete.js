@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var buildQuery = require('./build_query');
 /*
  Удалить всех друзей игрока: ИД

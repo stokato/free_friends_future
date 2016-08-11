@@ -4,7 +4,7 @@ var profilejs = require('../../profile/index'),          // Профиль
   GameError   = require('../../game_error'),              // Ошибки
   checkInput  = require('../../check_input'),            // Верификация
   //sanitize    = require('../../sanitizer'),
-  constants   = require('../constants');
+  constants   = require('../../constants');
 
 /*
  Удалить пользователя из друзей: Информация о друге (VID, или что то еще?)

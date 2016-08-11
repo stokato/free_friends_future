@@ -1,34 +1,31 @@
 var checkInput = require('./../../check_input');
-var constants_io = require('../../io/constants');
-var constants = require('../constants');
+var constants = require('../../constants');
 var GameError = require('./../../game_error');
-//var sanitize        = require('../../sanitizer');
 
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, userList) {
-  socket.on(constants_io.IO_GAME, function(options) {
-    if (!checkInput(constants_io.IO_GAME, socket, userList, options)) { return; }
+  socket.on(constants.IO_GAME, function(options) {
+    if (!checkInput(constants.IO_GAME, socket, userList, options)) { return; }
 
     var selfProfile = userList[socket.id];
-    var uid = selfProfile.getID(),
-        game = selfProfile.getGame();
-
-    //var pick = sanitize(options.pick);
+    var uid = selfProfile.getID();
+    var game = selfProfile.getGame();
 
     // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
       if (!checkInput(game.gNextGame, socket, userList, options)) { return; }
 
-      if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[options.pick]) { // Если нет такого пользоателя среди кандидатов
-        return handError(constants_io.errors.NO_THAT_PLAYER);
+      // Если нет такого пользоателя среди кандидатов
+      if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[options.pick]) {
+        return handError(constants.errors.NO_THAT_PLAYER);
       }
 
+      // В игре симпатии нельзя указать себя
       if(game.gNextGame == constants.G_SYMPATHY && uid == options.pick) {
-        return handError(constants_io.errors.SELF_ILLEGAL);
+        return handError(constants.errors.SELF_ILLEGAL);
       }
-
       if(game.gNextGame == constants.G_SYMPATHY_SHOW && uid == options.pick) {
-        return handError(constants_io.errors.SELF_ILLEGAL);
+        return handError(constants.errors.SELF_ILLEGAL);
       }
 
       if(!game.gActionsQueue[uid]) {
@@ -38,15 +35,14 @@ module.exports = function (socket, userList) {
       // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
       // И выбрать того, кого нет
       if(game.gNextGame == constants.G_SYMPATHY || game.gNextGame == constants.G_SYMPATHY_SHOW) {
-         var i, actions = game.gActionsQueue[uid];
-
-         for( i = 0; i < actions.length; i++) {
-           if(actions[i]["pick"] == options.pick) { return; }
-         }
-
         if(!game.gActivePlayers[options.pick]) { return; }
-      }
 
+        var actions = game.gActionsQueue[uid];
+
+        for( var i = 0; i < actions.length; i++) {
+          if(actions[i].pick == options.pick) { return; }
+        }
+      }
 
       // Уменьшаем счетчики ходов одного игрока и всех в текущем раунде
       game.gActionsLimits[uid] --;
@@ -57,7 +53,6 @@ module.exports = function (socket, userList) {
       // Вызваем обработчик текущей игры
       game.gHandlers[game.gNextGame](false, uid, options);
     }
-
 
     //-------------------------
     function handError(err, res) { res = res || {};

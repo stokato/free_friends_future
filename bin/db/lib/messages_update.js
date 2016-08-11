@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Изменить сообщение в БД: Свойства сообщения

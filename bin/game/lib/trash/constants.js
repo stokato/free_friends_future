@@ -1,4 +1,4 @@
-var Config = require('./../../config.json');
+var Config = require('./../../../../config.json');
 
 var G_START         = 'results',
   G_LOT           = 'lot',

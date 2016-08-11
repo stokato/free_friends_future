@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
  Получаем историю сообщений одного собеседника:
  - Читаем из БД

@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
  Инициализируем профиль
  - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)

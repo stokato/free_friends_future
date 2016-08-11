@@ -1,6 +1,6 @@
 var GameError = require('../../game_error'),              // Ошибки
   checkInput = require('../../check_input'),            // Верификация
-  constants  = require('../constants');
+  constants  = require('../../constants');
 
 var async = require('async');
 

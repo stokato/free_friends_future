@@ -1,7 +1,7 @@
 var dbjs      = require('./../../db/index'),
   GameError = require('./../../game_error'),
   checkInput = require('./../../check_input'),
-  constants = require('./../constants');
+  constants = require('./../../constants');
 
 var db = new dbjs();
 /*

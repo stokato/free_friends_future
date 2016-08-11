@@ -1,4 +1,4 @@
-var constants = require('./../constants');
+var constants = require('./../../constants');
     closeConnection = require('./close_connection');
 
 /*

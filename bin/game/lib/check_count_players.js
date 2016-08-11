@@ -1,30 +1,25 @@
-var constants_io = require('../../io/constants');
-var constants = require('../constants');
+var constants = require('../../constants');
 
-module.exports = function(game) {
+// Проверяем, достаточно ли игроков для продолжения игры
+module.exports = function() {
 
-  var guysInPrison = 0;
+  var guysInPrison  = 0;
   var girlsInPrison = 0;
 
-  if(game.gPrisoner !== null) {
-    var sex = game.gPrisoner.sex;
+  if(this.gPrisoner !== null) {
+    var sex = this.gPrisoner.sex;
 
-
-    if(sex == constants_io.GUY) {
+    if(sex == constants.GUY) {
       guysInPrison = 1;
     } else {
       girlsInPrison = 1;
     }
   }
 
-
-
-  var guysCount = game.gRoom.guys_count - guysInPrison;
-  var girlsCount = game.gRoom.girls_count - girlsInPrison;
+  var guysCount = this.gRoom.guys_count - guysInPrison;
+  var girlsCount = this.gRoom.girls_count - girlsInPrison;
 
   if((guysCount) < constants.PLAYERS_COUNT || (girlsCount) < constants.PLAYERS_COUNT) {
-    console.log("guys " + guysCount);
-    console.log("girls " + girlsCount);
     return false;
   }
 

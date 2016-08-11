@@ -1,7 +1,7 @@
 // Свои модули
 var GameError = require('../../game_error'),      // Ошибки
     checkInput = require('../../check_input'),    // Верификация
-    constants = require('./../constants'),     // Константы
+    constants = require('./../../constants'),     // Константы
     defineSex = require ('./define_sex'),
     createRoom = require('./create_room'),
     getLastMessages = require('./get_last_messages'),

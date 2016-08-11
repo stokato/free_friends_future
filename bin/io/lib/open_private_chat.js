@@ -5,7 +5,7 @@ var profilejs       = require('../../profile/index'),
   genDateHistory  = require('./gen_date_history'),
   sendOne         = require('./send_one'),
   //sanitize        = require('../../sanitizer'),
-  constants       = require('./../constants');
+  constants       = require('./../../constants');
 
 module.exports = function(socket, userList, profiles) {
   socket.on(constants.IO_OPEN_PRIVATE_CHAT, function(options) {

@@ -3,7 +3,7 @@ var async      =  require('async');
 var profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
-  constants = require('./../constants'),
+  constants = require('./../../constants'),
   //sanitize        = require('../../sanitizer'),
   dbjs         = require('../../db');
 

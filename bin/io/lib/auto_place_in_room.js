@@ -1,4 +1,4 @@
-var constants = require('./../constants'),
+var constants = require('./../../constants'),
     defineSex = require('./define_sex'),
     createRoom = require('./create_room');
 /*

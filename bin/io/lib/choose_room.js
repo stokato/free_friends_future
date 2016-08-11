@@ -2,7 +2,7 @@ var async     =  require('async');
 
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
-    constants = require('./../constants'),
+    constants = require('./../../constants'),
     defineSex = require('./define_sex'),
     //createRoom = require('./create_room'),
     getRoomInfo = require('./get_room_info');

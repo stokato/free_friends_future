@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
  Устанавливаем количество монет игрока
  - Сначала в БД и если успешно

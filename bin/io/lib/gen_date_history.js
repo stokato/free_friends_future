@@ -1,4 +1,4 @@
-var constants = require('./../constants');
+var constants = require('./../../constants');
 
 // Получаем дату начала недели
 module.exports = function(date) {

@@ -2,7 +2,7 @@ var dbjs       = require('./../../db/index'),                // База
     GameError  = require('./../../game_error'),
     checkInput = require('./../../check_input'),
     profilejs  = require('../../profile/index'),
-    constants  = require('./../constants');
+    constants  = require('./../../constants');
 
 var db = new dbjs();
 

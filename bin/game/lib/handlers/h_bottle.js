@@ -1,22 +1,15 @@
-var constants = require('../../constants');
-
-var randomPlayer = require('../random_player'),
-    getPlayersID = require('../get_players_id'),
-    startTimer   = require('../start_timer'),
-    setActionsLimit = require('../set_action_limits'),
-  getPlayerInfo  = require('./../get_player_info'),
-  checkCountPrisoners = require('./../check_count_players');
+var constants = require('../../../constants');
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
   return function(timer, uid) {
-    //var f = constants_io.FIELDS;
     if(!timer) { clearTimeout(game.gTimer); }
 
-    if(!checkCountPrisoners(game)) {
+    if(!game.checkCountPlayers()) {
       return game.stop();
     }
 
+    // Получаем данные по первому игроку
     var firstPlayerInfo = null;
     if(uid) {
       firstPlayerInfo = game.gActivePlayers[uid];
@@ -26,27 +19,31 @@ module.exports = function(game) {
       }
     }
 
+    // Выбираем второго игрока
     var firstGender = firstPlayerInfo.sex;
-    var male = constants.CONFIG.sex.male;
-    var female = constants.CONFIG.sex.female;
+    var male = constants.GUY;
+    var female = constants.GIRL;
 
     var secondGender = (firstGender == male)? female : male;
-    var secondPlayer = randomPlayer(game.gRoom, secondGender, null, game.gPrisoners);
+    var secondPlayer = game.getRandomPlayer(secondGender);
 
     if(!secondPlayer) {
       return game.stop();
     }
 
-    game.gActivePlayers[secondPlayer.getID()] = getPlayerInfo(secondPlayer);
-    game.gActionsQueue = {};
+    // Разрешаем второму игроку ходить
+    game.gActivePlayers[secondPlayer.getID()] = game.getPlayerInfo(secondPlayer);
 
-    setActionsLimit(game, 1);
+    // Оба могут ответить по разу
+    game.gActionsQueue = {};
+    game.setActionLimit(1);
     game.gActionsCount = 2;
 
     game.gNextGame = constants.G_BOTTLE_KISSES;
 
-    var result = {}; // players: getPlayersID(game.gActivePlayers)
-    result.players = getPlayersID(game.gActivePlayers);
+    // Отправляем результаты
+    var result = {};
+    result.players = game.getPlayersID();
     result.next_game = constants.G_BOTTLE_KISSES;
 
     result.prison = null;
@@ -58,15 +55,10 @@ module.exports = function(game) {
       }
     }
 
-    var player = randomPlayer(game.gRoom, null, null, game.gPrisoner);
-    if(!player) {
-      return game.stop();
-    }
-
-    game.emit(player.getSocket(), result);
-
+    game.emit(result);
     game.gameState = result;
 
-    game.gTimer = startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
+    // Устанавливаем таймаут
+    game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
   }
 };

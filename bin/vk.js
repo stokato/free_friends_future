@@ -4,7 +4,7 @@ var dbManager = new db();
 var sanitize        = require('./sanitizer');
 var md5 = require('md5');
 
-var constants = require('./io/constants');
+var constants = require('./constants');
 
 //var secret_key = "hiUl8U4F9q3BcbAl28va"; // Защищенный ключ приложения
 function VK () {

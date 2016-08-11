@@ -1,8 +1,8 @@
-// Собрать в массив ИД всех играков в списке
-module.exports = function (players) {
+// Собрать в массив информацию всех играков в списке
+module.exports = function () {
   var arr = [], item, player;
-  for(item in players) if(players.hasOwnProperty(item)) {
-    player = players[item];
+  for(item in this.gActivePlayers) if(this.gActivePlayers.hasOwnProperty(item)) {
+    player = this.gActivePlayers[item];
 
     var playerInfo = {
       id    : player.id,

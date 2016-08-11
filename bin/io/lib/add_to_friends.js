@@ -4,7 +4,7 @@ var profilejs =  require('../../profile/index'),          // Профиль
     GameError = require('../../game_error'),              // Ошибки
     checkInput = require('../../check_input'),            // Верификация
     //sanitize        = require('../../sanitizer'),
-    constants  = require('../constants');
+    constants  = require('../../constants');
 
 /*
  Добавить пользователя в друзья: Информация о друге (VID)

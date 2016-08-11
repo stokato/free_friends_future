@@ -1,14 +1,14 @@
-var constants = require('../constants');
+var constants = require('../../constants');
 
 // Выбрать произвольного игрока любого, или указанного пола
-module.exports = function (room, sex, excessIds, prisoner) { prisoner = prisoner || {};
-  excessIds = excessIds || [];
+module.exports = function (sex, excessIds) { excessIds = excessIds || [];
+  var self = this;
 
-  var guys = room.guys;
-  var girls = room.girls;
+  var guys = this.gRoom.guys;
+  var girls = this.gRoom.girls;
   var allPlayers = [], item;
 
-  if(!sex || sex == constants.CONFIG.sex.male)    {
+  if(!sex || sex == constants.GUY)    {
     for (item in guys)  if (guys.hasOwnProperty(item)) {
       if(!isInExcess(guys[item].getID())) {
         allPlayers.push(guys[item]);
@@ -16,7 +16,7 @@ module.exports = function (room, sex, excessIds, prisoner) { prisoner = prisoner
     }
   }
   
-  if(!sex || sex == constants.CONFIG.sex.female) {
+  if(!sex || sex == constants.GIRL) {
     for (item in girls) if(girls.hasOwnProperty(item)) {
       if(!isInExcess(girls[item].getID())) {
         allPlayers.push(girls[item]);
@@ -32,7 +32,7 @@ module.exports = function (room, sex, excessIds, prisoner) { prisoner = prisoner
 
   //---------------------------------
   function isInExcess (id) {
-    if(prisoner.id == id) {
+    if(self.gPrisoner && self.gPrisoner.id == id) {
       return true;
     }
 

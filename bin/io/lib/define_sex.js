@@ -1,4 +1,4 @@
-var constants = require('./../constants');
+var constants = require('./../../constants');
 
 module.exports = function(profile) {
   if(profile.getSex() == constants.GUY) {

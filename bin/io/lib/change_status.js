@@ -1,7 +1,7 @@
 var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     //sanitize        = require('../../sanitizer'),
-    constants = require('./../constants');
+    constants = require('./../../constants');
 
 /*
  Отправить изменить статус игрока: Статус

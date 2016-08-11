@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var buildQuery = require('./build_query');
 /*
  Добавить друга в БД: ИД, объект с данными друга

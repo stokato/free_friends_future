@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Добавляем пользователя в БД: объект с данными пользователя из соц. сетей

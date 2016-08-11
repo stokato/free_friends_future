@@ -1,7 +1,7 @@
 var GameError = require('../../game_error'),
   checkInput = require('../../check_input'),
   //sanitize        = require('../../sanitizer'),
-  constants = require('./../constants');
+  constants = require('./../../constants');
 
 module.exports = function(socket, userList) {
   socket.on(constants.IO_CLOSE_PRIVATE_CHAT, function(options) {

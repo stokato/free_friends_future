@@ -1,6 +1,6 @@
 var GameError = require('../../../game_error'),              // Ошибки
     checkInput = require('../../../check_input'),            // Верификация
-    constants = require('./../../constants');
+    constants = require('./../../../constants');
 
 // присоединиться к игре
 // Ставим игроку статус - готов к игре

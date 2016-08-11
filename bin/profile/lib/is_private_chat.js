@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
 Проверить - есть ли такой чат: ид собеседника (чата)
 

@@ -1,9 +1,9 @@
 // Проверяем - есть ли в комнате игрок с таким uid
-module.exports = function(room, uid) {
+module.exports = function(uid) {
 
   var item, guy, girl;
-  var guys = room.guys;
-  var girls = room.girls;
+  var guys = this.gRoom.guys;
+  var girls = this.gRoom.girls;
 
   for (item in guys) if(guys.hasOwnProperty(item)) {
     guy = guys[item];

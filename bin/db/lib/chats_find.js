@@ -1,6 +1,6 @@
 var async = require('async');
 
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Найти пользователей, с которыми были чаты, показать наличине новых сообщений

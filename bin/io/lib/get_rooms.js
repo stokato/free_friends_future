@@ -3,7 +3,7 @@ var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     defineSex  = require('./define_sex'),
     getRoomInfo = require('./get_room_info'),
-    constants  = require('../constants');
+    constants  = require('../../constants');
 
 /*
  Показать список комнат (столов)

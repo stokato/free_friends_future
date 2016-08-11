@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
 Получить историю приватного чата за заданный период времени
  */

@@ -1,5 +1,5 @@
 var async = require('async');
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
  Добавляем очки пользователю
  - Сначала в БД и если успешно

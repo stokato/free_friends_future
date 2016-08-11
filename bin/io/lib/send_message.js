@@ -8,7 +8,7 @@ var profilejs       = require('../../profile/index'), // Профиль
     sendInRoom      = require('./send_in_room'),
     sendOne         = require('./send_one'),
     genDateHistory  = require('./gen_date_history'),
-    constants       = require('./../constants');
+    constants       = require('./../../constants');
 
 var cassandra = require('cassandra-driver');
 var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassandra

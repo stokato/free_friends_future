@@ -8,7 +8,7 @@ var profilejs =  require('../../profile/index'),          // Профиль
     getRoomInfo = require('./get_room_info'),
     getLastMessages = require('./get_last_messages'),
     genDateHistory = require('./gen_date_history'),
-    constants = require('./../constants');
+    constants = require('./../../constants');
 
 var giveMoney         = require('./give_money');
 

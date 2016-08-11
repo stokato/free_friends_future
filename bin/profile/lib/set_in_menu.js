@@ -1,4 +1,4 @@
-var constants = require('../../io/constants');
+var constants = require('../../constants');
 /*
  Устанавливаем свойство - есть в меню
  - Сначала в БД и если успешно

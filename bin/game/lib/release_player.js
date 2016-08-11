@@ -1,47 +1,52 @@
 var checkInput = require('./../../check_input');
-var constants_io = require('../../io/constants');
-var constants = require('../constants');
+var constants = require('../../constants');
 var GameError = require('./../../game_error');
 
-// Добавить ход игрока в очередь для обработки
+// Освободить игрока из темницы
 module.exports = function (socket, userList) {
-  socket.on(constants_io.IO_RELEASE_PLAYER, function(options) {
-    if (!checkInput(constants_io.IO_RELEASE_PLAYER, socket, userList, options)) { return; }
+  socket.on(constants.IO_RELEASE_PLAYER, function(options) {
+    if (!checkInput(constants.IO_RELEASE_PLAYER, socket, userList, options)) { return; }
 
     var selfProfile = userList[socket.id];
     var game = selfProfile.getGame();
-    var prisonerInfo = game.gPrisoner;
+    var prisonerInfo = game.getPrisonerInfo();
 
     // Если серди заблокированных игроков такого нет, выдаем ошибку
     if(!prisonerInfo) {
-      return handError(constants_io.errors.NOT_IN_PRISON);
+      return handError(constants.errors.NOT_IN_PRISON);
     }
 
     if(selfProfile.getID() == prisonerInfo.id) {
-      return handError(constants_io.errors.SELF_ILLEGAL);
+      return handError(constants.errors.SELF_ILLEGAL);
     }
 
     // Проверяем - хватает ли монет у того, кто выкупает
     selfProfile.getMoney(function(err, money) {
-      if(money - constants.RANSOM < 0) {
-        return handError(constants_io.errors.TOO_LITTLE_MONEY);
+      if(err) { return handError(err); }
+
+      var newMoney = money - constants.RANSOM;
+
+      if(newMoney < 0) {
+        return handError(constants.errors.TOO_LITTLE_MONEY);
       }
 
       // Снимаем монеты
-      selfProfile.setMoney(money, function(err, money) { // money - constants.RANSOM
+      selfProfile.setMoney(newMoney, function(err, money) {
         if(err) { return handError(err); }
 
         // Снимаем блокировку
-        game.gPrisoner = null;
+        game.clearPrison();
 
-        var options = {};
-        options.id = prisonerInfo.id;
-        options.vid = prisonerInfo.vid;
+        var options = {
+          id  : prisonerInfo.id,
+          vid : prisonerInfo.vid
+        };
 
         // Оповещаем игроков в комнате
-        socket.broadcast.in(game.gRoom.name).emit(constants_io.IO_RELEASE_PLAYER, options);
-        options.operation_status = constants_io.RS_GOODSTATUS;
-        socket.emit(constants_io.IO_RELEASE_PLAYER, options);
+        socket.broadcast.in(game.gRoom.name).emit(constants.IO_RELEASE_PLAYER, options);
+
+        options.operation_status = constants.RS_GOODSTATUS;
+        socket.emit(constants.IO_RELEASE_PLAYER, options);
       });
     });
 

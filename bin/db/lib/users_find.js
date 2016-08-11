@@ -1,4 +1,4 @@
-var C = require('../constants');
+var C = require('../../constants');
 var qBuilder = require('./build_query');
 /*
  Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, списко искомых полей

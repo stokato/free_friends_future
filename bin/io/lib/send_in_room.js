@@ -1,4 +1,4 @@
-var constants = require('./../constants');
+var constants = require('./../../constants');
 // Отправить сообщение всем в комнате
 module.exports = function (socket, room, message) {
   socket.broadcast.in(room.name).emit(constants.IO_MESSAGE, message);

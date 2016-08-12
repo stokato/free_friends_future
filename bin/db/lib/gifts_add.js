@@ -36,17 +36,8 @@ module.exports = function(uid, options, callback) { options = options || {};
   this.client.execute(query, params, { prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
-    var result = {};
-    result["giftid"]  = options["giftid"];
-    result["type"]    = options["type"];
-    result["src"]     = options["src"];
-    result["date"]    = options["date"];
-    result["title"]   = options["title"];
-    result["fromid"]  = options["fromid"];
-    result["fromvid"] = options["fromvid"];
-    result["gid"]     = id.toString();
+    options.gid = id.toString();
 
-
-    callback(null, result);
+    callback(null, options);
   });
 };

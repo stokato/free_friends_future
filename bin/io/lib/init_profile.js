@@ -105,7 +105,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms, serverPr
         };
 
         for(var r in rooms) if(rooms.hasOwnProperty(r)) {
-          socket.broadcast.in(room.name).emit(constants.IO_OFFLINE, online);
+          socket.broadcast.in(room.name).emit(constants.IO_ONLINE, online);
         }
         //socket.broadcast.emit(constants.IO_ONLINE, online);
 

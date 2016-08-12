@@ -11,24 +11,22 @@ module.exports = function(uid, callback) {
   var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
 
-  //var f = C.IO.FIELDS;
-
+  // Отбираем все подарки
   var fields = ["id", "userid"];
   var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGIFTS, ["userid"], [1]);
 
   self.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
-
+    // Удаляем их
     var params = [];
-    var i;
-    var rowsLen = result.rows.length;
-    var const_fields = rowsLen;
-    for (i = 0; i < rowsLen; i ++) {
+    var constValues = result.rows.length;
+
+    for (var i = 0; i < result.rows.length; i ++) {
       params.push(result.rows[i]);
     }
 
-    var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGIFTS, ["id"], [const_fields]);
+    var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGIFTS, ["id"], [constValues]);
     self.client.execute(query, [params], { prepare: true }, function(err) {
       if (err) {  return callback(err); }
 

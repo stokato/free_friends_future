@@ -11,7 +11,6 @@ var async = require('async');
  */
 module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
-  //var f = C.IO.FIELDS;
 
   var date         = options["date"] || new Date();
   var opened       = options["opened"];
@@ -22,15 +21,15 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   var id = self.timeUuid.fromDate(date);
 
-  async.waterfall([
-    function(cb) {/////////////////////////////////////////////////////////////////////
+  async.waterfall([/////////////////////////////////////////////////////////////////////
+    function(cb) { // Записываем сообщение либо в основную таблицу
 
       var fields = ["id", "userid", "date", "companionid", "companionvid", "incoming", "text"];
+
       //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERMESSAGES);
 
-      var params = [id, uid, date, options["companionid"],
-                          options["companionvid"], options["incoming"], options["text"]];
+      var params = [id, uid, date, options["companionid"], options["companionvid"], options["incoming"], options["text"]];
 
       self.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
@@ -38,7 +37,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         cb(null, fields, params);
       });
     },///////////////////////////////////////////////////////////////////////////////////////
-    function(fields, params, cb) {
+    function(fields, params, cb) { // Либо в таблицу новых сообщений (если оно еще не прочитано)
       if(!opened) {//
         //var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
         var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERNEWMESSAGES);
@@ -49,11 +48,11 @@ module.exports = function(uid, options, callback) { options = options || {};
           cb(null, null);
         });
       } else cb(null, null);
-    },
-    function(res, cb) {/////////////////////////////////////////////////////////////////////////
+    }, //////////////////////////////////////////////////////////////////////////////////////////
+    function(res, cb) { // Добавляем чат
       var params = [uid, options["companionid"], opened];
-
       var fields = ["userid", "companionid", "isnew"];
+
       //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERCHATS);
 

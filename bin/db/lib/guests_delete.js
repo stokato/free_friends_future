@@ -11,8 +11,10 @@ module.exports = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   //var query = "DELETE FROM user_guests where user = ?";
-  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGUESTS,
-                                                  ["userid"],[1]);
+  var constFields = ["userid"];
+  var constValues = [1];
+
+  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGUESTS, constFields, constValues);
 
   this.client.execute(query, [uid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

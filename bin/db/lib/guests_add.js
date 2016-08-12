@@ -8,16 +8,15 @@ var qBuilder = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  //var f = C.IO.FIELDS;
 
-  if ( !uid || !options["guestid"] || !options["date"] || !options["guestvid"]) {
+  if ( !uid || !options.guestid || !options.date || !options.guestvid) {
     return callback(new Error("Не указан Id пользователя или его гостя, либо дата"), null);
   }
 
   var fields = ["userid", "guestid", "guestvid", "date"];
   var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERGUESTS);
 
-  var params = [uid, options["guestid"], options["guestvid"], options["date"] ];
+  var params = [uid, options.guestid, options.guestvid, options.date ];
 
   this.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

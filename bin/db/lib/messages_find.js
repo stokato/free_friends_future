@@ -11,8 +11,6 @@ var qBuilder = require('./build_query');
 module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
 
-  //var f = C.IO.FIELDS;
-
   var companions = options.id_list || [];
   var firstDate =  options["first_date"];
   var secondDate = options["second_date"];
@@ -22,9 +20,8 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   var fields = "";
   var params = [uid];
-  var i;
-  var compLen = companions.length;
-  for(i = 0; i < compLen; i++) {
+
+  for(var i = 0; i < companions.length; i++) {
     if (fields == "") { fields = fields + "?"; }
     else { fields = fields + ", " + "?"; }
 
@@ -41,8 +38,11 @@ module.exports = function(uid, options, callback) { options = options || {};
         params2.push(self.timeUuid.fromDate(secondDate));
       }
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERMESSAGES,
-                     ["userid", "companionid"],[1, companions.length], const_more, const_less);
+      var constFields = ["userid", "companionid"];
+      var constValues = [1, companions.length];
+
+      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERMESSAGES, constFields, constValues,
+                                                                                                const_more, const_less);
 
       self.client.execute(query, params2, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
@@ -51,17 +51,6 @@ module.exports = function(uid, options, callback) { options = options || {};
         var i, rowsLen = result.rows.length;
         if(rowsLen > 0) {
           for(i = 0; i < rowsLen; i++) {
-            //var row = result.rows[i];
-            //
-            //var message = {};
-            //message["id"]        = row["id].toString();
-            //message["date"]        = row["date];
-            //message["companionid"] = row["companionid].toString();
-            //message["companionvid"]    = row["companionvid];
-            //message["incoming"]    = row["incoming];
-            //message["text"]        = row["text];
-            //message["opened"]    = true;
-            //message["userid"] = uid;
 
             var message = result.rows[i];
             message.opened = true;
@@ -80,28 +69,18 @@ module.exports = function(uid, options, callback) { options = options || {};
     function(messages, cb) { // Получаем все непрочитанные сообщения
       //var query = "select * FROM user_new_messages where userid = ? and companionid in (" + fields + ")";
       messages = messages || [];
-      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERNEWMESSAGES,
-                                        ["userid", "companionid"], [1, companions.length]);
+
+      var constFields = ["userid", "companionid"];
+      var constValues = [1, companions.length];
+
+      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERNEWMESSAGES, constFields, constValues);
 
       self.client.execute(query, params, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
         var newMessages = [];
 
-        var rowsLen = result.rows.length;
-        if(rowsLen > 0) {
-          for(i = 0; i < rowsLen; i++) {
-            //var row = result.rows[i];
-            //
-            //var message = {};
-            //message["id]           = row["id].toString();
-            //message["date]         = row["date];
-            //message["companionid]  = row["companionid].toString();
-            //message["companionvid] = row["companionvid];
-            //message["incoming]     = row["incoming];
-            //message["text]         = row["text];
-            //message["opened]       = false;
-            //message["userid]       = uid;
-
+        if(result.rows.length > 0) {
+          for(i = 0; i < result.rows.length; i++) {
             var message = result.rows[i];
             message.opened = false;
             message.userid = uid;
@@ -111,13 +90,11 @@ module.exports = function(uid, options, callback) { options = options || {};
             newMessages.push(message);
           }
 
-          var i, j;
-          var len = messages.length;
-          var newMesLen = newMessages.length;
-          for(i = 0; i < newMesLen; i++) {
+          // Сливаем в один массив
+          for(var i = 0; i < newMessages.length; i++) {
             var noSuch = true;
-            for(j = 0; j < len; j++) {
-              if(newMessages[i]["id"] == messages[j]["id"]) {
+            for(var j = 0; j < messages.length; j++) {
+              if(newMessages[i].id == messages[j].id) {
                 noSuch = false;
               }
             }
@@ -129,10 +106,12 @@ module.exports = function(uid, options, callback) { options = options || {};
         }
       });
     },/////////////////////////////////////////////////////////////////////////////
-    function(messages, cb) {
+    function(messages, cb) { // Удаляем сообщения из таблицы новых
+      var constFields = ["userid", "companionid"];
+      var constValues = [1, companions.length];
+
       //var query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
-      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERNEWMESSAGES,
-                          ["userid", "companionid"], [1, companions.length]);
+      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERNEWMESSAGES, constFields, constValues);
 
       self.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err, null); }
@@ -157,12 +136,15 @@ module.exports = function(uid, options, callback) { options = options || {};
   })
 };
 
-function updateChat(db, uid, companions, count, callback) {
+function updateChat(db, uid, companions, count, callback) { // Сбрасываем в чатах флаг - есть новые
   //var query = "update user_chats set isnew = ? where userid = ? and companionid = ?";
   //var f = C.IO.FIELDS;
 
-  var query = qBuilder.build(qBuilder.Q_UPDATE, ["isnew"], C.T_USERCHATS,
-    ["userid", "companionid"], [1, 1]);
+  var fields = ["isnew"];
+  var constFields = ["userid", "companionid"];
+  var constValues = [1, 1];
+
+  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERCHATS, constFields, constValues);
   var params = [false, uid, companions[count]];
 
   db.execute(query, params, {prepare: true },  function(err) {

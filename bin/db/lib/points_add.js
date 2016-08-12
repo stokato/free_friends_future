@@ -10,13 +10,12 @@ var async = require('async');
  */
 module.exports = function(options, callback) { options    = options || {};
   var self = this;
-  //var f = C.IO.FIELDS;
 
   if ( !options["userid"] || !options["uservid"] || !options["points"] || !options["sex"]) {
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
 
-  async.waterfall([
+  async.waterfall([//////////////////////////////////////////////////////////////////
     function(cb) {
       var fields = ["id", "points", "userid", "uservid", "sex", "uid"];
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_POINTS);
@@ -28,7 +27,7 @@ module.exports = function(options, callback) { options    = options || {};
 
         cb(null, fields, params);
       });
-    },
+    }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) {
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_POINTS, ["uid"], [1]);
 
@@ -56,7 +55,7 @@ module.exports = function(options, callback) { options    = options || {};
 
         cb(null, fields, params);
       });
-    },
+    }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) {
 
       var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
@@ -67,7 +66,7 @@ module.exports = function(options, callback) { options    = options || {};
 
         cb(null, fields, params);
       });
-    },
+    }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) {
       var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
 
@@ -97,7 +96,7 @@ module.exports = function(options, callback) { options    = options || {};
 
         cb(null, null);
       });
-    }
+    } ////////////////////////////////////////////////////////////////////////////////
   ], function(err, res) {
     if(err) { callback(err, null); }
 

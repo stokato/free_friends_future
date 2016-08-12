@@ -1,4 +1,7 @@
 var constants = require('../../../constants');
+var async = require('async');
+var profilejs  =  require('../../../profile/index');
+var GameError = require('./../../../game_error');
 
 // Карты, ждем, кода все ответят, потом показываем ответы и где золото
 module.exports = function(game) {
@@ -14,6 +17,7 @@ module.exports = function(game) {
       var gold = Math.floor(Math.random() * constants.CARD_COUNT);
       var winners = [];
       var count = 0;
+      var bonus = constants.CARD_BOUNUS;
 
       var result = {
         picks : [],
@@ -34,63 +38,76 @@ module.exports = function(game) {
           });
 
           if(picks[0].pick == gold) {
-            winners.push(playerInfo.id);
+            winners.push(playerInfo);
           }
         }
       }
 
+      // Если есть победители, делим награду поровну и добавляем всем монеты
       if(winners.length > 0) {
+        bonus = Math.round(bonus / winners.length);
         addMoney();
       } else {
         game.restoreGame(result, true);
       }
 
       // Функция проверяет, если игрок не онлайн, создает его профиль.
-      // Добавляет всем очки
+      // Добавляет всем монеты
       function addMoney() {
-        var player = game.userList[winners[count].socketId];
-        if(player) {
-          player.addMoney(constants.KISS_POINTS, onMoney(player));
-        } else {
-          player = new profilejs();
-          player.build(players[count].id, function (err, info) {
-            if(err) {
-              new GameError(players[count].player.getSocket(),  constants.G_BOTTLE_KISSES, "Ошибка при создании профиля игрока");
-              return callback(err, null);
+        async.waterfall([ ///////////////////////////////////////////////////////////////
+          function(cb) { // Получаем профиль пользователя
+            var player = game.userList[winners[count].socketId];
+
+            if(player) {
+              cb(null, player, true);
+            } else {
+              player = new profilejs();
+              player.build(winners[count].id, function (err, info) {
+                if(err) {
+                  new GameError(winners[count].player.getSocket(),  constants.G_CARDS, "Ошибка при создании профиля игрока");
+                  return cb(err, null);
+                }
+
+                cb(null, player, false);
+              });
             }
+          },/////////////////////////////////////////////////////////////////////////////
+          function(player, isOnline, cb) { // Получаем баланс
+            player.getMoney(function (err, money) {
+              if (err) {  cb(err, null); }
 
-            player.addMoney(constants.KISS_POINTS, onMoney(player));
-          });
-        }
-      }
+              var newMoney = money + bonus;
+              cb(null, player, newMoney, isOnline);
+            });
+          },////////////////////////////////////////////////////////////////////////
+          function(player, newMoney, isOnline, cb) { // Добавляем монет
+            player.setMoney(newMoney, function (err, money) {
+              if (err) {  cb(err, null); }
 
-      // Функция обрабатывает результы начисления очков, оповещает игрока
-      // Если есть еще игрок, вызвает начисления очков для него
-      function onMoney(player) {
-        return function(err, res) {
+              cb(null, player, money, isOnline);
+            });
+
+          }////////////////////////////////////////////////////////////////////
+        ], function(err, player, money, isOnline) { // Оповещаем об изменениях
           if(err) {
-            new GameError(player.getSocket(),  constants.G_BOTTLE_KISSES, "Ошибка при начислении очков пользователю");
-            return onComplete(err, null);
+            new GameError(player.getSocket(),  constants.G_CARDS, "Ошибка при начислении монет пользователю");
+            return  game.stop();
           }
 
-          var playerSocket = player.getSocket();
-          playerSocket.emit(constants.IO_ADD_POINTS, { points : res });
+          if(isOnline) {
+            player.getSocket().emit(constants.IO_GET_MONEY, { money : money });
+          }
 
+          // Повторяем для всех пользователей
           count++;
-          if(count < players.length) {
+          if(count < winners.length) {
             addMoney();
           } else {
-            onComplete(null, null);
+            game.restoreGame(result, true);
           }
-        }
-      }
+        });///////////////////////////////////////////////////////
+      } // addMoney
 
-      // После того, как все очки начислены, переходим к следующей игре
-      function onComplete(err, res) {
-        if(err) { return game.stop(); }
-
-        game.restoreGame(result, true);
-      }
     }
   }
 };

@@ -10,19 +10,18 @@ var buildQuery = require('./build_query');
 module.exports = function(uid, fid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  //var f = C.IO.FIELDS;
 
   var fields = ["userid"];
-  var constFields = [1];
+  var constValues = [1];
   var params = [uid];
 
   if(fid) {
     fields.push(["friendid"]);
-    constFields.push(1);
+    constValues.push(1);
     params.push(fid);
   }
 
-  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, fields, constFields);
+  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, fields, constValues);
   this.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 

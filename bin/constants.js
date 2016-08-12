@@ -126,7 +126,7 @@ module.exports.GAMES_WITHOUT_PRISON = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, 
 module.exports.CARD_COUNT = 7;
 
 // Выигрышь за угаданную карту
-module.exports.CARD_BOUNUS = 10;
+module.exports.CARD_BOUNUS = 50;
 
 // Минимальное количество игроков одного пола в игре
 module.exports.PLAYERS_COUNT = 2;
@@ -148,7 +148,7 @@ module.exports.TIMEOUT_LOT      = 5 * 1000;
 module.exports.TIMEOUT_GAME     = 16 * 1000;
 module.exports.TIMEOUT_BOTTLE   = 7 * 1000;
 module.exports.TIMEOUT_RESULTS  = 5 * 1000;
-module.exports.TIMEOUT_PRISON   = 2 * 1000;
+module.exports.TIMEOUT_PRISON   = 4 * 1000;
 
 // Таблицы базы данных
 module.exports.T_USERS           = 'users';

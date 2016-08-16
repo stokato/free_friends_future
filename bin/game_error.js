@@ -1,4 +1,5 @@
 var constants = require('./constants');
+var logger = require('./../lib/log');
 
 // Свой объект ошибок
 function GameError(socket, func, message) {
@@ -39,11 +40,19 @@ function GameError(socket, func, message) {
    case constants.G_SYMPATHY                 : err.name = "Ошибка в игре Симпатии";                       break;
    case constants.IO_RELEASE_PLAYER          : err.name = "Ошибка при выкупе игрока";                     break;
 
+   case constants.IO_ADD_TRECK               : err.name = "Ошибка при добавлении трека в плей-лист";      break;
+   case constants.IO_GET_TRACK_LIST          : err.name = "Ошибка при получении плей-листа";              break;
+   case constants.IO_LIKE_TRACK              : err.name = "Ошибка при лайке трека";                       break;
+   case constants.IO_DISLIKE_TRACK           : err.name = "Ошибка при дизлайке трека";                    break;
+
    default:  err.name =   "Неизвестная ошибка"
  }
 
- console.log(err.name + " : " + err.message);
- console.log(err.stack);
+  logger.error(err.name + " : " + err.message);
+  logger.error(err.stack);
+
+ //console.log(err.name + " : " + err.message);
+  //console.log(err.stack);
 
  //if(socket) {
  //  socket.emit(constants.IO_ERROR, err);

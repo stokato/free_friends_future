@@ -48,9 +48,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         if (err) { return cb(err, null); }
         var messages = [];
 
-        var i, rowsLen = result.rows.length;
-        if(rowsLen > 0) {
-          for(i = 0; i < rowsLen; i++) {
+        if(result.rows.length > 0) {
+          for(var i = 0; i < result.rows.length; i++) {
 
             var message = result.rows[i];
             message.opened = true;

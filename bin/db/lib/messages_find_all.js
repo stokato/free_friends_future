@@ -8,15 +8,19 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
-  //var f = C.IO.FIELDS;
 
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
 
   var date = options["date"];
   var params = [uid];
 
+  var fields = ["companionid"];
+  var constFields = ["userid"];
+  var constValues = [1];
+
+  // Получаем чаты
   //var query = "select companionid FROM user_chats where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, ["companionid"], C.T_USERCHATS, ["userid"], [1]);
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERCHATS, constFields, constValues);
 
   self.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -35,30 +39,21 @@ module.exports = function(uid, options, callback) { options = options || {};
       params.push(self.timeUuid.fromDate(date));
     }
 
+    // Отбираем сообщения
     var fields = ["id", "date", "companionid", "companionvid", "incoming", "text", "opened"];
+    var constFields = ["userid", "companionid"];
+    var constValues = [1, compLen];
 
     //query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
-    var const_values = compLen;
-    query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERMESSAGES,
-                          ["userid", "companionid"] , [1, const_values], const_more);
+
+    query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERMESSAGES,  constFields , constValues, const_more);
 
     self.client.execute(query, params, {prepare: true }, function(err, result) {
       if (err) { return callback(err, null); }
       var messages = [];
 
-      var i, rowsLen = result.rows.length;
-      if(rowsLen > 0) {
-        for(i = 0; i < rowsLen; i++) {
-          //var row = result.rows[i];
-          //
-          //var message = {};
-          //message["id"] = row["id"].toString();
-          //message[f.date] = row[f.date];
-          //message[f.companionid] = row[f.companionid].toString();
-          //message[f.companionvid] = row[f.companionvid];
-          //message[f.incoming] = row[f.incoming];
-          //message[f.text] = row[f.text];
-          //message[f.opened] = row[f.opened];
+      if(result.rows.length > 0) {
+        for(var i = 0; i < result.rows.length; i++) {
 
           var message = result.rows[i];
           message.id = message.id.toString();
@@ -67,32 +62,27 @@ module.exports = function(uid, options, callback) { options = options || {};
           messages.push(message);
         }
 
+        // Получаем данные об отправителях
         //var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
         var fields = ["id", "vid", "age", "sex", "country", "points"];
-        var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, ["id"], [const_values]);
+        var constFields = ["id"];
+        var constValues = [compLen];
+
+        var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, constFields, constValues);
 
         params = [];
 
-        var compLen = companions.length;
-        for(i = 0; i< compLen; i++) {
+        for(i = 0; i< companions.length; i++) {
           params.push(companions[i]["companionid"]);
         }
+
         self.client.execute(query, params, {prepare: true }, function(err, result) {
           if (err) { return callback(err, null); }
 
+          // Разносим сообщения по чатам
           var users = [];
           var rowsLen = result.rows.length;
           for(i = 0; i < rowsLen; i++) {
-            //var row = result.rows[i];
-            //
-            //var user = {};
-            //user[f.id]    = row[f.id].toString();
-            //user[f.vid]   = row[f.vid];
-            //user[f.age]     = row[f.age];
-            //user[f.sex]     = row[f.sex];
-            //user[f.city]    = row[f.city];
-            //user[f.country] = row[f.country];
-            //user[f.points]  = row[f.points] || 0;
 
             var user = result.rows[i];
             user.id = user.id.toString();
@@ -101,11 +91,9 @@ module.exports = function(uid, options, callback) { options = options || {};
             users.push(user);
           }
 
-          var i, j;
-          var mesLen = messages.length;
-          var userLen = users.length;
-          for(i = 0; i < mesLen; i++) {
-            for(j = 0; j < userLen; j++) {
+
+          for(var i = 0; i < messages.length; i++) {
+            for(var j = 0; j < users.length; j++) {
               if(users[j]["id"] == messages[i]["companionid"]) {
                 if (!users[j].messages) users[j].messages = [];
                 if (messages[i]["opened"] == false) users[j]["opened"] = true;

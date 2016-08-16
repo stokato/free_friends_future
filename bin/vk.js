@@ -11,7 +11,7 @@ function VK () {
 
 }
 
-VK.prototype.handle = function(req, socket, callback) { var request = req || {};
+VK.prototype.handle = function(req, profiles, callback) { var request = req || {};
 
 // Сначала проверка
   var sig = request["sig"];
@@ -46,15 +46,15 @@ VK.prototype.handle = function(req, socket, callback) { var request = req || {};
     case "get_item_test": getItem(request, callback);
       break;
 
-    case "order_status_change": changeOrderStatus(request, socket, callback);
+    case "order_status_change": changeOrderStatus(request, profiles, callback);
       break;
 
-    case "order_status_change_test": changeOrderStatus(request, socket, callback);
+    case "order_status_change_test": changeOrderStatus(request, profiles, callback);
       break;
     default : sendError(callback);
   }
 
-  console.log(request);
+  //console.log(request);
 };
 
 module.exports = VK;
@@ -97,7 +97,7 @@ function getItem(request, callback) {
   });
 }
 
-function changeOrderStatus(request, socket, callback) {
+function changeOrderStatus(request, profiles, callback) {
   // Изменение статуса заказа
   var response = {};
   //var f = constants.FIELDS;
@@ -174,7 +174,11 @@ function changeOrderStatus(request, socket, callback) {
                 if (err) { return cb(err, null); }
 
                 options.money = goodInfo.price2;
-                socket.emit('give_money', options);
+                //socket.emit('give_money', options);
+
+                if(profiles[options.id]) {
+                  profiles[options.id].getSocket().emit('give_money', options);
+                }
 
                 var result = {};
                 result.orderid = orderid;
@@ -191,7 +195,11 @@ function changeOrderStatus(request, socket, callback) {
             if (err) { return cb(err, null); }
 
             options.money = goodInfo.price2;
-            socket.emit('give_money', options);
+            //socket.emit('give_money', options);
+
+            if(profiles[options.id]) {
+              profiles[options.id].getSocket().emit('give_money', options);
+            }
 
             var result = {};
             result.orderid = orderid;

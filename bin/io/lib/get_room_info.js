@@ -6,7 +6,7 @@ var constants = require('./../../constants');
  - Возвращаем объект и комнату обратно
  */
 module.exports = function (room, callback) {
-  var info = { name : room.name, guys : [], girls : [] };
+  var info = { name : room.name, guys : [], girls : [] , track_list : room.track_list };
 
   var gInfo = null;
   var item;

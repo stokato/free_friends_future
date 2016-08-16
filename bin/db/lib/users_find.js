@@ -36,24 +36,6 @@ module.exports = function(id, vid, f_list, callback) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length > 0) {
-      //var row = result.rows[0];
-      //
-      //var user = {};
-      //user[f.id]    = row[f.id].toString();
-      //user[f.vid]   = row[f.vid];
-      //user[f.age]     = row[f.age];
-      //user[f.country] = row[f.country];
-      //user[f.city]    = row[f.city];
-      //user[f.sex]     = row[f.sex];
-      //user[f.points]  = row[f.points];
-      //user[f.status]  = row[f.status];
-      //user[f.money]   = row[f.money];
-      //user[f.newfriends] = row[f.newfriends];
-      //user[f.newguests] = row[f.newguests];
-      //user[f.newgifts] = row[f.newgifts];
-      //user[f.newmessages] = row[f.newmessages];
-      //user[f.is_in_menu] = row[f.is_in_menu];
-      //user[f.gift1] = (row[f.gift1])? row[f.gift1].toString() : null;
 
       var user = result.rows[0];
       user.id = user.id.toString();

@@ -10,7 +10,6 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(options, callback) { options = options || {};
 
-  //var f = C.IO.FIELDS;
 
   if (!options["vid"]) { return callback(new Error("Не задан ИД пользователя ВКонтакте"), null); }
 

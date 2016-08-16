@@ -3,13 +3,20 @@
     "api_id" : "4853914",
     "api_secret" : "06G0eKuPliE1M4mHQU3S"
   },
+  "sessions" : {
+    "secret" : "kd07LNsJC0KjdQcSa",
+    "key"    : "session:sid",
+    "resave" : false,
+    "saveUninitialized" : true
+  },
   "server" : {
     "host": "localhost",
     "port": 3000
   },
   "cassandra" : {
     "host": "127.0.0.1",
-    "keyspace": "free_friends2"
+    "keyspace": "free_friends2",
+    "table_sessions": "sessions"
   },
   "user" : {
     "settings" : {
@@ -26,5 +33,9 @@
     "len_room_history" : "5",
     "one_sex_in_room"  : "5",
     "exit_timeout"  : "30000"
+  },
+  "static" : "public",
+  "logs" : {
+    "log" : "log/server.log"
   }
 }

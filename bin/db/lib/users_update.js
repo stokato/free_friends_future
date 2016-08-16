@@ -7,13 +7,15 @@ var qBuilder = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options = options || {};
-  //var f = C.IO.FIELDS;
 
   if (!options["id"] || !options["vid"]) {
     return callback(new Error("Задан пустй Id пользователя"), null);
   }
 
   var fields = ["vid"];
+  var constFields = ["id"];
+  var constValues = [1];
+
   var params = [];
   params.push(options["vid"]);
   if ("age" in options)           { fields.push("age");           params.push(options["age"]); }
@@ -30,7 +32,7 @@ module.exports = function(options, callback) { options = options || {};
   if ("newguests" in options)     { fields.push("newguests");     params.push(options["newguests"]); }
   if ("newmessages" in options)   { fields.push("newmessages");   params.push(options["newmessages"]); }
 
-  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERS, ["id"], [1]);
+  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERS, constFields, constValues);
 
   params.push(options["id"]);
 

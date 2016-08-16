@@ -36,10 +36,10 @@ function checkInput(em, socket, userList, options, serverProfile) {
   }
 
   // Проверка подписи
-  //if(!checkAuth(em, socket, userList, options)) {
-  //  handError(constants.errors.NO_AUTH, em);
-  //  return false;
-  //}
+  if(!checkAuth(em, socket, userList, options)) {
+    handError(constants.errors.NO_AUTH, em);
+    return false;
+  }
 
   var isValid = true;
   var val;
@@ -248,6 +248,39 @@ function checkInput(em, socket, userList, options, serverProfile) {
                         }
 
                         break;
+
+    case constants.IO_ADD_TRECK :
+                        isValid = ("track_id" in options)? isValid : false;
+
+                        if(!isValid) {
+                          new GameError(socket, em, "Не задан ид трека");
+                        }
+
+                        isValid = ("duration" in options)? isValid : false;
+                        isValid = (validator.isInt(options.duration))? isValid : false;
+
+                        if(!isValid) {
+                          new GameError(socket, em, "Не задана продолжительность трека");
+                        }
+
+                        options.track_id = sanitize(options.track_id);
+                        options.duration = sanitize(options.duration);
+                        break;
+
+    case constants.IO_LIKE_TRACK :
+    case constants.IO_DISLIKE_TRACK :
+                        isValid = ("track_id" in options)? isValid : false;
+
+                        if(!isValid) {
+                          new GameError(socket, em, "Не задан ид трека");
+                        }
+
+                        options.track_id = sanitize(options.track_id);
+                        break;
+
+    case constants.IO_GET_TRACK_LIST :
+
+                        break;
   }
 
   if(!isValid) {
@@ -283,14 +316,18 @@ function checkOptionsType(options) {
 }
 
 function checkAuth(em, socket, userList, options) {
-  if(("auth_key" in options) == false) {
-    new GameError(socket, em, "Отсутствует подпись запроса");
-    return false;
-  } else if (em == constants.IO_INIT) {
-    return compareAuthKey(options.vid);
+  if(em == constants.IO_INIT) {
+    if(("auth_key" in options) == false) {
+      new GameError(socket, em, "Отсутствует подпись запроса");
+      return false;
+    } else if (em == constants.IO_INIT) {
+      return compareAuthKey(options.vid);
+    } else {
+      var vid = userList[socket.id].getVID();
+      return compareAuthKey(vid);
+    }
   } else {
-    var vid = userList[socket.id].getVID();
-    return compareAuthKey(vid);
+    return (socket.handshake.session.authorized == true);
   }
 
   //--------------

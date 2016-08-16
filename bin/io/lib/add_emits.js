@@ -31,6 +31,11 @@ var chooseRoom      = require('./choose_room'),
 var addAction       = require('../../game/lib/add_action'),
     releasePlayer   = require('../../game/lib/release_player');
 
+var addTrack        = require('./add_track'),
+    getTrackList    = require('./get_track_list'),
+    likeTrack       = require('./like_track'),
+    dislikeTrack    = require('./dislike_track');
+
 // Назначаем эмиты
 module.exports = function(socket, userList, profiles, roomList, rooms) {
 
@@ -79,4 +84,10 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
   //joinGame(socket, userList, roomList);
   addAction(socket, userList);                                            // Действие в игре
   releasePlayer(socket, userList);                                        // Отпустить игрока из темницы
+
+  // Плеер
+  addTrack(socket, userList, roomList);                                   // Добавить трек в очередь комнаты
+  getTrackList(socket, userList, roomList);                               // Получить очередь комнаты
+  likeTrack(socket, userList, roomList);                                  // Лайкнуть трек
+  dislikeTrack(socket, userList, roomList);                               // Дизлайкнуть трек
 };

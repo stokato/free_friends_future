@@ -1,5 +1,7 @@
 var constants             = require('../constants');
 
+var logger = require('./../../lib/log');
+
 var start                 = require('./lib/start'),
     stop                  = require('./lib/stop'),
     emit                  = require('./lib/emit'),
@@ -114,7 +116,8 @@ getQuestionsFromDB();
 function getQuestionsFromDB() {
   dbManager.findAllQuestions(function(err, questions) {
     if(err) {
-      return console.log("Ошибка при получении вопросов из базы данных");
+      return logger.error(400, "Ошибка при получении вопросов из базы данных");
+       //console.log("Ошибка при получении вопросов из базы данных");
     }
 
     gameQuestions = questions;

@@ -1,4 +1,5 @@
 var async     =  require('async');
+var cassandra = require('cassandra-driver');
 // Свои модули
 var addEmits  =  require('./add_emits');
 var profilejs =  require('../../profile/index'),          // Профиль
@@ -12,6 +13,31 @@ var profilejs =  require('../../profile/index'),          // Профиль
 
 var giveMoney         = require('./give_money');
 
+var config = require('./../../../config.json');
+
+var testSession = {
+  "cookie": {
+    "path": "/",
+    "httpOnly": true,
+    "secure": true,
+    "maxAge": 600000
+  },
+  "name": "sid"
+};
+
+var CassandraStore = require('cassandra-store');
+
+var session_storage = new CassandraStore({
+  table: 'sessions',
+  client : new cassandra.Client({contactPoints: [config.cassandra.host], keyspace: config.cassandra.keyspace}),
+  clientOptions : {
+    contactPoints: [config.cassandra.host],
+    keyspace: config.cassandra.keyspace
+  }
+});
+
+
+
 /*
  Выполняем инициализацию
  - Создаем профиль
@@ -21,22 +47,20 @@ var giveMoney         = require('./give_money');
  - Получаем данные профилей игроков в комнате (для игрового стола)
  - Отправляем все клиенту
  */
-module.exports = function (socket, userList, profiles, roomList, rooms, serverProfile) {
-  // Подключение сервера
-  socket.on(constants.IO_SERVER_INIT, function() {
-    serverProfile.id = socket.id;
-
-    // Сообщяем о начислении денег (себе или другому пользователю)
-    giveMoney(socket, userList, profiles, roomList, serverProfile);
-  });
-
-
+module.exports = function (socket, userList, profiles, roomList, rooms) {
   socket.on(constants.IO_INIT, function(options) {
-
     if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
 
     async.waterfall([///////////////////////////////////////////////////////////
-      function (cb) { // Инициализируем профиль пользователя
+      function(cb) { // Сохраняем в сессию признак пройденной авторизации
+        socket.handshake.session.authorized = true;
+        socket.handshake.sessionStore.set(socket.handshake.sessionID, socket.handshake.session, function(err) {
+          if(err) {cb (err, null); }
+
+          cb(null, null);
+        })
+      }, ///////////////////////////////////////////////////////////
+      function (res, cb) { // Инициализируем профиль пользователя
 
         var selfProfile = new profilejs();
         var newConnect = false;

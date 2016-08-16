@@ -1,96 +1,62 @@
-var http = require("http");
-var Config = require('./config.json').server;
-var path = require("path");
-var fs = require("fs");
+var config = require('./config.json');
 
+var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var socketio = require('socket.io-client');
 
-var vk = require('./bin/vk');
-var vkManager = new vk();
+var session = require('./lib/session');
+var getCert = require('./lib/get_cert');
+var vkHandle = require('./lib/vk_handle');
+var log = require('./lib/log')(module);
 
-var qs = require('querystring');
+var io = require('./bin/io');
+var profiles;
 
-var socket;
+var app = express();
 
-var server = http.createServer( function(req, res) {
+//app.use(express.favicon());
+//app.use(express.logger('dev'));
+//app.use(express.methodOverride());
+//app.use(app.router);
 
-  if(req.method == 'POST') {
-    var body = '';
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended : false }));
+app.use(cookieParser(config.sessions.secret));
+app.use(session);
 
-    req.on('data', function (data) {
-      body += data;
+app.use(express.static(path.join(__dirname, config.static)));
 
-      // Too much POST data, kill the connection!
-      // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-      if (body.length > 1e6)
-        req.connection.destroy();
-    });
+app.use(getCert);
 
-    req.on('end', function () {
-      var post = qs.parse(body);
+app.use(vkHandle);
 
-      vkManager.handle(post, socket, function(err, response) {
-        if (err) { return console.log(err.message); }
-
-        res.end(response);
-        console.log(response);
-      });
-    });
-  }
-
-  var localPath;
-  if(req.method == 'GET' && (req.url.indexOf('well-known') == -1)) {
-
-    localPath = path.join(__dirname, '/public/', "index.html");
-
-    fs.exists(localPath, function(exists) {
-      if(exists) {
-        getFile(localPath, res, "text/html");
-      } else {
-        console.log("File not found: " + localPath);
-        res.writeHead(404);
-        res.end();
-      }
-    });
-  }
-
-  if(req.method == 'GET' && (req.url.indexOf('well-known') != -1)) {
-
-    localPath = path.join(__dirname, req.url);
-
-    fs.exists(localPath, function(exists) {
-      if(exists) {
-        getFile(localPath, res, "text/html");
-      } else {
-        console.log("File not found: " + localPath);
-        res.writeHead(404);
-        res.end();
-      }
-    });
-  }
+app.use(function(req, res, next) {
+  res.status(404);
+  log.debug('Not found URL: %s', req.url);
+  res.send({ error : 'Not found' });
+  return;
 });
 
-server.listen(Config.port, function() {
-  require('./bin/io').listen(server, function(err){
-    if(err) return console.log(err.message);
-
-    socket = socketio.connect('http://localhost:3000');
-    socket.emit('server_init');
-
-    console.log('server running at: ' + Config.host + ':' + Config.port);
-  });
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  log.error('Internal error(%d): %s', res.statusCode, err.message);
+  res.send({ error : err.message });
+  return;
 });
 
-function getFile(localPath, res, mimeType) {
-  fs.readFile(localPath, function(err, contents) {
-    if(!err) {
-      res.setHeader("Content-Length", contents.length);
-      res.setHeader("Content-Type", mimeType);
-      res.statusCode = 200;
-      res.end(contents);
-    } else {
-      res.writeHead(500);
-      res.end();
-    }
-  });
-}
+var server = app.listen(config.server.port, function() {
+  log.info('Sever running at: ' + config.server.host + ':' + config.server.port );
+});
+
+io.listen(server, function(err, profs){
+  if(err) return log.error('Socket error: %s', err.message);
+
+  profiles = profs;
+
+  app.set('profiles', profs);
+
+  log.info('Socket server listening on port :' + config.server.port);
+
+});

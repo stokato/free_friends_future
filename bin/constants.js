@@ -50,6 +50,8 @@ module.exports.errors = {
   NO_SUCH_CHAT        : { message: "Чат с этим пользователем не существует",                              code : 430 },
   NO_THAT_PLAYER      : { message: "Нельзя выбрать этого игрока",                                         code : 440 },
   NOT_IN_PRISON       : { message: "Этот игрок не находится в тюрьме",                                    code : 441 },
+  ALREADY_IS_TRACK    : { message: "Трек с таким ид уже есть в плей-листе",                               code : 451 },
+  NO_SUCH_TRACK       : { message: "В плей-листе нет трека с таким ид",                                   code : 452 },
   NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },
   NO_AUTH             : { message: "Ошибка авторизации",                                                  code : 490 },
   OTHER               : { message: "Неизвестная ошибка",                                                  code : 400 }
@@ -93,6 +95,11 @@ module.exports.IO_GIVE_MONEY          = 'give_money';
 
 module.exports.IO_SERVER_INIT         = 'server_init';
 module.exports.IO_NEW_GIFT            = 'new_gift';
+
+module.exports.IO_ADD_TRECK           = 'add_track';
+module.exports.IO_GET_TRACK_LIST      = 'get_track_list';
+module.exports.IO_LIKE_TRACK          = 'like_track';
+module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
 
 
 // Игры

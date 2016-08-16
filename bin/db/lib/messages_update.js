@@ -8,17 +8,19 @@ var qBuilder = require('./build_query');
  */
 module.exports = function(uid, options, callback) { options = options || {};
   var self = this;
-  //var m = C.IO.FIELDS;
 
   if (!options["id"] || !uid || !options["companionid"]) {
     return callback(new Error("Задан пустй Id пользователя, его собеседника или сообщения"), null);
   }
 
-  var constraints = ["userid", "companionid", "id"];
-  var query = qBuilder.build(qBuilder.Q_SELECT, ["id"], C.T_USERMESSAGES, constraints, [1,1,1]);
+  var constFields = ["userid", "companionid", "id"];
+  var constValues = [1, 1, 1];
+
+  var query = qBuilder.build(qBuilder.Q_SELECT, ["id"], C.T_USERMESSAGES, constFields, constValues);
 
   var params = [uid, options["companionid"], options["id"]];
 
+  // Получаем сообщение
   self.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
@@ -31,9 +33,12 @@ module.exports = function(uid, options, callback) { options = options || {};
     if (options["text"])          { fields.push("text");          params.push(options["text"]); }
     if (options["opened"])        { fields.push("opened");        params.push(options["opened"]); }
 
-    var constraints = ["userid", "companionid", "id"];
-    var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERMESSAGES, constraints, [1,1,1]);
+    var constFields = ["userid", "companionid", "id"];
+    var constValues = [1, 1, 1];
 
+    var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERMESSAGES, constFields, constValues);
+
+    // Сохраняем изменения
     self.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 

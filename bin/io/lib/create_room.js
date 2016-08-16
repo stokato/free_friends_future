@@ -15,9 +15,20 @@ module.exports = function (socket, userList) {
     messages: [],
     game : null,
     girls_counter : 1,
-    guys_counter : 2
+    guys_counter : 2,
+    track_list : [],
+    likers : {},
+    dislikers : {}
   };
   newRoom.game = new gamejs(newRoom, userList);
   return newRoom;
 };
 
+
+//var track = {
+//  track_id : "",
+//  id : "",
+//  vid : "",
+//  likes : 0,
+//  dislikes : 0
+//}

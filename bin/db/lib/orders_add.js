@@ -4,7 +4,6 @@ var qBuilder = require('./build_query');
  Добавляем заказ в БД
  */
 module.exports = function(options, callback) { options   = options || {};
-  //var f = C.IO.FIELDS;
 
   var date    = options["date"] || new Date;
 

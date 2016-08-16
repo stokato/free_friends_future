@@ -12,7 +12,10 @@ module.exports = function(goodtype, callback) {
   //var f = C.IO.FIELDS;
 
   var fields = ["id", "title", "type", "price", "src", "title"];
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, ["goodtype"], [1]);
+  var constFields = ["goodtype"];
+  var constValues = [1];
+
+  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, constFields, constValues);
 
   this.client.execute(query,[goodtype], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -24,19 +27,10 @@ module.exports = function(goodtype, callback) {
     var i;
     var rowsLen = result.rows.length;
     for (i = 0; i < rowsLen; i++) {
-      //var row = result.rows[i];
-      //
-      //var good = {};
-      //good[f.id]  = row[f.id].toString();
-      //good[f.title] = row[f.title];
-      //good[f.type]  = row[f.type];
-      //good[f.price] = row[f.price];
-      //good[f.data]  = row[f.data];
-      //good[f.title] = row[f.title];
 
       var good = result.rows[i];
       good.id = good.id.toString();
-      good.src = good.src;
+      //good.src = good.src;
 
       goods.push(good);
     }

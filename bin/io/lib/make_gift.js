@@ -128,11 +128,16 @@ module.exports = function (socket, userList, profiles, roomList) {
         result.title   = gift.title;
         result.date    = gift.date;
         result.gid     = gift.gid;
+        result.is_private = options.is_private;
 
         var room = roomList[socket.id];
 
         socket.emit(constants.IO_NEW_GIFT, result);
-        socket.broadcast.in(room.name).emit(constants.IO_NEW_GIFT, result);
+        if(!options.is_private) {
+          socket.broadcast.in(room.name).emit(constants.IO_NEW_GIFT, result);
+        } else {
+          friendSocket.emit(constants.IO_NEW_GIFT, result);
+        }
 
         friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }

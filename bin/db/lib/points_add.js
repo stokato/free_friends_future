@@ -1,11 +1,15 @@
 var C = require('../../constants');
 var qBuilder = require('./build_query');
 var async = require('async');
+var logger = require('./../../../lib/log');
+
 /*
  Добавить очки игрока в БД: объект с ид, вид и количеством очков
  - Проверка (все поля обязательны)
- - Определяем сотню
- - Строим и выполняем запрос
+ - Добавляем запись
+ - Удаляем старые записи
+ - Добавляем запись в таблицу по полу
+ - Удаляем и от туда старые записи
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
@@ -16,7 +20,7 @@ module.exports = function(options, callback) { options    = options || {};
   }
 
   async.waterfall([//////////////////////////////////////////////////////////////////
-    function(cb) {
+    function(cb) { // Добавляем новую запись в таблицу
       var fields = ["id", "points", "userid", "uservid", "sex", "uid"];
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_POINTS);
 
@@ -28,7 +32,7 @@ module.exports = function(options, callback) { options    = options || {};
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////
-    function(fields, params, cb) {
+    function(fields, params, cb) { // Отбираем все записи для этого пользователя
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_POINTS, ["uid"], [1]);
 
       var paramsF = [options["userid"]];
@@ -38,16 +42,20 @@ module.exports = function(options, callback) { options    = options || {};
 
         result.rows.sort(comparePoints);
 
+        // И удаляем все старые записи
         for(var i = 1; i < result.rows.length; i++) {
           var points = result.rows[i]["points"];
           var userid = result.rows[i]["userid"];
 
-          var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, ["id", "points", "userid"], [1, 1, 1]);
+          var constFields = ["id", "points", "userid"];
+          var constValues = [1, 1, 1];
+
+          var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, constFields, constValues);
 
           var paramsD = ["max", points, userid];
 
           self.client.execute(query, paramsD, {prepare: true }, function(err) {
-            if (err) {  console.log("Ошибка при удалениии старых очков: " +err.message) }
+            if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + C.T_POINTS); }
 
             //cb(null, params);
           });
@@ -56,7 +64,7 @@ module.exports = function(options, callback) { options    = options || {};
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////
-    function(fields, params, cb) {
+    function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
       var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
       var query = qBuilder.build(qBuilder.Q_INSERT, fields, db);
@@ -67,7 +75,7 @@ module.exports = function(options, callback) { options    = options || {};
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////////////////////
-    function(fields, params, cb) {
+    function(fields, params, cb) { // Удаляем старые записи
       var db = (options["sex"] == C.GIRL)? C.T_POINTS_GIRLS : C.T_POINTS_GUYS;
 
       var query = qBuilder.build(qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
@@ -83,12 +91,15 @@ module.exports = function(options, callback) { options    = options || {};
           var points = result.rows[i]["points"];
           var userid = result.rows[i]["userid"];
 
-          var query = qBuilder.build(qBuilder.Q_DELETE, [], db, ["id", "points", "userid"], [1, 1, 1]);
+          var constFields = ["id", "points", "userid"];
+          var constValues = [1, 1, 1];
+
+          var query = qBuilder.build(qBuilder.Q_DELETE, [], db, constFields, constValues);
 
           var paramsF = ["max", points, userid];
 
           self.client.execute(query, paramsF, {prepare: true }, function(err) {
-            if (err) {  console.log("Ошибка при удалениии старых очков: " +err.message) }
+            if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
 
             //cb(null, params);
           });
@@ -107,56 +118,3 @@ module.exports = function(options, callback) { options    = options || {};
 function comparePoints(user1, user2) {
   return user2.points - user1.points;
 }
-
-//function deletePoints(points, pos) {
-//  var f = C.IO.FIELDS;
-//
-//  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_POINTS, ["id, "points, "userid], [1, 1, 1]);
-//
-//  var params = ["max", options["points], options["userid]];
-//
-//
-//  self.client.execute(query, params, {prepare: true }, function(err) {
-//    if (err) {  return cb(err); }
-//
-//
-//    if(points.rows)
-//  });
-//}
-
-//
-//var C = require('../constants');
-//var qBuilder = require('./build_query');
-///*
-// Добавить очки игрока в БД: объект с ид, вид и количеством очков
-// - Проверка (все поля обязательны)
-// - Определяем сотню
-// - Строим и выполняем запрос
-// - Возвращаем объект обратно
-// */
-//module.exports = function(options, callback) { options    = options || {};
-//  var self = this;
-//  var f = C.IO.FIELDS;
-//
-//  if ( !options["userid] || !options["uservid] || !options["points]) {
-//    return callback(new Error("Не указан ИД, ВИД или количество очков игрока"), null);
-//  }
-//
-//  var hundred = Math.floor(options["points]/100) * 100 + 100;
-//
-//  var fields = ["hundreds, "points, "userid, "uservid];
-//  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERPOINTS);
-//
-//  var params = [hundred, options["points], options["userid], options["uservid]];
-//
-//  self.client.execute(query, params, {prepare: true },  function(err) {
-//    if (err) {  return callback(err); }
-//
-//    var query = qBuilder.build(qBuilder.Q_INSERT, ["id, "hundred], C.T_MAX_HANDRED);
-//    self.client.execute(query, [hundred, hundred],{prepare: true },  function(err) {
-//      if (err) {  return callback(err); }
-//
-//      callback(null, options);
-//    });
-//  });
-//};

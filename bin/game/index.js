@@ -1,6 +1,6 @@
 var constants             = require('../constants');
 
-var logger = require('./../../lib/log');
+var logger = require('./../../lib/log')(module);
 
 var start                 = require('./lib/start'),
     stop                  = require('./lib/stop'),

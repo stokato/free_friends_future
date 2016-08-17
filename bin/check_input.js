@@ -243,7 +243,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
                           new GameError(socket, em, "Не указан выбор игрока");
                         }
 
-                        if("pick" in options) {
+                        if("pick" in options && !validator.isBoolean(options.pick)) {
                           options.pick = sanitize(options.pick);
                         }
 

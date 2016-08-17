@@ -1,5 +1,6 @@
 var cookie = require('cookie');
-var log = require('./../../lib/log');
+
+var log = require('./../../lib/log')(module);
 
 module.exports = function(socket, next) {
   var data = socket.request;
@@ -7,7 +8,7 @@ module.exports = function(socket, next) {
   //Проверяем переданы ли cookie
   if (!data.headers.cookie) {
     log.error("Куки не переданы");
-    return next(new Error("Куки не переданы"))
+    //return next(new Error("Куки не переданы"));
   }
 
   // Парсим cookie
@@ -18,7 +19,7 @@ module.exports = function(socket, next) {
 
   if (!sid) {
     log.error("Отсутствует ключ сессии");
-    return next(new Error("Отсутствует ключ сессии"))
+    //return next(new Error("Отсутствует ключ сессии"));
   }
 
   sid = sid.substr(2).split('.');

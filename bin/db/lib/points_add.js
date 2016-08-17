@@ -1,7 +1,7 @@
 var C = require('../../constants');
 var qBuilder = require('./build_query');
 var async = require('async');
-var logger = require('./../../../lib/log');
+var logger = require('./../../../lib/log')(module);
 
 /*
  Добавить очки игрока в БД: объект с ид, вид и количеством очков

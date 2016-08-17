@@ -7,14 +7,20 @@
     "secret" : "kd07LNsJC0KjdQcSa",
     "key"    : "session:sid",
     "resave" : false,
-    "saveUninitialized" : true
+    "saveUninitialized" : true,
+    "cookie" : {
+      "secure" : false,
+      "httpOnly" : true,
+      "maxAge" : 21600000,
+      "path" : "/"
+    }
   },
   "server" : {
     "host": "localhost",
     "port": 3000
   },
   "cassandra" : {
-    "host": "127.0.0.1",
+    "host": "localhost",
     "keyspace": "free_friends2",
     "table_sessions": "sessions"
   },

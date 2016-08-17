@@ -47,6 +47,9 @@ module.exports = function (socket, userList) {
 
         options.operation_status = constants.RS_GOODSTATUS;
         socket.emit(constants.IO_RELEASE_PLAYER, options);
+
+        // Оповещаем об изменившемся счете
+        socket.emit(constants.IO_GET_MONEY, { money : money });
       });
     });
 

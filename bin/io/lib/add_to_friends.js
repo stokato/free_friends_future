@@ -6,6 +6,8 @@ var profilejs =  require('../../profile/index'),          // Профиль
     //sanitize        = require('../../sanitizer'),
     constants  = require('../../constants');
 
+var oPool = require('./../../objects_pool');
+
 /*
  Добавить пользователя в друзья: Информация о друге (VID)
  - Получаем свой профиль
@@ -13,11 +15,11 @@ var profilejs =  require('../../profile/index'),          // Профиль
  - Добдавляем друг другу в друзья (Сразу в БД)
  - Сообщаем клиену (и второму, если он онлайн)
  */
-module.exports = function (socket, userList, profiles) {
+module.exports = function (socket) {
   socket.on(constants.IO_ADD_FRIEND, function(options) {
-    if (!checkInput(constants.IO_ADD_FRIEND, socket, userList, options)) {  return; }
+    if (!checkInput(constants.IO_ADD_FRIEND, socket, oPool.userList, options)) {  return; }
 
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
 
     if (selfProfile.getID() == options.id) {
       return handError(constants.errors.SELF_ILLEGAL);
@@ -31,9 +33,9 @@ module.exports = function (socket, userList, profiles) {
       function (cb) { // Получаем профиль друга
 
         var friendProfile = null;
-        if (profiles[options.id]) {        // Если онлайн
+        if (oPool.profiles[options.id]) {        // Если онлайн
 
-          friendProfile = profiles[options.id];
+          friendProfile = oPool.profiles[options.id];
 
           cb(null, friendProfile);
         } else {                           // Если нет - берем из базы
@@ -77,7 +79,7 @@ module.exports = function (socket, userList, profiles) {
           //friendInfo.operation_status = constants.RS_GOODSTATUS;
           //socket.emit(constants.IO_ADD_FRIEND, friendInfo);
           //
-          //if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+          //if (oPool.profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
           //  var selfInfo = fillInfo(selfProfile, date);
           //
           //  var friendSocket = friendProfile.getSocket();
@@ -98,7 +100,7 @@ module.exports = function (socket, userList, profiles) {
       friendInfo.operation_status = constants.RS_GOODSTATUS;
       socket.emit(constants.IO_ADD_FRIEND, friendInfo);
 
-      if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+      if (oPool.profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
         var selfInfo = fillInfo(selfProfile, date);
 
         var friendSocket = friendProfile.getSocket();

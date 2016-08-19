@@ -4,12 +4,15 @@ var GameError = require('../../game_error'),      // Ошбики
     checkInput = require('../../check_input'),    // Верификация
     constants = require('./../../constants'),     // Константы
   getRoomInfo = require('./get_room_info'),
-    defineSex = require('./define_sex');
+    defineSex = require('./define_sex'),
+    sendUsersInRoom = require('./send_users_in_room');
 
-module.exports = function(socket, userList, profiles, roomList, rooms) {
-  //if (!checkInput(constants.IO_DISCONNECT, socket, userList, {})) { return; }
+var oPool = require('./../../objects_pool');
 
-  var selfProfile = userList[socket.id];
+module.exports = function(socket) {
+  //if (!checkInput(constants.IO_DISCONNECT, socket, oPool.userList, {})) { return; }
+
+  var selfProfile = oPool.userList[socket.id];
 
   async.waterfall([
     ///////////////////////////////////////////////////////////////////////////////////
@@ -20,12 +23,12 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
       };
 
       //if(selfProfile.getReady()) { // Останавливаем игру
-      //  roomList[socket.id].game.stop();
+      //  oPool.roomList[socket.id].game.stop();
       //}
 
       //socket.broadcast.emit(constants.IO_OFFLINE, info);
 
-      for(var r in rooms) if(rooms.hasOwnProperty(r)) {
+      for(var r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
         socket.broadcast.in(r.name).emit(constants.IO_OFFLINE, info);
       }
 
@@ -41,20 +44,20 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
 
     }, /////////////////////////////////////////////////////////////////////////////////////
     function (res, cb) { // удалеяем профиль и сокет из памяти
-      delete userList[socket.id];
+      delete oPool.userList[socket.id];
 
       var sex = defineSex(selfProfile);
 
-      var room = roomList[socket.id];
+      var room = oPool.roomList[socket.id];
 
       if (room) {
-        var roomName = roomList[socket.id].name;
-        delete roomList[socket.id][sex.sexArr][selfProfile.getID()];
-        roomList[socket.id][sex.len]--;
-        delete roomList[socket.id];
-        delete profiles[selfProfile.getID()];
-        if (rooms[roomName].guys_count == 0 && rooms[roomName].girls_count == 0) {
-          delete rooms[roomName];
+        var roomName = oPool.roomList[socket.id].name;
+        delete oPool.roomList[socket.id][sex.sexArr][selfProfile.getID()];
+        oPool.roomList[socket.id][sex.len]--;
+        delete oPool.roomList[socket.id];
+        delete oPool.profiles[selfProfile.getID()];
+        if (oPool.rooms[roomName].guys_count == 0 && oPool.rooms[roomName].girls_count == 0) {
+          delete oPool.rooms[roomName];
           room = null;
         }
       }
@@ -65,9 +68,12 @@ module.exports = function(socket, userList, profiles, roomList, rooms) {
         getRoomInfo(room, function (err, roomInfo) {
           if (err) { return cb(err, null); }
 
-          socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+          //socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+          sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
+            if(err) { return cb(err); }
 
-          cb(null, null);
+            cb(null, null);
+          });
         });
       } else {
         cb(null, null);

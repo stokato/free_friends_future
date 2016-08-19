@@ -3,15 +3,17 @@ var dbjs      = require('./../../db/index'),
   checkInput = require('./../../check_input'),
   constants = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
+
 var db = new dbjs();
 /*
  Получить денежные лоты для пополнения счета пользователя
  - Получаем все возможные лоты из базы
  - Отправляем клиенту
  */
-module.exports = function (socket, userList) {
+module.exports = function (socket) {
   socket.on(constants.IO_GET_MONEY_SHOP, function(options) {
-    if (!checkInput(constants.IO_GET_MONEY_SHOP, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_MONEY_SHOP, socket, oPool.userList, options)) { return; }
 
     db.findAllGoods(constants.GT_MONEY, function (err, goods) {
       if (err) {  return handError(err);  }

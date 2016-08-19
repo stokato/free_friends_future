@@ -1,13 +1,14 @@
 var checkInput = require('../../check_input'),
   constants = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
 
 // Возвращаем плей-лист комнаты
-module.exports = function(socket, userList, roomList) {
+module.exports = function(socket) {
   socket.on(constants.IO_GET_TRACK_LIST, function(options) {
-    if (!checkInput(constants.IO_GET_TRACK_LIST, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_TRACK_LIST, socket, oPool.userList, options)) { return; }
 
-    var room = roomList[socket.id];
+    var room = oPool.roomList[socket.id];
 
     //socket.broadcast.in(room.name).emit(constants.IO_GET_TRACK_LIST, room.track_list);
     socket.emit(constants.IO_GET_TRACK_LIST, { track_list : room.track_list, operation_status : constants.RS_GOODSTATUS });

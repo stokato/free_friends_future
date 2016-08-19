@@ -7,6 +7,8 @@ var GameError = require('../../game_error'),
     //createRoom = require('./create_room'),
     getRoomInfo = require('./get_room_info');
 
+var oPool = require('./../../objects_pool');
+
 /*
  Предлагаем способ смены комнаты
  - Получаем профиль
@@ -17,23 +19,23 @@ var GameError = require('../../game_error'),
  - Если друг онлайн и в его комнате есть место для нашего пола - добавляем в выходной список
  - Отправляем клиенту случайную комнату и список друзей (какие данные нужны ???)
  */
-module.exports = function (socket, userList, roomList, rooms, profiles) {
+module.exports = function (socket) {
   socket.on(constants.IO_CHOOSE_ROOM, function(options) {
-    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, oPool.userList, options)) { return; }
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков
       function (cb) {
-        var selfProfile = userList[socket.id];
+        var selfProfile = oPool.userList[socket.id];
 
         var freeRooms = [];
 
         var sex = defineSex(selfProfile);
 
         var item;
-        for (item in rooms) if (rooms.hasOwnProperty(item)
-          && rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM &&
-          roomList[socket.id].name != rooms[item].name) {
-          freeRooms.push(rooms[item]);
+        for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)
+          && oPool.rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM &&
+          oPool.roomList[socket.id].name != oPool.rooms[item].name) {
+          freeRooms.push(oPool.rooms[item]);
         }
 
         if(freeRooms.length > 0) {
@@ -49,7 +51,7 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         }
         //if (freeRooms.length == 0) {
         //  var newRoom = createRoom(socket);
-        //  rooms[newRoom.name] = newRoom;
+        //  oPool.rooms[newRoom.name] = newRoom;
         //  freeRooms.push(newRoom);
         //}
       },////////////////////////////////// Получаем всех друзей пользователя
@@ -65,10 +67,10 @@ module.exports = function (socket, userList, roomList, rooms, profiles) {
         allFriends = allFriends || [];
         var i;
         for (i = 0; i < allFriends.length; i++) {
-          var currFriend = profiles[allFriends[i]["id"]];
+          var currFriend = oPool.profiles[allFriends[i]["id"]];
           if (currFriend) {
             var friendSocket = currFriend.getSocket();
-            var friendsRoom = roomList[friendSocket["id"]];
+            var friendsRoom = oPool.roomList[friendSocket["id"]];
             if (friendsRoom[len] < constants.ONE_SEX_IN_ROOM) {
               var currInfo = {};
               currInfo.id      = currFriend.getID();

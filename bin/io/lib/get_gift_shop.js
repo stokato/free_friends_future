@@ -3,15 +3,17 @@ var dbjs      = require('./../../db/index'),
     checkInput = require('./../../check_input'),
     constants = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
+
 var db = new dbjs();
 /*
  Получить магазин с подарками
  - Получаем все возможные подарки из базы
  - Отправляем клиенту
  */
-module.exports = function (socket, userList) {
+module.exports = function (socket) {
   socket.on(constants.IO_GET_GIFT_SHOP, function(options) {
-    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, oPool.userList, options)) { return; }
 
     db.findAllGoods(constants.GT_GIFT, function (err, goods) {
       if (err) { return handError(err); }

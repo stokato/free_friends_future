@@ -7,9 +7,11 @@ var profilejs       = require('../../profile/index'),
   //sanitize        = require('../../sanitizer'),
   constants       = require('./../../constants');
 
-module.exports = function(socket, userList, profiles) {
+var oPool = require('./../../objects_pool');
+
+module.exports = function(socket) {
   socket.on(constants.IO_OPEN_PRIVATE_CHAT, function(options) {
-    if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket, oPool.userList, options)) { return; }
 
     //options.id = sanitize(options.id);
 
@@ -17,8 +19,8 @@ module.exports = function(socket, userList, profiles) {
       function(cb) {
 
         var friendProfile;
-        if (profiles[options.id]) {             // Если онлайн
-          friendProfile = profiles[options.id];
+        if (oPool.profiles[options.id]) {             // Если онлайн
+          friendProfile = oPool.profiles[options.id];
           cb(null, friendProfile);
 
         } else {                                // Если нет - берем из базы
@@ -32,7 +34,7 @@ module.exports = function(socket, userList, profiles) {
 
       }, ///////////////////////////////////////////////////////////////////////////
       function(friendProfile, cb) { // Отрываем чат для одного и отправляем ему историю
-        var selfProfile = userList[socket.id];
+        var selfProfile = oPool.userList[socket.id];
 
         if(selfProfile.getID() == options.id) {
           return cb(constants.errors.SELF_ILLEGAL);

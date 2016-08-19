@@ -2,14 +2,15 @@ var GameError = require('../../game_error'),
   checkInput = require('../../check_input'),
   constants = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
 
 // Добавляем лайк к треку
-module.exports = function(socket, userList, roomList) {
+module.exports = function(socket) {
   socket.on(constants.IO_LIKE_TRACK, function(options) {
-    if (!checkInput(constants.IO_LIKE_TRACK, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_LIKE_TRACK, socket, oPool.userList, options)) { return; }
 
-    var room = roomList[socket.id];
-    var selfProfile = userList[socket.id];
+    var room = oPool.roomList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
     var id = selfProfile.getID();
 
     var isTrack = false;

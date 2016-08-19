@@ -31,6 +31,7 @@ function fillInfo(profile) {
   info.city    = profile.getCity();
   info.country = profile.getCountry();
   info.points  = profile.getPoints();
+  info.is_friend = false;
 
   var gift = profile.getGift1();
 

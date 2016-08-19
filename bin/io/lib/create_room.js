@@ -1,10 +1,12 @@
 var gamejs = require('../../game');
+
+var oPool = require('./../../objects_pool');
 /*
  Создать новую комнату
  */
 var countRoom = 0;    // Счетчки комнат (сейчас нужен для генерации идентификатора окна)
 
-module.exports = function (socket, userList) {
+module.exports = function () {
   var name = "Room" + (++countRoom);
   var newRoom =  {
     name: name , // Как-нибудь генерируем новое имя (????)
@@ -20,7 +22,7 @@ module.exports = function (socket, userList) {
     likers : {},
     dislikers : {}
   };
-  newRoom.game = new gamejs(newRoom, userList);
+  newRoom.game = new gamejs(newRoom);
   return newRoom;
 };
 

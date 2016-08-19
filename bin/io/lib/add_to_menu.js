@@ -4,11 +4,13 @@ var GameError = require('../../game_error'),              // Ошибки
 
 var async = require('async');
 
-module.exports = function(socket, userList) {
-  socket.on(constants.IO_ADD_TO_MENU, function(options) {
-    if (!checkInput(constants.IO_ADD_TO_MENU, socket, userList, options)) { return; }
+var oPool = require('./../../objects_pool');
 
-    var selfProfile = userList[socket.id];
+module.exports = function(socket) {
+  socket.on(constants.IO_ADD_TO_MENU, function(options) {
+    if (!checkInput(constants.IO_ADD_TO_MENU, socket, oPool.userList, options)) { return; }
+
+    var selfProfile = oPool.userList[socket.id];
 
     if(selfProfile.isInMenu()) {
       return handError(constants.errors.ALREADY_IS_MENU);

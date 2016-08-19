@@ -10,6 +10,8 @@ var profilejs       = require('../../profile/index'), // Профиль
     genDateHistory  = require('./gen_date_history'),
     constants       = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
+
 var cassandra = require('cassandra-driver');
 var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassandra
 
@@ -21,12 +23,12 @@ var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassand
  - Сохраняем сообщение себе                                       ???
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
-module.exports = function (socket, userList, profiles, roomList) {
+module.exports = function (socket) {
   socket.on(constants.IO_MESSAGE, function(options) {
-    if (!checkInput(constants.IO_MESSAGE, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_MESSAGE, socket, oPool.userList, options)) { return; }
 
     //var f = constants.FIELDS;
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
 
     if (selfProfile.getID() == options.id) {
       return handError(constants.errors.SELF_ILLEGAL);
@@ -49,7 +51,7 @@ module.exports = function (socket, userList, profiles, roomList) {
     info.date    = date;
 
     if(!isChat) {
-      var currRoom = roomList[socket.id];
+      var currRoom = oPool.roomList[socket.id];
 
       info.messageid = TimeUuid.fromDate(date);
 
@@ -58,14 +60,14 @@ module.exports = function (socket, userList, profiles, roomList) {
 
     //options.id = sanitize(options.id);
 
-    if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, userList, options)){ return; }
+    if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, oPool.userList, options)){ return; }
 
     async.waterfall([//////////////////////////////////////////////////////////////
       function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
         var friendProfile = null;
 
-        if (profiles[options.id]) { // Если онлайн
-          friendProfile = profiles[options.id];
+        if (oPool.profiles[options.id]) { // Если онлайн
+          friendProfile = oPool.profiles[options.id];
           cb(null, friendProfile);
 
         } else {                // Если нет - берем из базы
@@ -96,7 +98,7 @@ module.exports = function (socket, userList, profiles, roomList) {
             }
           });
         } // Если собеседник онлайн и у него не открыт чат с нами
-        if (profiles[options.id] && !friendProfile.isPrivateChat(selfProfile.getID())) {
+        if (oPool.profiles[options.id] && !friendProfile.isPrivateChat(selfProfile.getID())) {
           chat = fillInfo(selfProfile);
 
           friendProfile.addPrivateChat(chat);
@@ -129,7 +131,7 @@ module.exports = function (socket, userList, profiles, roomList) {
         friendProfile.addMessage(savingMessage, function (err, message) {
           if (err) { return cb(err, null); }
 
-          if (profiles[options.id]) {
+          if (oPool.profiles[options.id]) {
             var friendSocket = friendProfile.getSocket();
 
             if(friendProfile.isPrivateChat(selfProfile.getID())) {

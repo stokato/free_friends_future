@@ -3,11 +3,13 @@ var GameError = require('../../game_error'),
   //sanitize        = require('../../sanitizer'),
   constants = require('./../../constants');
 
-module.exports = function(socket, userList) {
-  socket.on(constants.IO_CLOSE_PRIVATE_CHAT, function(options) {
-    if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, userList, options)) { return; }
+var oPool = require('./../../objects_pool');
 
-    var selfProfile = userList[socket.id];
+module.exports = function(socket) {
+  socket.on(constants.IO_CLOSE_PRIVATE_CHAT, function(options) {
+    if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, oPool.userList, options)) { return; }
+
+    var selfProfile = oPool.userList[socket.id];
 
     //options.id = sanitize(options.id);
 

@@ -5,6 +5,8 @@ var GameError = require('../../game_error'),
     getRoomInfo = require('./get_room_info'),
     constants  = require('../../constants');
 
+var oPool = require('./../../objects_pool');
+
 /*
  Показать список комнат (столов)
  - Получаем данные профиля
@@ -13,22 +15,22 @@ var GameError = require('../../game_error'),
  -- Получаем ее идентификтор и инфу по парням и девушкам (какую ???)
  - Передаем клиенту
  */
-module.exports = function (socket, userList, rooms, roomList) {
+module.exports = function (socket) {
   socket.on(constants.IO_GET_ROOMS, function(options) {
-    if (!checkInput(constants.IO_GET_ROOMS, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_ROOMS, socket, oPool.userList, options)) { return; }
 
-    var sex = defineSex(userList[socket.id]);
+    var sex = defineSex(oPool.userList[socket.id]);
 
     var resRooms = [];
     var count = 1;
 
-    var selfRoom = roomList[socket.id];
+    var selfRoom = oPool.roomList[socket.id];
 
-    for(var item in rooms) if(rooms.hasOwnProperty(item)) {
-      if (rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM && rooms[item].name != selfRoom.name) {
+    for(var item in oPool.rooms) if(oPool.rooms.hasOwnProperty(item)) {
+      if (oPool.rooms[item][sex.len] < constants.ONE_SEX_IN_ROOM && oPool.rooms[item].name != selfRoom.name) {
 
         count++;
-        getRoomInfo(rooms[item], function (err, info) {
+        getRoomInfo(oPool.rooms[item], function (err, info) {
           if (err) { return handError(options, err.message); }
 
           resRooms.push(info);

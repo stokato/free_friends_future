@@ -9,6 +9,8 @@ var profilejs  =  require('../../profile/index'),          // Профиль
 
 var dbManager = new dbjs();
 
+var oPool = require('./../../objects_pool');
+
 /*
  Подарить монеты: объект с инф. о получателе (VID, еще что то?)
  - Проверяем свой баланс
@@ -17,17 +19,17 @@ var dbManager = new dbjs();
  - Снимаем моенты со своего баланса
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
-module.exports = function (socket, userList, profiles, roomList, serverProfile) {
+module.exports = function (socket) {
   socket.on(constants.IO_GIVE_MONEY, function(options) {
-    if (!checkInput(constants.IO_GIVE_MONEY, socket, userList, options, serverProfile)) { return; }
+    if (!checkInput(constants.IO_GIVE_MONEY, socket, oPool.userList, options, oPool.serverProfile)) { return; }
 
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Получаем профиль адресата
         var friendProfile = null;
 
-        if (profiles[options.id]) { // Если онлайн
-          friendProfile = profiles[options.id];
+        if (oPool.profiles[options.id]) { // Если онлайн
+          friendProfile = oPool.profiles[options.id];
           cb(null, friendProfile);
 
         } else {                // Если нет - берем из базы
@@ -46,8 +48,8 @@ module.exports = function (socket, userList, profiles, roomList, serverProfile) 
       //  operation_status : constants.RS_GOODSTATUS
       //});
 
-      if (profiles[options.id]) {
-        var friendProfile = profiles[options.id];
+      if (oPool.profiles[options.id]) {
+        var friendProfile = oPool.profiles[options.id];
         var friendSocket = friendProfile.getSocket();
 
         friendSocket.emit(constants.IO_GIVE_MONEY, options);

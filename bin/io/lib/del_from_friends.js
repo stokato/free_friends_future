@@ -6,6 +6,8 @@ var profilejs = require('../../profile/index'),          // Профиль
   //sanitize    = require('../../sanitizer'),
   constants   = require('../../constants');
 
+var oPool = require('./../../objects_pool');
+
 /*
  Удалить пользователя из друзей: Информация о друге (VID, или что то еще?)
  - Получаем свой профиль
@@ -13,11 +15,11 @@ var profilejs = require('../../profile/index'),          // Профиль
  - Удаляем друг у друга из друзей (Сразу в БД)
  - Сообщаем клиену (и второму, если он онлайн) ???
  */
-module.exports = function (socket, userList, profiles) {
+module.exports = function (socket) {
   socket.on(constants.IO_DEL_FROM_FRIENDS, function(options) {
-    if (!checkInput(constants.IO_DEL_FROM_FRIENDS, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_DEL_FROM_FRIENDS, socket, oPool.userList, options)) { return; }
 
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
 
     //options.id = sanitize(options.id);
 
@@ -31,9 +33,9 @@ module.exports = function (socket, userList, profiles) {
       function (cb) { // Получаем профиль друга
 
         var friendProfile = null;
-        if (profiles[options.id]) {         // Если онлайн
+        if (oPool.profiles[options.id]) {         // Если онлайн
 
-          friendProfile = profiles[options.id];
+          friendProfile = oPool.profiles[options.id];
           cb(null, friendProfile);
 
         } else {                            // Если нет - берем из базы
@@ -67,7 +69,7 @@ module.exports = function (socket, userList, profiles) {
           //
           //socket.emit(constants.IO_DEL_FROM_FRIENDS, friendInfo);
           //
-          //if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+          //if (oPool.profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
           //  var selfInfo = fillInfo(selfProfile, date);
           //  var friendSocket = friendProfile.getSocket();
           //
@@ -85,7 +87,7 @@ module.exports = function (socket, userList, profiles) {
 
         socket.emit(constants.IO_DEL_FROM_FRIENDS, friendInfo);
 
-        if (profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
+        if (oPool.profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
           var selfInfo = fillInfo(selfProfile, date);
           var friendSocket = friendProfile.getSocket();
 

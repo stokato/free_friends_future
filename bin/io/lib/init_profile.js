@@ -9,34 +9,10 @@ var profilejs =  require('../../profile/index'),          // Профиль
     getRoomInfo = require('./get_room_info'),
     getLastMessages = require('./get_last_messages'),
     genDateHistory = require('./gen_date_history'),
+    sendUsersInRoom = require('./send_users_in_room'),
     constants = require('./../../constants');
 
-var giveMoney         = require('./give_money');
-
-var config = require('./../../../config.json');
-
-var testSession = {
-  "cookie": {
-    "path": "/",
-    "httpOnly": true,
-    "secure": true,
-    "maxAge": 600000
-  },
-  "name": "sid"
-};
-
-var CassandraStore = require('cassandra-store');
-
-var session_storage = new CassandraStore({
-  table: 'sessions',
-  client : new cassandra.Client({contactPoints: [config.cassandra.host], keyspace: config.cassandra.keyspace}),
-  clientOptions : {
-    contactPoints: [config.cassandra.host],
-    keyspace: config.cassandra.keyspace
-  }
-});
-
-
+var oPool = require('./../../objects_pool');
 
 /*
  Выполняем инициализацию
@@ -47,9 +23,9 @@ var session_storage = new CassandraStore({
  - Получаем данные профилей игроков в комнате (для игрового стола)
  - Отправляем все клиенту
  */
-module.exports = function (socket, userList, profiles, roomList, rooms) {
+module.exports = function (socket) {
   socket.on(constants.IO_INIT, function(options) {
-    if (!checkInput(constants.IO_INIT, socket, userList, options)) { return ; }
+    if (!checkInput(constants.IO_INIT, socket, oPool.userList, options)) { return ; }
 
     async.waterfall([///////////////////////////////////////////////////////////
       function(cb) { // Сохраняем в сессию признак пройденной авторизации
@@ -68,24 +44,24 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
           if (err) { return cb(err, null); }
 
           // Если присутствует старый профиль этого пользователя, меняем его на новый
-          var oldProfile = profiles[info.id];
+          var oldProfile = oPool.profiles[info.id];
           if (oldProfile)  {
             oldProfile.clearExitTimeout();
 
             var oldSocket = oldProfile.getSocket();
             oldProfile.setSocket(socket);
 
-            delete userList[oldSocket.id];
-            userList[socket.id] =  oldProfile;
+            delete oPool.userList[oldSocket.id];
+            oPool.userList[socket.id] =  oldProfile;
 
-            var room = roomList[oldSocket.id];
-            delete  roomList[oldSocket.id];
-            roomList[socket.id] = room;
+            var room = oPool.roomList[oldSocket.id];
+            delete  oPool.roomList[oldSocket.id];
+            oPool.roomList[socket.id] = room;
           }
                   // либо сохраняем новый
           else {
-            userList[socket.id] = selfProfile;
-            profiles[selfProfile.getID()] = selfProfile;
+            oPool.userList[socket.id] = selfProfile;
+            oPool.profiles[selfProfile.getID()] = selfProfile;
 
             newConnect = true;
           }
@@ -95,13 +71,13 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       }, ///////////////////////////////////////////////////////////////
       function (info, newConnect, selfProfile, cb) { // Помещяем в комнату
         if(newConnect) {
-          autoPlace(socket, userList, roomList, rooms, function (err, room) {
+          autoPlace(socket, function (err, room) {
             if (err) { return cb(err, null); }
 
             cb(null, info, room);
           });
         } else {
-          var room = roomList[socket.id];
+          var room = oPool.roomList[socket.id];
           info.game = room.game.getGameState(); // Получаем состояние игры в комнате
           socket.join(room.name);
 
@@ -114,11 +90,16 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
 
           info.room = roomInfo;
 
-          socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+          //socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+          sendUsersInRoom(roomInfo, info.id, function(err, roomInfo) {
+            if(err) { return cb(err); }
 
-          room.game.start(socket);
+            info.room = roomInfo;
 
-          cb(null, info, room);
+            room.game.start(socket);
+
+            cb(null, info, room);
+          });
         });
       },///////////////////////////////////////////////////////////////
       function(info, room, cb) {  // Уведомляем всех о входе пользователя
@@ -128,7 +109,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
           vid       : info.vid
         };
 
-        for(var r in rooms) if(rooms.hasOwnProperty(r)) {
+        for(var r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
           socket.broadcast.in(room.name).emit(constants.IO_ONLINE, online);
         }
         //socket.broadcast.emit(constants.IO_ONLINE, online);
@@ -147,7 +128,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
         var period = {};
         period.first_date = firstDate;
         period.second_date = secondDate;
-        userList[socket.id].getPrivateChatsWithHistory(period, function(err, history) {
+        oPool.userList[socket.id].getPrivateChatsWithHistory(period, function(err, history) {
           if(err) { return cb(err, null) }
 
           history = history || [];
@@ -163,7 +144,7 @@ module.exports = function (socket, userList, profiles, roomList, rooms) {
       }, ////////////////////////////////////////////////////////////
       function(res, cb) { // добавляем слушатели
 
-        addEmits(socket, userList, profiles, roomList, rooms);
+        addEmits(socket);
 
         cb(null, null);
       }///////////////////////////////////////////////////////////////

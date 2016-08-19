@@ -1,16 +1,18 @@
 var constants = require('./../../constants');
     closeConnection = require('./close_connection');
 
+var oPool = require('./../../objects_pool');
+
 /*
 Отключаемся от базы поистечении таймаута
  */
-module.exports = function (socket, userList, profiles, roomList, rooms) {
+module.exports = function (socket) {
   socket.on(constants.IO_DISCONNECT, function() {
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
     if(selfProfile) {
       selfProfile.setExitTimeout(
         setTimeout(function(){
-          closeConnection(socket, userList, profiles, roomList, rooms);
+          closeConnection(socket);
         }, constants.EXIT_TIMEOUT));
     }
   });

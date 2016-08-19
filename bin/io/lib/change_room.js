@@ -1,3 +1,4 @@
+
 // Свои модули
 var GameError = require('../../game_error'),      // Ошибки
     checkInput = require('../../check_input'),    // Верификация
@@ -6,7 +7,10 @@ var GameError = require('../../game_error'),      // Ошибки
     createRoom = require('./create_room'),
     getLastMessages = require('./get_last_messages'),
     //sanitize        = require('../../sanitizer'),
-    getRoomInfo = require('./get_room_info');
+    getRoomInfo = require('./get_room_info'),
+    sendUsersInRoom = require('./send_users_in_room');
+
+var oPool = require('./../../objects_pool');
 
 /*
  Сменить комнату: Идентификатор новой комнаты
@@ -22,40 +26,40 @@ var GameError = require('../../game_error'),      // Ошибки
  - Добавляем к ним данные игроков (девушки и парни на игровом столе)
  - Отправляем клиенту
  */
-module.exports = function (socket, userList, rooms, roomList) {
+module.exports = function (socket) {
   socket.on(constants.IO_CHANGE_ROOM, function(options) {
-    if (!checkInput(constants.IO_CHANGE_ROOM, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_CHANGE_ROOM, socket, oPool.userList, options)) { return; }
 
-    if(!rooms[options.room] && options.room != constants.NEW_ROOM) {
+    if(!oPool.rooms[options.room] && options.room != constants.NEW_ROOM) {
       return handError(constants.errors.NO_SUCH_ROOM);
     }
 
-    if(roomList[socket.id].name == options.room){
+    if(oPool.roomList[socket.id].name == options.room){
       return handError(constants.errors.ALREADY_IN_ROOM);
     }
 
     //options.room = sanitize(options.room);
 
     var newRoom = null;
-    var currRoom = roomList[socket.id];
-    var selfProfile = userList[socket.id];
+    var currRoom = oPool.roomList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
 
     var sex = defineSex(selfProfile);
 
     if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
-      newRoom = createRoom(socket, userList);
-      rooms[newRoom.name] = newRoom;
+      newRoom = createRoom(socket, oPool.userList);
+      oPool.rooms[newRoom.name] = newRoom;
 
     } else {                                  // Либо ищем указанную
       var item;
-      for (item in rooms) if (rooms.hasOwnProperty(item)) {
-        if (rooms[item].name == options.room) {
-          if (rooms[item][sex.len] >= constants.ONE_SEX_IN_ROOM) {
+      for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
+        if (oPool.rooms[item].name == options.room) {
+          if (oPool.rooms[item][sex.len] >= constants.ONE_SEX_IN_ROOM) {
             return handError(constants.errors.ROOM_IS_FULL);
           }
-          newRoom = rooms[item];
+          newRoom = oPool.rooms[item];
 
-          getLastMessages(socket, rooms[item]);
+          getLastMessages(socket, oPool.rooms[item]);
         }
       }
     }
@@ -65,7 +69,7 @@ module.exports = function (socket, userList, rooms, roomList) {
     }
 
     //if(selfProfile.getReady()) {
-    //  roomList[socket.id].game.stop();
+    //  oPool.roomList[socket.id].game.stop();
     //}
 
     newRoom[sex.sexArr][selfProfile.getID()] = selfProfile;
@@ -76,28 +80,28 @@ module.exports = function (socket, userList, rooms, roomList) {
     selfProfile.setGameIndex(index);
     newRoom[sex.counter] += 2;
 
-    roomList[socket.id] = newRoom;
+    oPool.roomList[socket.id] = newRoom;
 
     var isCurrRoom = true;
 
     delete currRoom[sex.sexArr][selfProfile.getID()];
     currRoom[sex.len]--;
     if (currRoom.guys_count == 0 && currRoom.girls_count == 0) {
-      delete rooms[currRoom.name];
+      delete oPool.rooms[currRoom.name];
       isCurrRoom = false;
     }
 
     getRoomInfo(newRoom, function (err, info) {
       if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
 
-      var message = {};
-      message.id      = selfProfile.getID();
-      message.vid     = selfProfile.getVID();
-      message.age     = selfProfile.getAge();
-      message.sex     = selfProfile.getSex();
-      message.city    = selfProfile.getCity();
-      message.country = selfProfile.getCountry();
-      message.points  = selfProfile.getPoints();
+      //var message = {};
+      //message.id      = selfProfile.getID();
+      //message.vid     = selfProfile.getVID();
+      //message.age     = selfProfile.getAge();
+      //message.sex     = selfProfile.getSex();
+      //message.city    = selfProfile.getCity();
+      //message.country = selfProfile.getCountry();
+      //message.points  = selfProfile.getPoints();
 
       //socket.broadcast.in(currRoom.name).emit('leave', message);
 
@@ -108,19 +112,30 @@ module.exports = function (socket, userList, rooms, roomList) {
 
       //socket.emit(constants.IO_CHANGE_ROOM, info);
 
-      socket.broadcast.in(newRoom.name).emit(constants.IO_ROOM_USERS, info);
-      socket.emit(constants.IO_ROOM_USERS, info);
 
-      newRoom.game.start(socket);
+      sendUsersInRoom(info, null, function(err, res) {
+        if(err) { return handError(err) }
 
+        newRoom.game.start(socket);
 
-      socket.emit(constants.IO_CHANGE_ROOM, { operation_status : constants.RS_GOODSTATUS });
+        socket.emit(constants.IO_CHANGE_ROOM, { operation_status : constants.RS_GOODSTATUS });
+      });
+
+      //socket.broadcast.in(newRoom.name).emit(constants.IO_ROOM_USERS, info);
+      //socket.emit(constants.IO_ROOM_USERS, info);
+
+      //newRoom.game.start(socket);
 
       if(isCurrRoom) {
         getRoomInfo(currRoom, function(err, currRoomInfo) {
           if(err) { return handError(err); }
 
-          socket.broadcast.in(currRoom.name).emit(constants.IO_ROOM_USERS, currRoomInfo);
+          sendUsersInRoom(currRoomInfo, null, function(err) {
+            if(err) { return handError(err); }
+
+          });
+
+          //socket.broadcast.in(currRoom.name).emit(constants.IO_ROOM_USERS, currRoomInfo);
         });
       }
     });
@@ -134,6 +149,7 @@ module.exports = function (socket, userList, rooms, roomList) {
 
       new GameError(socket, constants.IO_CHANGE_ROOM, err.message || constants.errors.OTHER.message);
     }
+
   });
 };
 

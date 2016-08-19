@@ -6,6 +6,8 @@ var profilejs =  require('../../profile/index'),          // Профиль
     //sanitize        = require('../../sanitizer'),
     constants = require('./../../constants');
 
+var oPool = require('./../../objects_pool');
+
 /*
  Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,
  которую можно достать из соц. сетей ????)
@@ -16,11 +18,11 @@ var profilejs =  require('../../profile/index'),          // Профиль
  -- Отправлем клиенту данные профиля (????)
  -- Если тот, кого смотрим, онлайн, наверно нужно его сразу уведомить о гостях ???
  */
-module.exports = function (socket, userList, profiles) {
+module.exports = function (socket) {
   socket.on(constants.IO_GET_PROFILE, function(options) {
-    if (!checkInput(constants.IO_GET_PROFILE, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_PROFILE, socket, oPool.userList, options)) { return; }
 
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
     var selfInfo = fillInfo(selfProfile);
 
     //options.id = sanitize(options.id);
@@ -68,14 +70,14 @@ module.exports = function (socket, userList, profiles) {
 
     } else {
       var isOnline = false;
-      if(profiles[options.id]) { isOnline = true }
+      if(oPool.profiles[options.id]) { isOnline = true }
 
       async.waterfall([///////////////////////////////////////////////////////////////////
         function (cb) { // Получаем профиль того, чей просматриваем
 
           var friendProfile = null;
           if (isOnline) { // Если онлайн
-            friendProfile = profiles[options.id];
+            friendProfile = oPool.profiles[options.id];
             var friendInfo = fillInfo(friendProfile);
             cb(null, friendProfile, friendInfo);
 
@@ -98,10 +100,10 @@ module.exports = function (socket, userList, profiles) {
           });
         },/////////////////////////////////////////////////////////////////////
         function (friendProfile, friendInfo, cb) { // Проверяем, наш ли это друг
-          friendProfile.isFriend(selfProfile.getID(), function (err, res) {
+          friendProfile.isFriend([selfProfile.getID()], function (err, res) {
             if (err) {  return cb(err, null); }
 
-            friendInfo.is_friend = res.is_friend;
+            friendInfo.is_friend = res[0].isFriend;
             cb(null, friendProfile, friendInfo);
           });
         },/////////////////////////////////////////////////////////////////////

@@ -6,12 +6,20 @@ var initProfile       = require('./lib/init_profile');
 var session = require('./../../lib/session');
 var checkSession = require('./checkSession');
 
+var oPool = require('./../objects_pool');
+
+
 var io = null;                                      // Сокет
 
-var userList = {},                                  // Профили пользователей по сокетам
-    roomList = {},                                  // Комнаты по сокетам
-    rooms    = {},                                  // Комнаты по их именам
-    profiles = {};                                  // Профили пользователей по id (надо бы убрать)
+//var userList = {},                                  // Профили пользователей по сокетам
+//    roomList = {},                                  // Комнаты по сокетам
+//    rooms    = {},                                  // Комнаты по их именам
+//    profiles = {};                                  // Профили пользователей по id (надо бы убрать)
+
+//oPool.userList = userList;
+//oPool.roomList = roomList;
+//oPool.rooms = rooms;
+//oPool.profiles = profiles;
 
 /*
 При подключении выполняем инициализацию и вешаем эмиттеры
@@ -29,9 +37,9 @@ module.exports.listen = function(server, callback) {
 
   io.sockets.on('connection', function (socket) {
 
-    initProfile(socket, userList, profiles, roomList, rooms);
+    initProfile(socket);
   });
-  callback(null, profiles);
+  callback(null, oPool.profiles);
 };
 
 //io.set('authorization', ioSessions({

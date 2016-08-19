@@ -31,6 +31,8 @@ var hStart                  = require('./lib/handlers/h_start'),
     hSympathyShow           = require('./lib/handlers/h_sympathy_show'),
     hPrison                 = require('./lib/handlers/h_prison');
 
+var oPool = require('./../objects_pool');
+
 var db                    = require('./../db/index.js'),
   dbManager = new db();
 
@@ -48,11 +50,11 @@ var gameQuestions = [];
  */
 module.exports = Game;
 
-function Game(room, userList) {
+function Game(room) {
   var self = this;
 
   this.gRoom = room;                  // Стол этой игры
-  this.userList = userList;
+  this.userList = oPool.userList;
 
   this.gActionsQueue  = {};           // Очередь действий игроков
   this.gActionsLimits = {};           // Лимиты ответов для игроков

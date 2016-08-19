@@ -37,57 +37,57 @@ var addTrack        = require('./add_track'),
     dislikeTrack    = require('./dislike_track');
 
 // Назначаем эмиты
-module.exports = function(socket, userList, profiles, roomList, rooms) {
+module.exports = function(socket) {
 
   //sendPublicMessage(socket, userList, roomList);
   //exit(socket, userList, profiles, roomList, rooms);
 
   // Навигация по комнатам
-  chooseRoom(socket, userList, roomList, rooms, profiles);             // Выбрать комнату
-  getRooms(socket, userList, rooms, roomList);                         // Получить список доступных комнат
-  changeRoom(socket, userList, rooms, roomList);                       // Сменить комнату
+  chooseRoom(socket);             // Выбрать комнату
+  getRooms(socket);                         // Получить список доступных комнат
+  changeRoom(socket);                       // Сменить комнату
 
-  changeStatus(socket, userList);                                       // Сменить статус
+  changeStatus(socket);                                       // Сменить статус
 
   // Профиль
-  getProfile(socket, userList, profiles);                               // Получить профиль
+  getProfile(socket);                               // Получить профиль
   //getGifts(socket, userList);
   //getPrivMes(socket, userList);
   //getFriends(socket, userList);
   //getGuests(socket, userList);
-  addToFriends(socket, userList, profiles);                             // Добавить в друзья
-  delFromFriends(socket, userList, profiles);                           // Удалить из друзей
-  makeGift(socket, userList, profiles, roomList);                       // Сделать подарок
+  addToFriends(socket);                             // Добавить в друзья
+  delFromFriends(socket);                           // Удалить из друзей
+  makeGift(socket);                       // Сделать подарок
   //giveMoney(socket, userList, profiles, serverProfile);
-  sendMessage(socket, userList, profiles, roomList);                    // Отправить сообщение
+  sendMessage(socket);                    // Отправить сообщение
   //openPrivMes(socket, userList);
-  getChatHistory(socket, userList, profiles);                           // Получить историю переписки
-  openPrivateChat(socket, userList, profiles);                          // Открыть чат
-  closePrivateChat(socket, userList, profiles);                         // Закрыть чат
-  addPoints(socket, userList);                                          // Добавить очки
-  disconnect(socket, userList, profiles, roomList, rooms);              // Отключиться
+  getChatHistory(socket);                           // Получить историю переписки
+  openPrivateChat(socket);                          // Открыть чат
+  closePrivateChat(socket);                         // Закрыть чат
+  addPoints(socket);                                          // Добавить очки
+  disconnect(socket);              // Отключиться
 
   // Топ
-  getTop(socket, userList);
+  getTop(socket);
 
   // Магазин
-  getGiftShop(socket, userList);                                         // Получить список доступных подарков
-  getMoneyShop(socket, userList);                                        // Получить список доступных лотов
+  getGiftShop(socket);                                         // Получить список доступных подарков
+  getMoneyShop(socket);                                        // Получить список доступных лотов
   // Монеты
   //changeMoney(socket, userList);
-  getMoney(socket, userList);                                            // Получить текущее количество монет
+  getMoney(socket);                                            // Получить текущее количество монет
 
   // Меню
-  addToMenu(socket, userList);                                           // Добавить в меню (в ВК)
+  addToMenu(socket);                                           // Добавить в меню (в ВК)
 
   // Игра
   //joinGame(socket, userList, roomList);
-  addAction(socket, userList);                                            // Действие в игре
-  releasePlayer(socket, userList);                                        // Отпустить игрока из темницы
+  addAction(socket);                                            // Действие в игре
+  releasePlayer(socket);                                        // Отпустить игрока из темницы
 
   // Плеер
-  addTrack(socket, userList, roomList);                                   // Добавить трек в очередь комнаты
-  getTrackList(socket, userList, roomList);                               // Получить очередь комнаты
-  likeTrack(socket, userList, roomList);                                  // Лайкнуть трек
-  dislikeTrack(socket, userList, roomList);                               // Дизлайкнуть трек
+  addTrack(socket);                                   // Добавить трек в очередь комнаты
+  getTrackList(socket);                               // Получить очередь комнаты
+  likeTrack(socket);                                  // Лайкнуть трек
+  dislikeTrack(socket);                               // Дизлайкнуть трек
 };

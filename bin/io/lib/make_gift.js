@@ -9,6 +9,8 @@ var profilejs  =  require('../../profile/index'),          // Профиль
 
 var dbManager = new dbjs();
 
+var oPool = require('./../../objects_pool');
+
 /*
  Сделать подарок: ИД подарка, объект с инф. о получателе (VID, еще что то?)
  - Ищем подарок по ИД в базе
@@ -16,11 +18,11 @@ var dbManager = new dbjs();
  - Добавляем адресату подарок (пишем сразу в БД)
  - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
  */
-module.exports = function (socket, userList, profiles, roomList) {
+module.exports = function (socket) {
   socket.on(constants.IO_MAKE_GIFT, function(options) {
-    if (!checkInput(constants.IO_MAKE_GIFT, socket, userList, options)) { return; }
+    if (!checkInput(constants.IO_MAKE_GIFT, socket, oPool.userList, options)) { return; }
 
-    var selfProfile = userList[socket.id];
+    var selfProfile = oPool.userList[socket.id];
 
     //options.id = sanitize(options.id);
 
@@ -60,8 +62,8 @@ module.exports = function (socket, userList, profiles, roomList) {
       function (gift, money, cb) { // Получаем профиль адресата
         var friendProfile = null;
 
-        if (profiles[options.id]) { // Если онлайн
-          friendProfile = profiles[options.id];
+        if (oPool.profiles[options.id]) { // Если онлайн
+          friendProfile = oPool.profiles[options.id];
           cb(null, friendProfile, gift, money);
 
         } else {                // Если нет - берем из базы
@@ -111,8 +113,8 @@ module.exports = function (socket, userList, profiles, roomList) {
 
       socket.emit(constants.IO_MAKE_GIFT, { operation_status : constants.RS_GOODSTATUS });
 
-      if (profiles[options.id]) {
-        var friendProfile = profiles[options.id];
+      if (oPool.profiles[options.id]) {
+        var friendProfile = oPool.profiles[options.id];
         var friendSocket = friendProfile.getSocket();
 
         var gift = friendProfile.getGift1();
@@ -130,7 +132,7 @@ module.exports = function (socket, userList, profiles, roomList) {
         result.gid     = gift.gid;
         result.is_private = options.is_private;
 
-        var room = roomList[socket.id];
+        var room = oPool.roomList[socket.id];
 
         socket.emit(constants.IO_NEW_GIFT, result);
         if(!options.is_private) {

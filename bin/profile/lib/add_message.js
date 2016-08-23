@@ -1,3 +1,4 @@
+var db = require('./../../db_manager');
 
 /*
  Сохраняем личное сообщение в БД
@@ -8,7 +9,7 @@ module.exports = function(message, callback) {
 
   message.opened = self.isPrivateChat(message.companionid); // Если чат открыт, сообщение уже прочитано
 
-  self.dbManager.addMessage(self.pID, message, function(err) {
+  db.addMessage(self.pID, message, function(err) {
     if (err) { return callback(err, null); }
 
     if (!self.isPrivateChat(message.companionid)) {

@@ -1,9 +1,11 @@
+var db = require('./../../db_manager');
+
 /*
  Проверяем, покупал ли пользователь такой товар
  */
 module.exports = function(goodid, callback) {
   var self = this;
-  self.dbManager.findPurchase(self.pID, function(err, foundGoods) {
+  db.findPurchase(self.pID, function(err, foundGoods) {
     if (err) { return cb(err); }
     if (foundGoods) {
       var good = null, i;

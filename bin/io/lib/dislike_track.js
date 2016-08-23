@@ -1,6 +1,6 @@
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input'),
-  constants = require('./../../constants');
+var constants = require('./../../constants'),
+  GameError = require('../../game_error'),
+  checkInput = require('../../check_input');
 
 var oPool = require('./../../objects_pool');
 

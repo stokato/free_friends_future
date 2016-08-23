@@ -1,3 +1,4 @@
+var db = require('./../../db_manager');
 /*
  Удаляем польлзователя из БД
  - Очищаем свойста
@@ -23,16 +24,16 @@ module.exports = function(callback) {
 
   self.pPrivateChats = null;
 
-  self.dbManager.deleteGifts(this.pID, function(err, id) {  // Удаляем подарки
+  db.deleteGifts(this.pID, function(err, id) {  // Удаляем подарки
     if(err) { return callback(err, null); }
-    self.dbManager.deleteMessages(id, function(err, id) { // и историю
+    db.deleteMessages(id, function(err, id) { // и историю
       if(err) { return callback(err, null) }
-      self.dbManager.deleteFriends(id, null, function(err, id) { // и друзей
+      db.deleteFriends(id, null, function(err, id) { // и друзей
         if(err) { return callback(err, null) }
-        self.dbManager.deleteGuests(id, function(err, id) { // и гостей
+        db.deleteGuests(id, function(err, id) { // и гостей
           if(err) { return callback(err, null) }
 
-          self.dbManager.deleteUser(id, function(err, id) { // и самого пользователя
+          db.deleteUser(id, function(err, id) { // и самого пользователя
             if(err) { return callback(err, null) }
 
             callback(null, id);

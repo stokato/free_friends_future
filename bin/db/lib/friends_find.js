@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var buildQuery = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 /*
  Найти друзей пользователя: ИД игрока
  - Проверка ИД
@@ -24,10 +24,10 @@ module.exports = function(uid, friendsID, callback) {
   }
 
   var fields = ["friendid", "friendvid", "date"];
-  var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERFRIENDS, constFields, constCount);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERFRIENDS, constFields, constCount);
 
   // Отбираем всех друзей
-  self.client.execute(query, params, {prepare: true }, function(err, result) {
+  cdb.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var friends = [];
@@ -54,9 +54,9 @@ module.exports = function(uid, friendsID, callback) {
 
       // Отбираем сведения по всем друзьям
       var fields = ["id", "vid", "age", "sex", "city", "country", "points"];
-      var query = buildQuery.build(buildQuery.Q_SELECT, fields, C.T_USERS, ["id"], [constValues]);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, ["id"], [constValues]);
 
-      self.client.execute(query, friendList, {prepare: true }, function(err, result) {
+      cdb.client.execute(query, friendList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
 
         for(var i = 0; i < result.rows.length; i++) {

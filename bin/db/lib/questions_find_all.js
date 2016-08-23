@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти все вопосы для игры questions
  - Строим запрос (все поля) и выполняем
@@ -8,9 +9,9 @@ var qBuilder = require('./build_query');
 module.exports = function(callback) {
 
   var fields = ["id", "text"];
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_QUESTIONS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_QUESTIONS);
 
-  this.client.execute(query,[], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, null);

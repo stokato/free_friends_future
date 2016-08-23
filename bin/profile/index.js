@@ -1,5 +1,3 @@
-var db        = require('./../db/index.js'),
-    dbManager = new db();
 
 var init                            = require('./lib/init'),
     addGift                         = require('./lib/add_gift'),
@@ -60,7 +58,6 @@ var setExitTimeout                  = require('./lib/set_exit_timeout'),
  *         удалить текущий профиль из базы и очистить все свойства
  */
 function Profile() {
-  this.dbManager = dbManager;
   this.pSocket   = null;   // Сокет
 
   this.pID           = null;   // Внутренний ИД

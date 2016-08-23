@@ -1,9 +1,9 @@
 // Свои модули
-var GameError = require('../../game_error'),
+var constants  = require('../../constants'),
+    GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     defineSex  = require('./define_sex'),
-    getRoomInfo = require('./get_room_info'),
-    constants  = require('../../constants');
+    getRoomInfo = require('./get_room_info');
 
 var oPool = require('./../../objects_pool');
 
@@ -17,7 +17,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_GET_ROOMS, function(options) {
-    if (!checkInput(constants.IO_GET_ROOMS, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_ROOMS, socket, options)) { return; }
 
     var sex = defineSex(oPool.userList[socket.id]);
 

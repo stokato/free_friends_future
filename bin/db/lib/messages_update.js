@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Изменить сообщение в БД: Свойства сообщения
  - Проверка (ИД обязателен)
@@ -7,8 +8,6 @@ var qBuilder = require('./build_query');
  - Возвращаем объект сообщения
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var self = this;
-
   if (!options["id"] || !uid || !options["companionid"]) {
     return callback(new Error("Задан пустй Id пользователя, его собеседника или сообщения"), null);
   }
@@ -16,12 +15,12 @@ module.exports = function(uid, options, callback) { options = options || {};
   var constFields = ["userid", "companionid", "id"];
   var constValues = [1, 1, 1];
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, ["id"], C.T_USERMESSAGES, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USERMESSAGES, constFields, constValues);
 
   var params = [uid, options["companionid"], options["id"]];
 
   // Получаем сообщение
-  self.client.execute(query, params, {prepare: true }, function(err, result) {
+  cdb.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) { return callback(new Error("Сообщения с таким Id нет в базе данных"), null)}
@@ -36,10 +35,10 @@ module.exports = function(uid, options, callback) { options = options || {};
     var constFields = ["userid", "companionid", "id"];
     var constValues = [1, 1, 1];
 
-    var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERMESSAGES, constFields, constValues);
+    var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, constants.T_USERMESSAGES, constFields, constValues);
 
     // Сохраняем изменения
-    self.client.execute(query, params, {prepare: true }, function(err) {
+    cdb.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       callback(null, options);

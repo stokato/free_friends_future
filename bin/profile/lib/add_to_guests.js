@@ -1,9 +1,11 @@
+var db = require('./../../db_manager');
+
 /*
  Добавляем гостя в БД
  */
 module.exports = function(options, callback) {
  var self = this;
- self.dbManager.addGuest(self.pID, options, function(err, guest) {
+ db.addGuest(self.pID, options, function(err, guest) {
    if (err) { return callback(err, null); }
 
    self.pNewGuests ++;

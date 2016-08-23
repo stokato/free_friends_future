@@ -21,7 +21,7 @@ var chooseRoom      = require('./choose_room'),
   getMoneyShop      = require('./get_money_shop'),
 //var changeMoney       = require('./money_io/change_money');
   getMoney          = require('./get_money'),
-  addPoints         = require('./trash/add_points'),
+  //addPoints         = require('./trash/add_points'),
   //joinGame          = require('./join_game'),
   disconnect        = require('./disconnect'),
   addToMenu         = require('./add_to_menu'),
@@ -64,7 +64,7 @@ module.exports = function(socket) {
   getChatHistory(socket);                           // Получить историю переписки
   openPrivateChat(socket);                          // Открыть чат
   closePrivateChat(socket);                         // Закрыть чат
-  addPoints(socket);                                          // Добавить очки
+  //addPoints(socket);                                          // Добавить очки
   disconnect(socket);              // Отключиться
 
   // Топ

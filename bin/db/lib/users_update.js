@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Изменяем данные пользователя: объек с данными
  - Проверка: поле ИД обязательные
@@ -32,11 +33,11 @@ module.exports = function(options, callback) { options = options || {};
   if ("newguests" in options)     { fields.push("newguests");     params.push(options["newguests"]); }
   if ("newmessages" in options)   { fields.push("newmessages");   params.push(options["newmessages"]); }
 
-  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, constants.T_USERS, constFields, constValues);
 
   params.push(options["id"]);
 
-  this.client.execute(query, params, {prepare: true }, function(err) {
+  cdb.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, options);

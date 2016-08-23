@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var buildQuery = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 /*
  Удалить всех друзей игрока: ИД
  - Проверка на ИД
@@ -21,8 +21,8 @@ module.exports = function(uid, fid, callback) {
     params.push(fid);
   }
 
-  var query = buildQuery.build(buildQuery.Q_DELETE, [], C.T_USERFRIENDS, fields, constValues);
-  this.client.execute(query, params, {prepare: true }, function(err) {
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERFRIENDS, fields, constValues);
+  cdb.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, uid);

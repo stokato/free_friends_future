@@ -1,7 +1,8 @@
 var async = require('async');
 
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти пользователей, с которыми были чаты, показать наличине новых сообщений
  - Проверка ИД
@@ -9,7 +10,6 @@ var qBuilder = require('./build_query');
  - Возвращаем массив с пользователями (если ничего нет null)
  */
 module.exports = function(uid, callback) {
-  var self = this;
 
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
@@ -22,9 +22,9 @@ module.exports = function(uid, callback) {
       var const_fields = ["userid"];
       var const_values = [1];
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERCHATS, const_fields, const_values);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERCHATS, const_fields, const_values);
 
-      self.client.execute(query, params, {prepare: true}, function (err, result) {
+      cdb.client.execute(query, params, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
 
         if (result.rows.length == 0) return cb(null, null, null, null);
@@ -49,9 +49,9 @@ module.exports = function(uid, callback) {
       var fields = ["id", "vid", "age", "sex", "city", "country", "points"];
       var const_fields = ["id"];
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, const_fields, [const_values]);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, const_fields, [const_values]);
 
-      self.client.execute(query, companions, {prepare: true}, function (err, result) {
+      cdb.client.execute(query, companions, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
 
         var users = [];

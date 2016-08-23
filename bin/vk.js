@@ -1,6 +1,6 @@
 var async = require('async');
-var db = require('./db');
-var dbManager = new db();
+var db = require('./db_manager');
+
 var sanitize        = require('./sanitizer');
 var md5 = require('md5');
 
@@ -70,7 +70,7 @@ function getItem(request, callback) {
   var goodId = sanitize(payInfo[0]); // наименование товара
 
   var response = {};
-  dbManager.findGood(goodId, function (err, goodInfo) {
+  db.findGood(goodId, function (err, goodInfo) {
     if(err) {
       response["error"] = {
         "error_code" : err.code,
@@ -115,7 +115,7 @@ function changeOrderStatus(request, profiles, callback) {
 
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
-        dbManager.findGood(options.goodid, function (err, goodInfo) {
+        db.findGood(options.goodid, function (err, goodInfo) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
@@ -127,7 +127,7 @@ function changeOrderStatus(request, profiles, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        dbManager.findUser(null, options.vid, ["money"], function(err, info) {
+        db.findUser(null, options.vid, ["money"], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
@@ -150,7 +150,7 @@ function changeOrderStatus(request, profiles, callback) {
         ordOptions.sum = goodInfo.price;
         ordOptions.date = new Date();
 
-        dbManager.addOrder(ordOptions, function(err, orderid) {
+        db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
 
           cb(null, goodInfo, info, orderid);
@@ -160,7 +160,7 @@ function changeOrderStatus(request, profiles, callback) {
         var options = {};
 
         if(payInfo[1]) {
-          dbManager.findUser(null, payInfo[1], ["money"], function(err, info) {
+          db.findUser(null, payInfo[1], ["money"], function(err, info) {
             if(err) { return cb(err, null); }
 
             if (info) {
@@ -170,7 +170,7 @@ function changeOrderStatus(request, profiles, callback) {
               options.vid = info.vid;
               options.money = info.money + goodInfo.price2;
 
-              dbManager.updateUser(options, function(err, id) {
+              db.updateUser(options, function(err, id) {
                 if (err) { return cb(err, null); }
 
                 options.money = goodInfo.price2;
@@ -191,7 +191,7 @@ function changeOrderStatus(request, profiles, callback) {
           options.vid = info.vid;
           options.money = info.money + goodInfo.price2;
 
-          dbManager.updateUser(options, function(err, id) {
+          db.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }
 
             options.money = goodInfo.price2;

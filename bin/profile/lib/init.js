@@ -1,6 +1,8 @@
 var async     = require('async');
 var Config = require('./../../../config.json').user;
 var constants = require('../../constants');
+var db = require('./../../db_manager');
+
 /*
  Инициализируем профиль
  - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
@@ -34,7 +36,7 @@ module.exports = function(socket, options, callback) {
       var fList = ["sex", "points", "money", "age", "country", "city", "status",
         "ismenu", "newfriends", "newguests", "newgifts", "newmessages", "gift1"];
 
-      self.dbManager.findUser(null, self.pVID, fList, function(err, foundUser) {
+      db.findUser(null, self.pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
           self.pID     = foundUser.id;
@@ -54,7 +56,7 @@ module.exports = function(socket, options, callback) {
           self.pNewGuests   = foundUser.newguests   || 0;
 
           if(foundUser.gift1) {
-            self.dbManager.findGift(foundUser.gift1, function(err, gift) {
+            db.findGift(foundUser.gift1, function(err, gift) {
               if (err) { return  callback(err, null); }
 
               self.pGift1 = gift || null;
@@ -98,7 +100,7 @@ module.exports = function(socket, options, callback) {
         newUser.money    = self.pMoney = Config.settings.start_money;
         newUser.ismenu = self.pIsInMenu;
 
-        self.dbManager.addUser(newUser, function(err, user) {
+        db.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }
 
           self.pID = user.id;

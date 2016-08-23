@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти сохраненные сообщения пользователя: ИД игрока
  - Проверка ИД
@@ -7,8 +8,6 @@ var qBuilder = require('./build_query');
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var self = this;
-
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
 
   var date = options["date"];
@@ -20,9 +19,9 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   // Получаем чаты
   //var query = "select companionid FROM user_chats where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERCHATS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERCHATS, constFields, constValues);
 
-  self.client.execute(query, params, {prepare: true }, function(err, result) {
+  cdb.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, null);
@@ -36,7 +35,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     var const_more = null;
     if (date) {
       const_more = "id";
-      params.push(self.timeUuid.fromDate(date));
+      params.push(cdb.timeUuid.fromDate(date));
     }
 
     // Отбираем сообщения
@@ -46,9 +45,9 @@ module.exports = function(uid, options, callback) { options = options || {};
 
     //query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
 
-    query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERMESSAGES,  constFields , constValues, const_more);
+    query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERMESSAGES,  constFields , constValues, const_more);
 
-    self.client.execute(query, params, {prepare: true }, function(err, result) {
+    cdb.client.execute(query, params, {prepare: true }, function(err, result) {
       if (err) { return callback(err, null); }
       var messages = [];
 
@@ -68,7 +67,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         var constFields = ["id"];
         var constValues = [compLen];
 
-        var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, constFields, constValues);
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, constFields, constValues);
 
         params = [];
 
@@ -76,7 +75,7 @@ module.exports = function(uid, options, callback) { options = options || {};
           params.push(companions[i]["companionid"]);
         }
 
-        self.client.execute(query, params, {prepare: true }, function(err, result) {
+        cdb.client.execute(query, params, {prepare: true }, function(err, result) {
           if (err) { return callback(err, null); }
 
           // Разносим сообщения по чатам

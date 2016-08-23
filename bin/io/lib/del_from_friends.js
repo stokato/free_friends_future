@@ -1,10 +1,11 @@
 var async     =  require('async');
+
 // Свои модули
-var profilejs = require('../../profile/index'),          // Профиль
+var constants   = require('../../constants'),
+  profilejs = require('../../profile/index'),          // Профиль
   GameError   = require('../../game_error'),              // Ошибки
-  checkInput  = require('../../check_input'),            // Верификация
-  //sanitize    = require('../../sanitizer'),
-  constants   = require('../../constants');
+  checkInput  = require('../../check_input');            // Верификация
+
 
 var oPool = require('./../../objects_pool');
 
@@ -17,7 +18,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_DEL_FROM_FRIENDS, function(options) {
-    if (!checkInput(constants.IO_DEL_FROM_FRIENDS, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_DEL_FROM_FRIENDS, socket, options)) { return; }
 
     var selfProfile = oPool.userList[socket.id];
 

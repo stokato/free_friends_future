@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Получаем список всех пользователей: список искомых полей
  - Строим и выполняем запрос
@@ -13,9 +14,9 @@ module.exports = function(f_list, callback) {
     fields.push(f_list[i]);
   }
 
- var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS);
+ var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS);
 
- this.client.execute(query,[], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[], {prepare: true }, function(err, result) {
    if (err) { return callback(err, null);}
 
    var users = [];

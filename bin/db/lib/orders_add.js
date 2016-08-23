@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Добавляем заказ в БД
  */
@@ -11,14 +12,14 @@ module.exports = function(options, callback) { options   = options || {};
     return callback(new Error("Не задан один из параметров заказа"), null);
   }
 
-  var id = this.uuid.random();
+  var id = cdb.uuid.random();
 
   var fields = ["id", "vid", "userid", "uservid", "sum", "date"];
-  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_ORDERS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_ORDERS);
 
   var params = [id, options["vid"], options["userid"], options["uservid"], options["sum"], date];
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     callback(null, id);

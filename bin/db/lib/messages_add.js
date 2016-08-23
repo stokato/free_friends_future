@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 
 var async = require('async');
 /*
@@ -10,8 +10,6 @@ var async = require('async');
  - Возвращаем объект сообщения
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var self = this;
-
   var date         = options["date"] || new Date();
   var opened       = options["opened"];
 
@@ -19,7 +17,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
-  var id = self.timeUuid.fromDate(date);
+  var id = cdb.timeUuid.fromDate(date);
 
   async.waterfall([/////////////////////////////////////////////////////////////////////
     function(cb) { // Записываем сообщение либо в основную таблицу
@@ -27,11 +25,11 @@ module.exports = function(uid, options, callback) { options = options || {};
       var fields = ["id", "userid", "date", "companionid", "companionvid", "incoming", "text"];
 
       //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
-      var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERMESSAGES);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERMESSAGES);
 
       var params = [id, uid, date, options["companionid"], options["companionvid"], options["incoming"], options["text"]];
 
-      self.client.execute(query, params, { prepare: true },  function(err) {
+      cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
 
         cb(null, fields, params);
@@ -40,9 +38,9 @@ module.exports = function(uid, options, callback) { options = options || {};
     function(fields, params, cb) { // Либо в таблицу новых сообщений (если оно еще не прочитано)
       if(!opened) {//
         //var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
-        var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERNEWMESSAGES);
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERNEWMESSAGES);
 
-        self.client.execute(query, params, { prepare: true },  function(err) {
+        cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) {  return cb(err); }
 
           cb(null, null);
@@ -54,9 +52,9 @@ module.exports = function(uid, options, callback) { options = options || {};
       var fields = ["userid", "companionid", "isnew"];
 
       //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
-      var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERCHATS);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERCHATS);
 
-      self.client.execute(query, params, { prepare: true },  function(err) {
+      cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
 
         cb(null, null);

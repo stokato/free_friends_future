@@ -1,7 +1,6 @@
-var GameError = require('../../game_error'),
-    checkInput = require('../../check_input'),
-    //sanitize        = require('../../sanitizer'),
-    constants = require('./../../constants');
+var constants = require('./../../constants'),
+    GameError = require('../../game_error'),
+    checkInput = require('../../check_input');
 
 var oPool = require('./../../objects_pool');
 
@@ -13,7 +12,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_CHANGE_STATUS, function(options) {
-    if (!checkInput(constants.IO_CHANGE_STATUS, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_CHANGE_STATUS, socket, options)) { return; }
 
     //options.status = sanitize(options.status);
 

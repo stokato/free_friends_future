@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Добавляем пользователя в БД: объект с данными пользователя из соц. сетей
  - Проверка (ВИД обязателен)
@@ -9,11 +10,9 @@ var qBuilder = require('./build_query');
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options = options || {};
-
-
   if (!options["vid"]) { return callback(new Error("Не задан ИД пользователя ВКонтакте"), null); }
 
-  var id = this.uuid.random();
+  var id = cdb.uuid.random();
 
   var fields = ["id", "vid"];
   var params = [id, options["vid"]];
@@ -27,9 +26,9 @@ module.exports = function(options, callback) { options = options || {};
   if (options["ismenu"])  { fields.push("ismenu");  params.push(options["ismenu"]); }
   if (options["gift1"])   { fields.push("gift1");  params.push(options["gift1"]); }
 
-  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERS);
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     options["id"] = id;

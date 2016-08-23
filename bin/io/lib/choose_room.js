@@ -4,7 +4,6 @@ var GameError = require('../../game_error'),
     checkInput = require('../../check_input'),
     constants = require('./../../constants'),
     defineSex = require('./define_sex'),
-    //createRoom = require('./create_room'),
     getRoomInfo = require('./get_room_info');
 
 var oPool = require('./../../objects_pool');
@@ -21,7 +20,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_CHOOSE_ROOM, function(options) {
-    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_CHOOSE_ROOM, socket, options)) { return; }
 
     async.waterfall([////////////////// Отбираем комнаты, в которых не хватает игроков
       function (cb) {

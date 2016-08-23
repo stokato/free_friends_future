@@ -1,6 +1,6 @@
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input'),
-  constants = require('./../../constants');
+var constants = require('./../../constants'),
+  GameError = require('../../game_error'),
+  checkInput = require('../../check_input');
 
 var oPool = require('./../../objects_pool');
 
@@ -9,7 +9,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_GET_MONEY, function(options) {
-    if (!checkInput(constants.IO_GET_MONEY, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_MONEY, socket, options)) { return; }
 
     oPool.userList[socket.id].getMoney(function (err, money) {
       if (err) {  return handError(err); }

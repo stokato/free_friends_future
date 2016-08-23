@@ -1,19 +1,22 @@
-var checkInput = require('./../../check_input');
 var constants = require('../../constants');
+
+var checkInput = require('./../../check_input');
 var GameError = require('./../../game_error');
 
-// Добавить ход игрока в очередь для обработки
-module.exports = function (socket, userList) {
-  socket.on(constants.IO_GAME, function(options) {
-    if (!checkInput(constants.IO_GAME, socket, userList, options)) { return; }
+var oPool = require('./../../objects_pool');
 
-    var selfProfile = userList[socket.id];
+// Добавить ход игрока в очередь для обработки
+module.exports = function (socket) {
+  socket.on(constants.IO_GAME, function(options) {
+    if (!checkInput(constants.IO_GAME, socket, options)) { return; }
+
+    var selfProfile = oPool.userList[socket.id];
     var uid = selfProfile.getID();
     var game = selfProfile.getGame();
 
     // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
     if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
-      if (!checkInput(game.gNextGame, socket, userList, options)) { return; }
+      if (!checkInput(game.gNextGame, socket, options)) { return; }
 
       // Если нет такого пользоателя среди кандидатов
       if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[options.pick]) {

@@ -6,8 +6,6 @@ function ObjectsPool () {
   this.profiles = {};                                  // Профили пользователей по id (надо бы убрать)
 }
 
-ObjectsPool.prototype.getPool = function() { return this; };
-
 var oPool = new ObjectsPool();
 
-module.exports = oPool.getPool();
+module.exports = oPool;

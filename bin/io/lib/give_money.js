@@ -1,15 +1,12 @@
-var async      =  require('async');
+var async       =  require('async');
 // Свои модули
-var profilejs  =  require('../../profile/index'),          // Профиль
-  GameError    = require('../../game_error'),
-  checkInput   = require('../../check_input'),
-  constants = require('./../../constants'),
-  //sanitize        = require('../../sanitizer'),
-  dbjs         = require('../../db/index');
+var constants   = require('./../../constants'),
+  profilejs     =  require('../../profile/index'),          // Профиль
+  GameError     = require('../../game_error'),
+  checkInput    = require('../../check_input'),
+  db            = require('../../db_manager');
 
-var dbManager = new dbjs();
-
-var oPool = require('./../../objects_pool');
+var oPool       = require('./../../objects_pool');
 
 /*
  Подарить монеты: объект с инф. о получателе (VID, еще что то?)
@@ -21,7 +18,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_GIVE_MONEY, function(options) {
-    if (!checkInput(constants.IO_GIVE_MONEY, socket, oPool.userList, options, oPool.serverProfile)) { return; }
+    if (!checkInput(constants.IO_GIVE_MONEY, socket, options)) { return; }
 
 
     async.waterfall([///////////////////////////////////////////////////////////////////

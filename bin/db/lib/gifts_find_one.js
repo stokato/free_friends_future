@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 
 /*
  Найти подарок пользователя по его id
@@ -12,9 +12,9 @@ module.exports = function(id, callback) {
   var constFields = ["id"];
   var constValues = [1];
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGIFTS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERGIFTS, constFields, constValues);
 
-  self.client.execute(query,[id], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[id], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var gifts = [];

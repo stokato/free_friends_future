@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, списко искомых полей
  - Проверка
@@ -30,9 +31,9 @@ module.exports = function(id, vid, f_list, callback) {
     fields.push(f_list[i]);
   }
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, [constraint], [1]);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, [constraint], [1]);
 
-  this.client.execute(query,param, {prepare: true }, function(err, result) {
+  cdb.client.execute(query,param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length > 0) {

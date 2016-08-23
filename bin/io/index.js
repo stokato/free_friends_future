@@ -4,7 +4,7 @@ var ios = require('socket.io-express-session');
 var initProfile       = require('./lib/init_profile');
 
 var session = require('./../../lib/session');
-var checkSession = require('./checkSession');
+//var checkSession = require('./checkSession');
 
 var oPool = require('./../objects_pool');
 
@@ -33,7 +33,7 @@ module.exports.listen = function(server, callback) {
 
   io.use(ios(session));
 
-  io.use(checkSession);
+  //io.use(checkSession);
 
   io.sockets.on('connection', function (socket) {
 

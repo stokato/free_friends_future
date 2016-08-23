@@ -1,19 +1,19 @@
 var async     =  require('async');
 
 // Свои модули
-var profilejs       = require('../../profile/index'), // Профиль
+var constants       = require('./../../constants'),
+    profilejs       = require('../../profile/index'), // Профиль
     GameError       = require('../../game_error'),
     //sanitize        = require('../../sanitizer'),
     checkInput      = require('../../check_input'),
     sendInRoom      = require('./send_in_room'),
     sendOne         = require('./send_one'),
-    genDateHistory  = require('./gen_date_history'),
-    constants       = require('./../../constants');
+    genDateHistory  = require('./gen_date_history');
+
+var cdb = require('./../../cassandra_db');
 
 var oPool = require('./../../objects_pool');
 
-var cassandra = require('cassandra-driver');
-var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassandra
 
 /*
  Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
@@ -25,7 +25,7 @@ var TimeUuid = cassandra.types.TimeUuid; // Генератор id для Cassand
  */
 module.exports = function (socket) {
   socket.on(constants.IO_MESSAGE, function(options) {
-    if (!checkInput(constants.IO_MESSAGE, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_MESSAGE, socket,  options)) { return; }
 
     //var f = constants.FIELDS;
     var selfProfile = oPool.userList[socket.id];
@@ -53,14 +53,14 @@ module.exports = function (socket) {
     if(!isChat) {
       var currRoom = oPool.roomList[socket.id];
 
-      info.messageid = TimeUuid.fromDate(date);
+      info.messageid = cdb.timeUuid.fromDate(date);
 
       return sendInRoom(socket, currRoom, info);
     }
 
     //options.id = sanitize(options.id);
 
-    if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, oPool.userList, options)){ return; }
+    if (!checkInput(constants.IO_PRIVATE_MESSAGE, socket, options)){ return; }
 
     async.waterfall([//////////////////////////////////////////////////////////////
       function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю

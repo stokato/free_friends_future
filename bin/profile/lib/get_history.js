@@ -1,17 +1,18 @@
 var constants = require('../../constants');
+var db = require('./../../db_manager');
+
 /*
 Получить историю приватного чата за заданный период времени
  */
 module.exports = function(options, callback) {
   var self = this;
-  //var f = constants.FIELDS;
 
   var params = {};
   params.id_list        = [options.id];
   params.first_date  = options.first_date;
   params.second_date = options.second_date;
 
-  self.dbManager.findMessages(self.pID, params, function(err, messages) {
+  db.findMessages(self.pID, params, function(err, messages) {
     if (err) { return callback(err, null); }
 
     messages = messages || [];

@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти все заказы пользователя: ИД
  - Проверка ИД
@@ -13,9 +14,9 @@ module.exports = function(userid, callback) {
   var constFields = ["userid"];
   var constValues = [1];
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_ORDERS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_ORDERS, constFields, constValues);
 
-  this.client.execute(query,[userid], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[userid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) { return callback(null, null); }

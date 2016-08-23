@@ -1,13 +1,11 @@
 var async      =  require('async');
+
 // Свои модули
-var profilejs  =  require('../../profile/index'),          // Профиль
+var constants = require('./../../constants'),
+  profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
-  constants = require('./../../constants'),
-  //sanitize        = require('../../sanitizer'),
-  dbjs         = require('../../db');
-
-var dbManager = new dbjs();
+  db         = require('../../db_manager');
 
 var oPool = require('./../../objects_pool');
 
@@ -20,7 +18,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_MAKE_GIFT, function(options) {
-    if (!checkInput(constants.IO_MAKE_GIFT, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_MAKE_GIFT, socket, options)) { return; }
 
     var selfProfile = oPool.userList[socket.id];
 
@@ -34,7 +32,7 @@ module.exports = function (socket) {
 
     async.waterfall([///////////////////////////////////////////////////////////////////
       function (cb) { // Ищем подарок в магазине
-        dbManager.findGood(options.giftid, function (err, gift) {
+        db.findGood(options.giftid, function (err, gift) {
           if (err) { return cb(err, null) }
 
           if (gift) {

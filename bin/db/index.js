@@ -1,13 +1,3 @@
-var cassandra = require('cassandra-driver');
-var async = require('async');
-var Config = require('../../config.json').cassandra; // Настойки доступа к БД
-// Клиент Кассанда
-var client = new cassandra.Client({contactPoints: [Config.host],
-  keyspace: Config.keyspace});
-
-var Uuid = cassandra.types.Uuid;  // Генератор id для Cassandra
-var TimeUuid = cassandra.types.TimeUuid;
-
 var addUser           = require('./lib/users_add'),
   findUser            = require('./lib/users_find'),
   findAllUsers        = require('./lib/users_find_all'),
@@ -57,9 +47,6 @@ var addUser           = require('./lib/users_add'),
  *                 - добавить, найти, удалить товар (магазин)
  */
 var DBManager = function() {
-  this.client = client;
-  this.uuid = Uuid;
-  this.timeUuid = TimeUuid;
 };
 
 DBManager.prototype.addUser           = addUser;

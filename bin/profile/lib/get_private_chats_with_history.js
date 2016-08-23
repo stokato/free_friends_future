@@ -1,4 +1,6 @@
 var constants = require('../../constants');
+var db = require('./../../db_manager');
+
 /*
  Получаем историю сообщений одного собеседника:
  - Читаем из БД
@@ -20,7 +22,7 @@ module.exports = function(options, callback) {
    params.first_date  = options.first_date;
    params.second_date = options.second_date;
 
-   self.dbManager.findMessages(self.pID, params, function(err, messages) { // Получаем историю
+   db.findMessages(self.pID, params, function(err, messages) { // Получаем историю
      if (err) { return callback(err, null); }
 
      messages = messages || [];

@@ -1,7 +1,8 @@
 var async = require('async');
 
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
  - Проверка ИД
@@ -9,8 +10,6 @@ var qBuilder = require('./build_query');
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var self = this;
-
   var companions = options.id_list || [];
   var firstDate =  options["first_date"];
   var secondDate = options["second_date"];
@@ -34,17 +33,17 @@ module.exports = function(uid, options, callback) { options = options || {};
       var params2 = params.slice(0);
       if (firstDate) {
         const_more = const_less = "id";
-        params2.push(self.timeUuid.fromDate(firstDate));
-        params2.push(self.timeUuid.fromDate(secondDate));
+        params2.push(cdb.timeUuid.fromDate(firstDate));
+        params2.push(cdb.timeUuid.fromDate(secondDate));
       }
 
       var constFields = ["userid", "companionid"];
       var constValues = [1, companions.length];
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERMESSAGES, constFields, constValues,
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS], constants.T_USERMESSAGES, constFields, constValues,
                                                                                                 const_more, const_less);
 
-      self.client.execute(query, params2, {prepare: true }, function(err, result) {
+      cdb.client.execute(query, params2, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
         var messages = [];
 
@@ -72,9 +71,9 @@ module.exports = function(uid, options, callback) { options = options || {};
       var constFields = ["userid", "companionid"];
       var constValues = [1, companions.length];
 
-      var query = qBuilder.build(qBuilder.Q_SELECT, [qBuilder.ALL_FIELDS], C.T_USERNEWMESSAGES, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS], constants.T_USERNEWMESSAGES, constFields, constValues);
 
-      self.client.execute(query, params, {prepare: true }, function(err, result) {
+      cdb.client.execute(query, params, {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
         var newMessages = [];
 
@@ -110,9 +109,9 @@ module.exports = function(uid, options, callback) { options = options || {};
       var constValues = [1, companions.length];
 
       //var query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
-      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERNEWMESSAGES, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERNEWMESSAGES, constFields, constValues);
 
-      self.client.execute(query, params, {prepare: true }, function(err) {
+      cdb.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err, null); }
 
         cb(null, messages);
@@ -122,7 +121,7 @@ module.exports = function(uid, options, callback) { options = options || {};
 
       var count = 0;
 
-      updateChat(self.client, uid, companions, count, function(err, res) {
+      updateChat(uid, companions, count, function(err, res) {
         if(err) { return cb(err, null); }
 
         cb(null, messages);
@@ -135,7 +134,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   })
 };
 
-function updateChat(db, uid, companions, count, callback) { // Сбрасываем в чатах флаг - есть новые
+function updateChat(uid, companions, count, callback) { // Сбрасываем в чатах флаг - есть новые
   //var query = "update user_chats set isnew = ? where userid = ? and companionid = ?";
   //var f = C.IO.FIELDS;
 
@@ -143,16 +142,16 @@ function updateChat(db, uid, companions, count, callback) { // Сбрасыва�
   var constFields = ["userid", "companionid"];
   var constValues = [1, 1];
 
-  var query = qBuilder.build(qBuilder.Q_UPDATE, fields, C.T_USERCHATS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, constants.T_USERCHATS, constFields, constValues);
   var params = [false, uid, companions[count]];
 
-  db.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err, null); }
 
     count++;
 
     if(count < companions.length) {
-      updateChat(db, uid, companions, count, callback);
+      updateChat(uid, companions, count, callback);
     } else {
       callback(null, null);
     }

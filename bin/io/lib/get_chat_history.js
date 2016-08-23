@@ -1,16 +1,16 @@
 var async         = require('async');
-var profilejs     =  require('../../profile/index'),
+
+var constants       = require('./../../constants'),
+  profilejs     =  require('../../profile/index'),
   GameError       = require('../../game_error'),
   checkInput      = require('../../check_input'),
-  sendOne         = require('./send_one'),
-  //sanitize        = require('../../sanitizer'),
-  constants       = require('./../../constants') ;
+  sendOne         = require('./send_one');
 
 var oPool = require('./../../objects_pool');
 
 module.exports = function(socket) {
   socket.on(constants.IO_GET_CHAT_HISTORY, function(options) {
-    if (!checkInput(constants.IO_GET_CHAT_HISTORY, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_CHAT_HISTORY, socket, options)) { return; }
 
     //options.id = sanitize(options.id);
 

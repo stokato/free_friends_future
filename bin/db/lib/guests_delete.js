@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 /*
  Удалить всех гостей игрока: ИД
  - Проверка на ИД
@@ -14,9 +14,9 @@ module.exports = function(uid, callback) {
   var constFields = ["userid"];
   var constValues = [1];
 
-  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERGUESTS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERGUESTS, constFields, constValues);
 
-  this.client.execute(query, [uid], {prepare: true }, function(err) {
+  cdb.client.execute(query, [uid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, uid);

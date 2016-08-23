@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var buildQuery = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
  - Провека: все поля
@@ -17,10 +17,10 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
-  var id = this.uuid.random();
+  var id = cdb.uuid.random();
 
   var fields = ["id", "userid", "giftid", "type", "src", "date", "title", "fromid", "fromvid"];
-  var query = buildQuery.build(buildQuery.Q_INSERT, fields, C.T_USERGIFTS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGIFTS);
 
   var params = [];
   params.push(id);
@@ -33,7 +33,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   params.push(options["fromid"]);
   params.push(options["fromvid"]);
 
-  this.client.execute(query, params, { prepare: true },  function(err) {
+  cdb.client.execute(query, params, { prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     options.gid = id.toString();

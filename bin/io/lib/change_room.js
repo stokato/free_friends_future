@@ -6,7 +6,6 @@ var GameError = require('../../game_error'),      // Ошибки
     defineSex = require ('./define_sex'),
     createRoom = require('./create_room'),
     getLastMessages = require('./get_last_messages'),
-    //sanitize        = require('../../sanitizer'),
     getRoomInfo = require('./get_room_info'),
     sendUsersInRoom = require('./send_users_in_room');
 
@@ -28,7 +27,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_CHANGE_ROOM, function(options) {
-    if (!checkInput(constants.IO_CHANGE_ROOM, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_CHANGE_ROOM, socket, options)) { return; }
 
     if(!oPool.rooms[options.room] && options.room != constants.NEW_ROOM) {
       return handError(constants.errors.NO_SUCH_ROOM);

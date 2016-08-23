@@ -1,7 +1,9 @@
-var constants = require('../../../constants');
 var async = require('async');
-var profilejs  =  require('../../../profile/index');
+
+var constants = require('../../../constants');
 var GameError = require('./../../../game_error');
+var profilejs  =  require('../../../profile/index');
+
 
 // Карты, ждем, кода все ответят, потом показываем ответы и где золото
 module.exports = function(game) {

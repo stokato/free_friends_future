@@ -1,13 +1,12 @@
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input'),
-  //sanitize        = require('../../sanitizer'),
-  constants = require('./../../constants');
+var constants = require('./../../constants'),
+  GameError = require('../../game_error'),
+  checkInput = require('../../check_input');
 
 var oPool = require('./../../objects_pool');
 
 module.exports = function(socket) {
   socket.on(constants.IO_CLOSE_PRIVATE_CHAT, function(options) {
-    if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_CLOSE_PRIVATE_CHAT, socket, options)) { return; }
 
     var selfProfile = oPool.userList[socket.id];
 

@@ -1,30 +1,33 @@
 var validator = require('validator');
+var md5 = require('md5');
 
-var GameError = require('./game_error');
 var constants = require('./constants');
 var sanitize        = require('./sanitizer');
+var GameError = require('./game_error');
 
-var md5 = require('md5');
+var oPool = require('./objects_pool');
 
 var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
 var ID_LEN = 36;
 
-function checkInput(em, socket, userList, options, serverProfile) {
 
-  // Подключение сервера
-  if(serverProfile && socket.id == serverProfile.id) {
-    return true;
-  }
+
+function checkInput(em, socket, options) {
+
+  //// Подключение сервера
+  //if(serverProfile && socket.id == serverProfile.id) {
+  //  return true;
+  //}
 
 
   // Попытка повторного подключения
-  if(em == constants.IO_INIT && userList[socket.id] ) {
+  if(em == constants.IO_INIT && oPool.userList[socket.id] ) {
     handError(constants.errors.NO_AUTH, em);
     return false;
   }
 
   // Такого пользователя нет
-  if(em != constants.IO_INIT && !userList[socket.id] ) {
+  if(em != constants.IO_INIT && !oPool.userList[socket.id] ) {
     handError(constants.errors.NO_AUTH, em);
     return false;
   }
@@ -36,7 +39,7 @@ function checkInput(em, socket, userList, options, serverProfile) {
   }
 
   // Проверка подписи
-  if(!checkAuth(em, socket, userList, options)) {
+  if(!checkAuth(em, socket, options)) {
     handError(constants.errors.NO_AUTH, em);
     return false;
   }
@@ -315,7 +318,7 @@ function checkOptionsType(options) {
   return true;
 }
 
-function checkAuth(em, socket, userList, options) {
+function checkAuth(em, socket, options) {
   if(em == constants.IO_INIT) {
     if(("auth_key" in options) == false) {
       new GameError(socket, em, "Отсутствует подпись запроса");
@@ -323,7 +326,7 @@ function checkAuth(em, socket, userList, options) {
     } else if (em == constants.IO_INIT) {
       return compareAuthKey(options.vid);
     } else {
-      var vid = userList[socket.id].getVID();
+      var vid = oPool.userList[socket.id].getVID();
       return compareAuthKey(vid);
     }
   } else {

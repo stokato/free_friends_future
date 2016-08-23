@@ -1,16 +1,16 @@
 var async     =  require('async');
-var cassandra = require('cassandra-driver');
+
 // Свои модули
-var addEmits  =  require('./add_emits');
-var profilejs =  require('../../profile/index'),          // Профиль
-    GameError = require('../../game_error'),
-    checkInput = require('../../check_input'),
-    autoPlace = require('./auto_place_in_room'),
-    getRoomInfo = require('./get_room_info'),
+var constants       = require('./../../constants'),
+    profilejs       =  require('../../profile/index'),          // Профиль
+    GameError       = require('../../game_error'),
+    checkInput      = require('../../check_input'),
+    autoPlace       = require('./auto_place_in_room'),
+    getRoomInfo     = require('./get_room_info'),
     getLastMessages = require('./get_last_messages'),
-    genDateHistory = require('./gen_date_history'),
+    genDateHistory  = require('./gen_date_history'),
     sendUsersInRoom = require('./send_users_in_room'),
-    constants = require('./../../constants');
+    addEmits        =  require('./add_emits');
 
 var oPool = require('./../../objects_pool');
 
@@ -25,7 +25,7 @@ var oPool = require('./../../objects_pool');
  */
 module.exports = function (socket) {
   socket.on(constants.IO_INIT, function(options) {
-    if (!checkInput(constants.IO_INIT, socket, oPool.userList, options)) { return ; }
+    if (!checkInput(constants.IO_INIT, socket, options)) { return ; }
 
     async.waterfall([///////////////////////////////////////////////////////////
       function(cb) { // Сохраняем в сессию признак пройденной авторизации

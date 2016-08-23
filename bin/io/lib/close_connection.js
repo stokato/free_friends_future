@@ -1,9 +1,9 @@
 var async     =  require('async');
 
 var GameError = require('../../game_error'),      // Ошбики
-    checkInput = require('../../check_input'),    // Верификация
+    //checkInput = require('../../check_input'),    // Верификация
     constants = require('./../../constants'),     // Константы
-  getRoomInfo = require('./get_room_info'),
+    getRoomInfo = require('./get_room_info'),
     defineSex = require('./define_sex'),
     sendUsersInRoom = require('./send_users_in_room');
 

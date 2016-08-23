@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти гостей пользователя: ИД игрока
  - Проверка ИД
@@ -16,9 +17,9 @@ module.exports = function(uid, callback) {
   var constValues = [1];
 
   //var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERGUESTS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERGUESTS, constFields, constValues);
 
-  self.client.execute(query,[uid], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var guests = [];
@@ -46,9 +47,9 @@ module.exports = function(uid, callback) {
       var constValues = [rowsLen];
 
       //var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
-      var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERS, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, constFields, constValues);
 
-      self.client.execute(query, guestList, {prepare: true }, function(err, result) {
+      cdb.client.execute(query, guestList, {prepare: true }, function(err, result) {
         if (err) { return callback(err, null); }
 
         // Сопоставляем результаты

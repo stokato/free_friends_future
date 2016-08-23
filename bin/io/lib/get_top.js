@@ -1,10 +1,8 @@
-var dbjs       = require('./../../db/index'),                // База
+var constants  = require('./../../constants'),
+    db         = require('./../../db_manager'),                // База
     GameError  = require('./../../game_error'),
     checkInput = require('./../../check_input'),
-    profilejs  = require('../../profile/index'),
-    constants  = require('./../../constants');
-
-var db = new dbjs();
+    profilejs  = require('../../profile/index');
 
 /////////////////////////// ТОП ИГРОКОВ ///////////////////////////////////////////////////////////
 /*

@@ -1,4 +1,5 @@
 var constants = require('../../constants');
+var db = require('./../../db_manager');
 /*
  Инициализируем профиль
  - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
@@ -15,7 +16,7 @@ module.exports = function(id, callback) {
  if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
 
  var fList = ["sex", "points", "status", "country", "city", "age", "ismenu", "gift1"];
- self.dbManager.findUser(self.pID, null, fList, function(err, foundUser) {
+ db.findUser(self.pID, null, fList, function(err, foundUser) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
 
@@ -35,7 +36,7 @@ module.exports = function(id, callback) {
    self.pMoney       = foundUser.money       || 0;
 
    if(foundUser.gift1) {
-     self.dbManager.findGift(foundUser.gift1, function(err, gift) {
+     db.findGift(foundUser.gift1, function(err, gift) {
        if (err) { return  callback(err, null); }
 
        self.pGift1 = gift || null;

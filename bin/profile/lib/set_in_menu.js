@@ -1,4 +1,6 @@
 var constants = require('../../constants');
+var db = require('./../../db_manager');
+
 /*
  Устанавливаем свойство - есть в меню
  - Сначала в БД и если успешно
@@ -16,7 +18,7 @@ module.exports = function(isInMenu, callback) {
   options.vid = self.pVID;
   options.ismenu = isInMenu;
 
-  self.dbManager.updateUser(options, function(err) {
+  db.updateUser(options, function(err) {
     if (err) {return callback(err, null); }
 
     self.pIsInMenu = isInMenu;

@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Найти все товары: ИД
  - Проверка ИД
@@ -13,9 +14,9 @@ module.exports = function(goodid, callback) {
   var constFields = ["id"];
   var constValues = [1];
 
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_SHOP, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_SHOP, constFields, constValues);
 
-  this.client.execute(query,[goodid], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[goodid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) { return callback(null, null); }

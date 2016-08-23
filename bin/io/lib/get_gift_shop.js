@@ -1,11 +1,10 @@
-var dbjs      = require('./../../db/index'),
+var constants = require('./../../constants'),
+    db      = require('./../../db_manager'),
     GameError = require('./../../game_error'),
-    checkInput = require('./../../check_input'),
-    constants = require('./../../constants');
+    checkInput = require('./../../check_input');
 
 var oPool = require('./../../objects_pool');
 
-var db = new dbjs();
 /*
  Получить магазин с подарками
  - Получаем все возможные подарки из базы
@@ -13,7 +12,7 @@ var db = new dbjs();
  */
 module.exports = function (socket) {
   socket.on(constants.IO_GET_GIFT_SHOP, function(options) {
-    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_GIFT_SHOP, socket, options)) { return; }
 
     db.findAllGoods(constants.GT_GIFT, function (err, goods) {
       if (err) { return handError(err); }

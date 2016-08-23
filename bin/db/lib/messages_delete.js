@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Удалить все сообщения игрока: ИД
  - Проверка на ИД
@@ -8,8 +9,6 @@ var qBuilder = require('./build_query');
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-  var self = this;
-
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   // Отбираем сообщения
@@ -18,9 +17,9 @@ module.exports = function(uid, callback) {
   var constValues = [1];
 
   //var query = "select companionid FROM user_chats where userid = ?";
-  var query = qBuilder.build(qBuilder.Q_SELECT, fields, C.T_USERCHATS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERCHATS, constFields, constValues);
 
-  self.client.execute(query,[uid], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     var params = [];
@@ -34,9 +33,9 @@ module.exports = function(uid, callback) {
     var constValues = [1, result.rows.length];
 
     //var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
-    query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERMESSAGES, constFields, constValues);
+    query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERMESSAGES, constFields, constValues);
 
-    self.client.execute(query, params, {prepare: true }, function(err) {
+    cdb.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       // Удаляем чат
@@ -44,9 +43,9 @@ module.exports = function(uid, callback) {
       var constFields = ["userid"];
       var constValues = [1];
 
-      var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERCHATS, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERCHATS, constFields, constValues);
 
-      self.client.execute(query, [uid], {prepare: true }, function(err) {
+      cdb.client.execute(query, [uid], {prepare: true }, function(err) {
         if (err) {  return callback(err); }
 
         callback(null, uid);

@@ -1,13 +1,13 @@
-var GameError = require('../../game_error'),
-  checkInput = require('../../check_input'),
-  constants = require('./../../constants');
+var constants = require('./../../constants'),
+  GameError = require('../../game_error'),
+  checkInput = require('../../check_input');
 
 var oPool = require('./../../objects_pool');
 
 // Добавляем лайк к треку
 module.exports = function(socket) {
   socket.on(constants.IO_LIKE_TRACK, function(options) {
-    if (!checkInput(constants.IO_LIKE_TRACK, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_LIKE_TRACK, socket, options)) { return; }
 
     var room = oPool.roomList[socket.id];
     var selfProfile = oPool.userList[socket.id];

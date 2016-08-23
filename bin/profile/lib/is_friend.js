@@ -3,10 +3,11 @@
  */
 
 var constants = require('./../../constants');
+var db = require('./../../db_manager');
 
 module.exports = function(usersID, callback) {
   var self = this;
-  self.dbManager.findFriends(self.pID, usersID, function(err, friends) {
+  db.findFriends(self.pID, usersID, function(err, friends) {
     if (err) { return callback(err, null); }
 
     //var result = {};

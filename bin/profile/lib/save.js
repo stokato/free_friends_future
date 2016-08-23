@@ -1,4 +1,5 @@
 var constants = require('../../constants');
+var db = require('./../../db_manager');
 /*
  Сохраняем профиль в БД
  */
@@ -24,7 +25,7 @@ module.exports = function(callback) {
  }
 
 
-  self.dbManager.updateUser(options, function(err, id) {
+  db.updateUser(options, function(err, id) {
    if (err) { return callback(err, null); }
 
    callback(null, id);

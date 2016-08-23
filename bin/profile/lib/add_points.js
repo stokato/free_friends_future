@@ -1,5 +1,7 @@
 var async = require('async');
+
 var constants = require('../../constants');
+var db = require('./../../db_manager');
 /*
  Добавляем очки пользователю
  - Сначала в БД и если успешно
@@ -22,7 +24,7 @@ module.exports = function(num, callback) {
       options.vid = self.pVID;
       options.points = self.pPoints + num;
 
-      self.dbManager.updateUser(options, function(err) {
+      db.updateUser(options, function(err) {
         if (err) {return cb(err, null); }
 
         cb(null, null);
@@ -35,7 +37,7 @@ module.exports = function(num, callback) {
         options.sex = self.pSex;
       //options[f.uid] = self.pID;
       options.points = self.pPoints + num;
-      self.dbManager.addPoints(options, function(err) {
+      db.addPoints(options, function(err) {
         if(err) { return cb(err, null); }
 
         self.pPoints += num;

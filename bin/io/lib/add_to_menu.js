@@ -1,14 +1,14 @@
-var GameError = require('../../game_error'),              // Ошибки
-  checkInput = require('../../check_input'),            // Верификация
-  constants  = require('../../constants');
-
 var async = require('async');
+
+var constants  = require('../../constants'),
+  GameError = require('../../game_error'),              // Ошибки
+  checkInput = require('../../check_input');            // Верификация
 
 var oPool = require('./../../objects_pool');
 
 module.exports = function(socket) {
   socket.on(constants.IO_ADD_TO_MENU, function(options) {
-    if (!checkInput(constants.IO_ADD_TO_MENU, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_ADD_TO_MENU, socket, options)) { return; }
 
     var selfProfile = oPool.userList[socket.id];
 

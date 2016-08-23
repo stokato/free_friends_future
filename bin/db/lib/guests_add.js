@@ -1,5 +1,5 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
 /*
  Добавить гостя в БД: ИД, объект с данными гостя
  - Проверка (все поля обязательны)
@@ -14,11 +14,11 @@ module.exports = function(uid, options, callback) { options = options || {};
   }
 
   var fields = ["userid", "guestid", "guestvid", "date"];
-  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_USERGUESTS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGUESTS);
 
   var params = [uid, options.guestid, options.guestvid, options.date ];
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     callback(null, options);

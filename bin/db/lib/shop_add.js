@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -14,14 +15,14 @@ module.exports = function(options, callback) { options    = options || {};
     return callback(new Error("Не указаны необходимые поля товара"), null);
   }
 
-  var id = this.uuid.random();
+  var id = cdb.uuid.random();
 
   var fields = ["id", "title", "price", "src", "type", "goodtype"];
-  var query = qBuilder.build(qBuilder.Q_INSERT, fields, C.T_SHOP);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_SHOP);
 
   var params = [id, options["title"], options["price"], options["src"], options["type"], options["goodtype"]];
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     options["id"] = id;

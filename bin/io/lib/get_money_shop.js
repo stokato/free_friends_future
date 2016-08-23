@@ -1,11 +1,10 @@
-var dbjs      = require('./../../db/index'),
+var db      = require('./../../db_manager'),
   GameError = require('./../../game_error'),
   checkInput = require('./../../check_input'),
   constants = require('./../../constants');
 
 var oPool = require('./../../objects_pool');
 
-var db = new dbjs();
 /*
  Получить денежные лоты для пополнения счета пользователя
  - Получаем все возможные лоты из базы
@@ -13,7 +12,7 @@ var db = new dbjs();
  */
 module.exports = function (socket) {
   socket.on(constants.IO_GET_MONEY_SHOP, function(options) {
-    if (!checkInput(constants.IO_GET_MONEY_SHOP, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_GET_MONEY_SHOP, socket, options)) { return; }
 
     db.findAllGoods(constants.GT_MONEY, function (err, goods) {
       if (err) {  return handError(err);  }

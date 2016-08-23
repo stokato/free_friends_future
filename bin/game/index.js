@@ -1,4 +1,5 @@
 var constants             = require('../constants');
+var db = require ('./../db_manager');
 
 var logger = require('./../../lib/log')(module);
 
@@ -32,9 +33,6 @@ var hStart                  = require('./lib/handlers/h_start'),
     hPrison                 = require('./lib/handlers/h_prison');
 
 var oPool = require('./../objects_pool');
-
-var db                    = require('./../db/index.js'),
-  dbManager = new db();
 
 var gameQuestions = [];
 /**
@@ -116,7 +114,7 @@ getQuestionsFromDB();
 
 // --------------------
 function getQuestionsFromDB() {
-  dbManager.findAllQuestions(function(err, questions) {
+  db.findAllQuestions(function(err, questions) {
     if(err) {
       return logger.error(400, "Ошибка при получении вопросов из базы данных");
        //console.log("Ошибка при получении вопросов из базы данных");

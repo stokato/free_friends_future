@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Удаляем пользователя: ИД
  - Проверка на ИД
@@ -8,9 +9,9 @@ var qBuilder = require('./build_query');
 module.exports = function(id, callback) {
   if (!id) { callback(new Error("Задан пустой Id")); }
 
-  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_USERS, ["id"], [1]);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERS, ["id"], [1]);
 
-  this.client.execute(query, [id], {prepare: true }, function(err) {
+  cdb.client.execute(query, [id], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, id);

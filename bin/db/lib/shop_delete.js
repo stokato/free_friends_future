@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var qBuilder = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Удалить товар из БД: ИД
  - Проверка на ИД
@@ -12,9 +13,9 @@ module.exports = function(goodid, callback) {
   var constFields = ["id"];
   var constValues = [1];
 
-  var query = qBuilder.build(qBuilder.Q_DELETE, [], C.T_SHOP, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_SHOP, constFields, constValues);
 
-  this.client.execute(query, [goodid], {prepare: true }, function(err) {
+  cdb.client.execute(query, [goodid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, goodid);

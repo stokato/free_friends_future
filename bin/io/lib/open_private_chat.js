@@ -1,17 +1,17 @@
 var async           = require('async');
-var profilejs       = require('../../profile/index'),
+
+var constants       = require('./../../constants'),
+  profilejs       = require('../../profile/index'),
   GameError       = require('../../game_error'),
   checkInput      = require('../../check_input'),
   genDateHistory  = require('./gen_date_history'),
-  sendOne         = require('./send_one'),
-  //sanitize        = require('../../sanitizer'),
-  constants       = require('./../../constants');
+  sendOne         = require('./send_one');
 
 var oPool = require('./../../objects_pool');
 
 module.exports = function(socket) {
   socket.on(constants.IO_OPEN_PRIVATE_CHAT, function(options) {
-    if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket, oPool.userList, options)) { return; }
+    if (!checkInput(constants.IO_OPEN_PRIVATE_CHAT, socket,  options)) { return; }
 
     //options.id = sanitize(options.id);
 

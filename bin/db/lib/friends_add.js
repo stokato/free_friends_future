@@ -1,5 +1,6 @@
-var C = require('../../constants');
-var buildQuery = require('./build_query');
+var constants = require('../../constants');
+var cdb = require('./../../cassandra_db');
+
 /*
  Добавить друга в БД: ИД, объект с данными друга
  - Проверка (все поля обязательны)
@@ -16,9 +17,9 @@ module.exports = function(uid, friend, callback) { friend = friend || {};
   var fields = ["userid", "friendid", "friendvid", "date"];
   var params = [uid, friend["friendid"], friend["friendvid"], friend["date"]];
 
-  var query = buildQuery.build(buildQuery.Q_INSERT, fields, C.T_USERFRIENDS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERFRIENDS);
 
-  this.client.execute(query, params, {prepare: true },  function(err) {
+  cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     callback(null, friend);

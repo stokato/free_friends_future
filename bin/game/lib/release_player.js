@@ -1,13 +1,15 @@
-var checkInput = require('./../../check_input');
 var constants = require('../../constants');
+var checkInput = require('./../../check_input');
 var GameError = require('./../../game_error');
 
-// Освободить игрока из темницы
-module.exports = function (socket, userList) {
-  socket.on(constants.IO_RELEASE_PLAYER, function(options) {
-    if (!checkInput(constants.IO_RELEASE_PLAYER, socket, userList, options)) { return; }
+var oPool = require('./../../objects_pool');
 
-    var selfProfile = userList[socket.id];
+// Освободить игрока из темницы
+module.exports = function (socket) {
+  socket.on(constants.IO_RELEASE_PLAYER, function(options) {
+    if (!checkInput(constants.IO_RELEASE_PLAYER, socket, options)) { return; }
+
+    var selfProfile = oPool.userList[socket.id];
     var game = selfProfile.getGame();
     var prisonerInfo = game.getPrisonerInfo();
 

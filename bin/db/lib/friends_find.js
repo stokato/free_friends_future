@@ -49,7 +49,7 @@ module.exports = function(uid, friendsID, callback) {
         };
 
         friends.push(friend);
-        friendList.push(friend["id"]);
+        friendList.push(friend["id"].toString());
       }
 
       // Отбираем сведения по всем друзьям

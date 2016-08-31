@@ -20,7 +20,8 @@ module.exports = function () {
     guys_counter : 2,
     track_list : [],
     likers : {},
-    dislikers : {}
+    dislikers : {},
+    trackTime : null
   };
   newRoom.game = new gamejs(newRoom);
   return newRoom;

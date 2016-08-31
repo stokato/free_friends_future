@@ -118,6 +118,13 @@ module.exports = function (socket) {
         newRoom.game.start(socket);
 
         socket.emit(constants.IO_CHANGE_ROOM, { operation_status : constants.RS_GOODSTATUS });
+
+        if(newRoom.track_list.length > 0) {
+          var passedTime = Math.round((new Date() - room.trackTime) * 0.001);
+          var trackInfo = { track : newRoom.track_list[0], passed_time : passedTime };
+          socket.emit(constants.IO_START_TRACK, trackInfo);
+        }
+
       });
 
       //socket.broadcast.in(newRoom.name).emit(constants.IO_ROOM_USERS, info);

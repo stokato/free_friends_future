@@ -121,6 +121,14 @@ module.exports = function (socket) {
 
         cb(null, info, room);
       }, //////////////////////////////////////////////////////////////////
+      function(info, room, cb) { // Запускаем трек
+        if(room.track_list.length > 0) {
+          var passedTime = Math.round((new Date() - room.trackTime) * 0.001);
+          var trackInfo = { track : room.track_list[0], passed_time : passedTime };
+          socket.emit(constants.IO_START_TRACK, trackInfo);
+        }
+        cb(null, info, room);
+      }, //////////////////////////////////////////////////////////////////
       function (info, room, cb) { // Получаем данные по приватным чатам
         var secondDate = new Date();
         var firstDate = genDateHistory(secondDate);

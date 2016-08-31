@@ -33,13 +33,13 @@ module.exports = function(info, selfId, callback) {
           var j;
           for(j = 0; j < newInfo.guys.length; j++) {
             if(friends[i].id == newInfo.guys[j].id) {
-              newInfo.guys[j].is_friend = true;
+              newInfo.guys[j].is_friend = friends[i].isFriend;
             }
           }
 
           for(j = 0; j < newInfo.girls.length; j++) {
             if(friends[i].id == newInfo.girls[j].id) {
-              newInfo.girls[j].is_friend = true;
+              newInfo.girls[j].is_friend = friends[i].isFriend;
             }
           }
         }

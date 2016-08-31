@@ -100,6 +100,7 @@ module.exports.IO_ADD_TRECK           = 'add_track';
 module.exports.IO_GET_TRACK_LIST      = 'get_track_list';
 module.exports.IO_LIKE_TRACK          = 'like_track';
 module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
+module.exports.IO_START_TRACK         = 'start_track';
 
 
 // Игры

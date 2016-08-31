@@ -32,6 +32,7 @@ function fillInfo(profile) {
   info.country = profile.getCountry();
   info.points  = profile.getPoints();
   info.is_friend = false;
+  info.index  = profile.getGameIndex();
 
   var gift = profile.getGift1();
 

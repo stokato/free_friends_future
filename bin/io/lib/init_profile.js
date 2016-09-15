@@ -10,6 +10,7 @@ var constants       = require('./../../constants'),
     getLastMessages = require('./get_last_messages'),
     genDateHistory  = require('./gen_date_history'),
     sendUsersInRoom = require('./send_users_in_room'),
+    setGiftTimeout = require('./set_gift_timeout'),
     addEmits        =  require('./add_emits');
 
 var oPool = require('./../../objects_pool');
@@ -74,34 +75,51 @@ module.exports = function (socket) {
           autoPlace(socket, function (err, room) {
             if (err) { return cb(err, null); }
 
-            cb(null, info, room);
+            cb(null, info, room, selfProfile);
           });
         } else {
           var room = oPool.roomList[socket.id];
           info.game = room.game.getGameState(); // Получаем состояние игры в комнате
           socket.join(room.name);
 
-          cb(null, info, room);
+          cb(null, info, room, selfProfile);
         }
       },///////////////////////////////////////////////////////////////
-      function (info, room, cb) { // Получаем данные по игрокам в комнате (для стола)
+      function (info, room, selfProfile, cb) { // Получаем данные по игрокам в комнате (для стола)
         getRoomInfo(room, function (err, roomInfo) {
           if (err) { return cb(err, null); }
 
           info.room = roomInfo;
 
-          //socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
-          sendUsersInRoom(roomInfo, info.id, function(err, roomInfo) {
-            if(err) { return cb(err); }
+          if(info.gift1) {
+            var currDate = new Date();
+            var giftDate = new Date(info.gift1.date);
+            if(currDate >= giftDate) {
+              selfProfile.clearGiftInfo(function() {
+                info.gift1 = null;
 
-            info.room = roomInfo;
-
-            room.game.start(socket);
-
-            cb(null, info, room);
-          });
+                cb(null, info, room, roomInfo);
+              });
+            } else {
+              cb(null, info, room, roomInfo);
+            }
+          } else {
+            cb(null, info, room, roomInfo);
+          }
         });
       },///////////////////////////////////////////////////////////////
+      function(info, room, roomInfo, cb) {
+        //socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+        sendUsersInRoom(roomInfo, info.id, function(err, roomInfo) {
+          if(err) { return cb(err); }
+
+          info.room = roomInfo;
+
+          room.game.start(socket);
+
+          cb(null, info, room);
+        });
+      },//////////////////////////////////////////////////////////////
       function(info, room, cb) {  // Уведомляем всех о входе пользователя
 
         var online = {

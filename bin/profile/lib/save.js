@@ -22,6 +22,8 @@ module.exports = function(callback) {
  options.newguests   = self.pNewGuests;
  if(self.pGift1) {
    options.gift1     = self.pGift1.gid;
+ } else {
+   options.gift1      = null;
  }
 
 

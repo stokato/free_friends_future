@@ -6,6 +6,8 @@ var md5 = require('md5');
 
 var constants = require('./constants');
 
+var oPool = require('./objects_pool');
+
 //var secret_key = "hiUl8U4F9q3BcbAl28va"; // Защищенный ключ приложения
 function VK () {
 
@@ -156,8 +158,10 @@ function changeOrderStatus(request, profiles, callback) {
           cb(null, goodInfo, info, orderid);
         });
       }, ///////////////////////////////////////////////////////////////////////////////
-      function(goodInfo, info, orderid, cb) { // пополняем баланс, себе или другому пользователю
+      function(goodInfo, selfInfo, orderid, cb) { // пополняем баланс, себе или другому пользователю
         var options = {};
+        options.from_id = selfInfo.id;
+        options.from_vid = selfInfo.vid;
 
         if(payInfo[1]) {
           db.findUser(null, payInfo[1], ["money"], function(err, info) {
@@ -177,7 +181,14 @@ function changeOrderStatus(request, profiles, callback) {
                 //socket.emit('give_money', options);
 
                 if(profiles[options.id]) {
-                  profiles[options.id].getSocket().emit('give_money', options);
+                  var socket = profiles[options.id].getSocket();
+                  socket.emit('give_money', options);
+
+                  var roomList = oPool.roomList;
+                  var room = roomList[socket.id];
+                  if(room) {
+                    socket.broadcast.in(room.name).emit('give_money', options);
+                  }
                 }
 
                 var result = {};
@@ -187,9 +198,9 @@ function changeOrderStatus(request, profiles, callback) {
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options.id = info.id;
-          options.vid = info.vid;
-          options.money = info.money + goodInfo.price2;
+          options.id = selfInfo.id;
+          options.vid = selfInfo.vid;
+          options.money = selfInfo.money + goodInfo.price2;
 
           db.updateUser(options, function(err, id) {
             if (err) { return cb(err, null); }

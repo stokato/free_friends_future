@@ -5,6 +5,8 @@ var constants = require('./../../constants'),
   profilejs  =  require('../../profile/index'),          // Профиль
   GameError    = require('../../game_error'),
   checkInput   = require('../../check_input'),
+  getRoomInfo     = require('./get_room_info'),
+  setGiftTimeout = require('./set_gift_timeout'),
   db         = require('../../db_manager');
 
 var oPool = require('./../../objects_pool');
@@ -140,6 +142,9 @@ module.exports = function (socket) {
         }
 
         friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+
+        setGiftTimeout(friendProfile.getID());
+
       }
     }); // waterfall
 

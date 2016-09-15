@@ -29,6 +29,9 @@ module.exports.MENU_BONUS = 5;
 // Цена подарка
 module.exports.GIFT_MONEY = 10;
 
+// Длительность отображения подарка на аве
+module.exports.GIFT_TIMEOUT = 120 * 1000; // 1800 *
+
 // Типы товаров
 module.exports.GT_GIFT = "gift";
 module.exports.GT_MONEY = "money";

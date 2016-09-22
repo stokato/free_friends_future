@@ -75,9 +75,6 @@ module.exports = function (socket) {
     newRoom[sex.len]++;
 
     selfProfile.setGame(newRoom.game);
-    var index = newRoom[sex.counter];
-    selfProfile.setGameIndex(index);
-    newRoom[sex.counter] += 2;
 
     oPool.roomList[socket.id] = newRoom;
 
@@ -89,28 +86,20 @@ module.exports = function (socket) {
       delete oPool.rooms[currRoom.name];
       isCurrRoom = false;
     }
+    currRoom[sex.indexes].push(selfProfile.getGameIndex());
+  
+    var indexes = newRoom[sex.indexes];
+    indexes.sort(function (i1, i2) { return i1 - i2; });
+    selfProfile.setGameIndex(indexes[0]);
+    indexes.splice(0, 1);
 
     getRoomInfo(newRoom, function (err, info) {
       if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
-
-      //var message = {};
-      //message.id      = selfProfile.getID();
-      //message.vid     = selfProfile.getVID();
-      //message.age     = selfProfile.getAge();
-      //message.sex     = selfProfile.getSex();
-      //message.city    = selfProfile.getCity();
-      //message.country = selfProfile.getCountry();
-      //message.points  = selfProfile.getPoints();
-
-      //socket.broadcast.in(currRoom.name).emit('leave', message);
+      
 
       socket.leave(currRoom.name);
       socket.join(newRoom.name);
-
-      //socket.broadcast.in(newRoom.name).emit('join', message);
-
-      //socket.emit(constants.IO_CHANGE_ROOM, info);
-
+      
 
       sendUsersInRoom(info, null, function(err, res) {
         if(err) { return handError(err) }
@@ -126,11 +115,7 @@ module.exports = function (socket) {
         }
 
       });
-
-      //socket.broadcast.in(newRoom.name).emit(constants.IO_ROOM_USERS, info);
-      //socket.emit(constants.IO_ROOM_USERS, info);
-
-      //newRoom.game.start(socket);
+      
 
       if(isCurrRoom) {
         getRoomInfo(currRoom, function(err, currRoomInfo) {
@@ -141,7 +126,6 @@ module.exports = function (socket) {
 
           });
 
-          //socket.broadcast.in(currRoom.name).emit(constants.IO_ROOM_USERS, currRoomInfo);
         });
       }
     });

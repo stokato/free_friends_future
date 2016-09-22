@@ -39,10 +39,10 @@ function checkInput(em, socket, options) {
   }
 
   // Проверка подписи
-  if(!checkAuth(em, socket, options)) {
-    handError(constants.errors.NO_AUTH, em);
-    return false;
-  }
+  // if(!checkAuth(em, socket, options)) {
+  //   handError(constants.errors.NO_AUTH, em);
+  //   return false;
+  // }
 
   var isValid = true;
   var val;

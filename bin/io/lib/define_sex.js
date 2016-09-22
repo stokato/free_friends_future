@@ -1,15 +1,17 @@
 var constants = require('./../../constants');
 
 module.exports = function(profile) {
+  var len, sexArr, indexes;
+  
   if(profile.getSex() == constants.GUY) {
     len = 'guys_count';
     sexArr = 'guys';
-    counter = 'guys_counter';
+    indexes = 'guys_indexes';
   }
   else {
     len = 'girls_count';
     sexArr = 'girls';
-    counter = 'girls_counter';
+    indexes = 'girls_indexes';
   }
-  return { len : len, sexArr : sexArr, counter : counter };
+  return { len : len, sexArr : sexArr, indexes : indexes };
 };

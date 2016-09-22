@@ -1,25 +1,16 @@
 var socketio  =  require('socket.io');
-var ios = require('socket.io-express-session');
+var ios       = require('socket.io-express-session');
 
-var initProfile       = require('./lib/init_profile');
+var ioClient = require('socket.io-client');
 
-var session = require('./../../lib/session');
+var initProfile = require('./lib/init_profile');
+
+var session     = require('./../../lib/session');
 //var checkSession = require('./checkSession');
 
-var oPool = require('./../objects_pool');
-
+var oPool       = require('./../objects_pool');
 
 var io = null;                                      // Сокет
-
-//var userList = {},                                  // Профили пользователей по сокетам
-//    roomList = {},                                  // Комнаты по сокетам
-//    rooms    = {},                                  // Комнаты по их именам
-//    profiles = {};                                  // Профили пользователей по id (надо бы убрать)
-
-//oPool.userList = userList;
-//oPool.roomList = roomList;
-//oPool.rooms = rooms;
-//oPool.profiles = profiles;
 
 /*
 При подключении выполняем инициализацию и вешаем эмиттеры
@@ -38,49 +29,35 @@ module.exports.listen = function(server, callback) {
   io.sockets.on('connection', function (socket) {
 
     initProfile(socket);
+    
   });
+  
+  //////////// Боты
+  var bots = [];
+  var males = [1, 1, 2, 2, 1];
+  var countries = [1, 2, 3, 4, 9];
+  var cities = [2, 314, 467, 284, 378];
+  var bDate =new Date(1993, 4, 1, 0, 0, 0, 0);
+  var vid = "11111";
+  
+  for(var b = 0; b < 5; b++) {
+    var clientS = ioClient.connect('http://localhost:3000');
+    
+    clientS.emit('init', {
+      sex : males[b],
+      bdate : bDate,
+      country : countries[b],
+      city : cities[b],
+      vid : vid
+    });
+    
+    bots.push(clientS);
+    
+    vid = (vid * 1 + 11111).toString();
+  }
+  ////////////
+  
   callback(null, oPool.profiles);
 };
 
-//io.set('authorization', ioSessions({
-//  key : 'sid',
-//  secret: 'secret',
-//  store: session_storage
-//}));
 
-// Аутентификация пользователей
-//io.set('authorization', function (data, accept) {
-//  // Проверяем переданы ли cookie
-//  if (!data.headers.cookie)
-//    return accept('No cookie transmitted.', false);
-//
-//  // Парсим cookie
-//  data.cookie = cookie.parse(data.headers.cookie);
-//
-//  // Получаем идентификатор сессии
-//  var sid = data.cookie['sid'] || "";
-//
-//  if (!sid) {
-//    accept(null, false);
-//  }
-//
-//  sid = sid.substr(2).split('.');
-//  sid = sid[0];
-//  data.sessionID = sid;
-//
-//  // Добавляем метод для чтения сессии
-//  // в handshakeData
-//  //data.getSession = function(cb) {
-//    // Запрашиваем сессию из хранилища
-//    session_storage.get(sid, function(err, session) {
-//      if (err || !session) {
-//        console.log(err);
-//        accept(err, false);
-//        return;
-//      }
-//      accept(null, true);
-//      //cb(err, session);
-//    });
-//  //};
-//  //accept(null, true);
-//});

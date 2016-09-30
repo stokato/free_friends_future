@@ -1,5 +1,3 @@
-var constants = require('../../../constants');
-
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {
   return function(timer) {

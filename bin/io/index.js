@@ -3,7 +3,7 @@ var ios       = require('socket.io-express-session');
 
 var ioClient = require('socket.io-client');
 
-var initProfile = require('./lib/init_profile');
+var emitInit = require('./lib/emits/emit_init');
 
 var session     = require('./../../lib/session');
 //var checkSession = require('./checkSession');
@@ -28,7 +28,7 @@ module.exports.listen = function(server, callback) {
 
   io.sockets.on('connection', function (socket) {
 
-    initProfile(socket);
+    emitInit(socket);
     
   });
   
@@ -39,10 +39,10 @@ module.exports.listen = function(server, callback) {
   var cities = [2, 314, 467, 284, 378];
   var bDate =new Date(1993, 4, 1, 0, 0, 0, 0);
   var vid = "11111";
-  
+
   for(var b = 0; b < 5; b++) {
     var clientS = ioClient.connect('http://localhost:3000');
-    
+
     clientS.emit('init', {
       sex : males[b],
       bdate : bDate,
@@ -50,9 +50,9 @@ module.exports.listen = function(server, callback) {
       city : cities[b],
       vid : vid
     });
-    
+
     bots.push(clientS);
-    
+
     vid = (vid * 1 + 11111).toString();
   }
   ////////////

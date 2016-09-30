@@ -1,5 +1,3 @@
-var constants = require('../../../constants');
-
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
   return function(timer, uid, options) { options = options || {};

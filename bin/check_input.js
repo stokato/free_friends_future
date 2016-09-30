@@ -11,8 +11,7 @@ var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
 var ID_LEN = 36;
 
 
-
-function checkInput(em, socket, options) {
+module.exports = function (em, socket, options, callback) {
 
   //// Подключение сервера
   //if(serverProfile && socket.id == serverProfile.id) {
@@ -65,6 +64,10 @@ function checkInput(em, socket, options) {
 
                         if("id" in options) {
                           options.id = sanitize(options.id);
+  
+                          if(!checkID(options.id)) {
+                            new GameError(socket, em, "Некорректно задан ИД");
+                          }
                         }
                         break;
 
@@ -83,13 +86,13 @@ function checkInput(em, socket, options) {
                         options.id = sanitize(options.id);
                         break;
 
-    case constants.IO_PRIVATE_MESSAGE :
-                        isValid = checkID(options.id);
-
-                        if(!isValid) {
-                          new GameError(socket, em, "Некорректно задан ИД");
-                        }
-                        break;
+    // case constants.IO_PRIVATE_MESSAGE :
+    //                     isValid = checkID(options.id);
+    //
+    //                     if(!isValid) {
+    //                       new GameError(socket, em, "Некорректно задан ИД");
+    //                     }
+    //                     break;
 
     case constants.IO_MAKE_GIFT :
 
@@ -289,10 +292,13 @@ function checkInput(em, socket, options) {
   if(!isValid) {
     handError(constants.errors.NO_PARAMS, em);
   }
-
+  
+  if(isValid && callback) {
+    callback(null, socket, options);
+  }
+    
   return isValid;
-
-
+  
   //-------------------------
   function handError(err, em, res) { res = res || {};
     res.operation_status = constants.RS_BADSTATUS;
@@ -302,9 +308,8 @@ function checkInput(em, socket, options) {
 
     new GameError(socket, em, err.message || constants.errors.OTHER.message);
   }
-}
+};
 
-module.exports = checkInput;
 
 function checkID(id) {
   var res = (id + "").search(idRegExp);

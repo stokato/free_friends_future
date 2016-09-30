@@ -2,7 +2,7 @@ var constants = require('./constants');
 var logger = require('./../lib/log')(module);
 
 // Свой объект ошибок
-function GameError(socket, func, message) {
+function GameError(func, message) {
  var err = {};
  err.message = message;
  err.stack = (new Error()).stack;
@@ -14,8 +14,7 @@ function GameError(socket, func, message) {
    case constants.IO_GET_ROOMS               : err.name = "Ошибка открытия окна доступных столов";        break;
    case constants.IO_CHANGE_ROOM             : err.name = "Ошибка смены стола";                           break;
    case constants.IO_GET_PROFILE             : err.name = "Ошибка открытия окна профиля";                 break;
-   //case "GETHISTORY"         : err.name = "Ошибка открытия окна личных сообщений";                    //  break;
-   //case "GETGIFTS"           : err.name = "Ошибка открытия окна подарков";                            //  break;
+   
    case constants.IO_GET_MONEY               : err.name = "Ошибка получения баланса";                     break;
    case constants.IO_MAKE_GIFT               : err.name = "Ошибка совершения подарка";                    break;
    case constants.IO_GET_TOP                 : err.name = "Ошибка открытия топа игроков";                 break;
@@ -25,7 +24,7 @@ function GameError(socket, func, message) {
    case constants.IO_GET_MONEY_SHOP          : err.name = "Ошибка открытия окна пополения баланса";       break;
    case constants.IO_ADD_FRIEND              : err.name = "Ошибка добавления в друзья";                   break;
    case constants.IO_CHANGE_STATUS           : err.name = "Ошибка изменения статуса";                     break;
-   //case "OPENPRIVATEMESSAGE" : err.name = "Ошибка изменения статуса сообещения как открытого";         //  break;
+
    case constants.IO_GET_CHAT_HISTORY        : err.name = "Ошибка получения истории сообщений";           break;
    case constants.IO_OPEN_PRIVATE_CHAT       : err.name = "Ошибка открытия приватного чата";              break;
    case constants.IO_CLOSE_PRIVATE_CHAT      : err.name = "Ошибка закрытия приватного чата";              break;
@@ -51,12 +50,6 @@ function GameError(socket, func, message) {
   logger.error(err.name + " : " + err.message);
   logger.error(err.stack);
 
- //console.log(err.name + " : " + err.message);
-  //console.log(err.stack);
-
- //if(socket) {
- //  socket.emit(constants.IO_ERROR, err);
- //}
 }
 GameError.prototype = Object.create(Error.prototype);
 GameError.prototype.constructor = GameError;

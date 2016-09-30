@@ -1,5 +1,3 @@
-var constants = require('../../../constants');
-
 // Игра - кто лучший, рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
 module.exports = function(game) {
   return function(timer, uid, options) {

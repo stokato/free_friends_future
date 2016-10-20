@@ -31,7 +31,8 @@ module.exports = function (socket, options, callback) {
   }
   
   if(oPool.roomList[socket.id].name == options.room){
-    return callback(constants.errors.ALREADY_IN_ROOM);
+    // return callback(constants.errors.ALREADY_IN_ROOM);
+    return callback(null, null); // Если уже в этой комнате - ничего не делаем
   }
   
   var newRoom = null;
@@ -77,7 +78,7 @@ module.exports = function (socket, options, callback) {
   }
   
   currRoom.pushIndex(userSex, selfProfile.getGameIndex());
-  selfProfile.setGameIndex(currRoom.popIndex(userSex));
+  selfProfile.setGameIndex(newRoom.popIndex(userSex));
   
   playTrackInRoom(socket, newRoom);
     

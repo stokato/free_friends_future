@@ -44,7 +44,7 @@ module.exports = function (socket, options, callback) {
     
     if(count == 0) {
       
-      callback(null, { room : resRooms });
+      callback(null, { rooms : resRooms });
       
     }
   }

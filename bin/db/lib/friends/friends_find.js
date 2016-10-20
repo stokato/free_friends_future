@@ -4,10 +4,9 @@ var cdb = require('./../common/cassandra_db');
  Найти друзей пользователя: ИД игрока
  - Проверка ИД
  - Строим запрос (все поля) и выполняем
- - Возвращаем массив объектв с данными друзей (если ничгео нет - NULL)
+ - Возвращаем массив объектов с данными друзей (если ничгео нет - NULL)
  */
 module.exports = function(uid, friendsID, callback) {
-  var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
 
   var constFields = ["userid"];
@@ -26,7 +25,7 @@ module.exports = function(uid, friendsID, callback) {
   var fields = ["friendid", "friendvid", "date"];
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERFRIENDS, constFields, constCount);
 
-  // Отбираем всех друзей
+  // Отбираем всех друзей или по списку friendsID
   cdb.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 

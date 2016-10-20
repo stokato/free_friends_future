@@ -20,7 +20,6 @@ module.exports = function(id, callback) {
     var gifts = [];
 
     if(result.rows.length > 0) {
-      var row = result.rows[0];
 
       var gift = result.rows[0];
       gift.gid     = id;

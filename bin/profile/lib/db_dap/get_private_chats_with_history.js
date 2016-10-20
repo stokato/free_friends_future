@@ -26,31 +26,36 @@ module.exports = function(options, callback) {
      if (err) { return callback(err, null); }
 
      messages = messages || [];
-     var message = {};
+     // var message = {};
      var i, j, history = [];
      for(i = 0; i < messages.length; i++) {
-       for(j = 0; j < self.pPrivateChats.length; j++) {
-
-         var currChat = self.pPrivateChats[j];
-         if(messages[i]["incoming"] && messages[i]["companionid"] == currChat.id) {
-           message.vid     = currChat.vid;
-           message.city    = currChat.city;
-           message.country = currChat.country;
-           message.sex     = currChat.sex;
+       var message = {};
+    
+       if (!messages[i].incoming && messages[i].userid.toString() == self.getID()) {
+         message.vid = self.pVID;
+         message.city = self.pCity;
+         message.country = self.pCountry;
+         message.sex = self.pSex;
+       } else {
+         for(j = 0; j < self.pPrivateChats.length; j++) {
+           var currChat = self.pPrivateChats[j];
+           if (messages[i].incoming && messages[i].companionid == currChat.id) {
+             message.vid = currChat.vid;
+             message.city = currChat.city;
+             message.country = currChat.country;
+             message.sex = currChat.sex;
+           }
          }
-         if(!messages[i].incoming && messages[i].userid.toString() == self.getID()) {
-           message.vid     = self.pVID;
-           message.city    = self.pCity;
-           message.country = self.pCountry;
-           message.sex     = self.pSex;
-         }
-         message.chat = currChat["id"];
-         message.chatVID = currChat["vid"];
-         message.date = messages[i]["date"];
-         message.text = messages[i]["text"];
-
-         history.push(message);
        }
+    
+       message.chat = messages[i].companionid;
+       message.chatVID = messages[i].companionvid;
+       message.date = messages[i].date;
+       message.text = messages[i].text;
+       message.id = messages[i].id;
+    
+       history.push(message);
+       //}
      }
 
      callback(null, history);

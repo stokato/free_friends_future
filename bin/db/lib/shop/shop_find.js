@@ -2,10 +2,10 @@ var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
 
 /*
- Найти все товары: ИД
+ Найти товар: ИД
  - Проверка ИД
  - Строим запрос (все поля) и выполняем
- - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
+ - Возвращаем данные по товару (Если не нашли ничего - NULL)
  */
 module.exports = function(goodid, callback) {
   if(!goodid) { return callback(new Error("Не задан ИД товара"), null); }

@@ -10,7 +10,7 @@ var cdb = require('./../common/cassandra_db');
  - Возвращаем опции обратно
  */
 module.exports = function(options, callback) { options = options || {};
-  var self = this;
+
   if (!options["userid"] || !options["sex"]) {
     return callback(new Error("Задан пустой Id игрока или пол"));
   }
@@ -26,7 +26,6 @@ module.exports = function(options, callback) { options = options || {};
 
       cdb.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err); }
-
 
         cb(null, params, constFields, constValues);
       });
@@ -45,6 +44,6 @@ module.exports = function(options, callback) { options = options || {};
     if(err) { callback(err, null); }
 
     callback(null, options);
-  } )
+  });
 
 };

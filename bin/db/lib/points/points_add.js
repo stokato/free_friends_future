@@ -33,36 +33,40 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Отбираем все записи для этого пользователя
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_POINTS, ["uid"], [1]);
-
-      var paramsF = [options["userid"]];
-
-      cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
-        if (err) {  return cb(err); }
-
-        result.rows.sort(comparePoints);
-
-        // И удаляем все старые записи
-        for(var i = 1; i < result.rows.length; i++) {
-          var points = result.rows[i]["points"];
-          var userid = result.rows[i]["userid"];
-
-          var constFields = ["id", "points", "userid"];
-          var constValues = [1, 1, 1];
-
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_POINTS, constFields, constValues);
-
-          var paramsD = ["max", points, userid];
-
-          cdb.client.execute(query, paramsD, {prepare: true }, function(err) {
-            if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + constants.T_POINTS); }
-
-            //cb(null, params);
-          });
-        }
-
+      delOldPoints(fields, constants.T_POINTS, function () {
         cb(null, fields, params);
       });
+      
+      // var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_POINTS, ["uid"], [1]);
+      //
+      // var paramsF = [options["userid"]];
+      //
+      // cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
+      //   if (err) {  return cb(err); }
+      //
+      //   result.rows.sort(comparePoints);
+      //
+      //   // И удаляем все старые записи
+      //   for(var i = 1; i < result.rows.length; i++) {
+      //     var points = result.rows[i]["points"];
+      //     var userid = result.rows[i]["userid"];
+      //
+      //     var constFields = ["id", "points", "userid"];
+      //     var constValues = [1, 1, 1];
+      //
+      //     var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_POINTS, constFields, constValues);
+      //
+      //     var paramsD = ["max", points, userid];
+      //
+      //     cdb.client.execute(query, paramsD, {prepare: true }, function(err) {
+      //       if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + constants.T_POINTS); }
+      //
+      //       //cb(null, params);
+      //     });
+      //   }
+      //
+      //   cb(null, fields, params);
+      // });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
@@ -78,35 +82,38 @@ module.exports = function(options, callback) { options    = options || {};
     function(fields, params, cb) { // Удаляем старые записи
       var db = (options["sex"] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
 
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
-
-      var paramsF = [options["userid"]];
-
-      cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
-        if (err) {  return cb(err); }
-
-        result.rows.sort(comparePoints);
-
-        for(var i = 1; i < result.rows.length; i++) {
-          var points = result.rows[i]["points"];
-          var userid = result.rows[i]["userid"];
-
-          var constFields = ["id", "points", "userid"];
-          var constValues = [1, 1, 1];
-
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
-
-          var paramsF = ["max", points, userid];
-
-          cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
-            if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
-
-            //cb(null, params);
-          });
-        }
-
+      delOldPoints(fields, db, function () {
         cb(null, null);
       });
+      
+      // var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
+      //
+      // var paramsF = [options["userid"]];
+      //
+      // cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
+      //   if (err) {  return cb(err); }
+      //
+      //   result.rows.sort(comparePoints);
+      //
+      //   for(var i = 1; i < result.rows.length; i++) {
+      //     var points = result.rows[i]["points"];
+      //     var userid = result.rows[i]["userid"];
+      //
+      //     var constFields = ["id", "points", "userid"];
+      //     var constValues = [1, 1, 1];
+      //
+      //     var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
+      //
+      //     var paramsF = ["max", points, userid];
+      //
+      //     cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
+      //       if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
+      //
+      //       //cb(null, params);
+      //     });
+      //   }
+      //   cb(null, null);
+      // });
     } ////////////////////////////////////////////////////////////////////////////////
   ], function(err, res) {
     if(err) { callback(err, null); }
@@ -114,6 +121,39 @@ module.exports = function(options, callback) { options    = options || {};
     callback(null, options);
   })
 };
+
+function delOldPoints(fields, db, cb) { // Удаляем старые записи
+  
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
+  
+  var paramsF = [options["userid"]];
+  
+  cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
+    if (err) {  return cb(err); }
+    
+    result.rows.sort(comparePoints);
+    
+    for(var i = 1; i < result.rows.length; i++) {
+      var points = result.rows[i]["points"];
+      var userid = result.rows[i]["userid"];
+      
+      var constFields = ["id", "points", "userid"];
+      var constValues = [1, 1, 1];
+      
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
+      
+      var paramsF = ["max", points, userid];
+      
+      cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
+        if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
+        
+        //cb(null, params);
+      });
+    }
+    
+    cb(null, null);
+  });
+}
 
 function comparePoints(user1, user2) {
   return user2.points - user1.points;

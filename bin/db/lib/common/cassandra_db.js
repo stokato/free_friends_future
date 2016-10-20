@@ -15,7 +15,12 @@ function CassandraDB () {
 
 var cassandraDB = new CassandraDB();
 
+// Клиент БД
 module.exports.client = cassandraDB.client;
+
+// Генераторы ИД
 module.exports.uuid = cassandraDB.uuid;
 module.exports.timeUuid = cassandraDB.timeUuid;
+
+// Построитель запросов
 module.exports.qBuilder = buildQuery;

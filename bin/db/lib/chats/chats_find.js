@@ -16,7 +16,7 @@ module.exports = function(uid, callback) {
   }
 
   async.waterfall([ //////////////////////////////////////////////////////////
-    function (cb) {  // Получаем список чатов
+    function (cb) {  // Выбираем всех собеседников пользователя, отдельно запоминаем признак - есть ли новые сообщения
       var params = [uid];
       var fields = ["companionid", "isnew"];
       var const_fields = ["userid"];
@@ -43,7 +43,7 @@ module.exports = function(uid, callback) {
         cb(null, const_values, companions, newMessages);
       });
     },////////////////////////////////////////////////////////////////////
-    function (const_values, companions, newMessages, cb) { // Разбиваем чаты по пользователям
+    function (const_values, companions, newMessages, cb) { // Выбираем данные по собеседникам и добавляем признак новых сообщений
       if(!companions) { return cb(null, null, null, null); }
 
       var fields = ["id", "vid", "age", "sex", "city", "country", "points"];

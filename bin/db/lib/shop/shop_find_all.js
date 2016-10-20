@@ -36,7 +36,6 @@ module.exports = function(goodtype, callback) {
       goods.push(good);
     }
 
-
     callback(null, goods);
   });
 };

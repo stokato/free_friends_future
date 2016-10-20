@@ -55,7 +55,7 @@ module.exports = function (socket, options, callback) {
       function (gift, money, cb) { // Получаем профиль адресата
         
         getUserProfile(options.id, function (err, friendProfile) {
-          if(err) { cb(err); }
+          if(err) { return cb(err); }
           
           cb(null, friendProfile, gift, money);
         });

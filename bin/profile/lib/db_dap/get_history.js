@@ -18,6 +18,7 @@ module.exports = function(options, callback) {
     messages = messages || [];
     var history = [];
     var message = {};
+    
     for(var i = 0; i < messages.length; i++) {
       message = {};
       if(messages[i].incoming) { // Если входящее, берем данные собеседника (хранятся в чате) и наоборот
@@ -41,6 +42,7 @@ module.exports = function(options, callback) {
 
       history.push(message);
     }
+    
     callback(null, history);
   });
 };

@@ -1,3 +1,5 @@
+// Построитель запросов к базе данных
+
 var Q_SELECT = "select",
     Q_INSERT = "insert",
     Q_UPDATE = "update",
@@ -64,6 +66,7 @@ module.exports.build = function(type, fields, table,
   return query;
 };
 
+// Добавляем строку WHERE
 function buildConstraints(query, const_fields, const_values, const_more, const_less) {
   if(!const_fields) { return query; }
 
@@ -80,6 +83,7 @@ function buildConstraints(query, const_fields, const_values, const_more, const_l
   return query;
 }
 
+// Для выбора из нескольких допустимых значений
 function buildPluralConstraintValues(count) {
   var i, constraint = " in (";
   for(i = 0; i < count; i++) {

@@ -30,8 +30,7 @@ module.exports = function(socket, options, callback) {
             return mesA.date - mesB.date;
           });
           
-          var i;
-          for(i = 0; i < history.length; i++) {
+          for(var i = 0; i < history.length; i++) {
             sendOne(socket, history[i]);
           }
         });

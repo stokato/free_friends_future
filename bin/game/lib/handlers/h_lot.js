@@ -24,6 +24,8 @@ module.exports = function(game) {
     game.gStoredRand = rand;
 
     game.gNextGame = games[rand];
+    
+    game.gNextGame = constants.G_SYMPATHY;
 
 
     // Очищаем настройки

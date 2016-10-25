@@ -105,6 +105,10 @@ module.exports.IO_LIKE_TRACK          = 'like_track';
 module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
 module.exports.IO_START_TRACK         = 'start_track';
 
+module.exports.IO_ADD_QUESTION        = 'add_question';
+module.exports.IO_DEL_QUESTION        = 'del_question';
+module.exports.IO_SHOW_QUESTIONS      = 'show_questions';
+module.exports.IO_DEL_ALL_QUESTIONS   = 'del_all_questions';
 
 // Игры
 var G_START         = 'results',
@@ -153,6 +157,9 @@ module.exports.QUESTIONS_TIMEOUT = 24 * 60 * 60 * 1000;
 
 // Величина выкупа из тюрьмы
 module.exports.RANSOM = 50;
+
+// Цена просмтора чужоко выбора
+module.exports.SYMPATHY_PRICE = 5;
 
 // Таймауты
 module.exports.TIMEOUT_LOT      = 5 * 1000;

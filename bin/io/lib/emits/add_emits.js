@@ -26,7 +26,11 @@ var addTorFriend        = require('../profile/add_to_friends'),
     makeGift            = require('../chat/make_gift'),
     sendMessage         = require('../chat/send_message'),
     addAction           = require('../../../game/lib/add_action'),
-    releasePlayer       = require('../../../game/lib/release_player');
+    releasePlayer       = require('../../../game/lib/release_player'),
+    addQuestion         = require('../admin/add_question'),
+    delQuestion         = require('../admin/delete_question'),
+    showQuestions        = require('../admin/show_all_questions'),
+    deleteAllQuestions  = require('../admin/delete_all_questions');
 
 // Назначаем эмиты
 module.exports = function(socket) {
@@ -54,7 +58,11 @@ module.exports = function(socket) {
     { emit : constants.IO_MAKE_GIFT,            handler : makeGift },
     { emit : constants.IO_MESSAGE,              handler : sendMessage, withoutStatus : true },
     { emit : constants.IO_GAME,                 handler : addAction,   withoutStatus : true },
-    { emit : constants.IO_RELEASE_PLAYER,       handler : releasePlayer }
+    { emit : constants.IO_RELEASE_PLAYER,       handler : releasePlayer },
+    { emit : constants.IO_ADD_QUESTION,         handler : addQuestion },
+    { emit : constants.IO_DEL_QUESTION,         handler : delQuestion },
+    { emit : constants.IO_SHOW_QUESTIONS,       handler : showQuestions },
+    { emit : constants.IO_DEL_ALL_QUESTIONS,    handler : deleteAllQuestions }
   ];
   
   for(var i = 0; i < emitList.length; i++) {

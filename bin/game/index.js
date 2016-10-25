@@ -71,6 +71,8 @@ function Game(room) {
   this.girlsIndex = 0;                // Индекс игарющей девушки
   this.guysIndex = 0;                 // и парня
   this.currentSex = 1;                // текущий пол
+  
+  this.currentAnswer = 0;
 
   this.gHandlers = {};           // Обработчики игр
   this.gHandlers[constants.G_START]         = hStart(self);

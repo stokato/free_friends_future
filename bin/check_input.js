@@ -287,6 +287,28 @@ module.exports = function (em, socket, options, callback) {
     case constants.IO_GET_TRACK_LIST :
 
                         break;
+  
+    case constants.IO_ADD_QUESTION :
+                        isValid = ("text" in options)? isValid : false;
+                    
+                        if(!isValid) {
+                          new GameError(socket, em, "Не задан текст вопроса");
+                        }
+  
+                        options.text = sanitize(options.text);
+                        
+      break;
+  
+    case constants.IO_DEL_QUESTION :
+                        isValid = checkID(options.id);
+                    
+                        if(!isValid) {
+                          new GameError(socket, em, "Некорректно задан ИД вопроса");
+                        }
+                    
+                        options.id = sanitize(options.id);
+      break;
+
   }
 
   if(!isValid) {

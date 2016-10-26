@@ -109,6 +109,7 @@ module.exports.IO_ADD_QUESTION        = 'add_question';
 module.exports.IO_DEL_QUESTION        = 'del_question';
 module.exports.IO_SHOW_QUESTIONS      = 'show_questions';
 module.exports.IO_DEL_ALL_QUESTIONS   = 'del_all_questions';
+module.exports.IO_GAME_ERROR          = 'game_error';
 
 // Игры
 var G_START         = 'results',
@@ -163,10 +164,11 @@ module.exports.SYMPATHY_PRICE = 5;
 
 // Таймауты
 module.exports.TIMEOUT_LOT      = 5 * 1000;
-module.exports.TIMEOUT_GAME     = 16 * 1000;
+module.exports.TIMEOUT_GAME     = 18 * 1000;
 module.exports.TIMEOUT_BOTTLE   = 7 * 1000;
 module.exports.TIMEOUT_RESULTS  = 5 * 1000;
 module.exports.TIMEOUT_PRISON   = 4 * 1000;
+module.exports.TIMEOUT_SYMPATHY_SHOW = 15 * 1000;
 
 // Таблицы базы данных
 module.exports.T_USERS           = 'users';

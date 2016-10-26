@@ -1,6 +1,7 @@
 var GameError = require('./../../../game_error');
 var constants = require('../../../constants');
-var profilejs =  require('../../../profile/index');
+var ProfileJS =  require('../../../profile/index');
+var handleError = require('../../../handle_error');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
@@ -62,11 +63,11 @@ module.exports = function(game) {
       if(player) {
         player.addPoints(constants.KISS_POINTS, onPoints(player));
       } else {
-        player = new profilejs();
+        player = new ProfileJS();
         player.build(players[count].id, function (err, info) {
           if(err) {
-            new GameError(players[count].player.getSocket(),  constants.G_BOTTLE_KISSES, "Ошибка при создании профиля игрока");
-            return callback(err, null);
+            //new GameError(constants.G_BOTTLE_KISSES, "Ошибка при создании профиля игрока");
+            return onComplete(err, player);// callback(err, null);
           }
 
           player.addPoints(constants.KISS_POINTS, onPoints(player));
@@ -79,8 +80,8 @@ module.exports = function(game) {
     function onPoints(player) {
       return function(err, res) {
         if(err) {
-          new GameError(player.getSocket(),  constants.G_BOTTLE_KISSES, "Ошибка при начислении очков пользователю");
-          return onComplete(err, null);
+          //new GameError(constants.G_BOTTLE_KISSES, "Ошибка при начислении очков пользователю");
+          return onComplete(err, player);
         }
 
         var playerSocket = player.getSocket();
@@ -90,14 +91,23 @@ module.exports = function(game) {
         if(count < players.length) {
           addPoints();
         } else {
-          onComplete(null, null);
+          onComplete(null, player);
         }
       }
     }
 
     // После того, как все очки начислены, переходим к следующей игре
-    function onComplete(err, res) {
-      if(err) { return game.stop(); }
+    function onComplete(err, player) {
+      if(err) {
+        // return game.stop();
+        var socket = player.getSocket();
+        
+        if(socket) {
+          return handleError(socket, constants.IO_GAME_ERROR, err);
+        }
+        
+        return new GameError(constants.G_BOTTLE_KISSES, err.message);
+      }
 
       game.restoreGame(null, true);
     }

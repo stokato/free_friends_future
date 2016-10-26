@@ -46,7 +46,7 @@ module.exports = function(game) {
       game.gameState = result;
 
       // Устанавливаем таймер
-      game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
+      game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_SYMPATHY_SHOW);
     }
   }
 };

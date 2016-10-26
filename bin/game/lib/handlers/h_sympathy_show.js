@@ -1,5 +1,7 @@
 var constants = require('../../../constants');
 var oPool = require('./../../../objects_pool');
+var GameError = require('./../../../game_error');
+var handleError = require('../../../handle_error');
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
@@ -8,23 +10,26 @@ module.exports = function(game) {
     if(uid) {
       var selfProfile = oPool.profiles[uid];
       
-      if(!selfProfile) { onComplete(new Error("Пользователь не онлайн")); }
+      if(!selfProfile) { onError(new Error("Пользователь не онлайн")); }
       
       // Проверяем - хватает ли монет у того, кто выкупает
       selfProfile.getMoney(function(err, money) {
-        if(err) { return callback(err); }
+        if(err) { return onError(err, selfProfile); }
         
         var newMoney = money - constants.SYMPATHY_PRICE;
         
         if(newMoney < 0) {
-          return; // onComplete(constants.errors.TOO_LITTLE_MONEY);
+          return onError(constants.errors.TOO_LITTLE_MONEY, selfProfile); // onComplete(constants.errors.TOO_LITTLE_MONEY);
         }
         
         // Снимаем монеты
         selfProfile.setMoney(newMoney, function(err, money) {
-          if(err) { return onComplete(err); }
+          if(err) { return onError(err, selfProfile); }
           
           onPick();
+          
+          var selfSocket = selfProfile.getSocket();
+          selfSocket.emit(constants.IO_GET_MONEY, { money : money });
         });
       });
       
@@ -73,17 +78,25 @@ module.exports = function(game) {
         return game.stop();
       }
     
-      game.restoreGame(null, true);
+      game.restoreGame(null, false);
     }
     
     // После того, как все очки начислены, переходим к следующей игре
-    function onComplete(err, res) {
+    function onError(err, player) {
       if(err) {
-        console.log(err.message);
-        return game.stop();
+        new GameError(constants.G_SYMPATHY_SHOW, err.message);
+        
+        if(player) {
+          var socket = player.getSocket();
+          
+          if(socket) {
+            handleError(socket, constants.IO_GAME_ERROR, err);
+          }
+        }
+        
+        return; // game.stop();
       }
-      
-      game.restoreGame(null, true);
+
     }
   }
 };

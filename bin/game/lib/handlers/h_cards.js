@@ -2,7 +2,8 @@ var async = require('async');
 
 var constants = require('../../../constants');
 var GameError = require('./../../../game_error');
-var profilejs  =  require('../../../profile/index');
+var ProfileJS  =  require('../../../profile/index');
+var handleError = require('../../../handle_error');
 
 
 // Карты, ждем, кода все ответят, потом показываем ответы и где золото
@@ -63,10 +64,10 @@ module.exports = function(game) {
             if(player) {
               cb(null, player, true);
             } else {
-              player = new profilejs();
+              player = new ProfileJS();
               player.build(winners[count].id, function (err, info) {
                 if(err) {
-                  new GameError(winners[count].player.getSocket(),  constants.G_CARDS, "Ошибка при создании профиля игрока");
+                  //new GameError(winners[count].player.getSocket(),  constants.G_CARDS, "Ошибка при создании профиля игрока");
                   return cb(err, null);
                 }
 
@@ -92,8 +93,14 @@ module.exports = function(game) {
           }////////////////////////////////////////////////////////////////////
         ], function(err, player, money, isOnline) { // Оповещаем об изменениях
           if(err) {
-            new GameError(player.getSocket(),  constants.G_CARDS, "Ошибка при начислении монет пользователю");
-            return  game.stop();
+            //new GameError(player.getSocket(),  constants.G_CARDS, "Ошибка при начислении монет пользователю");
+            // return  game.stop();
+            new GameError(constants.G_CARDS, err.message);
+            
+            if(isOnline) {
+              handleError(player.getSocket(), constants.IO_GAME_ERROR, err);
+            }
+            return;
           }
 
           if(isOnline) {

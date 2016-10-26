@@ -24,8 +24,6 @@ module.exports = function(game) {
     game.gStoredRand = rand;
 
     game.gNextGame = games[rand];
-    
-    game.gNextGame = constants.G_SYMPATHY;
 
 
     // Очищаем настройки
@@ -43,6 +41,8 @@ module.exports = function(game) {
       case constants.G_BOTTLE :    // для бутылочки ходит тот же, кто крутил вочек
         game.gActionsCount = 1;
         game.setActionLimit(1);
+        
+        timeout = constants.TIMEOUT_BOTTLE;
         break;
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос

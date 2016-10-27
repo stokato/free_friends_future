@@ -36,6 +36,9 @@ module.exports.GIFT_TIMEOUT = 120 * 1000; // 1800 *
 module.exports.GT_GIFT = "gift";
 module.exports.GT_MONEY = "money";
 
+// Цена добавления трека
+module.exports.TRACK_PRICE = 5;
+
 // статусы операций
 module.exports.RS_GOODSTATUS = "success";
 module.exports.RS_BADSTATUS = "fail";
@@ -157,7 +160,7 @@ module.exports.KISS_POINTS = 1;
 module.exports.QUESTIONS_TIMEOUT = 24 * 60 * 60 * 1000;
 
 // Величина выкупа из тюрьмы
-module.exports.RANSOM = 50;
+module.exports.RANSOM_PRICE = 50;
 
 // Цена просмтора чужоко выбора
 module.exports.SYMPATHY_PRICE = 5;

@@ -24,8 +24,7 @@ module.exports = function(game) {
     game.gStoredRand = rand;
 
     game.gNextGame = games[rand];
-
-
+    
     // Очищаем настройки
     game.gActionsQueue = {};
 

@@ -1,4 +1,5 @@
 var async     =  require('async');
+var oPool = require('./../../../objects_pool');
 
 // Свои модули
 var constants     = require('../../../constants'),
@@ -11,6 +12,11 @@ var constants     = require('../../../constants'),
 module.exports = function(socket) {
   socket.on(constants.IO_GAME, function(options) {
   
+    var selfProfile = oPool.userList[socket.id];
+    var game = selfProfile.getGame();
+    
+    options.gNextGame = game.getNextGame();
+    
     async.waterfall(
       [
         function (cb) {  cb(null, constants.IO_GAME, socket, options); },

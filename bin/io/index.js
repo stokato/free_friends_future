@@ -34,11 +34,11 @@ module.exports.listen = function(server, callback) {
   
   //////////// Боты
   var bots = [];
+  var ids = [28922, 46733, 3134205, 178755875,  19581362];
   var males = [1, 1, 2, 2, 1];
   var countries = [1, 2, 3, 4, 9];
   var cities = [2, 314, 467, 284, 378];
   var bDate =new Date(1993, 4, 1, 0, 0, 0, 0);
-  var vid = "11111";
 
   for(var b = 0; b < 5; b++) {
     var clientS = ioClient.connect('http://localhost:3000');
@@ -48,12 +48,11 @@ module.exports.listen = function(server, callback) {
       bdate : bDate,
       country : countries[b],
       city : cities[b],
-      vid : vid
+      vid : ids[b].toString()
     });
 
     bots.push(clientS);
 
-    vid = (vid * 1 + 17811).toString();
   }
   ////////////
   

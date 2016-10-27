@@ -1,5 +1,7 @@
 var constants  = require('./../../../constants');            // Верификация
 
+var payService = require('./../common/pay_service');
+
 var oPool = require('./../../../objects_pool');
 
 // Добавляем трек в очередь плей-листа комнаты
@@ -14,34 +16,42 @@ module.exports = function(socket, options, callback) {
     }
   }
   
-  if (room.track_list.length == 0) {
-    room.trackTime = new Date();
-  }
+  payService(selfProfile, constants.TRACK_PRICE, function (err) {
+    if(err) {
+      return callback(err);
+    }
+    
+    if (room.track_list.length == 0) {
+      room.trackTime = new Date();
+    }
   
-  var track = {
-    track_id: options.track_id,
-    id: selfProfile.getID(),
-    vid: selfProfile.getVID(),
-    likes: 0,
-    dislikes: 0,
-    duration: options.duration
-  };
+    var track = {
+      track_id: options.track_id,
+      id: selfProfile.getID(),
+      vid: selfProfile.getVID(),
+      likes: 0,
+      dislikes: 0,
+      duration: options.duration
+    };
+    
+    if (room.track_list.length == 0) {
+      startTrack(socket, room, track);
+    }
   
-  if (room.track_list.length == 0) {
-    startTrack(socket, room, track);
-  }
+    room.track_list.push(track);
   
-  room.track_list.push(track);
+    room.likers[options.track_id] = {};
+    room.dislikers[options.track_id] = {};
   
-  room.likers[options.track_id] = {};
-  room.dislikers[options.track_id] = {};
   
-  // socket.emit(constants.IO_ADD_TRECK, {operation_status: constants.RS_GOODSTATUS});
+    // socket.emit(constants.IO_ADD_TRECK, {operation_status: constants.RS_GOODSTATUS});
   
-  socket.broadcast.in(room.name).emit(constants.IO_GET_TRACK_LIST, {track_list: room.track_list});
-  socket.emit(constants.IO_GET_TRACK_LIST, {track_list: room.track_list});
+    socket.broadcast.in(room.name).emit(constants.IO_GET_TRACK_LIST, {track_list: room.track_list});
+    socket.emit(constants.IO_GET_TRACK_LIST, {track_list: room.track_list});
   
-  callback(null, null);
+    callback(null, null);
+  });
+
   
   //-------------------------
   function startTrack(socket, room, track, timerID) { timerID = timerID || null;

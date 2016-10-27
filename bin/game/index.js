@@ -112,6 +112,8 @@ Game.prototype.getQuestions = function() {
   return gameQuestions;
 };
 
+Game.prototype.getNextGame = function() { return this.gNextGame; };
+
 getQuestionsFromDB();
 
 // --------------------

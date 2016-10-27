@@ -3,6 +3,8 @@ var oPool = require('./../../../objects_pool');
 var GameError = require('./../../../game_error');
 var handleError = require('../../../handle_error');
 
+var payService = require('./../../../io/lib/common/pay_service');
+
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
   return function(timer, uid, options) { options = options || {};
@@ -12,26 +14,34 @@ module.exports = function(game) {
       
       if(!selfProfile) { onError(new Error("Пользователь не онлайн")); }
       
-      // Проверяем - хватает ли монет у того, кто выкупает
-      selfProfile.getMoney(function(err, money) {
-        if(err) { return onError(err, selfProfile); }
-        
-        var newMoney = money - constants.SYMPATHY_PRICE;
-        
-        if(newMoney < 0) {
-          return onError(constants.errors.TOO_LITTLE_MONEY, selfProfile); // onComplete(constants.errors.TOO_LITTLE_MONEY);
+      payService(selfProfile, constants.SYMPATHY_PRICE, function (err) {
+        if(err) {
+          return onError(err, selfProfile);
         }
-        
-        // Снимаем монеты
-        selfProfile.setMoney(newMoney, function(err, money) {
-          if(err) { return onError(err, selfProfile); }
-          
-          onPick();
-          
-          var selfSocket = selfProfile.getSocket();
-          selfSocket.emit(constants.IO_GET_MONEY, { money : money });
-        });
+  
+        onPick();
       });
+      
+      // // Проверяем - хватает ли монет у того, кто выкупает
+      // selfProfile.getMoney(function(err, money) {
+      //   if(err) { return onError(err, selfProfile); }
+      //
+      //   var newMoney = money - constants.SYMPATHY_PRICE;
+      //
+      //   if(newMoney < 0) {
+      //     return onError(constants.errors.TOO_LITTLE_MONEY, selfProfile); // onComplete(constants.errors.TOO_LITTLE_MONEY);
+      //   }
+      //
+      //   // Снимаем монеты
+      //   selfProfile.setMoney(newMoney, function(err, money) {
+      //     if(err) { return onError(err, selfProfile); }
+      //
+      //     onPick();
+      //
+      //     var selfSocket = selfProfile.getSocket();
+      //     selfSocket.emit(constants.IO_GET_MONEY, { money : money });
+      //   });
+      // });
       
       function onPick() {
         

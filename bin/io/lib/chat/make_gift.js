@@ -4,6 +4,7 @@ var async      =  require('async');
 var constants = require('./../../../constants'),
   getUserProfile     = require('./../common/get_user_profile'),
   setGiftTimeout = require('./../common/set_gift_timeout'),
+  payService     = require('./../common/pay_service'),
   db         = require('./../../../db_manager');
 
 var oPool = require('./../../../objects_pool');
@@ -41,27 +42,48 @@ module.exports = function (socket, options, callback) {
           }
         });
       }, ///////////////////////////////////////////////////////////////
-      function (gift, cb) { // Проверяем, достаточно ли денег у пользователя
-        selfProfile.getMoney(function (err, money) {
-          if (err) { return cb(err, null) }
-
-          if (gift.price <= money) {
-            cb(null, gift, money);
-          } else {
-            cb(constants.errors.TOO_LITTLE_MONEY, null);
-          }
-        });
-      }, ///////////////////////////////////////////////////////////////
-      function (gift, money, cb) { // Получаем профиль адресата
+      
+      // function (gift, cb) { // Проверяем, достаточно ли денег у пользователя
+      //   selfProfile.getMoney(function (err, money) {
+      //     if (err) { return cb(err, null) }
+      //
+      //     if (gift.price <= money) {
+      //       cb(null, gift, money);
+      //     } else {
+      //       cb(constants.errors.TOO_LITTLE_MONEY, null);
+      //     }
+      //   });
+      // }, ///////////////////////////////////////////////////////////////
+      function (gift, cb) { // Получаем профиль адресата
         
         getUserProfile(options.id, function (err, friendProfile) {
           if(err) { return cb(err); }
           
-          cb(null, friendProfile, gift, money);
+          cb(null, friendProfile, gift);
         });
         
+      }, /////////////////////////////////////////////////////////////////
+      function (friendProfile, gift, cb) { // Снимаем деньги с пользователя
+        payService(selfProfile, gift.price, function (err) {
+          if(err) {
+            return cb(err, null);
+          }
+      
+          cb(null, friendProfile, gift);
+        });
+        // var newMoney = money - gift.price;
+        // selfProfile.setMoney(newMoney, function (err, money) {
+        //   if (err) { return cb(err, null); }
+        //
+        //   socket.emit(constants.IO_GET_MONEY, {
+        //     money : money,
+        //     operation_status : constants.RS_GOODSTATUS
+        //   });
+        //
+        //   cb(null, null);
+        // });
       },///////////////////////////////////////////////////////////////
-      function (friendProfile, gift, money, cb) { // Сохраняем подарок
+      function (friendProfile, gift, cb) { // Сохраняем подарок
 
         var params = {};
         params.fromid  = selfProfile.getID();
@@ -74,21 +96,6 @@ module.exports = function (socket, options, callback) {
 
         friendProfile.addGift(params, function (err, result) {
           if (err) { return cb(err, null); }
-
-          cb(null, gift, money);
-        });
-
-      }, /////////////////////////////////////////////////////////////////
-      function (gift, money, cb) { // Снимаем деньги с пользователя
-
-        var newMoney = money - gift.price;
-        selfProfile.setMoney(newMoney, function (err, money) {
-          if (err) { return cb(err, null); }
-
-          socket.emit(constants.IO_GET_MONEY, {
-            money : money,
-            operation_status : constants.RS_GOODSTATUS
-          });
 
           cb(null, null);
         });

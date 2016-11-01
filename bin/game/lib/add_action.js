@@ -33,14 +33,14 @@ module.exports = function (socket, options, callback) {
     // И выбрать того, кого нет
     if(game.gNextGame == constants.G_SYMPATHY || game.gNextGame == constants.G_SYMPATHY_SHOW) {
       if(!game.gActivePlayers[options.pick]) {
-        return callback(new Error("В игре Симпатии нельзя выбрать несколько раз одного и того же игрока"));
+        return callback(constants.errors.IS_ALREADY_SELECTED);
       }
       
       var actions = game.gActionsQueue[uid];
       
       for( var i = 0; i < actions.length; i++) {
         if(actions[i].pick == options.pick) {
-          return callback(new Error("В игре Симпатии нельзя выбрать того, кого нет среди игроков"));
+          return callback(constants.errors.FORBIDDEN_CHOICE);
         }
       }
     }

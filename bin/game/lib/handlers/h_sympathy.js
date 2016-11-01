@@ -29,9 +29,10 @@ module.exports = function(game) {
       // Отправляем результаты
       var result = {
         next_game   : game.gNextGame,
-        players     : game.getPlayersID,
+        players     : game.getPlayersID(),
         prison      : null
       };
+      
       if(game.gPrisoner !== null) {
         result.prison = {
           id : game.gPrisoner.id,

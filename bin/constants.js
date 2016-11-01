@@ -56,6 +56,8 @@ module.exports.errors = {
   NO_SUCH_CHAT        : { message: "Чат с этим пользователем не существует",                              code : 430 },
   NO_THAT_PLAYER      : { message: "Нельзя выбрать этого игрока",                                         code : 440 },
   NOT_IN_PRISON       : { message: "Этот игрок не находится в тюрьме",                                    code : 441 },
+  IS_ALREADY_SELECTED : { message: "В игре Симпатии нельзя выбрать несколько раз одного и того же игрока",code : 442 },
+  FORBIDDEN_CHOICE    : { message: "В игре Симпатии нельзя выбрать того, кого нет среди игроков",         code : 443 },
   ALREADY_IS_TRACK    : { message: "Трек с таким ид уже есть в плей-листе",                               code : 451 },
   NO_SUCH_TRACK       : { message: "В плей-листе нет трека с таким ид",                                   code : 452 },
   NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },

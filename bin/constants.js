@@ -49,6 +49,7 @@ module.exports.errors = {
   SELF_ILLEGAL        : { message: "Нельзя выполнить это действие в свой адрес",                          code : 410 },
   TOO_LITTLE_MONEY    : { message: "Недостаточно монет",                                                  code : 405 },
   ONLY_FRIEND         : { message: "Подарок можно сделать только другу (монеты)",                         code : 406 },
+  ACTON_TIMEOUT       : { message: "Таймаут на это действие еще не истек",                                code : 407 },
   ALREADY_IS_MENU     : { message: "Добавить в меню - этот пользователь уже добавил приложение в меню",   code : 415 },
   NO_SUCH_ROOM        : { message: "Нет комнаты с таким идентификатором",                                 code : 420 },
   ALREADY_IN_ROOM     : { message: "Пользователь уже в этой комнате",                                     code : 421 },
@@ -115,6 +116,7 @@ module.exports.IO_DEL_QUESTION        = 'del_question';
 module.exports.IO_SHOW_QUESTIONS      = 'show_questions';
 module.exports.IO_DEL_ALL_QUESTIONS   = 'del_all_questions';
 module.exports.IO_GAME_ERROR          = 'game_error';
+module.exports.IO_LIKE_PROFILE        = 'like';
 
 // Игры
 var G_START         = 'results',
@@ -147,7 +149,7 @@ module.exports.GAMES_WITHOUT_PRISON = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, 
 module.exports.CARD_COUNT = 7;
 
 // Выигрышь за угаданную карту
-module.exports.CARD_BOUNUS = 50;
+module.exports.CARD_BOUNUS = 100;
 
 // Минимальное количество игроков одного пола в игре
 module.exports.PLAYERS_COUNT = 2;
@@ -157,15 +159,17 @@ module.exports.SHOW_SYMPATHY_LIMIT = 2;
 
 // Количество очков, начисляющихся за обоюдный поцелуй
 module.exports.KISS_POINTS = 1;
+module.exports.SYMPATHY_POINTS = 1;
+module.exports.BEST_POINTS = 1;
 
 // Раз в сутки получать из базы список вопросов
 module.exports.QUESTIONS_TIMEOUT = 24 * 60 * 60 * 1000;
 
 // Величина выкупа из тюрьмы
-module.exports.RANSOM_PRICE = 50;
+module.exports.RANSOM_PRICE = 10;
 
 // Цена просмтора чужоко выбора
-module.exports.SYMPATHY_PRICE = 5;
+module.exports.SYMPATHY_PRICE = 1;
 
 // Таймауты
 module.exports.TIMEOUT_LOT      = 5 * 1000;
@@ -174,6 +178,10 @@ module.exports.TIMEOUT_BOTTLE   = 7 * 1000;
 module.exports.TIMEOUT_RESULTS  = 5 * 1000;
 module.exports.TIMEOUT_PRISON   = 4 * 1000;
 module.exports.TIMEOUT_SYMPATHY_SHOW = 15 * 1000;
+
+// Таймаут лайка пользователю - 24 часа
+module.exports.TIMEOUT_LIKE     = 24 * 60 * 60 * 1000;
+module.exports.TIMEOUT_ROOM_CHANGE   = 15 * 1000;
 
 // Таблицы базы данных
 module.exports.T_USERS           = 'users';

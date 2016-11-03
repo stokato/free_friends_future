@@ -29,10 +29,9 @@ module.exports = function (em, socket, options, callback) {
   }
   
   // Проверка подписи
-  // if(!checkAuth(em, socket, options)) {
-  //   handError(constants.errors.NO_AUTH, em);
-  //   return false;
-  // }
+  if(!checkAuth(em, socket, options)) {
+    return callback(constants.errors.NO_AUTH);
+  }
   
   var isValid = true;
   var val;
@@ -252,6 +251,13 @@ module.exports = function (em, socket, options, callback) {
       options.id = sanitize(options.id);
       break;
     
+    case constants.IO_LIKE_PROFILE :
+      isValid = checkID(options.id);
+      
+      err.messagee = "Некорректно задан ИД вопроса";
+      
+      options.id = sanitize(options.id);
+      break;
   }
   
   if(isValid == true) {

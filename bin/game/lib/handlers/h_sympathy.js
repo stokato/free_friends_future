@@ -1,5 +1,9 @@
 var constants = require('../../../constants');
 
+var addPoints = require('./../common/add_points');
+
+var GameError = require('./../../../game_error');
+
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
   return function (timer) {
@@ -9,6 +13,33 @@ module.exports = function(game) {
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
+      
+      // game.gActionsQueue = { id : [ { pick - id other player }, {...} ], id : ... }
+      
+      var players = [], count = 0;
+      
+      for(var selfID in game.gActionsQueue) if (game.gActionsQueue.hasOwnProperty(selfID)) {
+        var selfPicks = game.gActionsQueue[selfID];
+        
+        for(var selfPickOptions = 0; selfPickOptions < selfPicks.length; selfPickOptions++) {
+          var selfPick = selfPicks[selfPickOptions].pick;
+          
+          var otherPicks = game.gActionsQueue[selfPick];
+          if(otherPicks) {
+            for(var otherPickOptions = 0; otherPickOptions < otherPicks.length; otherPickOptions++) {
+              var otherPick = otherPicks[otherPickOptions].pick;
+              if(otherPick && otherPick == selfID) {
+                players.push(selfID);
+              }
+            }
+          }
+        }
+      }
+      
+      if(players.length > 0) {
+        addPoints(players[count], constants.SYMPATHY_POINTS, onComplete);
+      }
+      
 
       game.gNextGame = constants.G_SYMPATHY_SHOW;
 
@@ -48,6 +79,16 @@ module.exports = function(game) {
 
       // Устанавливаем таймер
       game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_SYMPATHY_SHOW);
+    }
+    
+    //---------------------
+    function onComplete(err) {
+      if(err) { return new GameError(constants.G_SYMPATHY, err.message); }
+    
+      count++;
+      if(count < players.length) {
+        addPoints(players[count], constants.SYMPATHY_POINTS, onComplete);
+      }
     }
   }
 };

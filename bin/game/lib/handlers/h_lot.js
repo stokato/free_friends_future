@@ -106,7 +106,7 @@ module.exports = function(game) {
         game.activateAllPlayers(bestPlayers);
 
         game.setActionLimit(1);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners;
+        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners - 2;
 
         result.best = bestPlayerInfo;
         break;
@@ -116,7 +116,7 @@ module.exports = function(game) {
         game.activateAllPlayers();
 
         game.setActionLimit(constants.SHOW_SYMPATHY_LIMIT);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners;
+        game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners) * 2;
         break;
       //////////////////// ТЮРЬМА ///////////////////////////////////////////////////////
       case constants.G_PRISON:           // По истечении таймаута, добавляем в тюрьму

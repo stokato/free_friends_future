@@ -35,9 +35,15 @@ module.exports = function (socket, options, callback) {
     return callback(null, null); // Если уже в этой комнате - ничего не делаем
   }
   
+  var selfProfile = oPool.userList[socket.id];
+  
+  // Если таймаут на смену комнаты еще не истек, возвращаем ошибку
+  if(oPool.roomChangeLocks[selfProfile.getID()]) {
+    return callback(constants.errors.ACTON_TIMEOUT);
+  }
+  
   var newRoom = null;
   var currRoom = oPool.roomList[socket.id];
-  var selfProfile = oPool.userList[socket.id];
   var userSex = selfProfile.getSex();
   
   if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
@@ -85,8 +91,11 @@ module.exports = function (socket, options, callback) {
   getRoomInfo(newRoom, function (err, info) {
     if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
     
-    socket.leave(currRoom.name);
+    socket.leave(currRoom.name,function () { });
     socket.join(newRoom.name);
+    
+    oPool.roomChangeLocks[selfProfile.getID()] = true;
+    setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), constants.TIMEOUT_ROOM_CHANGE);
         
     sendUsersInRoom(info, null, function(err, res) {
       if(err) { return callback(err) }
@@ -110,6 +119,14 @@ module.exports = function (socket, options, callback) {
       callback(null, null);
     }
   });
+  
+  //---------------------
+  function setChangeTimeout(locks, selfid, delay) {
+    setTimeout(function () {
+      var lock = String(selfid);
+      delete locks[lock];
+    }, delay);
+  }
   
 };
 

@@ -30,7 +30,8 @@ var addTorFriend        = require('../profile/add_to_friends'),
     addQuestion         = require('../admin/add_question'),
     delQuestion         = require('../admin/delete_question'),
     showQuestions        = require('../admin/show_all_questions'),
-    deleteAllQuestions  = require('../admin/delete_all_questions');
+    deleteAllQuestions  = require('../admin/delete_all_questions'),
+    likeProfile         = require('../profile/like_profile');
 
 // Назначаем эмиты
 module.exports = function(socket) {
@@ -62,7 +63,8 @@ module.exports = function(socket) {
     { emit : constants.IO_ADD_QUESTION,         handler : addQuestion },
     { emit : constants.IO_DEL_QUESTION,         handler : delQuestion },
     { emit : constants.IO_SHOW_QUESTIONS,       handler : showQuestions },
-    { emit : constants.IO_DEL_ALL_QUESTIONS,    handler : deleteAllQuestions }
+    { emit : constants.IO_DEL_ALL_QUESTIONS,    handler : deleteAllQuestions },
+    { emit : constants.IO_LIKE_PROFILE,         handler : likeProfile }
   ];
   
   for(var i = 0; i < emitList.length; i++) {

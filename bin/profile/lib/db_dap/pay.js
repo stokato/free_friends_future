@@ -1,8 +1,14 @@
+/**
+ * Created by s.t.o.k.a.t.o on 17.11.2016.
+ */
+
 var constants = require('../../../constants');
 
-module.exports = function (profile, price, callback) {
+module.exports = function (price, callback) {
   
-  profile.getMoney(function(err, money) {
+  var self = this;
+  
+  self.getMoney(function(err, money) {
     if(err) { return callback(err); }
     
     var newMoney = money - price;
@@ -12,7 +18,7 @@ module.exports = function (profile, price, callback) {
     }
     
     // Снимаем монеты
-    profile.setMoney(newMoney, function(err, money) {
+    self.setMoney(newMoney, function(err, money) {
       if(err) { return callback(err); }
       
       var socket = profile.getSocket();

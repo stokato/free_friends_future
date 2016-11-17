@@ -1,10 +1,19 @@
 var db = require('./../../../db_manager');
+
 /*
  Добавляем друга в БД
  */
-module.exports = function(friendid, callback) {
+module.exports = function(friendProfile, date, callback) {
  var self = this;
- db.addFriend(self.pID, friendid, function (err) {
+  
+  var params = {
+    friendid  : friendProfile.getID(),
+    friendvid : friendProfile.getVID(),
+    date      : date
+  };
+  
+  
+ db.addFriend(self.pID, params, function (err) {
    if (err) { return callback(err, null); }
 
    self.pNewFriends ++;

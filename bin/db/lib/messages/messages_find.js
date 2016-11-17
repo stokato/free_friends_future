@@ -126,7 +126,76 @@ module.exports = function(uid, options, callback) { options = options || {};
 
         cb(null, messages);
       });
-    }//////////////////////////////////////////////////////////////////////////////////
+    },//////////////////////////////////////////////////////////////////////////////////
+    function (messages, cb) { // Отбираем сведения по обоим собеседникам
+      // Отбираем сведения по всем друзьям
+      var fields = ["id", "vid", "age", "sex", "city", "country"];
+      var constFields = ["id"];
+      var constValues = [companions.length + 1];
+    
+      var params = [uid];
+      for(var i = 0; i < companions.length; i++) {
+        params.push(companions[i]);
+      }
+      
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, constFields, constValues);
+      cdb.client.execute(query, params, {prepare: true }, function(err, result) {
+        if (err) { return callback(err, null); }
+      
+        var i, selfInfo, compInfoList = {}, compInfo;
+      
+        for(i = 0; i < result.rows.length; i++) {
+          var info = result.rows[i];
+          info.id = info.id.toString();
+          if(info.id == uid) {
+            selfInfo = info;
+          } else {
+            compInfoList[info.id] = info;
+          }
+        }
+      
+        if(!selfInfo) {
+          cb("Не удалось найти сведения о целевом пользователе");
+        }
+      
+        var message, complMessages = [];
+      
+        selfInfo.id = selfInfo.id.toString();
+      
+        for(i = 0; i < messages.length; i++) {
+          message = {};
+  
+          compInfo = compInfoList[message[i].companionid];
+  
+          if(!compInfo) {
+            cb("Не удалось найти сведения об одном из собеседников");
+          }
+          
+          if(messages[i].incoming) { // Если входящее, берем данные собеседника и наоборот
+            message.id      = compInfo.id;
+            message.vid     = compInfo.vid;
+            message.city    = compInfo.city;
+            message.country = compInfo.country;
+            message.sex     = compInfo.sex;
+          } else {
+            message.id      = selfInfo.id;
+            message.vid     = selfInfo.vid;
+            message.city    = selfInfo.city;
+            message.country = selfInfo.country;
+            message.sex     = selfInfo.sex;
+          }
+          message.chat      = compInfo.id;
+          message.chatVID   = compInfo.vid;
+          message.date      = messages[i].date;
+          message.text      = messages[i].text;
+          message.messageid = messages[i].id;
+        
+          complMessages.push(message);
+        }
+      
+        cb(null, complMessages);
+      });
+    }
   ], function(err, messages) {
     if(err) return callback(err, null);
 

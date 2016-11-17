@@ -7,24 +7,24 @@ var GameError = require('./../../../game_error');
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
   return function (timer) {
-    if (game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if (game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
       
-      // game.gActionsQueue = { id : [ { pick - id other player }, {...} ], id : ... }
+      // game._actionsQueue = { id : [ { pick - id other player }, {...} ], id : ... }
       
       var players = [], count = 0;
       
-      for(var selfID in game.gActionsQueue) if (game.gActionsQueue.hasOwnProperty(selfID)) {
-        var selfPicks = game.gActionsQueue[selfID];
+      for(var selfID in game._actionsQueue) if (game._actionsQueue.hasOwnProperty(selfID)) {
+        var selfPicks = game._actionsQueue[selfID];
         
         for(var selfPickOptions = 0; selfPickOptions < selfPicks.length; selfPickOptions++) {
           var selfPick = selfPicks[selfPickOptions].pick;
           
-          var otherPicks = game.gActionsQueue[selfPick];
+          var otherPicks = game._actionsQueue[selfPick];
           if(otherPicks) {
             for(var otherPickOptions = 0; otherPickOptions < otherPicks.length; otherPickOptions++) {
               var otherPick = otherPicks[otherPickOptions].pick;
@@ -41,44 +41,46 @@ module.exports = function(game) {
       }
       
 
-      game.gNextGame = constants.G_SYMPATHY_SHOW;
+      game._nextGame = constants.G_SYMPATHY_SHOW;
 
       // Сохраняем выбор игроков
-      game.gStoredOptions = game.gActionsQueue;
+      game._storedOptions = game._actionsQueue;
 
       // Очищаем настройки
-      game.gActivePlayers = {};
-      game.gActionsQueue = {};
+      game._activePlayers = {};
+      game._actionsQueue = {};
 
       // Все игроки могут посмотреть результаты всех
       game.activateAllPlayers();
-      var countPrisoners = (game.gPrisoner === null)? 0 : 1;
+      var countPrisoners = (game._prisoner === null)? 0 : 1;
 
-      game.setActionLimit(game.gRoom.girls_count + game.gRoom.guys_count - 1 - countPrisoners);
-      game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners) * 10;
+      game.setActionLimit(game._room.getCountInRoom(constants.GIRL)
+                  + game._room.getCountInRoom(constants.GUY) - 1 - countPrisoners);
+      game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
+                  + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 10;
 
       // Отправляем результаты
       var result = {
-        next_game   : game.gNextGame,
+        next_game   : game._nextGame,
         players     : game.getPlayersID(),
         prison      : null
       };
       
-      if(game.gPrisoner !== null) {
+      if(game._prisoner !== null) {
         result.prison = {
-          id : game.gPrisoner.id,
-          vid: game.gPrisoner.vid,
-          sex: game.gPrisoner.sex
+          id : game._prisoner.id,
+          vid: game._prisoner.vid,
+          sex: game._prisoner.sex
         }
       }
 
       game.emit(result);
 
       // Сохраняем состояние игры
-      game.gameState = result;
+      game._gameState = result;
 
       // Устанавливаем таймер
-      game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_SYMPATHY_SHOW);
+      game.startTimer(game._handlers[game._nextGame], constants.TIMEOUT_SYMPATHY_SHOW);
     }
     
     //---------------------

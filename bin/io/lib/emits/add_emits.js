@@ -2,7 +2,6 @@ var constants     = require('../../../constants');
 
 var emitDisconnect          = require('./emit_disconnect');
 var createCustomEvent   = require('./create_custom_emit');
-var emitGame            = require('./emit_game');
 
 var addTorFriend        = require('../profile/add_to_friends'),
     delFromFriends      = require('../profile/del_from_friends'),

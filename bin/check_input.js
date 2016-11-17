@@ -152,7 +152,7 @@ module.exports = function (em, socket, options, callback) {
         options.pick = sanitize(options.pick);
       }
       
-      switch (options.gNextGame) {
+      switch (options._nextGame) {
         case constants.G_BEST :
           isValid = checkID(options.pick);
           

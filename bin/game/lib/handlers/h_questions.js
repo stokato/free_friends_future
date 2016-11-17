@@ -1,8 +1,8 @@
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {
   return function(timer) {
-    if(game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if(game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
@@ -13,9 +13,9 @@ module.exports = function(game) {
       };
 
       var playerInfo, picks;
-      for (var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        playerInfo = game.gActivePlayers[item];
-        picks = game.gActionsQueue[playerInfo.id];
+      for (var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        playerInfo = game._activePlayers[item];
+        picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
           result.picks.push({

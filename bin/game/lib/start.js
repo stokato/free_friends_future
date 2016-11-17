@@ -4,6 +4,6 @@ var constants = require('../../constants');
 module.exports = function() {
 
   if(this.checkCountPlayers()) {
-    this.gHandlers[constants.G_START]();
+    this._handlers[constants.G_START]();
   }
 };

@@ -1,13 +1,11 @@
 var async      =  require('async');
 
 // Свои модули
-var constants = require('./../../../constants'),
-  getUserProfile     = require('./../common/get_user_profile'),
-  setGiftTimeout = require('./../common/set_gift_timeout'),
-  payService     = require('./../common/pay_service'),
-  db         = require('./../../../db_manager');
-
-var oPool = require('./../../../objects_pool');
+var constants         = require('./../../../constants'),
+  getUserProfile      = require('./../common/get_user_profile'),
+  setGiftTimeout      = require('./../common/set_gift_timeout'),
+  db                  = require('./../../../db_manager'),
+  oPool               = require('./../../../objects_pool');
 
 /*
  Сделать подарок: ИД подарка, объект с инф. о получателе (VID, еще что то?)
@@ -43,17 +41,6 @@ module.exports = function (socket, options, callback) {
         });
       }, ///////////////////////////////////////////////////////////////
       
-      // function (gift, cb) { // Проверяем, достаточно ли денег у пользователя
-      //   selfProfile.getMoney(function (err, money) {
-      //     if (err) { return cb(err, null) }
-      //
-      //     if (gift.price <= money) {
-      //       cb(null, gift, money);
-      //     } else {
-      //       cb(constants.errors.TOO_LITTLE_MONEY, null);
-      //     }
-      //   });
-      // }, ///////////////////////////////////////////////////////////////
       function (gift, cb) { // Получаем профиль адресата
         
         getUserProfile(options.id, function (err, friendProfile) {
@@ -64,37 +51,15 @@ module.exports = function (socket, options, callback) {
         
       }, /////////////////////////////////////////////////////////////////
       function (friendProfile, gift, cb) { // Снимаем деньги с пользователя
-        payService(selfProfile, gift.price, function (err) {
-          if(err) {
-            return cb(err, null);
-          }
+        selfProfile.pay(gift.price, function (err) {
+          if(err) { return cb(err, null); }
       
           cb(null, friendProfile, gift);
         });
-        // var newMoney = money - gift.price;
-        // selfProfile.setMoney(newMoney, function (err, money) {
-        //   if (err) { return cb(err, null); }
-        //
-        //   socket.emit(constants.IO_GET_MONEY, {
-        //     money : money,
-        //     operation_status : constants.RS_GOODSTATUS
-        //   });
-        //
-        //   cb(null, null);
-        // });
       },///////////////////////////////////////////////////////////////
       function (friendProfile, gift, cb) { // Сохраняем подарок
 
-        var params = {};
-        params.fromid  = selfProfile.getID();
-        params.fromvid = selfProfile.getVID();
-        params.date    = date;
-        params.src     = gift.src;
-        params.giftid  = gift.id;
-        params.type    = gift.type;
-        params.title   = gift.title;
-
-        friendProfile.addGift(params, function (err, result) {
+        friendProfile.addGift(selfProfile, date, gift, function (err, result) {
           if (err) { return cb(err, null); }
 
           cb(null, null);
@@ -110,24 +75,26 @@ module.exports = function (socket, options, callback) {
 
         var gift = friendProfile.getGift1();
 
-        var result = {};
-        result.fromid  = selfProfile.getID();
-        result.fromvid = selfProfile.getVID();
-        result.id      = friendProfile.getID();
-        result.vid     = friendProfile.getVID();
-        result.giftid  = gift.giftid;
-        result.src     = gift.src;
-        result.type    = gift.type;
-        result.title   = gift.title;
-        result.date    = gift.date;
-        result.gid     = gift.gid;
-        result.is_private = options.is_private;
+        var result = {
+          fromid : selfProfile.getID(),
+          fromvid : selfProfile.getVID,
+          id      : friendProfile.getID(),
+          vid     : friendProfile.getVID(),
+          giftid  : gift.giftid,
+          src     : gift.src,
+          type    : gift.type,
+          title   : gift.title,
+          date    : gift.date,
+          gid     : gift.gid,
+          is_private : options.is_private
+        };
 
         var room = oPool.roomList[socket.id];
 
         socket.emit(constants.IO_NEW_GIFT, result);
+        
         if(!options.is_private) {
-          socket.broadcast.in(room.name).emit(constants.IO_NEW_GIFT, result);
+          socket.broadcast.in(room.getName()).emit(constants.IO_NEW_GIFT, result);
         } else {
           friendSocket.emit(constants.IO_NEW_GIFT, result);
         }

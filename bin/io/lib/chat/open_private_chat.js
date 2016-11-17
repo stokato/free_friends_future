@@ -24,25 +24,17 @@ module.exports = function(socket, options, callback) {
         
         var secondDate = new Date();
         var firstDate = genDateHistory(secondDate);
-        var chat = {};
-        chat.id          = friendProfile.getID();
-        chat.vid         = friendProfile.getVID();
-        chat.first_date  = firstDate;
-        chat.second_date = secondDate;
-        chat.age         = friendProfile.getAge();
-        chat.city        = friendProfile.getCity();
-        chat.country     = friendProfile.getCountry();
-        chat.sex         = friendProfile.getSex();
 
-        selfProfile.addPrivateChat(chat);
+        selfProfile.addPrivateChat(friendProfile, firstDate, secondDate);
         
-        selfProfile.getHistory(chat, function(err, history) {
+        var params = {
+          id : friendProfile.getID(),
+          first_date : firstDate,
+          second_date : secondDate
+        };
+        
+        selfProfile.getHistory(params, function(err, history) { history = history || [];
           if(err) { return cb(err, null); }
-
-          history = history || [];
-          history.sort(function (mesA, mesB) {
-            return mesA.date - mesB.date;
-          });
 
           for(var i = 0; i < history.length; i++) {
             sendOne(socket, history[i]);

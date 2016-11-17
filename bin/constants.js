@@ -4,6 +4,7 @@ var Config = require('./../config.json');
 module.exports.ONE_SEX_IN_ROOM = Config.io.one_sex_in_room;
 
 // Пол игрока
+module.exports.ANY = -100;
 module.exports.GUY = Config.user.constants.sex.male;
 module.exports.GIRL = Config.user.constants.sex.female;
 
@@ -143,6 +144,7 @@ module.exports.G_PRISON           = G_PRISON;
 
 // Игры с тюрьмой и без
 module.exports.GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
+// module.exports.GAMES = [ G_SYMPATHY, G_PRISON ];
 module.exports.GAMES_WITHOUT_PRISON = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
 
 // Количество карт в игре

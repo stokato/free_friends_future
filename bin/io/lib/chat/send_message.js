@@ -32,15 +32,16 @@ module.exports = function (socket, options, callback) {
 
     var date = new Date();
 
-    var info = {};
-    info.id      = selfProfile.getID();
-    info.vid     = selfProfile.getVID();
-    info.age     = selfProfile.getAge();
-    info.sex     = selfProfile.getSex();
-    info.city    = selfProfile.getCity();
-    info.country = selfProfile.getCountry();
-    info.text    = options.text;
-    info.date    = date;
+    var info = {
+      id      : selfProfile.getID(),
+      vid     : selfProfile.getVID(),
+      age     : selfProfile.getAge(),
+      sex     : selfProfile.getSex(),
+      city    : selfProfile.getCity(),
+      country : selfProfile.getCountry(),
+      text    : options.text,
+      date    : date
+    };
 
     if(!isChat) {
       var currRoom = oPool.roomList[socket.id];
@@ -84,15 +85,8 @@ module.exports = function (socket, options, callback) {
         }
       },//////////////////////////////////////////////////////////////////////
       function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
-        var date = new Date();
-        var savingMessage = {};
-        savingMessage.date         = date;
-        savingMessage.companionid  = selfProfile.getID();
-        savingMessage.companionvid = selfProfile.getVID();
-        savingMessage.incoming     = true;
-        savingMessage.text         = options.text;
 
-        friendProfile.addMessage(savingMessage, function (err, message) {
+        friendProfile.addMessage(selfProfile, true, date, options.text, function (err, message) {
           if (err) { return cb(err, null); }
 
           if (oPool.profiles[options.id]) {
@@ -107,18 +101,12 @@ module.exports = function (socket, options, callback) {
               friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
             }
           }
-          cb(null, savingMessage, friendProfile, date);
+          cb(null, friendProfile);
         });
       }, //////////////////////////////////////////////////////////////////////////////////////
-      function (savingMessage, friendProfile, date, cb) { // Сохраняем сообщение в историю отправителя
+      function (friendProfile, cb) { // Сохраняем сообщение в историю отправителя
 
-        savingMessage.date         = date;
-        savingMessage.companionid  = friendProfile.getID();
-        savingMessage.companionvid = friendProfile.getVID();
-        savingMessage.incoming     = false;
-        //savingMessage[f.text]         = options[f.text];
-
-        selfProfile.addMessage(savingMessage, function (err, message) {
+        selfProfile.addMessage(friendProfile, false, date, options.text, function (err, message) {
           if (err) { cb(err, null); }
 
           info.chat = friendProfile.getID();
@@ -134,7 +122,6 @@ module.exports = function (socket, options, callback) {
       
       callback(null, null);
     });
-
 };
 
 

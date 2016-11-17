@@ -15,25 +15,25 @@ module.exports = function(game) {
     var count = 0, players = [];
 
     // Если все игроки сделали выбор, проверяем - оба ли поцеловали
-    if (game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if (game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
 
       var playerInfo, item, allKissed = true;
-      for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        playerInfo  = game.gActivePlayers[item];
-        if(!game.gActionsQueue[playerInfo.id] || !game.gActionsQueue[playerInfo.id][0].pick === true) {
+      for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        playerInfo  = game._activePlayers[item];
+        if(!game._actionsQueue[playerInfo.id] || !game._actionsQueue[playerInfo.id][0].pick === true) {
           allKissed = false;
         }
       }
 
       // Если оба поцеловали друг друга, нужно добавить им очки, получаем данные игроков
       if(allKissed) {
-        for(item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-          players.push(game.gActivePlayers[item]);
+        for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+          players.push(game._activePlayers[item]);
         }
         addPoints(players[count].id, constants.KISS_POINTS, onComplete);
       }
@@ -43,7 +43,7 @@ module.exports = function(game) {
 
     //----------------
     function broadcastPick(uid) {
-      var playerInfo = game.gActivePlayers[uid];
+      var playerInfo = game._activePlayers[uid];
 
       var result = {
         id   : uid,
@@ -52,8 +52,8 @@ module.exports = function(game) {
       };
       game.emit(result);
 
-      if(!game.gameState.picks) { game.gameState.picks = []; }
-      game.gameState.picks.push(result);
+      if(!game._gameState.picks) { game._gameState.picks = []; }
+      game._gameState.picks.push(result);
     }
 
     function onComplete(err) {

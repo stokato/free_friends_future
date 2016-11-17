@@ -1,12 +1,20 @@
 var db = require('./../../../db_manager');
 
-var constants = require('./../../../constants');
-
 /*
  Добавляем подарок в БД
  */
-module.exports = function(options, callback) {
+module.exports = function(giftMaker, date, gift, callback) {
   var self = this;
+  
+  var options = {
+    fromid      : giftMaker.getID(),
+    fromvid     : giftMaker.getVID(),
+    date        : date,
+    src         : gift.src,
+    giftid      : gift.id,
+    type        : gift.type,
+    title       : gift.title
+  };
 
   db.addGift(self.pID, options, function(err, result) {
     if (err) { return callback(err, null); }

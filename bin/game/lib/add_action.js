@@ -10,33 +10,33 @@ module.exports = function (socket, options, callback) {
   var game = selfProfile.getGame();
   
   // Если этому пользователю можно ходить, и он еще не превысил лимит ходов
-  if(game.gActivePlayers[uid] && game.gActionsLimits[uid] > 0) {
+  if(game._activePlayers[uid] && game._actionsLimits[uid] > 0) {
     
     // Если нет такого пользоателя среди кандидатов
-    if(game.gNextGame == constants.G_BEST && !game.gStoredOptions[options.pick]) {
+    if(game._nextGame == constants.G_BEST && !game._storedOptions[options.pick]) {
       return callback(constants.errors.NO_THAT_PLAYER);
     }
     
     // В игре симпатии нельзя указать себя
-    if(game.gNextGame == constants.G_SYMPATHY && uid == options.pick) {
+    if(game._nextGame == constants.G_SYMPATHY && uid == options.pick) {
       return callback(constants.errors.SELF_ILLEGAL);
     }
-    if(game.gNextGame == constants.G_SYMPATHY_SHOW && uid == options.pick) {
+    if(game._nextGame == constants.G_SYMPATHY_SHOW && uid == options.pick) {
       return callback(constants.errors.SELF_ILLEGAL);
     }
     
-    if(!game.gActionsQueue[uid]) {
-      game.gActionsQueue[uid] = [];
+    if(!game._actionsQueue[uid]) {
+      game._actionsQueue[uid] = [];
     }
     
     // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
     // И выбрать того, кого нет
-    if(game.gNextGame == constants.G_SYMPATHY || game.gNextGame == constants.G_SYMPATHY_SHOW) {
-      if(!game.gActivePlayers[options.pick]) {
+    if(game._nextGame == constants.G_SYMPATHY || game._nextGame == constants.G_SYMPATHY_SHOW) {
+      if(!game._activePlayers[options.pick]) {
         return callback(constants.errors.IS_ALREADY_SELECTED);
       }
       
-      var actions = game.gActionsQueue[uid];
+      var actions = game._actionsQueue[uid];
       
       for( var i = 0; i < actions.length; i++) {
         if(actions[i].pick == options.pick) {
@@ -46,13 +46,13 @@ module.exports = function (socket, options, callback) {
     }
     
     // Уменьшаем счетчики ходов одного игрока и всех в текущем раунде
-    game.gActionsLimits[uid] --;
+    game._actionsLimits[uid] --;
     
-    game.gActionsQueue[uid].push(options);
-    game.gActionsCount--;
+    game._actionsQueue[uid].push(options);
+    game._actionsCount--;
     
     // Вызваем обработчик текущей игры
-    game.gHandlers[game.gNextGame](false, uid, options);
+    game._handlers[game._nextGame](false, uid, options);
   
     callback(null, null);
   }

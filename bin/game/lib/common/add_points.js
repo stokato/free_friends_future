@@ -1,18 +1,21 @@
-var constants = require('./../../../constants');
+var constants     = require('./../../../constants'),
+    oPool         = require('./../../../objects_pool'),
+    ProfileJS     = require('./../../../profile/index'),
+    GameError     = require('./../../../game_error'),
+    handleError   = require('../../../handle_error');
 
-var oPool = require('./../../../objects_pool');
-var ProfileJS = require('./../../../profile/index');
-
-var handleError = require('../../../handle_error');
-var GameError = require('./../../../game_error');
-
-// Добавляем пользователю очки
+/*
+    Добавляем пользователю очки
+  */
 module.exports = function (uid, count, callback) {
   
+  // Если пользователь оналайн, берем из пула
   var player = oPool.profiles[uid];
   
   if(player) {
     player.addPoints(count, onPoints(player));
+    
+    // Либо создаем
   } else {
     player = new ProfileJS();
     player.build(uid, function (err, info) {

@@ -19,11 +19,13 @@ module.exports = function (socket,  callback) {
 
   var sex = selfProfile.getSex();
 
+  // Получаем название текущей комнаты (если есть такая)
   var selfRoomName = '';
   if(oPool.roomList[socket.id]) {
     selfRoomName = oPool.roomList[socket.id].name;
   }
 
+  // Выбираем комнату с наименьшим количеством пустующих мест для этого пола
   var item;
   for(item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
@@ -35,32 +37,26 @@ module.exports = function (socket,  callback) {
       }
     }
   }
-
-  if(!newRoom) { // Нет ни одной свободной комнаты
-    newRoom = createRoom(socket, oPool.userList);
-    oPool.rooms[newRoom.name] = newRoom;
-  }
-
-  socket.join(newRoom.name);
-
-  newRoom.addProfile(sex, selfProfile);
   
-  selfProfile.setGameIndex(newRoom.popIndex(sex));
-
+  // Нет ни одной свободной комнаты, создаем новую
+  if(!newRoom) {
+    newRoom = createRoom(socket, oPool.userList);
+    oPool.rooms[newRoom.getName()] = newRoom;
+  }
+  
   var oldRoom = oPool.roomList[socket.id];
   if(oldRoom) {
-    socket.leave(oldRoom.name);
-    oldRoom.deleteProfile(sex, selfProfile.getID());
-    oldRoom.pushIndex(sex, selfProfile.getGameIndex());
+    oldRoom.deleteProfile(sex, selfProfile);
     
     if(oldRoom.getCountInRoom(constants.GUY) == 0 &&
-        oldRoom.getCountInRoom(constants.GIRL) == 0)  {
-      delete oPool.rooms[oldRoom.name];
+      oldRoom.getCountInRoom(constants.GIRL) == 0)  {
+      delete oPool.rooms[oldRoom.getName()];
     }
   }
   
+  newRoom.addProfile(sex, selfProfile);
   
-  selfProfile.setGame(newRoom.game);
+  selfProfile.setGame(newRoom.getGame());
   oPool.roomList[socket.id] = newRoom;
 
   callback(null, newRoom);

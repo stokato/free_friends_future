@@ -4,7 +4,6 @@ var oPool                 = require('./../../../objects_pool'),
     ProfileJS             = require('./../../../profile/index'),
     addProfileToPool      = require('./../common/add_profile_to_pool'),
     autoPlace             = require('./../common/auto_place_in_room'),
-    getRoomInfo           = require('./../common/get_room_info'),
     startTrack            = require('./../player/start_track'),
     sendUsersInRoom       = require('./../common/send_users_in_room'),
     addEmits              = require('../emits/add_emits');
@@ -63,27 +62,27 @@ module.exports = function (socket, options, callback) {
     },///////////////////////////////////////////////////////////////
     
     function (info, room, selfProfile, cb) { // Получаем данные по игрокам в комнате (для стола)
-      getRoomInfo(room, function (err, roomInfo) {
-        if (err) { return cb(err, null); }
+  
+      var roomInfo = room.getInfo();
+  
+      info.room = roomInfo;
+  
+      if(info.gift1) {
+        var currDate = new Date();
+        var giftDate = new Date(info.gift1.date);
+        if(currDate >= giftDate) {
+          selfProfile.clearGiftInfo(function() {
+            info.gift1 = null;
         
-        info.room = roomInfo;
-        
-        if(info.gift1) {
-          var currDate = new Date();
-          var giftDate = new Date(info.gift1.date);
-          if(currDate >= giftDate) {
-            selfProfile.clearGiftInfo(function() {
-              info.gift1 = null;
-              
-              cb(null, info, room, roomInfo);
-            });
-          } else {
             cb(null, info, room, roomInfo);
-          }
+          });
         } else {
           cb(null, info, room, roomInfo);
         }
-      });
+      } else {
+        cb(null, info, room, roomInfo);
+      }
+  
     },///////////////////////////////////////////////////////////////
     
     function(info, room, roomInfo, cb) { // Отравляем в комнату сведения о пользователях в ней
@@ -97,10 +96,10 @@ module.exports = function (socket, options, callback) {
       });
     },//////////////////////////////////////////////////////////////
     
-    function(info, room, cb) {  // Уведомляем всех о входе пользователя
+    function(info, room, cb) {
   
       // Запускаем игру
-      room.game.start(socket);
+      room.getGame().start(socket);
       
       addEmits(socket);
       

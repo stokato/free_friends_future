@@ -9,7 +9,6 @@ var db = require('./../../../db_manager');
  */
 module.exports = function(options, callback) {
  var self = this;
- //var f = constants.FIELDS;
 
  if(self.pPrivateChats[0]) { // Если есть открытые чаты
    var arr = [];
@@ -21,44 +20,16 @@ module.exports = function(options, callback) {
    params.id_list        = arr;
    params.first_date  = options.first_date;
    params.second_date = options.second_date;
-
-   db.findMessages(self.pID, params, function(err, messages) { // Получаем историю
+  
+   // Получаем историю
+   db.findMessages(self.pID, params, function(err, messages) { messages = messages || [];
      if (err) { return callback(err, null); }
+  
+     messages.sort(function (mesA, mesB) {
+       return mesA.date - mesB.date;
+     });
 
-     messages = messages || [];
-     // var message = {};
-     var i, j, history = [];
-     for(i = 0; i < messages.length; i++) {
-       var message = {};
-    
-       if (!messages[i].incoming && messages[i].userid.toString() == self.getID()) {
-         message.vid = self.pVID;
-         message.city = self.pCity;
-         message.country = self.pCountry;
-         message.sex = self.pSex;
-       } else {
-         for(j = 0; j < self.pPrivateChats.length; j++) {
-           var currChat = self.pPrivateChats[j];
-           if (messages[i].incoming && messages[i].companionid == currChat.id) {
-             message.vid = currChat.vid;
-             message.city = currChat.city;
-             message.country = currChat.country;
-             message.sex = currChat.sex;
-           }
-         }
-       }
-    
-       message.chat = messages[i].companionid;
-       message.chatVID = messages[i].companionvid;
-       message.date = messages[i].date;
-       message.text = messages[i].text;
-       message.id = messages[i].id;
-    
-       history.push(message);
-       //}
-     }
-
-     callback(null, history);
+     callback(null, messages);
 
    });
  } else { callback(null, null) ;}

@@ -23,6 +23,7 @@ var init                            = require('./lib/init/init'),
     remove                          = require('./lib/db_dap/remove'),
     save                            = require('./lib/db_dap/save'),
     setMoney                        = require('./lib/db_dap/set_money'),
+    pay                             = require('./lib/db_dap/pay'),
     setStatus                       = require('./lib/db_dap/set_status'),
     setSocket                       = require('./lib/db_undep/set_socket'),
     addPrivateChat                  = require('./lib/db_undep/add_private_chat'),
@@ -113,7 +114,6 @@ Profile.prototype.getGifts        = getGifts;
 Profile.prototype.addMessage      = addMessage;
 Profile.prototype.getPrivateChats = getPrivateChats;
 Profile.prototype.getHistory      = getHistory;
-//Profile.prototype.addPoints       = addPoints;
 Profile.prototype.setMoney        = setMoney;
 Profile.prototype.setStatus       = setStatus;
 Profile.prototype.setSocket       = setSocket;
@@ -148,5 +148,7 @@ Profile.prototype.delFromFriends = delFromFriends;
 
 Profile.prototype.getGift1  = getGift1;
 Profile.prototype.clearGiftInfo = clearGiftInfo;
+
+Profile.prototype.pay = pay;
 
 module.exports = Profile;

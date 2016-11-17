@@ -3,7 +3,7 @@ var constants = require('../../../constants');
 // Выбор следующей игры
 module.exports = function(game) {
   return function(timer, uid) {
-    clearTimeout(game.gTimer);
+    clearTimeout(game._timer);
 
     var timeout = constants.TIMEOUT_GAME;
 
@@ -13,9 +13,9 @@ module.exports = function(game) {
 
     // Определяем следующую игру, если игроков слишком мало - то без тюрьмы
     var rand;
-    var games = (game.gPrisoner !== null ||
-                  game.gRoom.girls_count <= 2 ||
-                    game.gRoom.guys_count <= 2)? constants.GAMES_WITHOUT_PRISON : constants.GAMES;
+    var games = (game._prisoner !== null ||
+                  game._room.getCountInRoom(constants.GIRL) <= 2 ||
+                    game._room.getCountInRoom(constants.GUY) <= 2)? constants.GAMES_WITHOUT_PRISON : constants.GAMES;
 
     do {
       rand = Math.floor(Math.random() * games.length);
@@ -23,61 +23,64 @@ module.exports = function(game) {
 
     game.gStoredRand = rand;
 
-    game.gNextGame = games[rand];
+    game._nextGame = games[rand];
+    
     
     // Очищаем настройки
-    game.gActionsQueue = {};
+    game._actionsQueue = {};
 
     var result = {
-      next_game    : game.gNextGame,
+      next_game    : game._nextGame,
       players      : []
     };
 
-    var countPrisoners = (game.gPrisoner === null)? 0 : 1;
+    var countPrisoners = (game._prisoner === null)? 0 : 1;
 
-    switch (game.gNextGame) {
+    switch (game._nextGame) {
       /////////////////////// БУТЫЛОЧКА //////////////////////////////////////////
       case constants.G_BOTTLE :    // для бутылочки ходит тот же, кто крутил вочек
-        game.gActionsCount = 1;
+        game._actionsCount = 1;
         game.setActionLimit(1);
         
         timeout = constants.TIMEOUT_BOTTLE;
         break;
       ////////////////////// ВОПРОСЫ ////////////////////////////////////////////////////
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
-        game.gActivePlayers = {};
+        game._activePlayers = {};
         game.activateAllPlayers();
 
         game.setActionLimit(1);
 
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners;
+        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
+                                  + game._room.getCountInRoom(constants.GUY) - countPrisoners;
 
         result.question =  game.getRandomQuestion();
         break;
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
-        game.gActivePlayers = {};
+        game._activePlayers = {};
         game.activateAllPlayers();
 
         game.setActionLimit(1);
 
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners;
+        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
+                                + game._room.getCountInRoom(constants.GUY) - countPrisoners;
         break;
       //////////////////// ЛУЧШИЙ ///////////////////////////////////////////////////////
       case constants.G_BEST : // для игры "лучший" выбираем произвольно пару к игроку того же пола, ходят остальные
 
         var firstPlayer = null;
         if(uid) {
-          firstPlayer = game.gActivePlayers[uid];
+          firstPlayer = game._activePlayers[uid];
         } else {
-          for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-            firstPlayer = game.gActivePlayers[item];
+          for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+            firstPlayer = game._activePlayers[item];
           }
         }
 
         // Получаем второго игрока
         var firstGender = firstPlayer.sex;
-        var randPlayer = game.getRandomPlayer(firstGender, [firstPlayer.id]);
+        var randPlayer = games._room.randomProfile(firstGender, [firstGender.id]);
 
         if(!randPlayer) {
           return game.stop();
@@ -97,31 +100,33 @@ module.exports = function(game) {
         }];
 
         // Сохраняем опции
-        game.gStoredOptions = {};
-        game.gStoredOptions[firstPlayer.id] = firstPlayer;
-        game.gStoredOptions[secondPlayer.id] = secondPlayer;
+        game._storedOptions = {};
+        game._storedOptions[firstPlayer.id] = firstPlayer;
+        game._storedOptions[secondPlayer.id] = secondPlayer;
 
         // Ходяв все оставшиеся игроки по разу
-        game.gActivePlayers = {};
+        game._activePlayers = {};
         game.activateAllPlayers(bestPlayers);
 
         game.setActionLimit(1);
-        game.gActionsCount = game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners - 2;
+        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
+                              + game._room.getCountInRoom(constants.GUY) - countPrisoners - 2;
 
         result.best = bestPlayerInfo;
         break;
       //////////////////// СИМПАТИИ ///////////////////////////////////////////////////////
       case constants.G_SYMPATHY:          // Ходяв все игроки по 2 раза
-        game.gActivePlayers = {};
+        game._activePlayers = {};
         game.activateAllPlayers();
 
         game.setActionLimit(constants.SHOW_SYMPATHY_LIMIT);
-        game.gActionsCount = (game.gRoom.girls_count + game.gRoom.guys_count - countPrisoners) * 2;
+        game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
+                                + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 2;
         break;
       //////////////////// ТЮРЬМА ///////////////////////////////////////////////////////
       case constants.G_PRISON:           // По истечении таймаута, добавляем в тюрьму
 
-        //game.gActionsCount = 1;
+        //game._actionsCount = 1;
         //game.setActionLimit(1);
 
         timeout = constants.TIMEOUT_PRISON;
@@ -132,20 +137,20 @@ module.exports = function(game) {
 
 
     // Добавляем данные об игроке в темнице и отправляем результаты игрокам
-    if(game.gPrisoner !== null) {
+    if(game._prisoner !== null) {
       result.prison = {
-        id : game.gPrisoner.id,
-        vid: game.gPrisoner.vid,
-        sex: game.gPrisoner.sex
+        id : game._prisoner.id,
+        vid: game._prisoner.vid,
+        sex: game._prisoner.sex
       }
     } else {
       result.prison = null;
     }
 
     game.emit(result);
-    game.gameState = result;
+    game._gameState = result;
 
     // Устанавливаем таймаут
-    game.startTimer(game.gHandlers[game.gNextGame], timeout);
+    game.startTimer(game._handlers[game._nextGame], timeout);
   }
 };

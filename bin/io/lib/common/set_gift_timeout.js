@@ -1,25 +1,22 @@
 var constants = require('./../../../constants'),
   sendUsersInRoom = require('./send_users_in_room'),
   GameError       = require('../../../game_error'),
-  getRoomInfo     = require('./get_room_info');
+  oPool = require('./../../../objects_pool');
 
-var oPool = require('./../../../objects_pool');
-
+// Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
 module.exports = function(id) {
   setTimeout(function () {
     var profile = oPool.profiles[id];
     if(profile) {
       profile.clearGiftInfo(function() {
-        var room = oPool.roomList[profile.getSocket().id];
-
-        getRoomInfo(room, function (err, roomInfo) {
-          if (err) { return new GameError(socket, constants.IO_MAKE_GIFT, err.message || constants.errors.OTHER.message); }
-
-          sendUsersInRoom(roomInfo, null, function(err, roomInfo) {
-            if(err) { return new GameError(socket, constants.IO_MAKE_GIFT, err.message || constants.errors.OTHER.message); }
-
-          });
+        
+        var roomInfo = oPool.roomList[profile.getSocket().id].getInfo();
+        
+        sendUsersInRoom(roomInfo, null, function(err, roomInfo) {
+          if(err) { return new GameError(socket, constants.IO_MAKE_GIFT, err.message || constants.errors.OTHER.message); }
+    
         });
+        
       });
     }
   }, constants.GIFT_TIMEOUT);

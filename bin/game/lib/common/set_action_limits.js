@@ -1,8 +1,8 @@
 // Устанавливаем для всех игроков указанный лемит ходов
 module.exports = function(limit) {
   var item;
-  this.gActionsLimits = {};
-  for(item in this.gActivePlayers) if(this.gActivePlayers.hasOwnProperty(item)) {
-    this.gActionsLimits[item] = limit;
+  this._actionsLimits = {};
+  for(item in this._activePlayers) if(this._activePlayers.hasOwnProperty(item)) {
+    this._actionsLimits[item] = limit;
   }
 };

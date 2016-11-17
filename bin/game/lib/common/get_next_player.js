@@ -6,40 +6,35 @@ module.exports = function (prisonerResuming) {
 
   // Определяем - из кого выбирать - из мальчиков или из девочек
   var players, currIndex;
-  if(this.currentSex == constants.GIRL) {
-    players = this.gRoom.guys;
-    currIndex = this.guysIndex;
+  if(this._currentSex == constants.GIRL) {
+    players = this._room.getAllPlayers(constants.GUY);
+    currIndex = this._guysIndex;
   } else {
-    players = this.gRoom.girls;
-    currIndex = this.girlsIndex;
-  }
-
-  // Получаем всех игроков одного пола
-  var arr = [], player;
-  for(var item in players) if(players.hasOwnProperty(item)) {
-    player = players[item];
-    arr.push({ player : player, index : player.getGameIndex()});
+    players = this._room.getAllPlayers(constants.GIRL);
+    currIndex = this._girlsIndex;
   }
 
   // Сортируем по индексу
-  arr.sort(compareIndex);
+  players.sort(function (player1, player2) {
+    return player1.getGameIndex() - player2.getGameIndex();
+  });
 
   // Если в темнице кто-то есть, получаем его ид
   var prisonerId = null;
-  if(this.gPrisoner) {
-    prisonerId = this.gPrisoner.id;
+  if(this._prisoner) {
+    prisonerId = this._prisoner.id;
   }
 
   // Получаем игрока с индексом больше текущего
-  for(var i = 0; i < arr.length; i++) {
+  for(var i = 0; i < players.length; i++) {
 
-    if(arr[i].index > currIndex) {
-      var nextPlayer = arr[i].player;
+    if(players[i].getGameIndex() > currIndex) {
+      var nextPlayer = players[i];
 
       // Если он в темнице и его можно освободить, очищаем ее и возвращаем следующего игрока
       if(nextPlayer.getID() == prisonerId) {
         if(prisonerResuming) {
-          this.gPrisoner = null;
+          this._prisoner = null;
         }
 
         // если нет - возвращаем его
@@ -51,31 +46,28 @@ module.exports = function (prisonerResuming) {
   }
 
   // Если текущий последний, берем с начала
-  if(arr[0].player.getID() == prisonerId) {
+  if(players[0].getID() == prisonerId) {
     if(prisonerResuming) {
-      this.gPrisoner = null;
+      this._prisoner = null;
     }
 
-    return onComplete(arr[1].player);
+    return onComplete(players[1]);
   }
 
-  return onComplete(arr[0].player);
+  return onComplete(players[0]);
 
   //----------------------
   function onComplete(nextPlayer) {
     // Устанавливаем новые текуще индекс и пол
-    if(self.currentSex == constants.GIRL) {
-      self.guysIndex = nextPlayer.getGameIndex();
+    if(self._currentSex == constants.GIRL) {
+      self._guysIndex = nextPlayer.getGameIndex();
     } else {
-      self.girlsIndex = nextPlayer.getGameIndex();
+      self._girlsIndex = nextPlayer.getGameIndex();
     }
-    self.currentSex = nextPlayer.getSex();
+    self._currentSex = nextPlayer.getSex();
 
     // Возвращаем нового игрока
     return self.getPlayerInfo(nextPlayer);
   }
-
-  function compareIndex(player1, player2) {
-    return player1.index - player2.index;
-  }
+  
 };

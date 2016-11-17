@@ -2,21 +2,21 @@ var constants = require('../../constants');
 
 // Останавливаем игру
 module.exports = function() {
-  clearTimeout(this.gTimer);
+  clearTimeout(this._timer);
 
-  this.gNextGame = constants.G_START;
+  this._nextGame = constants.G_START;
 
-  this.gActionsQueue   = {};
-  this.gActionsLimits  = {};
-  this.gStoredOptions  = {};
-  this.gActivePlayers  = {};
+  this._actionsQueue   = {};
+  this._actionsLimits  = {};
+  this._storedOptions  = {};
+  this._activePlayers  = {};
 
-  this.gameState = null;
+  this._gameState = null;
 
-  this.gTimer = null;
-  this.gActionsCount = 0;
+  this._timer = null;
+  this._actionsCount = 0;
 
-  this.gPrisoner = null;
+  this._prisoner = null;
 
   this.start();
 };

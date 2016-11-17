@@ -13,16 +13,17 @@ module.exports = function(num, callback) {
     return callback(new Error("Ошибка при добавлении очков пользователю, количество очков задано некорректно"));
   }
   var self = this;
-  //var f = constants.FIELDS;
+  
   self.pPoints = self.pPoints || 0;
   var oldPoints = self.pPoints;
 
   async.waterfall([ ////////////////////////////////////////////////////
     function(cb) { // Обновляем очки пользователя в основной таблице
-      var options = {};
-      options.id = self.pID;
-      options.vid = self.pVID;
-      options.points = self.pPoints + num;
+      var options = {
+        id      : self.pID,
+        vid     : self.pVID,
+        points  : self.pPoints + num
+      };
 
       db.updateUser(options, function(err) {
         if (err) {return cb(err, null); }
@@ -31,12 +32,13 @@ module.exports = function(num, callback) {
       });
     }, /////////////////////////////////////////////////////////////////
     function(res, cb) { // Добавляем новые данные в таблицу очков
-        var options = {};
-        options.userid = self.pID;
-        options.uservid = self.pVID;
-        options.sex = self.pSex;
-      //options[f.uid] = self.pID;
-      options.points = self.pPoints + num;
+        var options = {
+          userid  : self.pID,
+          uservid : self.pVID,
+          sex     : self.pSex,
+          points  : self.pPoints + num
+        };
+      
       db.addPoints(options, function(err) {
         if(err) { return cb(err, null); }
 
@@ -45,8 +47,7 @@ module.exports = function(num, callback) {
       });
     }//////////////////////////////////////////////////////////
   ], function(err, res) { // Обрабатываем ошибки или возвращаем результаты
-    if(err) {
-      return callback(err, null); }
+    if(err) { return callback(err, null); }
 
     callback(null, self.pPoints);
   })

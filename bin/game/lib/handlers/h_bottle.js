@@ -3,7 +3,7 @@ var constants = require('../../../constants');
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
   return function(timer, uid) {
-    if(!timer) { clearTimeout(game.gTimer); }
+    if(!timer) { clearTimeout(game._timer); }
 
     if(!game.checkCountPlayers()) {
       return game.stop();
@@ -12,10 +12,10 @@ module.exports = function(game) {
     // Получаем данные по первому игроку
     var firstPlayerInfo = null;
     if(uid) {
-      firstPlayerInfo = game.gActivePlayers[uid];
+      firstPlayerInfo = game._activePlayers[uid];
     } else { // В случае, если игрок так и не покрутил волчек, берем его uid из настроек
-      for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        firstPlayerInfo = game.gActivePlayers[item];
+      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        firstPlayerInfo = game._activePlayers[item];
       }
     }
 
@@ -25,21 +25,21 @@ module.exports = function(game) {
     var female = constants.GIRL;
 
     var secondGender = (firstGender == male)? female : male;
-    var secondPlayer = game.getRandomPlayer(secondGender);
+    var secondPlayer = game._room.randomProfile(secondGender);
 
     if(!secondPlayer) {
       return game.stop();
     }
 
     // Разрешаем второму игроку ходить
-    game.gActivePlayers[secondPlayer.getID()] = game.getPlayerInfo(secondPlayer);
+    game._activePlayers[secondPlayer.getID()] = game.getPlayerInfo(secondPlayer);
 
     // Оба могут ответить по разу
-    game.gActionsQueue = {};
+    game._actionsQueue = {};
     game.setActionLimit(1);
-    game.gActionsCount = 2;
+    game._actionsCount = 2;
 
-    game.gNextGame = constants.G_BOTTLE_KISSES;
+    game._nextGame = constants.G_BOTTLE_KISSES;
 
     // Отправляем результаты
     var result = {};
@@ -47,18 +47,18 @@ module.exports = function(game) {
     result.next_game = constants.G_BOTTLE_KISSES;
 
     result.prison = null;
-    if(game.gPrisoner !== null) {
+    if(game._prisoner !== null) {
       result.prison = {
-        id : game.gPrisoner.id,
-        vid: game.gPrisoner.vid,
-        sex: game.gPrisoner.sex
+        id : game._prisoner.id,
+        vid: game._prisoner.vid,
+        sex: game._prisoner.sex
       }
     }
 
     game.emit(result);
-    game.gameState = result;
+    game._gameState = result;
 
     // Устанавливаем таймаут
-    game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_GAME);
+    game.startTimer(game._handlers[game._nextGame], constants.TIMEOUT_GAME);
   }
 };

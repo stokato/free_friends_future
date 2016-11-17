@@ -2,7 +2,6 @@ var async     =  require('async');
 
 var GameError       = require('../../../game_error'),      // Ошбики
     constants       = require('./../../../constants'),     // Константы
-    getRoomInfo     = require('./get_room_info'),
     emitAllRooms    = require('../common/emit_all_rooms'),
     sendUsersInRoom = require('./send_users_in_room');
 
@@ -21,7 +20,7 @@ module.exports = function(socket) {
       };
 
       for(var r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
-        socket.broadcast.in(r.name).emit(constants.IO_OFFLINE, info);
+        socket.broadcast.in(r.getName()).emit(constants.IO_OFFLINE, info);
       }
 
       cb(null, null);
@@ -44,15 +43,13 @@ module.exports = function(socket) {
 
       if (room) {
         
-        room.pushIndex(sex, selfProfile.getGameIndex());
-        
-        room.deleteProfile(sex, selfProfile.getID());
+        room.deleteProfile(sex, selfProfile);
         
         delete oPool.roomList[socket.id];
         delete oPool.profiles[selfProfile.getID()];
         
         if (room.getCountInRoom(constants.GUY) == 0 && room.getCountInRoom(constants.GIRL) == 0) {
-          delete oPool.rooms[room.name];
+          delete oPool.rooms[room.getName()];
           room = null;
         }
       }
@@ -60,17 +57,17 @@ module.exports = function(socket) {
     },///////////////////////////////////////////////////////////////
     function (room, cb) { // Получаем данные по игрокам в комнате (для стола)
       if(room) {
-        getRoomInfo(room, function (err, roomInfo) {
-          if (err) { return cb(err, null); }
-          
-          sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
-            if(err) { return cb(err); }
+        
+        var roomInfo = room.getInfo();
   
-            emitAllRooms(socket, constants.IO_OFFLINE, {id : selfProfile.getID(), vid : selfProfile.getVID() });
-
-            cb(null, null);
-          });
+        sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
+          if(err) { return cb(err); }
+    
+          emitAllRooms(socket, constants.IO_OFFLINE, {id : selfProfile.getID(), vid : selfProfile.getVID() });
+    
+          cb(null, null);
         });
+
       } else {
         cb(null, null);
       }

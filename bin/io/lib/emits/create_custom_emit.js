@@ -8,7 +8,7 @@ var constants     = require('../../../constants'),
   checkInput      = require('../../../check_input');
 
 /*
-  Создаеть обработчик для указанного эмита, получает так же функцию, которая выполняется при срабатывании
+  Создает обработчик для указанного эмита, получает так же функцию, которая выполняется при срабатывании
  */
 module.exports = function (socket, emit, handler, withoutStatus) {
   socket.on(emit, function(options) {
@@ -17,7 +17,7 @@ module.exports = function (socket, emit, handler, withoutStatus) {
       var selfProfile = oPool.userList[socket.id];
       var game = selfProfile.getGame();
   
-      options.gNextGame = game.getNextGame();
+      options._nextGame = game.getNextGame();
     }
   
     async.waterfall(

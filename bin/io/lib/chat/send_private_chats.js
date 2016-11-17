@@ -6,20 +6,15 @@ module.exports = function (socket, callback) { // Получаем данные 
   var secondDate = new Date();
   var firstDate = genDateHistory(secondDate);
   
-  var period = {};
-  period.first_date = firstDate;
-  period.second_date = secondDate;
-  oPool.userList[socket.id].getPrivateChatsWithHistory(period, function(err, history) {
+  var params = {
+    first_date : firstDate,
+    second_date : secondDate
+  };
+
+  oPool.userList[socket.id].getPrivateChatsWithHistory(params, function(err, history) { history = history || [];
     if(err) { return callback(err, null) }
     
-    history = history || [];
-    
-    history.sort(function (mesA, mesB) {
-      return mesA.date - mesB.date;
-    });
-    
-    var i;
-    for(i = 0; i < history.length; i++) {
+    for(var i = 0; i < history.length; i++) {
       socket.emit(constants.IO_MESSAGE, history[i]);
     }
     

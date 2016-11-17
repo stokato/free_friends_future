@@ -1,7 +1,6 @@
 var async     =  require('async');
 
-var constants = require('./../../../constants'),
-  getRoomInfo = require('./../common/get_room_info');
+var constants = require('./../../../constants');
 
 var oPool = require('../../../objects_pool');
 
@@ -26,51 +25,51 @@ module.exports = function (socket, options, callback) {
       var freeRooms = [];
       var item;
       
+      // Отбираем комнаты со свободными для нашего пола местами
       for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)
         && oPool.rooms[item].getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM &&
-        oPool.roomList[socket.id].name != oPool.rooms[item].name) {
+        oPool.roomList[socket.id].name != oPool.rooms[item].getName()) {
         
         freeRooms.push(oPool.rooms[item]);
       }
       
       if(freeRooms.length > 0) {
         var index = Math.floor(Math.random() * freeRooms.length);
-        var randRoom = freeRooms[index];
         
-        getRoomInfo(randRoom, function (err, info) {
-          if (err) { return cb(err, null); }
-          
-          cb(null, info);
-        });
+        var info = freeRooms[index].getInfo();
+        cb(null, info);
         
       } else {
         cb(null, null);
       }
     },////////////////////////////////// Получаем всех друзей пользователя
     function (roomInfo, cb) {
+      
       selfProfile.getFriends(false, function (err, allFriends) {
         if (err) { return cb(err, null); }
         
         cb(null, roomInfo, allFriends);
       });
+      
     },///////////////////////// Составляем список друзей с неполными коматами
     function (roomInfo, allFriends, cb) { allFriends = allFriends || [];
       var friendList = [];
             
       for (var i = 0; i < allFriends.length; i++) {
-        var currFriend = oPool.profiles[allFriends[i]["id"]];
+        var currFriend = oPool.profiles[allFriends[i].id];
         if (currFriend) {
           var friendSocket = currFriend.getSocket();
-          var friendsRoom = oPool.roomList[friendSocket["id"]];
+          var friendsRoom = oPool.roomList[friendSocket.id];
           if (friendsRoom.getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM) {
-            var currInfo = {};
-            currInfo.id      = currFriend.getID();
-            currInfo.vid     = currFriend.getVID();
-            currInfo.age     = currFriend.getAge();
-            currInfo.sex     = currFriend.getSex();
-            currInfo.city    = currFriend.getCity();
-            currInfo.country = currFriend.getCountry();
-            currInfo.room    = friendsRoom.name;
+            var currInfo = {
+              id      : currFriend.getID(),
+              vid     : currFriend.getVID(),
+              age     : currFriend.getAge(),
+              sex     : currFriend.getSex(),
+              city    : currFriend.getCity(),
+              country : currFriend.getCountry(),
+              room    : friendsRoom.name
+            };
             
             friendList.push(currInfo);
           }

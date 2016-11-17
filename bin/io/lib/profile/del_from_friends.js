@@ -63,20 +63,19 @@ module.exports = function (socket, options, callback) {
     }); // waterfall
 
 
-    //-------------------------
-    function fillInfo(profile, date) {
-      var info = {};
-      info.id      = profile.getID();
-      info.vid     = profile.getVID();
-      info.date    = date;
-      info.points  = profile.getPoints();
-      info.age     = profile.getAge();
-      info.city    = profile.getCity();
-      info.country = profile.getCountry();
-      info.sex     = profile.getSex();
-
-      return info;
-    }
+  //-------------------------
+  function fillInfo(profile, date) {
+    return {
+      id      : profile.getID(),
+      vid     : profile.getVID(),
+      date    : date,
+      points  : profile.getPoints(),
+      age     : profile.getAge(),
+      city    : profile.getCity(),
+      country : profile.getCountry(),
+      sex     : profile.getSex()
+    };
+  }
 
 };
 

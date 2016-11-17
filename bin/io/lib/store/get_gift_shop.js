@@ -15,7 +15,7 @@ module.exports = function (socket, options, callback) {
 
       goods.sort(function (gift1, gift2) {
         if(gift1["type"] < gift2["type"]) return -1;
-        if(gift2["type"] < gift1[".type"]) return 1;
+        if(gift2["type"] < gift1["type"]) return 1;
         return 0;
       });
 

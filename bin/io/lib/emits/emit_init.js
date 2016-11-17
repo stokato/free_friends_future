@@ -1,14 +1,14 @@
 var async     =  require('async');
 
 // Свои модули
-var constants       = require('../../../constants'),
-    oPool           = require('../../../objects_pool'),
-    init            = require('../profile/init_profile'),
-    handleError     = require('../../../handle_error'),
-    checkInput      = require('../../../check_input'),
-    getLastMessages       = require('../common/get_last_messages'),
-    emitAllRooms          = require('../common/emit_all_rooms'),
-    sendPrivateChats = require('../chat/send_private_chats');
+var constants         = require('../../../constants'),
+    oPool             = require('../../../objects_pool'),
+    init              = require('../profile/init_profile'),
+    handleError       = require('../../../handle_error'),
+    checkInput        = require('../../../check_input'),
+    getLastMessages   = require('../common/get_last_messages'),
+    emitAllRooms      = require('../common/emit_all_rooms'),
+    sendPrivateChats  = require('../chat/send_private_chats');
 
 
 module.exports = function (socket) {

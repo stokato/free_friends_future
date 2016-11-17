@@ -9,18 +9,17 @@ module.exports = function(game) {
     if(uid) { broadcastPick(game, uid);  }
 
     // После голосования
-    if(game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if(game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
       
-
       // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
-      if(game.gActionsCount == 0) {
+      if(game._actionsCount == 0) {
   
-        for(var bestID in game.gStoredOptions) if (game.gStoredOptions.hasOwnProperty(bestID)) {
+        for(var bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
           
           if(checkBestOfBest(bestID) == true) {
             addPoints(bestID, constants.BEST_POINTS, function (err) {
@@ -36,8 +35,9 @@ module.exports = function(game) {
     }
 
     //---------------
+    // Обрабатываем ход каждого игрока
     function broadcastPick(game, uid) {
-      var playerInfo = game.gActivePlayers[uid];
+      var playerInfo = game._activePlayers[uid];
 
       var result = {
         pick : {
@@ -49,18 +49,21 @@ module.exports = function(game) {
       game.emit(result);
 
       // Сохраняем состояние игры
-      if(!game.gameState.picks) {
-        game.gameState.picks = [];
+      if(!game._gameState.picks) {
+        game._gameState.picks = [];
       }
-      game.gameState.picks.push(result.pick);
+      game._gameState.picks.push(result.pick);
     }
   
+    // Проверяем - врдуг все проголосовали за этого игрока
     function checkBestOfBest(bestID) {
       
-        for(var otherID in game.gActionsQueue) if(game.gActionsQueue.hasOwnProperty(otherID)) {
-          var otherPicks = game.gActionsQueue[otherID];
+        for(var otherID in game._actionsQueue) if(game._actionsQueue.hasOwnProperty(otherID)) {
+          var otherPicks = game._actionsQueue[otherID];
         
           for(var otherPicksOptions = 0; otherPicksOptions < otherPicks.length; otherPicksOptions++) {
+  
+            // Если хотя бы один не проголосовал - возвращаем ложь
             if(otherPicks[otherPicksOptions].pick != bestID) {
               return false;
             }

@@ -1,8 +1,8 @@
-var async         = require('async');
+var async           = require('async');
 
 var constants       = require('./../../../constants'),
-  getUserProfile  = require('./../common/get_user_profile'),
-  sendOne         = require('./../common/send_one');
+  getUserProfile    = require('./../common/get_user_profile'),
+  sendOne           = require('./../common/send_one');
 
 var oPool = require('./../../../objects_pool');
 
@@ -26,9 +26,6 @@ module.exports = function(socket, options, callback) {
           if(err) { return cb(err, null); }
           
           history = history || [];
-          history.sort(function (mesA, mesB) {
-            return mesA.date - mesB.date;
-          });
           
           for(var i = 0; i < history.length; i++) {
             sendOne(socket, history[i]);
@@ -36,7 +33,7 @@ module.exports = function(socket, options, callback) {
         });
         cb(null, null);
       } else {
-        return cb(new Error("Чат с этим пользователем не открыт"));
+        return cb(new Error(constants.errors.NO_SUCH_CHAT));
       }
     }
   ], function(err, res) {

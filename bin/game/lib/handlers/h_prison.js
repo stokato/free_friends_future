@@ -3,22 +3,22 @@ var constants = require('../../../constants');
 // Помещаем игрока в темницу
 module.exports = function(game) {
   return function(timer, uid) {
-    if (game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if (game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
 
       // Помещаем тукущего игрока в темницу
-      for(var item in game.gActivePlayers) if(game.gActivePlayers.hasOwnProperty(item)) {
-        game.gPrisoner = game.gActivePlayers[item];
+      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        game._prisoner = game._activePlayers[item];
       }
 
-      game.gActionsCount = 0;
+      game._actionsCount = 0;
 
       // Переходим к волчку
-      game.gHandlers[constants.G_START](false);
+      game._handlers[constants.G_START](false);
     }
   }
 };

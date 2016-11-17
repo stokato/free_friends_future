@@ -5,8 +5,8 @@ var constants     = require('../../../constants');
 // выбираем произвольно одного из них и переходим к розыгышу волчка
 module.exports = function(game) {
   return function(timer) {
-    if (game.gActionsCount == 0 || timer) {
-      if(!timer) { clearTimeout(game.gTimer); }
+    if (game._actionsCount == 0 || timer) {
+      if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
@@ -15,10 +15,10 @@ module.exports = function(game) {
       var nextPlayerInfo;
       // Если игрока в темнице нет в комнате - очищаем темницу
       // Получаем следующего игрока
-      if(game.gNextGame != constants.G_PRISON) {
-        if(game.gPrisoner) {
-          if(!game.isPlayerInRoom(game.gPrisoner.id)) {
-            game.gPrisoner = null;
+      if(game._nextGame != constants.G_PRISON) {
+        if(game._prisoner) {
+          if(!game._room.isProfile(game._prisoner.id)) {
+            game._prisoner = null;
           }
         }
         nextPlayerInfo = game.getNextPlayer(true);
@@ -27,35 +27,35 @@ module.exports = function(game) {
       }
 
       // Очищаем настройки
-      game.gActivePlayers = {};
-      game.gActionsQueue = {};
+      game._activePlayers = {};
+      game._actionsQueue = {};
 
       // Игрок ходит 1 раз
-      game.gActivePlayers[nextPlayerInfo.id] = nextPlayerInfo;
+      game._activePlayers[nextPlayerInfo.id] = nextPlayerInfo;
 
       game.setActionLimit(1);
-      game.gActionsCount = 1;
+      game._actionsCount = 1;
 
-      game.gNextGame = constants.G_LOT;
+      game._nextGame = constants.G_LOT;
 
       var result = {
-        next_game   : game.gNextGame,
+        next_game   : game._nextGame,
         players     : game.getPlayersID()
       };
       result.prison = null;
-      if(game.gPrisoner !== null) {
+      if(game._prisoner !== null) {
         result.prison = {
-          id : game.gPrisoner.id,
-          vid: game.gPrisoner.vid,
-          sex: game.gPrisoner.sex
+          id : game._prisoner.id,
+          vid: game._prisoner.vid,
+          sex: game._prisoner.sex
         }
       }
 
       game.emit(result);
-      game.gameState = result;
+      game._gameState = result;
 
       // Устанавливаем таймаут
-      game.startTimer(game.gHandlers[game.gNextGame], constants.TIMEOUT_LOT);
+      game.startTimer(game._handlers[game._nextGame], constants.TIMEOUT_LOT);
     }
   }
 };

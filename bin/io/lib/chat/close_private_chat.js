@@ -1,7 +1,5 @@
-
-// Свои модули
 var constants     = require('./../../../constants'),
-  oPool            = require('./../../../objects_pool');
+    oPool         = require('./../../../objects_pool');
 
 module.exports = function (socket, options, callback) {
   
@@ -14,5 +12,4 @@ module.exports = function (socket, options, callback) {
   selfProfile.deletePrivateChat(options.id);
   
   callback(null, { id : options.id });
-  
 };

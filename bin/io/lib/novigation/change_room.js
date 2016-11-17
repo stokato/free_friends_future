@@ -1,10 +1,9 @@
 
 // Свои модули
-var GameError = require('./../../../game_error'),      // Ошибки
+var async = require('async'),      // Ошибки
   constants = require('./../../../constants'),     // Константы
   createRoom = require('./../common/create_room'),
   getLastMessages = require('./../common/get_last_messages'),
-  getRoomInfo = require('./../common/get_room_info'),
   sendUsersInRoom = require('./../common/send_users_in_room'),
   playTrackInRoom = require('./../player/play_track_in_room');
 
@@ -30,7 +29,7 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.NO_SUCH_ROOM);
   }
   
-  if(oPool.roomList[socket.id].name == options.room){
+  if(oPool.roomList[socket.id].getName() == options.room){
     // return callback(constants.errors.ALREADY_IN_ROOM);
     return callback(null, null); // Если уже в этой комнате - ничего не делаем
   }
@@ -46,20 +45,19 @@ module.exports = function (socket, options, callback) {
   var currRoom = oPool.roomList[socket.id];
   var userSex = selfProfile.getSex();
   
+  //TODO: Эту возможность следует потом убрать
   if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
     newRoom = createRoom(socket, oPool.userList);
-    oPool.rooms[newRoom.name] = newRoom;
+    oPool.rooms[newRoom.getName()] = newRoom;
     
   } else {                                  // Либо ищем указанную
     var item;
     for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
-      if (oPool.rooms[item].name == options.room) {
+      if (oPool.rooms[item].getName() == options.room) {
         if (oPool.rooms[item].getCountInRoom(userSex) >= constants.ONE_SEX_IN_ROOM) {
           return callback(constants.errors.ROOM_IS_FULL);
         }
         newRoom = oPool.rooms[item];
-        
-        getLastMessages(socket, oPool.rooms[item]);
       }
     }
   }
@@ -68,57 +66,62 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.NO_SUCH_ROOM);
   }
   
-  newRoom.addProfile(userSex, selfProfile);
-  
-  selfProfile.setGame(newRoom.game);
-  
-  oPool.roomList[socket.id] = newRoom;
+  currRoom.deleteProfile(userSex, selfProfile);
   
   var isCurrRoom = true;
-  
-  currRoom.deleteProfile(userSex, selfProfile.getID());
-  
   if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
-    delete oPool.rooms[currRoom.name];
+    delete oPool.rooms[currRoom.getName()];
     isCurrRoom = false;
   }
   
-  currRoom.pushIndex(userSex, selfProfile.getGameIndex());
-  selfProfile.setGameIndex(newRoom.popIndex(userSex));
+  newRoom.addProfile(userSex, selfProfile);
   
-  playTrackInRoom(socket, newRoom);
-    
-  getRoomInfo(newRoom, function (err, info) {
-    if (err) { return new GameError(socket, constants.IO_CHANGE_ROOM, err.message); }
-    
-    socket.leave(currRoom.name,function () { });
-    socket.join(newRoom.name);
-    
-    oPool.roomChangeLocks[selfProfile.getID()] = true;
-    setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), constants.TIMEOUT_ROOM_CHANGE);
-        
-    sendUsersInRoom(info, null, function(err, res) {
-      if(err) { return callback(err) }
-      
-      newRoom.game.start(socket);
-    });
-    
-    // Если пользователь перешел из другой комнаты, обновляем в ней список участников
-    if(isCurrRoom) {
-      getRoomInfo(currRoom, function(err, currRoomInfo) {
-        if(err) { return callback(err); }
-        
+  oPool.roomList[socket.id] = newRoom;
+  
+  async.waterfall([
+    function (cb) {
+      // Если пользователь перешел из другой комнаты, обновляем в ней список участников
+      if(isCurrRoom) {
+        var currRoomInfo = currRoom.getInfo();
+  
         sendUsersInRoom(currRoomInfo, null, function(err) {
-          if(err) { return callback(err); }
-          
-          callback(null, null);
+          if(err) { return cb(err); }
+    
+          cb(null, null);
         });
-        
+
+      } else {
+        cb(null, null);
+      }
+    },
+    function (res, cb) {
+      
+      var info = newRoom.getInfo();
+      oPool.roomChangeLocks[selfProfile.getID()] = true;
+      setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), constants.TIMEOUT_ROOM_CHANGE);
+    
+      cb(null, info);
+    },
+    function (info, cb) {
+      sendUsersInRoom(info, null, function(err, res) {
+        if(err) { return cb(err) }
+    
+        cb(null, null);
       });
-    } else {
-      callback(null, null);
     }
+  ], function (err) {
+    if(err) {
+      return callback(err);
+    }
+    
+    callback(null, null);
+  
+    newRoom.getGame().start(socket);
+  
+    playTrackInRoom(socket, newRoom);
+    getLastMessages(socket, newRoom);
   });
+  
   
   //---------------------
   function setChangeTimeout(locks, selfid, delay) {
@@ -127,6 +130,5 @@ module.exports = function (socket, options, callback) {
       delete locks[lock];
     }, delay);
   }
-  
 };
 

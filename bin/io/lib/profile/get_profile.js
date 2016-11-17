@@ -28,7 +28,7 @@ module.exports = function (socket, options, callback) {
     city    : selfProfile.getCity(),
     country : selfProfile.getCountry(),
     status  : selfProfile.getStatus(),
-    points  : selfProfile.getPoints(),
+    points  : selfProfile.getPoints()
   };
   
   if (selfProfile.getID() == options.id) { // Если открываем свой профиль
@@ -87,7 +87,7 @@ module.exports = function (socket, options, callback) {
             city    : friendProfile.getCity(),
             country : friendProfile.getCountry(),
             status  : friendProfile.getStatus(),
-            points  : friendProfile.getPoints(),
+            points  : friendProfile.getPoints()
           });
         });
         
@@ -118,11 +118,8 @@ module.exports = function (socket, options, callback) {
         });
       },/////////////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
-        var user = {};
-        user.guestid = selfProfile.getID();
-        user.guestvid = selfProfile.getVID();
-        user.date = new Date();
-        friendProfile.addToGuests(user, function (err, res) {
+        var date = new Date();
+        friendProfile.addToGuests(selfProfile, date, function (err, res) {
           if (err) { return cb(err, null); }
           
           cb(null, friendProfile, friendInfo);

@@ -6,8 +6,8 @@ module.exports = function() {
   var guysInPrison  = 0;
   var girlsInPrison = 0;
 
-  if(this.gPrisoner !== null) {
-    var sex = this.gPrisoner.sex;
+  if(this._prisoner !== null) {
+    var sex = this._prisoner.sex;
 
     if(sex == constants.GUY) {
       guysInPrison = 1;
@@ -16,8 +16,8 @@ module.exports = function() {
     }
   }
 
-  var guysCount = this.gRoom.guys_count - guysInPrison;
-  var girlsCount = this.gRoom.girls_count - girlsInPrison;
+  var guysCount = this._room.getCountInRoom(constants.GUY) - guysInPrison;
+  var girlsCount = this._room.getCountInRoom(constants.GIRL)- girlsInPrison;
 
   if((guysCount) < constants.PLAYERS_COUNT || (girlsCount) < constants.PLAYERS_COUNT) {
     return false;

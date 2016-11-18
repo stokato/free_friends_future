@@ -11,16 +11,16 @@ var constants = require('./../../constants'),
 module.exports = function (sex, profile) {
   
   if(sex == constants.GUY) {
-    delete  this.guys[profile.getID()];
+    delete  this._guys[profile.getID()];
     this._guys_count--;
   } else {
-    delete this.girls[profile.getID()];
+    delete this._girls[profile.getID()];
     this._girls_count--;
   }
   
   var socket = profile.getSocket();
   if(socket) {
-    socket.leave(this.name);
+    socket.leave(this._nameOfRoom);
   } else {
     logger.error("Room_delete_profile : Не удалось получить сокет профиля");
   }

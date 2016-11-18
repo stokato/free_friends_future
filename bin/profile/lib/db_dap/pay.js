@@ -4,6 +4,9 @@
 
 var constants = require('../../../constants');
 
+/*
+    Снимаем монеты с пользователя
+ */
 module.exports = function (price, callback) {
   
   var self = this;
@@ -17,14 +20,10 @@ module.exports = function (price, callback) {
       return callback(constants.errors.TOO_LITTLE_MONEY); // onComplete(constants.errors.TOO_LITTLE_MONEY);
     }
     
-    // Снимаем монеты
     self.setMoney(newMoney, function(err, money) {
       if(err) { return callback(err); }
       
-      var socket = profile.getSocket();
-      socket.emit(constants.IO_GET_MONEY, { money : money });
-      
-      callback(null, profile, price);
+      callback(null, money);
     });
   });
   

@@ -20,7 +20,7 @@ module.exports = function(socket) {
       };
 
       for(var r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
-        socket.broadcast.in(r.getName()).emit(constants.IO_OFFLINE, info);
+        socket.broadcast.in(oPool.rooms[r].getName()).emit(constants.IO_OFFLINE, info);
       }
 
       cb(null, null);

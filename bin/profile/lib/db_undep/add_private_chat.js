@@ -1,27 +1,27 @@
 /*
-Добавить приватный чат: ид и вид
-  Добавляем в список открытых чатов
+    Добавить приватный чат  в список открытых чатов
  */
 module.exports = function(companion, firstDate, secondDate) {
   
   var cid = companion.getID();
   
-  for(var i = 0; i < this.pPrivateChats.length; i++) {
-    if(this.pPrivateChats[i].id == cid) {
+  // Если уже есть такой чат, ничего не делаем
+  for(var i = 0; i < this._pIsPrivateChats.length; i++) {
+    if(this._pIsPrivateChats[i].id == cid) {
       return;
     }
   }
   
   var chat = {
-  id          : cid,
-  vid         : companion.getVID(),
-  first_date  : firstDate,
-  second_date : secondDate,
-  age         : companion.getAge(),
-  city        : companion.getCity(),
-  country     : companion.getCountry(),
-  sex         : companion.getSex()
+    id          : cid,
+    vid         : companion.getVID(),
+    first_date  : firstDate,
+    second_date : secondDate,
+    age         : companion.getAge(),
+    city        : companion.getCity(),
+    country     : companion.getCountry(),
+    sex         : companion.getSex()
   };
   
-  this.pPrivateChats.push(chat);
+  this._pIsPrivateChats.push(chat);
 };

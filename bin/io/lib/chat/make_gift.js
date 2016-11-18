@@ -51,9 +51,11 @@ module.exports = function (socket, options, callback) {
         
       }, /////////////////////////////////////////////////////////////////
       function (friendProfile, gift, cb) { // Снимаем деньги с пользователя
-        selfProfile.pay(gift.price, function (err) {
+        selfProfile.pay(gift.price, function (err, money) {
           if(err) { return cb(err, null); }
-      
+          
+          socket.emit(constants.IO_GET_MONEY, { money : money });
+          
           cb(null, friendProfile, gift);
         });
       },///////////////////////////////////////////////////////////////

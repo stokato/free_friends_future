@@ -80,7 +80,7 @@ module.exports = function(game) {
 
         // Получаем второго игрока
         var firstGender = firstPlayer.sex;
-        var randPlayer = games._room.randomProfile(firstGender, [firstGender.id]);
+        var randPlayer = game._room.randomProfile(firstGender, [firstPlayer.id]);
 
         if(!randPlayer) {
           return game.stop();

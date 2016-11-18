@@ -1,15 +1,12 @@
-var constants = require('../../../constants');
 /*
-Проверить - есть ли такой чат: ид собеседника (чата)
-
+  Проверить - есть ли такой чат
  */
 module.exports = function(id) {
-  var ok = false;
-  var i, chats = this.pPrivateChats;
+  var chats = this._pIsPrivateChats;
 
-  for(i = 0; i < chats.length; i++) {
-    if(chats[i]["id"] == id) { ok = true; }
+  for(var i = 0; i < chats.length; i++) {
+    if(chats[i].id == id) { return true; }
   }
 
-  return ok;
+  return false;
 };

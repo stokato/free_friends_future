@@ -6,23 +6,22 @@ var db = require('./../../../db_manager');
 module.exports = function(giftMaker, date, gift, callback) {
   var self = this;
   
-  var options = {
-    fromid      : giftMaker.getID(),
-    fromvid     : giftMaker.getVID(),
-    date        : date,
-    src         : gift.src,
-    giftid      : gift.id,
-    type        : gift.type,
-    title       : gift.title
-  };
+  var options = {};
+  options[db.CONST.FROMID]  = giftMaker.getID();
+  options[db.CONST.FROMVID] = giftMaker.getVID();
+  options[db.CONST.DATE]    = date;
+  options[db.CONST.SRC]     = gift.src;
+  options[db.CONST.GIFTID]  = gift.id;
+  options[db.CONST.TYPE]    = gift.type;
+  options[db.CONST.TITLE]   = gift.title;
 
-  db.addGift(self.pID, options, function(err, result) {
+  db.addGift(self._pID, options, function(err, result) {
     if (err) { return callback(err, null); }
 
-    self.pGift1 = result;
-    self.pGift1Time = new Date();
+    self._pGift1 = result;
+    self._pGift1Time = date;
 
-    self.pNewGifts ++;
+    self._pIsNewGifts ++;
     self.save(function(err) {
       if (err) { return callback(err, null); }
 
@@ -31,4 +30,3 @@ module.exports = function(giftMaker, date, gift, callback) {
   });
 
 };
-

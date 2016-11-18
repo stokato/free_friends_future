@@ -1,4 +1,5 @@
 var db = require('./../../../db_manager');
+
 /*
  Удаляем польлзователя из БД
  - Очищаем свойста
@@ -11,20 +12,20 @@ var db = require('./../../../db_manager');
 module.exports = function(callback) {
 
   var self = this;
-  self.pSocket   = null;
+  self._pSoket   = null;
 
-  self.pVID      = null;
-  self.pAge      = null;
-  self.pCountry  = null;
-  self.pCity     = null;
-  self.pStatus   = null;
-  self.pPoints   = null;
-  self.pSex      = null;
-  self.pMoney    = null;
+  self._pVID      = null;
+  self._pAge      = null;
+  self._pCountry  = null;
+  self._pCity     = null;
+  self._pStatus   = null;
+  self._pPoints   = null;
+  self._pSex      = null;
+  self._pMoney    = null;
 
-  self.pPrivateChats = null;
+  self._pIsPrivateChats = null;
 
-  db.deleteGifts(this.pID, function(err, id) {  // Удаляем подарки
+  db.deleteGifts(this._pID, function(err, id) {  // Удаляем подарки
     if(err) { return callback(err, null); }
     db.deleteMessages(id, function(err, id) { // и историю
       if(err) { return callback(err, null) }

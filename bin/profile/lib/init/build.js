@@ -1,45 +1,52 @@
 var constants = require('../../../constants');
 var db = require('./../../../db_manager');
+
 /*
- Инициализируем профиль
- - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
- - Что-то проверяем
- - Ищем пользователя в БД и заполняем оставшиеся свойства
- - Если нет - добавляем
- - Возвращаем свойсва
+    Инициализируем профиль
  */
 module.exports = function(id, callback) {
  var self = this;
- //var f = constants.FIELDS;
- self.pID = id;
 
- if (!self.pID) { return callback(new Error("Не задан ИД"), null); }
+ self._pID = id;
 
- var fList = ["sex", "points", "status", "country", "city", "age", "ismenu", "gift1"];
- db.findUser(self.pID, null, fList, function(err, foundUser) {
+ if (!self._pID) { return callback(new Error("Не задан ИД"), null); }
+
+ var fList = [
+   db.CONST.SEX,
+   db.CONST.POINTS,
+   db.CONST.STATUS,
+   db.CONST.COUNTRY,
+   db.CONST.CITY,
+   db.CONST.AGE,
+   db.CONST.ISMENU,
+   db.CONST.GIFT1
+ ];
+  
+ db.findUser(self._pID, null, fList, function(err, foundUser) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
 
-   self.pVID     = foundUser.vid;
-   self.pStatus  = foundUser.status;
-   self.pPoints  = foundUser.points;
-   self.pSex     = foundUser.sex;
-   self.pCountry = foundUser.country;
-   self.pCity    = foundUser.city;
-   self.pAge     = foundUser.age;
-   self.pIsInMenu = foundUser.ismenu;
+   self._pVID           = foundUser[db.CONST.VID];
+   self._pStatus        = foundUser[db.CONST.STATUS];
+   self._pPoints        = foundUser[db.CONST.POINTS];
+   self._pSex           = foundUser[db.CONST.SEX];
+   self._pCountry       = foundUser[db.CONST.COUNTRY];
+   self._pCity          = foundUser[db.CONST.CITY];
+   self._pAge           = foundUser[db.CONST.AGE];
+   self._pIsInMenu      = foundUser[db.CONST.ISMENU];
 
-   self.pNewMessages = foundUser.newmessages || 0;
-   self.pNewGifts    = foundUser.newgifts    || 0;
-   self.pNewFriends  = foundUser.newfriends  || 0;
-   self.pNewGuests   = foundUser.newguests   || 0;
-   self.pMoney       = foundUser.money       || 0;
+   self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
+   self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
+   self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
+   self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
+  
+   self._pMoney         = foundUser[db.CONST.MONEY]      || 0;
 
-   if(foundUser.gift1) {
-     db.findGift(foundUser.gift1, function(err, gift) {
+   if(foundUser[db.CONST.GIFT1]) {
+     db.findGift(foundUser[db.CONST.GIFT1], function(err, gift) {
        if (err) { return  callback(err, null); }
 
-       self.pGift1 = gift || null;
+       self._pGift1 = gift || null;
 
        var info = pullInfo(self);
 
@@ -53,23 +60,22 @@ module.exports = function(id, callback) {
 };
 
 function pullInfo(profile) {
-  //var f = constants.FIELDS;
-  var info = {};
-  info.id       = profile.pID;
-  info.vid      = profile.pVID;
-  info.age      = profile.pAge;
-  info.country  = profile.pCountry;
-  info.city     = profile.pCity;
-  info.status   = profile.pStatus;
-  info.points   = profile.pPoints;
-  info.money    = profile.pMoney;
-  info.sex      = profile.pSex;
-  info.messages = profile.pNewMessages;
-  info.gifts    = profile.pNewGifts;
-  info.friends  = profile.pNewFriends;
-  info.guests   = profile.pNewGifts;
-  info.ismenu   = profile.pIsInMenu;
-  info.gift1    = profile.pGift1;
 
-  return info;
+  return {
+    id       : profile._pID,
+    vid      : profile._pVID,
+    age      : profile._pAge,
+    country  : profile._pCountry,
+    city     : profile._pCity,
+    status   : profile._pStatus,
+    points   : profile._pPoints,
+    money    : profile._pMoney,
+    sex      : profile._pSex,
+    messages : profile._pIsNewMessages,
+    gifts    : profile._pIsNewGifts,
+    friends  : profile._pIsNewFriends,
+    guests   : profile._pIsNewGifts,
+    ismenu   : profile._pIsInMenu,
+    gift1    : profile._pGift1
+  };
 }

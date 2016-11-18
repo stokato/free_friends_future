@@ -1,32 +1,29 @@
-/*
- Проверяем, является ли пользватель другом
- */
-
-var constants = require('./../../../constants');
 var db = require('./../../../db_manager');
+
+/*
+    Проверяем, является ли пользватель другом
+ */
 
 module.exports = function(usersID, callback) {
   var self = this;
-  db.findFriends(self.pID, usersID, function(err, friends) {
+  
+  db.findFriends(self._pID, usersID, function(err, friends) {
     if (err) { return callback(err, null); }
-
-    //var result = {};
-    //result["friend"] = false;
-    //
-    //if(friends) {
-    //  result["friend"] = true;
-    //}
 
     var results = [];
     for(var i = 0; i < usersID.length; i++) {
       results.push({id : usersID[i], isFriend : false });
+      
       if(friends) {
+        
         for(var j = 0; j < friends.length; j++) {
-          if(friends[j].id == results[i].id) {
+          if(friends[j][db.CONST.ID] == results[i].id) {
             results[i].isFriend = true;
           }
         }
+        
       }
+      
     }
 
     callback(null, results);

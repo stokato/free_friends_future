@@ -8,16 +8,21 @@ module.exports = function(socket, options, callback) {
   var selfProfile = oPool.userList[socket.id];
   var room = oPool.roomList[socket.id];
   
+  var mPlayer = room.getMusicPlayer();
+  var trackList = mPlayer.getTrackList();
+  
   // Проверяем - есть ли такой трек в очереди
-  for (var i = 0; i < room.track_list.length; i++) {
-    if (room.track_list[i].track_id == options.track_id) {
+  for (var i = 0; i < trackList.length; i++) {
+    if (trackList[i].track_id == options.track_id) {
       return callback(constants.errors.ALREADY_IS_TRACK);
     }
   }
   
   // Оплачиваем трек
-  selfProfile.pay(constants.TRACK_PRICE, function (err) {
+  selfProfile.pay(constants.TRACK_PRICE, function (err, money) {
     if(err) { return callback(err); }
+    
+    socket.emit(constants.IO_GET_MONEY, { money : money });
   
     var track = {
       track_id    : options.track_id,
@@ -28,15 +33,14 @@ module.exports = function(socket, options, callback) {
       duration    : options.duration
     };
     
-    var trackList = room.getTrackList();
     
     // Если очередь пустая, запускаем сразу
     if (trackList.length == 0) {
-      room.setTrackTime(new Date());
+      mPlayer.setTrackTime(new Date());
       startTrack(socket, room, track);
     }
-    
-    room.addTrack(track);
+  
+    mPlayer.addTrack(track);
     
     // socket.emit(constants.IO_ADD_TRECK, {operation_status: constants.RS_GOODSTATUS});
   
@@ -49,12 +53,13 @@ module.exports = function(socket, options, callback) {
   
   //-------------------------
   function startTrack(socket, room, track, timerID) { timerID = timerID || null;
-    room.setTrackTime(new Date());
-    
-    var trackList = room.getTrackList();
+    var mPlayer = room.getMusicPlayer();
+  
+    mPlayer.setTrackTime(new Date());
+    var trackList = mPlayer.getTrackList();
     
     timerID = setTimeout(function () {
-      room.deleteTrack(track.track_id);
+      mPlayer.deleteTrack(track.track_id);
       
       if (trackList.length > 0) {
         var newTrack = trackList[0];

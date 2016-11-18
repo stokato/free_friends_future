@@ -52,8 +52,8 @@ module.exports = function (socket, options, callback) {
         });
       } else {
         var room = oPool.roomList[socket.id];
-        info.game = room.game.getGameState(); // Получаем состояние игры в комнате
-        socket.join(room.name);
+        info.game = room.getGame().getGameState(); // Получаем состояние игры в комнате
+        socket.join(room.getName());
   
         startTrack(room, socket);
         

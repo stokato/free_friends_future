@@ -12,11 +12,12 @@ module.exports = function(game) {
       
       if(!selfProfile) { onError(new Error("Пользователь не онлайн")); }
       
-      selfProfile.pay(constants.SYMPATHY_PRICE, function (err) {
-        if(err) {
-          return onError(err, selfProfile);
-        }
+      selfProfile.pay(constants.SYMPATHY_PRICE, function (err, money) {
+        if(err) { return onError(err, selfProfile);  }
   
+        var socket = selfProfile.getSocket();
+        socket.emit(constants.IO_GET_MONEY, { money : money });
+        
         onPick();
       });
       

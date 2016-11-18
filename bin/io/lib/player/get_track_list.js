@@ -5,6 +5,6 @@ module.exports = function(socket, options, callback) {
   
   var room = oPool.roomList[socket.id];
 
-  callback(null, room.getTrackList());
+  callback(null, room.getMusicPlayer().getTrackList());
 
 };

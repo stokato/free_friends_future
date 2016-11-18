@@ -9,7 +9,6 @@ var addUser           = require('./lib/users/users_add'),
   addMessage          = require('./lib/messages/messages_add'),
   findAllMessages     = require('./lib/messages/messages_find_all'),
   findMessages        = require('./lib/messages/messages_find'),
-  findMessagesOneChat = require('./lib/messages/messages_find_one_chat'),
   updateMessage       = require('./lib/messages/messages_update'),
   deleteMessages      = require('./lib/messages/messages_delete'),
   addFriend           = require('./lib/friends/friends_add'),
@@ -48,6 +47,7 @@ var addUser           = require('./lib/users/users_add'),
  *                 - добавить, найти, удалить товар (магазин)
  */
 var DBManager = function() {
+  this.CONST = dbConstants;
 };
 
 DBManager.prototype.addUser           = addUser;
@@ -62,7 +62,6 @@ DBManager.prototype.addMessage        = addMessage;
 DBManager.prototype.updateMessage     = updateMessage;
 DBManager.prototype.findAllMessages   = findAllMessages;
 DBManager.prototype.findMessages      = findMessages;
-DBManager.prototype.findMessagesOneChat = findMessagesOneChat;
 DBManager.prototype.deleteMessages    = deleteMessages;
 DBManager.prototype.addFriend         = addFriend;
 DBManager.prototype.findFriends       = findFriends;
@@ -87,3 +86,44 @@ DBManager.prototype.deleteQuestion    = deleteQuestion;
 DBManager.prototype.deleteAllQuestions = deleteAllQuestions;
 
 module.exports = DBManager;
+
+var dbConstants = {
+  FR_FRIENDID     : "friendid",
+  FR_FRIENDVID    : "friendvid",
+  DATE            : "date",
+  SRC             : "src",
+  GIFTID          : "giftid",
+  TYPE            : "type",
+  TITLE           : "title",
+  FROMID          : "fromid",
+  FROMVID         : "fromvid",
+  MS_COMPANIONID  : "companionid",
+  MS_COMPANIONVID : "companionvid",
+  MS_INCOMING     : "incoming",
+  MS_TEXT         : "text",
+  MS_OPENED       : "opened",
+  USERID          : "userid",
+  USERVID         : "uservid",
+  SEX             : "sex",
+  POINTS          : "points",
+  GU_GUESTID      : "guestid",
+  GU_GUESTVID     : "guestvid",
+  ID_LIST         : "id_list",
+  DATE_FROM       : "first_date",
+  DATE_TO         : "second_date",
+  MONEY           : "money",
+  ID              : "id",
+  VID             : "vid",
+  AGE             : "age",
+  COUNTRY         : "country",
+  CITY            : "city",
+  STATUS          : "status",
+  ISMESSAGES      : "newmessages",
+  ISGIFTS         : "newgifts",
+  ISFRIENDS       : "newfriends",
+  ISGUESTS        : "newguests",
+  GIFT1           : "gift1",
+  ISMENU          : "ismenu"
+};
+
+

@@ -1,28 +1,25 @@
-var constants = require('../../../constants');
 var db = require('./../../../db_manager');
 
 /*
- Устанавливаем количество монет игрока
- - Сначала в БД и если успешно
- - В ОЗУ
- - Возвращаем
+  Устанавливаем количество монет игрока
  */
 module.exports = function(num, callback) {
   if (!isNumeric(num)) {
-    return callback(new Error("Ошибка при установке количества монет, количество монет задано некорректно"));
+    return callback(new Error("Количество монет задано некорректно"));
   }
   var self = this;
 
   var options = {};
-  options.id = self.pID;
-  options.vid = self.pVID;
-  options.money = num;
+  options[db.CONST.ID]    = self._pID;
+  options[db.CONST.VID]   = self._pVID;
+  options[db.CONST.MONEY] = num;
 
   db.updateUser(options, function(err) {
     if (err) {return callback(err, null); }
 
-    self.pMoney = num;
-    callback(null, self.pMoney);
+    self._pMoney = num;
+    
+    callback(null, self._pMoney);
   });
 };
 

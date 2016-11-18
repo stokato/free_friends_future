@@ -18,8 +18,10 @@ module.exports = function (socket, options, callback) {
       return callback(constants.errors.SELF_ILLEGAL);
     }
     
-    selfProfile.pay(constants.RANSOM_PRICE, function (err) {
+    selfProfile.pay(constants.RANSOM_PRICE, function (err, money) {
       if(err) { return callback(err); }
+      
+      socket.emit(constants.IO_GET_MONEY, { money : money });
   
       // Снимаем блокировку
       game.clearPrison();

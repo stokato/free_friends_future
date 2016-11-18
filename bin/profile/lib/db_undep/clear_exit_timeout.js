@@ -1,6 +1,6 @@
 /*
-Сбросить таймаут отключения сокета
+    Сбросить таймаут отключения сокета
  */
 module.exports = function() {
-  clearTimeout(this.pExitTimeout);
+  clearTimeout(this._pIsExitTimeout);
 };

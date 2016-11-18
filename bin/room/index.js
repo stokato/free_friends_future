@@ -70,6 +70,10 @@ Room.prototype.getMusicPlayer = function () {
   return this._mplayer;
 };
 
+Room.prototype.getMessages = function () {
+  return this._messages;
+};
+
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;
 Room.prototype.getInfo        = getInfo;

@@ -1,15 +1,15 @@
 var db = require('./../../../db_manager');
 
 /*
- Получаем гостей из БД
+    Получаем гостей из БД
  */
 module.exports = function(isSelf, callback) {
  var self = this;
- db.findGuests(self.pID, function(err, guests) {
+ db.findGuests(self._pID, function(err, guests) {
    if (err) { return callback(err, null); }
 
    if(isSelf) {
-     self.pNewGuests = 0;
+     self._pIsNewGuests = 0;
    }
 
    self.save(function(err) {

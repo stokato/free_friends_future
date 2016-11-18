@@ -18,9 +18,24 @@ module.exports = function(options, callback) { options    = options || {};
   if ( !options["userid"] || !options["uservid"] || !options["points"] || !options["sex"]) {
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
+  
+  var self = this;
 
   async.waterfall([//////////////////////////////////////////////////////////////////
-    function(cb) { // Добавляем новую запись в таблицу
+    function (cb) { // Обновляем таблицу пользователя
+      var params = {
+        id      : options.userid,
+        vid     : options.uservid,
+        points  : options.points
+      };
+  
+      self.updateUser(params, function(err) {
+        if (err) {return cb(err, null); }
+    
+        cb(null, null);
+      });
+    }, //////////////////////////////////////////////////////////////////////////////////
+    function(res, cb) { // Добавляем новую запись в таблицу
       var fields = ["id", "points", "userid", "uservid", "sex", "uid"];
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_POINTS);
 
@@ -36,37 +51,6 @@ module.exports = function(options, callback) { options    = options || {};
       delOldPoints(fields, constants.T_POINTS, function () {
         cb(null, fields, params);
       });
-      
-      // var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_POINTS, ["uid"], [1]);
-      //
-      // var paramsF = [options["userid"]];
-      //
-      // cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
-      //   if (err) {  return cb(err); }
-      //
-      //   result.rows.sort(comparePoints);
-      //
-      //   // И удаляем все старые записи
-      //   for(var i = 1; i < result.rows.length; i++) {
-      //     var points = result.rows[i]["points"];
-      //     var userid = result.rows[i]["userid"];
-      //
-      //     var constFields = ["id", "points", "userid"];
-      //     var constValues = [1, 1, 1];
-      //
-      //     var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_POINTS, constFields, constValues);
-      //
-      //     var paramsD = ["max", points, userid];
-      //
-      //     cdb.client.execute(query, paramsD, {prepare: true }, function(err) {
-      //       if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + constants.T_POINTS); }
-      //
-      //       //cb(null, params);
-      //     });
-      //   }
-      //
-      //   cb(null, fields, params);
-      // });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
@@ -85,35 +69,6 @@ module.exports = function(options, callback) { options    = options || {};
       delOldPoints(fields, db, function () {
         cb(null, null);
       });
-      
-      // var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
-      //
-      // var paramsF = [options["userid"]];
-      //
-      // cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
-      //   if (err) {  return cb(err); }
-      //
-      //   result.rows.sort(comparePoints);
-      //
-      //   for(var i = 1; i < result.rows.length; i++) {
-      //     var points = result.rows[i]["points"];
-      //     var userid = result.rows[i]["userid"];
-      //
-      //     var constFields = ["id", "points", "userid"];
-      //     var constValues = [1, 1, 1];
-      //
-      //     var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
-      //
-      //     var paramsF = ["max", points, userid];
-      //
-      //     cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
-      //       if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
-      //
-      //       //cb(null, params);
-      //     });
-      //   }
-      //   cb(null, null);
-      // });
     } ////////////////////////////////////////////////////////////////////////////////
   ], function(err, res) {
     if(err) { callback(err, null); }
@@ -130,7 +85,9 @@ module.exports = function(options, callback) { options    = options || {};
     cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
       if (err) {  return cb(err); }
       
-      result.rows.sort(comparePoints);
+      result.rows.sort(function (user1, user2) {
+        return user2.points - user1.points;
+      });
       
       for(var i = 1; i < result.rows.length; i++) {
         var points = result.rows[i]["points"];
@@ -152,10 +109,6 @@ module.exports = function(options, callback) { options    = options || {};
       
       cb(null, null);
     });
-  }
-  
-  function comparePoints(user1, user2) {
-    return user2.points - user1.points;
   }
   
 };

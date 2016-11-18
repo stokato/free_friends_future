@@ -1,29 +1,30 @@
-var constants = require('../../../constants');
 var db = require('./../../../db_manager');
+
 /*
- Сохраняем профиль в БД
+   Сохраняем профиль в БД
  */
 module.exports = function(callback) {
  var self = this;
 
  var options = {};
- options.id          = self.pID;
- options.vid         = self.pVID;
- options.age         = self.pAge;
- options.country     = self.pCountry;
- options.city        = self.pCity;
- options.sex         = self.pSex;
- options.status      = self.pStatus;
- options.points      = self.pPoints;
- options.money       = self.pMoney;
- options.newmessages = self.pNewMessages;
- options.newgifts    = self.pNewGifts;
- options.newfriends  = self.pNewFriends;
- options.newguests   = self.pNewGuests;
- if(self.pGift1) {
-   options.gift1     = self.pGift1.gid;
+ options[db.CONST.ID]          = self._pID;
+ options[db.CONST.VID]         = self._pVID;
+ options[db.CONST.AGE]         = self._pAge;
+ options[db.CONST.COUNTRY]     = self._pCountry;
+ options[db.CONST.CITY]        = self._pCity;
+ options[db.CONST.SEX]         = self._pSex;
+ options[db.CONST.STATUS]      = self._pStatus;
+ options[db.CONST.POINTS]      = self._pPoints;
+ options[db.CONST.MONEY]       = self._pMoney;
+ options[db.CONST.ISMESSAGES]  = self._pIsNewMessages;
+ options[db.CONST.ISGIFTS]     = self._pIsNewGifts;
+ options[db.CONST.ISFRIENDS]   = self._pIsNewFriends;
+ options[db.CONST.ISGUESTS]    = self._pIsNewGuests;
+ 
+ if(self._pGift1) {
+   options[db.CONST.GIFT1]      = self._pGift1.gid;
  } else {
-   options.gift1      = null;
+   options[db.CONST.GIFT1]      = null;
  }
 
 

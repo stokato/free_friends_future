@@ -4,12 +4,7 @@ var constants = require('../../../constants');
 var db = require('./../../../db_manager');
 
 /*
- Инициализируем профиль
- - Устанавливаем полученные из соц сети свойства (в БД они точно не нужны, а в ОЗУ ???)
- - Что-то проверяем
- - Ищем пользователя в БД и заполняем оставшиеся свойства
- - Если нет - добавляем
- - Возвращаем свойсва
+    Инициализируем профиль
  */
 module.exports = function(socket, options, callback) {
   var self = this;
@@ -17,49 +12,62 @@ module.exports = function(socket, options, callback) {
 
   async.waterfall([//////////////////////////////////////////////////////////////////////////
     function (cb) {  // Устанавливаем свойства
-      self.pSocket   = socket;
-      self.pVID      = options.vid;
-      self.pBDate    = new Date(options.bdate);
-      self.pAge      = new Date().getFullYear() - self.pBDate.getFullYear();
-      self.pCountry  = options.country;
-      self.pCity     = options.city;
-      self.pSex      = options.sex;
+      self._pSoket    = socket;
+      self._pVID      = options.vid;
+      self._pBDate    = new Date(options.bdate);
+      self._pAge      = new Date().getFullYear() - self._pBDate.getFullYear();
+      self._pCountry  = options.country;
+      self._pCity     = options.city;
+      self._pSex      = options.sex;
 
-      if (!self.pSocket) { return cb(new Error("Не задан Socket Id"), null); }
-      if (!self.pVID ||  !self.pAge || !self.pCountry || !self.pCity || !self.pSex) {
+      if (!self._pSoket) { return cb(new Error("Не задан Socket Id"), null); }
+      if (!self._pVID ||  !self._pAge || !self._pCountry || !self._pCity || !self._pSex) {
         return cb(new Error("Не задана одна из опций"), null);
       }
 
       cb(null, null);
     },
     function (res, cb) {  // Ищем пользователя в базе
-      var fList = ["sex", "points", "money", "age", "country", "city", "status",
-        "ismenu", "newfriends", "newguests", "newgifts", "newmessages", "gift1"];
+      var fList = [
+        db.CONST.SEX,
+        db.CONST.POINTS,
+        db.CONST.MONEY,
+        db.CONST.AGE,
+        db.CONST.COUNTRY,
+        db.CONST.CITY,
+        db.CONST.STATUS,
+        db.CONST.ISMENU,
+        db.CONST.ISFRIENDS,
+        db.CONST.ISGUESTS,
+        db.CONST.ISGIFTS,
+        db.CONST.ISMESSAGES,
+        db.CONST.GIFT1
+      ];
 
-      db.findUser(null, self.pVID, fList, function(err, foundUser) {
+      db.findUser(null, self._pVID, fList, function(err, foundUser) {
         if (err) { return cb(err); }
         if (foundUser) {
-          self.pID     = foundUser.id;
-          self.pStatus = foundUser.status;
-          self.pPoints = foundUser.points;
-          self.pMoney  = foundUser.money;
+          self._pID     = foundUser[db.CONST.ID];
+          self._pStatus = foundUser[db.CONST.STATUS];
+          self._pPoints = foundUser[db.CONST.POINTS];
+          self._pMoney  = foundUser[db.CONST.MONEY];
 
-          self.pAge     = (self.pAge)     ? self.pAge     : foundUser.age;
-          self.pSex     = (self.pSex)     ? self.pSex     : foundUser.sex;
-          self.pCountry = (self.pCountry) ? self.pCountry : foundUser.country;
-          self.pCity    = (self.pCity)    ? self.pCity    : foundUser.city;
-          self.pIsInMenu = foundUser.ismenu || false;
+          self._pAge     = (self._pAge)     ? self._pAge     : foundUser[db.CONST.AGE];
+          self._pSex     = (self._pSex)     ? self._pSex     : foundUser[db.CONST.SEX];
+          self._pCountry = (self._pCountry) ? self._pCountry : foundUser[db.CONST.COUNTRY];
+          self._pCity    = (self._pCity)    ? self._pCity    : foundUser[db.CONST.CITY];
+          self._pIsInMenu = foundUser[db.CONST.ISMENU] || false;
 
-          self.pNewMessages = foundUser.newmessages || 0;
-          self.pNewGifts    = foundUser.newgifts    || 0;
-          self.pNewFriends  = foundUser.newfriends  || 0;
-          self.pNewGuests   = foundUser.newguests   || 0;
+          self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
+          self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
+          self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
+          self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
 
           if(foundUser.gift1) {
-            db.findGift(foundUser.gift1, function(err, gift) {
+            db.findGift(foundUser[db.CONST.GIFT1], function(err, gift) {
               if (err) { return  callback(err, null); }
 
-              self.pGift1 = gift || null;
+              self._pGift1 = gift || null;
 
               cb(null, foundUser);
             });
@@ -74,9 +82,9 @@ module.exports = function(socket, options, callback) {
     },////////////////////////////////////////////////////////////////////////
     function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
       if(foundUser) {
-        if(self.pSex    != foundUser.sex     || self.pAge  != foundUser.age  ||
-          self.pCountry != foundUser.country || self.pCity != foundUser.city ||
-          self.pStatus  != foundUser.status) {
+        if(self._pSex    != foundUser[db.CONST.SEX]     || self._pAge  != foundUser[db.CONST.AGE]  ||
+          self._pCountry != foundUser[db.CONST.COUNTRY] || self._pCity != foundUser[db.CONST.CITY] ||
+          self._pStatus  != foundUser[db.CONST.STATUS]) {
 
           self.save(function(err) {
             if (err) { return cb(err); }
@@ -92,29 +100,19 @@ module.exports = function(socket, options, callback) {
         // Добавляем пользователя
 
         var newUser = {};
-        newUser.vid      = self.pVID;
-        newUser.age      = self.pAge;
-        newUser.country  = self.pCountry;
-        newUser.city     = self.pCity;
-        newUser.sex      = self.pSex;
-        newUser.money    = self.pMoney = Config.settings.start_money;
-        newUser.ismenu = self.pIsInMenu;
+        newUser[db.CONST.VID]      = self._pVID;
+        newUser[db.CONST.AGE]      = self._pAge;
+        newUser[db.CONST.COUNTRY]  = self._pCountry;
+        newUser[db.CONST.CITY]     = self._pCity;
+        newUser[db.CONST.SEX]      = self._pSex;
+        newUser[db.CONST.MONEY]    = self._pMoney = Config.settings.start_money;
+        newUser[db.CONST.ISMENU]   = self._pIsInMenu;
 
         db.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }
 
-          self.pID = user.id;
-
-          ///////////////////////////////////////
-          //var rand = Math.floor(Math.random()  * 100);
-          //
-          //self.addPoints(rand, function(err, res) {
-          //  if(err) { cb (err, null); }
-          //
-          //  cb(null, null);
-          //});
-          //
-          //////////////////////////////////////
+          self._pID = user[db.CONST.ID];
+          
           cb(null, null);
         });
       } else cb(null, null);
@@ -122,22 +120,23 @@ module.exports = function(socket, options, callback) {
     //////////////////////////////////////////////////////////////////////////////////
   ], function (err) { // Вызвается последней или в случае ошибки
     if (err) { return  callback(err); }
-
-    var info = {};
-    info.id          = self.pID;
-    info.vid         = self.pVID;
-    info.status      = self.pStatus;
-    info.points      = self.pPoints;
-    info.money       = self.pMoney;
-    info.sex         = self.pSex;
-    info.age         = self.pAge;
-    info.city        = self.pCity;
-    info.country     = self.pCountry;
-    info.gift1       = self.pGift1;
-    info.newmessages = self.pNewMessages;
-    info.newgifts    = self.pNewGifts;
-    info.newfriends  = self.pNewFriends;
-    info.newguests   = self.pNewGuests;
+  
+    var info = {
+      id          : self._pID,
+      vid         : self._pVID,
+      status      : self._pStatus,
+      points      : self._pPoints,
+      money       : self._pMoney,
+      sex         : self._pSex,
+      age         : self._pAge,
+      city        : self._pCity,
+      country     : self._pCountry,
+      gift1       : self._pGift1,
+      newmessages : self._pIsNewMessages,
+      newgifts    : self._pIsNewGifts,
+      newfriends  : self._pIsNewFriends,
+      newguests   : self._pIsNewGuests
+    };
 
     callback(null, info);
   }); // waterfall

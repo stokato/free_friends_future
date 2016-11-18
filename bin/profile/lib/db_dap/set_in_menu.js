@@ -1,11 +1,7 @@
-var constants = require('../../../constants');
 var db = require('./../../../db_manager');
 
 /*
- Устанавливаем свойство - есть в меню
- - Сначала в БД и если успешно
- - В ОЗУ
- - Возвращаем
+    Устанавливаем свойство - есть в меню
  */
 module.exports = function(isInMenu, callback) {
 
@@ -14,14 +10,15 @@ module.exports = function(isInMenu, callback) {
   var self = this;
 
   var options = {};
-  options.id = self.pID;
-  options.vid = self.pVID;
-  options.ismenu = isInMenu;
+  options[db.CONST.ID]      = self._pID;
+  options[db.CONST.VID]     = self._pVID;
+  options[db.CONST.ISMENU]  = isInMenu;
 
   db.updateUser(options, function(err) {
     if (err) {return callback(err, null); }
 
-    self.pIsInMenu = isInMenu;
-    callback(null, self.pIsInMenu);
+    self._pIsInMenu = isInMenu;
+    
+    callback(null, self._pIsInMenu);
   });
 };

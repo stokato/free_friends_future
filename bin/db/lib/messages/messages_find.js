@@ -165,7 +165,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         for(i = 0; i < messages.length; i++) {
           message = {};
   
-          compInfo = compInfoList[message[i].companionid];
+          compInfo = compInfoList[messages[i].companionid];
   
           if(!compInfo) {
             cb("Не удалось найти сведения об одном из собеседников");

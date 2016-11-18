@@ -47,7 +47,7 @@ module.exports.listen = function(server, callback) {
     var clientS;
   
     for(var b = 0; b < 5; b++) {
-      clientS = ioClient.connect('http://localhost:3000');
+      clientS = ioClient.connect('http://localhost:' + '3030');
     
       clientS.emit('init', {
         sex : males1[b],
@@ -312,7 +312,7 @@ module.exports.listen = function(server, callback) {
     
     }
     ////////////
-  })();
+  });//();
   
   callback(null, oPool.profiles);
 };

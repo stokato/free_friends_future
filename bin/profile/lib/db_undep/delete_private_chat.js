@@ -1,9 +1,10 @@
 /*
-Удалить приватный чат: ид собеседника (чата)
+    Удалить приватный чат
  */
 module.exports = function(id) {
-  var i, chats = this.pPrivateChats;
-  for(i = 0; i < chats.length; i++) {
+  var chats = this._pIsPrivateChats;
+  
+  for(var i = 0; i < chats.length; i++) {
     if(chats[i].id == id) {
       return chats.splice(i, 1);
     }

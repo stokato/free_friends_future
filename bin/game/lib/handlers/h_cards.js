@@ -4,6 +4,7 @@ var constants = require('../../../constants');
 var GameError = require('./../../../game_error');
 var ProfileJS  =  require('../../../profile/index');
 var handleError = require('../../../handle_error');
+var oPool = require('./../../../objects_pool');
 
 
 // Карты, ждем, кода все ответят, потом показываем ответы и где золото
@@ -59,7 +60,7 @@ module.exports = function(game) {
       function addMoney() {
         async.waterfall([ ///////////////////////////////////////////////////////////////
           function(cb) { // Получаем профиль пользователя
-            var player = game.userList[winners[count].socketId];
+            var player = oPool.userList[winners[count].socketId];
 
             if(player) {
               cb(null, player, true);

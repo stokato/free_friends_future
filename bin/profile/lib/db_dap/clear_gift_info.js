@@ -1,7 +1,10 @@
 
+/*
+    Убираем из профиля сведения о последнем подарке
+ */
 module.exports = function(callback) {
-  this.pGift1 = null;
-  this.pGift1Time = null;
+  this._pGift1 = null;
+  this._pGift1Time = null;
 
   this.save(function(err) {
     if (err) { return callback(err, null); }

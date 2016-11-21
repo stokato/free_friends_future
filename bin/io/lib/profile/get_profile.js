@@ -34,10 +34,12 @@ module.exports = function (socket, options, callback) {
   if (selfProfile.getID() == options.id) { // Если открываем свой профиль
     async.waterfall([
       function (cb) { // Получаем историю чатов
-        selfProfile.getPrivateChats(function (err, chats) {
+        selfProfile.getPrivateChats(function (err, chatsInfo) { chatsInfo = chatsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.chats = chats;
+          selfInfo.chats = chatsInfo.chats;
+          selfInfo.new_messages = chatsInfo.new_chats || 0;
+          
           cb(null, null);
         });
       }, /////////////////////////////////////////////////////////////

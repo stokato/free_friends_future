@@ -17,6 +17,9 @@ module.exports = function (target, callback) {
     case constants.VIEWED_TYPE.GIFTS :
       db.openGifts(this._pID, onComplete);
       break;
+    case constants.VIEWED_TYPE.MESSAGES :
+      onComplete(null); // Новые сообщения обнуляем при открытии чата
+      break;
     default :
       callback(new Error("Не задана цель для обновления"));
   }

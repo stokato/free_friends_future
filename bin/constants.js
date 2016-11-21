@@ -123,7 +123,8 @@ module.exports.IO_SET_VIEWED          = 'viewed';
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
   'GUESTS'  : 'guests',
-  'GIFTS'   : 'gifts'
+  'GIFTS'   : 'gifts',
+  'MESSAGES': 'messages'
 };
 
 // Игры

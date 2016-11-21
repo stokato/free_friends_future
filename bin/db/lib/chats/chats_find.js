@@ -34,16 +34,20 @@ module.exports = function(uid, callback) {
 
         var companions = [];
         var newMessages = {};
+        var countNew    = 0;
 
         for (var i = 0; i < rows.length; i++) {
           companions.push(rows[i].companionid.toString());
           newMessages[rows[i].companionid.toString()] = rows[i].isnew;
+          if(rows[i].isnew) {
+            countNew++;
+          }
         }
 
-        cb(null, const_values, companions, newMessages);
+        cb(null, const_values, companions, newMessages, countNew);
       });
     },////////////////////////////////////////////////////////////////////
-    function (const_values, companions, newMessages, cb) { // Выбираем данные по собеседникам и добавляем признак новых сообщений
+    function (const_values, companions, newMessages, countNew, cb) { // Выбираем данные по собеседникам и добавляем признак новых сообщений
       if(!companions) { return cb(null, null, null, null); }
 
       var fields = ["id", "vid", "age", "sex", "city", "country", "points"];
@@ -59,12 +63,12 @@ module.exports = function(uid, callback) {
 
           var user = result.rows[i];
           user.id = user.id.toString();
-          user.isnew = newMessages[user.id];
+          user.is_new = newMessages[user.id];
 
           users.push(user);
         }
 
-        cb(null, users);
+        cb(null, { chats : users, new_chats : countNew });
       });
     } ////////////////////////////////////////////////////////////////////////////
   ], function(err, users) {

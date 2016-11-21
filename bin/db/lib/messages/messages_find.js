@@ -155,7 +155,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         }
       
         if(!selfInfo) {
-          cb("Не удалось найти сведения о целевом пользователе");
+          return cb("Не удалось найти сведения о целевом пользователе");
         }
       
         var message, complMessages = [];

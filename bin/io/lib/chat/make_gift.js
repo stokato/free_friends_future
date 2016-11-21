@@ -101,7 +101,7 @@ module.exports = function (socket, options, callback) {
           friendSocket.emit(constants.IO_NEW_GIFT, result);
         }
 
-        friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+        // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
 
         setGiftTimeout(friendProfile.getID());
         

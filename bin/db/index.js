@@ -31,7 +31,10 @@ var addUser           = require('./lib/users/users_add'),
   addQuestion         = require('./lib/questions/questions_add'),
   deleteQuestion      = require('./lib/questions/questions_delete'),
   deleteAllQuestions  = require('./lib/questions/questions_delete_all'),
-  findGift            = require('./lib/gifts/gifts_find_one');
+  findGift            = require('./lib/gifts/gifts_find_one'),
+  openFriends         = require('./lib/friends/friends_open'),
+  openGuests          = require('./lib/guests/guests_open'),
+  openGifts           = require('./lib/gifts/gifts_open');
 
 
 /**
@@ -84,6 +87,9 @@ DBManager.prototype.findGift          = findGift;
 DBManager.prototype.addQuestion       = addQuestion;
 DBManager.prototype.deleteQuestion    = deleteQuestion;
 DBManager.prototype.deleteAllQuestions = deleteAllQuestions;
+DBManager.prototype.openFriends       = openFriends;
+DBManager.prototype.openGuests        = openGuests;
+DBManager.prototype.openGifts         = openGifts;
 
 module.exports = DBManager;
 

@@ -63,7 +63,7 @@ module.exports.listen = function(server, callback) {
     }
   
     for(b = 0; b < 5; b++) {
-      clientS = ioClient.connect('http://localhost:3000');
+      clientS = ioClient.connect('http://localhost:3030');
     
       bots2.push(clientS);
     }

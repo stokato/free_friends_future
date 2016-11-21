@@ -98,7 +98,7 @@ module.exports = function (socket, options, callback) {
               info.messageid = message.messageid;
               sendOne(friendSocket, info);
             } else {
-              friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+              // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
             }
           }
           cb(null, friendProfile);

@@ -5,17 +5,17 @@ var db = require('./../../../db_manager');
  */
 module.exports = function(isSelf, callback) {
  var self = this;
- db.findGuests(self._pID, function(err, guests) {
+ db.findGuests(self._pID, isSelf, function(err, guests) {
    if (err) { return callback(err, null); }
 
-   if(isSelf) {
-     self._pIsNewGuests = 0;
-   }
+   // if(isSelf) {
+   //   self._pIsNewGuests = 0;
+   // }
 
-   self.save(function(err) {
-     if (err) { return callback(err, null); }
+   // self.save(function(err) {
+   //   if (err) { return callback(err, null); }
 
      callback(null, guests);
-   });
+   // });
  });
 };

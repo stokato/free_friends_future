@@ -118,6 +118,13 @@ module.exports.IO_SHOW_QUESTIONS      = 'show_questions';
 module.exports.IO_DEL_ALL_QUESTIONS   = 'del_all_questions';
 module.exports.IO_GAME_ERROR          = 'game_error';
 module.exports.IO_LIKE_PROFILE        = 'like';
+module.exports.IO_SET_VIEWED          = 'viewed';
+
+module.exports.VIEWED_TYPE            = {
+  'FRIENDS' : 'friends',
+  'GUESTS'  : 'guests',
+  'GIFTS'   : 'gifts'
+};
 
 // Игры
 var G_START         = 'results',

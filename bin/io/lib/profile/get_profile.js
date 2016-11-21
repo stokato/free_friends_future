@@ -42,30 +42,33 @@ module.exports = function (socket, options, callback) {
         });
       }, /////////////////////////////////////////////////////////////
       function (res, cb) { // Получаем подарки
-        selfProfile.getGifts(function (err, gifts) {
+        selfProfile.getGifts(true, function (err, giftsInfo) { giftsInfo = giftsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.gifts = gifts;
+          selfInfo.gifts = giftsInfo.gifts;
+          selfInfo.new_gifts = giftsInfo.new_gifts || 0;
           cb(null, null);
         });
       },/////////////////////////////////////////////////////////////////////
       function (res, cb) { // Получаем друзей
-        selfProfile.getFriends(true, function (err, friends) {
+        selfProfile.getFriends(true, function (err, friendsInfo) { friendsInfo = friendsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.friends = friends;
+          selfInfo.friends = friendsInfo.friends;
+          selfInfo.new_friends = friendsInfo.new_friends || 0;
           cb(null, null);
         });
       },/////////////////////////////////////////////////////////////////////
       function (res, cb) { // Получаем гостей
-        selfProfile.getGuests(true, function (err, guests) {
+        selfProfile.getGuests(true, function (err, guestsInfo) { guestsInfo = guestsInfo || {};
           if (err) { return cb(err, null); }
           
-          selfInfo.guests = guests;
+          selfInfo.guests = guestsInfo.guests;
+          selfInfo.new_guests = guestsInfo.new_guests || 0;
           cb(null, null);
         });
       }/////////////////////////////////////////////////////////////////////
-    ], function(err, res) {
+    ], function(err) {
       if (err) { return callback(err); }
       
       callback(null, selfInfo);
@@ -93,11 +96,11 @@ module.exports = function (socket, options, callback) {
         
       },///////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Получаем подарки
-        friendProfile.getGifts(function (err, gifts) {
+        friendProfile.getGifts(false, function (err, giftsInfo) { giftsInfo = giftsInfo || {};
           if (err) {  return cb(err, null); }
           
           
-          friendInfo.gifts = gifts;
+          friendInfo.gifts = giftsInfo.gifts;
           cb(null, friendProfile, friendInfo);
         });
       },/////////////////////////////////////////////////////////////////////
@@ -110,26 +113,26 @@ module.exports = function (socket, options, callback) {
         });
       },/////////////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Получаем друзей
-        friendProfile.getFriends(false, function (err, friends) {
+        friendProfile.getFriends(false, function (err, friendsInfo) { friendsInfo = friendsInfo || {};
           if (err) {  return cb(err, null); }
           
-          friendInfo.friends = friends;
+          friendInfo.friends = friendsInfo.friends;
           cb(null, friendProfile, friendInfo);
         });
       },/////////////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
         var date = new Date();
-        friendProfile.addToGuests(selfProfile, date, function (err, res) {
+        friendProfile.addToGuests(selfProfile, date, function (err) {
           if (err) { return cb(err, null); }
           
           cb(null, friendProfile, friendInfo);
         });
       },/////////////////////////////////////////////////////////////////////
       function (friendProfile, friendInfo, cb) { // Получаем гостей
-        friendProfile.getGuests(false, function (err, guests) {
+        friendProfile.getGuests(false, function (err, guestsInfo) { guestsInfo = guestsInfo || {};
           if (err) { return cb(err, null); }
           
-          friendInfo.guests = guests;
+          friendInfo.guests = guestsInfo.guests;
           cb(null, friendProfile, friendInfo);
         });
       }/////////////////////////////////////////////////////////////////////
@@ -139,7 +142,7 @@ module.exports = function (socket, options, callback) {
       if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
         var friendSocket = friendProfile.getSocket();
         friendSocket.emit(constants.IO_ADD_GUEST, selfInfo);
-        friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+        // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }
       
       callback(null, friendInfo);

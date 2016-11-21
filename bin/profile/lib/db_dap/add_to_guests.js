@@ -14,11 +14,11 @@ module.exports = function(guestProfile, date, callback) {
  db.addGuest(self._pID, options, function(err, guest) {
    if (err) { return callback(err, null); }
 
-   self._pIsNewGuests ++;
-   self.save(function(err) {
-     if (err) { return callback(err, null); }
+   // self._pIsNewGuests ++;
+   // self.save(function(err) {
+   //   if (err) { return callback(err, null); }
 
      callback(null, guest);
-   });
+   // });
  })
 };

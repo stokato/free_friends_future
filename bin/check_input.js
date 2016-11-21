@@ -145,6 +145,14 @@ module.exports = function (em, socket, options, callback) {
       
       break;
     
+    case constants.IO_SET_VIEWED :
+      isValid = ("target" in options)?             isValid : false;
+      
+      err.message = "Не задано свойство target";
+      
+      options.target = sanitize(options.target);
+      
+      break;
     
     case constants.IO_GAME :
       

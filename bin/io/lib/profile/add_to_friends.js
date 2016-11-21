@@ -56,7 +56,7 @@ module.exports = function (socket, options, callback) {
           var friendSocket = friendProfile.getSocket();
           friendSocket.emit(constants.IO_NEW_FRIEND, selfInfo);
           
-          friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
+          // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
         }
         
         callback(null, friendInfo);

@@ -25,7 +25,8 @@ var init                            = require('./lib/init/init'),
     isFriend                        = require('./lib/db_dap/is_friend'),
     setInMenu                       = require('./lib/db_dap/set_in_menu'),
     delFromFriends                  = require('./lib/db_dap/del_from_friends'),
-    clearGiftInfo                   = require('./lib/db_dap/clear_gift_info');
+    clearGiftInfo                   = require('./lib/db_dap/clear_gift_info'),
+    view                            = require('./lib/db_dap/view');
 
 var clearExitTimeout                = require('./lib/db_undep/clear_exit_timeout');
 
@@ -131,5 +132,6 @@ Profile.prototype.setInMenu = setInMenu;
 Profile.prototype.delFromFriends = delFromFriends;
 Profile.prototype.clearGiftInfo = clearGiftInfo;
 Profile.prototype.pay = pay;
+Profile.prototype.view = view;
 
 module.exports = Profile;

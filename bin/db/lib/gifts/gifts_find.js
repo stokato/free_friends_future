@@ -9,25 +9,27 @@ var cdb = require('./../common/cassandra_db');
  - Строим и выполняем запрос (все поля)
  - Возвращаем массив с подарками (если ничего нет NULL)
  */
-module.exports = function(uid, callback) {
+module.exports = function(uid, isSelf, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null);}
 
   async.waterfall([ // Отбираем сведения по новым подаркам
     function (cb) {
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USER_NEW_GIFTS, ["userid"], [1]);
+      if(isSelf) {
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USER_NEW_GIFTS, ["userid"], [1]);
   
-      cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-        if (err) { return cb(err, null); }
+        cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
+          if (err) { return cb(err, null); }
     
-        var newIds = [];
-        
-        for(var i = 0; i < result.rows.length; i++) {
-          newIds.push(result.rows[i].id);
-        }
-        
-        cb(null, newIds);
-        
-      });
+          var newIds = [];
+    
+          for(var i = 0; i < result.rows.length; i++) {
+            newIds.push(result.rows[i].id);
+          }
+    
+          cb(null, newIds);
+    
+        });
+      } else { cb(null, []); }
       
     },
     function (newIds, cb) {
@@ -53,11 +55,14 @@ module.exports = function(uid, callback) {
           gift.giftid   = gift.giftid.toString();
           gift.fromid   = gift.fromid.toString();
           gift.fromvid  = gift.fromvid.toString();
-          gift.is_new   = false;
           
-          for(var nid = 0; nid < newIds.length; nid++) {
-            if(gift.id == newIds[nid]) {
-              gift.is_new = true;
+          if(isSelf) {
+            gift.is_new   = false;
+  
+            for(var nid = 0; nid < newIds.length; nid++) {
+              if(gift.id == newIds[nid]) {
+                gift.is_new = true;
+              }
             }
           }
     
@@ -119,7 +124,7 @@ module.exports = function(uid, callback) {
           })
         }
     
-        cb(null, { users : users, new_gifts : countNews });
+        cb(null, { gifts : users, new_gifts : countNews });
       });
     }
   ],

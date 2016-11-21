@@ -1,0 +1,29 @@
+/**
+ * Created by s.t.o.k.a.t.o on 21.11.2016.
+ */
+var constants = require('./../../../constants');
+var db = require('./../../../db_manager');
+
+
+module.exports = function (target, callback) {
+  
+  switch (target) {
+    case constants.VIEWED_TYPE.FRIENDS :
+      db.openFriends(this._pID, onComplete);
+      break;
+    case constants.VIEWED_TYPE.GUESTS :
+      db.openGuests(this._pID, onComplete);
+      break;
+    case constants.VIEWED_TYPE.GIFTS :
+      db.openGifts(this._pID, onComplete);
+      break;
+    default :
+      callback(new Error("Не задана цель для обновления"));
+  }
+  
+  function onComplete(err) {
+    if(err) { return callback(err); }
+    
+    callback(null, target);
+  }
+};

@@ -21,7 +21,7 @@ module.exports = function(giftMaker, date, gift, callback) {
     self._pGift1 = result;
     self._pGift1Time = date;
 
-    self._pIsNewGifts ++;
+    // self._pIsNewGifts ++;
     self.save(function(err) {
       if (err) { return callback(err, null); }
 

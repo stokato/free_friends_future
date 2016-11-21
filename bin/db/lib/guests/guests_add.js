@@ -1,3 +1,5 @@
+var async = require('async');
+
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
 
@@ -14,14 +16,36 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указан Id пользователя или его гостя, либо дата"), null);
   }
 
-  var fields = ["userid", "guestid", "guestvid", "date"];
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGUESTS);
-
-  var params = [uid, options.guestid, options.guestvid, options.date ];
-
-  cdb.client.execute(query, params, {prepare: true },  function(err) {
+  async.waterfall([
+    function (cb) {
+      var fields = ["userid", "guestid", "guestvid", "date"];
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGUESTS);
+  
+      var params = [uid, options.guestid, options.guestvid, options.date ];
+  
+      cdb.client.execute(query, params, {prepare: true },  function(err) {
+        if (err) {  return cb(err); }
+    
+        cb(null, options);
+      });
+    },
+      function (res, cb) {
+        var fields = ["userid", "guestid"];
+      
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USER_NEW_GUESTS);
+      
+        var params = [uid, options.guestid];
+      
+        cdb.client.execute(query, params, { prepare: true },  function(err) {
+          if (err) { return cb(err); }
+        
+          cb(null, null);
+        });
+      }
+  ],
+  function (err) {
     if (err) {  return callback(err); }
-
+  
     callback(null, options);
   });
 };

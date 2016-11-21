@@ -14,7 +14,7 @@ module.exports = function(uid, callback) {
   // Отбираем все новые подарки пользователя
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USER_NEW_GIFTS, ["userid"], [1]);
   
-  cdb.client.execute(query,[uid, true], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     // Меняем флаг нового сообщения
@@ -24,7 +24,7 @@ module.exports = function(uid, callback) {
     var constValues = [result.rows.length];
     
     for (var i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i].id);
+      params.push(result.rows[i].id.toString());
     }
     
     var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USER_NEW_GIFTS, constFields, constValues);

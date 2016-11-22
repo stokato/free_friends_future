@@ -152,8 +152,9 @@ module.exports.G_PRISON           = G_PRISON;
 
 // Игры с тюрьмой и без
 module.exports.GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
-// module.exports.GAMES = [ G_SYMPATHY, G_PRISON ];
+//  module.exports.GAMES = [ G_BEST, G_PRISON ];
 module.exports.GAMES_WITHOUT_PRISON = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
+// module.exports.GAMES_WITHOUT_PRISON = [G_BEST];
 
 // Количество карт в игре
 module.exports.CARD_COUNT = 7;

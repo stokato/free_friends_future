@@ -79,7 +79,7 @@ module.exports = function (socket, options, callback) {
 
         var result = {
           fromid : selfProfile.getID(),
-          fromvid : selfProfile.getVID,
+          fromvid : selfProfile.getVID(),
           id      : friendProfile.getID(),
           vid     : friendProfile.getVID(),
           giftid  : gift.giftid,

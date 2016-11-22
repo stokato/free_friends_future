@@ -48,7 +48,7 @@ module.exports = function (socket, options, callback) {
       selfProfile.getFriends(false, function (err, allFriends) {
         if (err) { return cb(err, null); }
         
-        cb(null, roomInfo, allFriends);
+        cb(null, roomInfo, allFriends.friends);
       });
       
     },///////////////////////// Составляем список друзей с неполными коматами

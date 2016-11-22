@@ -27,7 +27,7 @@ module.exports = function(uid, callback) {
       cdb.client.execute(query, params, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
 
-        if (result.rows.length == 0) return cb(null, null, null, null);
+        if (result.rows.length == 0) return cb(null, null, null, null, null);
 
         var rows = result.rows;
         var const_values = rows.length;

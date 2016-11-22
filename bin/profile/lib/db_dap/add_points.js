@@ -12,8 +12,8 @@ module.exports = function(num, callback) {
   self._pPoints = self._pPoints || 0;
   
   var options = {};
-  options[db.CONST.USERID]  = self._pID;
-  options[db.CONST.USERVID] = self._pVID;
+  options[db.CONST.ID]  = self._pID;
+  options[db.CONST.VID] = self._pVID;
   options[db.CONST.SEX]     = self._pSex;
   options[db.CONST.POINTS]  = self._pPoints + num;
   

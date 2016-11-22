@@ -3,6 +3,8 @@ var async = require('async');
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
 
+var PF = require('./../../constants').PFIELDS;
+
 /*
  Добавить друга в БД: ИД, объект с данными друга
  - Проверка (все поля обязательны)
@@ -10,16 +12,16 @@ var cdb = require('./../common/cassandra_db');
  - Строим и выполняем запрос
  - Возвращаем объект обратно
  */
-module.exports = function(uid, friend, callback) { friend = friend || {};
+module.exports = function(uid, options, callback) { options = options || {};
 
-  if ( !uid || !friend["friendid"] || !friend["friendvid"]) {
+  if ( !uid || !options[PF.ID] || !options[PF.VID]) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
   async.waterfall([
     function (cb) {
       var fields = ["userid", "friendid", "friendvid", "date"];
-      var params = [uid, friend["friendid"], friend["friendvid"], friend["date"]];
+      var params = [uid, options[PF.ID], options[PF.VID], options[PF.DATE]];
   
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERFRIENDS);
   
@@ -31,7 +33,7 @@ module.exports = function(uid, friend, callback) { friend = friend || {};
     },
     function (res, cb) {
       var fields = ["userid", "friendid"];
-      var params = [uid, friend["friendid"]];
+      var params = [uid, options[PF.ID]];
   
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USER_NEW_FRIENDS);
   
@@ -45,7 +47,7 @@ module.exports = function(uid, friend, callback) { friend = friend || {};
   function (err) {
     if (err) {  return callback(err); }
     
-    callback(null, friend);
+    callback(null, options);
   });
 
 };

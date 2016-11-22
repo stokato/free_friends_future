@@ -7,8 +7,8 @@ module.exports = function(friendProfile, date, callback) {
  var self = this;
   
   var params = {};
-  params[db.CONST.FR_FRIENDID]  = friendProfile.getID();
-  params[db.CONST.FR_FRIENDVID] = friendProfile.getVID();
+  params[db.CONST.ID]  = friendProfile.getID();
+  params[db.CONST.VID] = friendProfile.getVID();
   params[db.CONST.DATE]         = date;
   
  db.addFriend(self._pID, params, function (err) {

@@ -2,6 +2,7 @@ var async = require('async');
 
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF = require('./../../constants').PFIELDS;
 
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
@@ -10,9 +11,9 @@ var cdb = require('./../common/cassandra_db');
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var companions = options.id_list || [];
-  var firstDate =  options["first_date"];
-  var secondDate = options["second_date"];
+  var companions = options[PF.ID_LIST] || [];
+  var firstDate =  options[PF.DATE_FROM];
+  var secondDate = options[PF.DATE_TO];
 
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
   if (!companions[0]) { return callback(new Error("Задан пустой Id собеседника"), null); }

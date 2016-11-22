@@ -7,8 +7,8 @@ module.exports = function(guestProfile, date, callback) {
  var self = this;
   
  var options = {};
- options[db.CONST.GU_GUESTID]   = guestProfile.getID();
- options[db.CONST.GU_GUESTVID]  = guestProfile.getVID();
+ options[db.CONST.ID]   = guestProfile.getID();
+ options[db.CONST.VID]  = guestProfile.getVID();
  options[db.CONST.DATE]         = date;
   
  db.addGuest(self._pID, options, function(err, guest) {

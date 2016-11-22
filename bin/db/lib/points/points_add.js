@@ -2,6 +2,7 @@ var async = require('async');
 
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF = require('./../../constants').PFIELDS;
 
 var logger = require('./../../../../lib/log')(module);
 
@@ -15,7 +16,7 @@ var logger = require('./../../../../lib/log')(module);
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-  if ( !options["userid"] || !options["uservid"] || !options["points"] || !options["sex"]) {
+  if ( !options[PF.ID] || !options[PF.VID] || !options[PF.POINTS] || !options[PF.SEX]) {
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
   
@@ -24,9 +25,9 @@ module.exports = function(options, callback) { options    = options || {};
   async.waterfall([//////////////////////////////////////////////////////////////////
     function (cb) { // Обновляем таблицу пользователя
       var params = {
-        id      : options.userid,
-        vid     : options.uservid,
-        points  : options.points
+        id      : options[PF.ID],
+        vid     : options[PF.VID],
+        points  : options[PF.POINTS]
       };
   
       self.updateUser(params, function(err) {
@@ -39,7 +40,7 @@ module.exports = function(options, callback) { options    = options || {};
       var fields = ["id", "points", "userid", "uservid", "sex", "uid"];
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_POINTS);
 
-      var params = ["max", options["points"], options["userid"], options["uservid"], options["sex"], options["userid"]];
+      var params = ["max", options[PF.POINTS], optionss[PF.ID], options[PF.VID], options[PF.SEX], options[PF.ID]];
 
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -54,7 +55,7 @@ module.exports = function(options, callback) { options    = options || {};
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
-      var db = (options["sex"] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
+      var db = (options[PF.SEX] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
 
       cdb.client.execute(query, params, {prepare: true },  function(err) {
@@ -64,7 +65,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Удаляем старые записи
-      var db = (options["sex"] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
+      var db = (options[PF.SEX] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
 
       delOldPoints(fields, db, function () {
         cb(null, null);
@@ -80,7 +81,7 @@ module.exports = function(options, callback) { options    = options || {};
     
     var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, ["uid"], [1]);
     
-    var paramsF = [options["userid"]];
+    var paramsF = [options[PF.ID]];
     
     cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
       if (err) {  return cb(err); }

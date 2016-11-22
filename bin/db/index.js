@@ -94,26 +94,16 @@ DBManager.prototype.openGifts         = openGifts;
 module.exports = DBManager;
 
 var dbConstants = {
-  FR_FRIENDID     : "friendid",
-  FR_FRIENDVID    : "friendvid",
   DATE            : "date",
   SRC             : "src",
   GIFTID          : "giftid",
   TYPE            : "type",
   TITLE           : "title",
-  FROMID          : "fromid",
-  FROMVID         : "fromvid",
-  MS_COMPANIONID  : "companionid",
-  MS_COMPANIONVID : "companionvid",
-  MS_INCOMING     : "incoming",
-  MS_TEXT         : "text",
-  MS_OPENED       : "opened",
-  USERID          : "userid",
-  USERVID         : "uservid",
+  INCOMING        : "incoming",
+  TEXT            : "text",
+  OPENED          : "opened",
   SEX             : "sex",
   POINTS          : "points",
-  GU_GUESTID      : "guestid",
-  GU_GUESTVID     : "guestvid",
   ID_LIST         : "id_list",
   DATE_FROM       : "first_date",
   DATE_TO         : "second_date",
@@ -129,7 +119,8 @@ var dbConstants = {
   ISFRIENDS       : "newfriends",
   ISGUESTS        : "newguests",
   GIFT1           : "gift1",
-  ISMENU          : "ismenu"
+  ISMENU          : "ismenu",
+  MESSAGEID       : "messageid"
 };
 
 

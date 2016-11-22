@@ -1,7 +1,9 @@
+var async = require('async');
+
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF  = require('./../../constants').PFIELDS;
 
-var async = require('async');
 /*
  Добавить сообщение в БД: ИД, объект сообщения
  - Проверка (все поля обязательны)
@@ -10,10 +12,10 @@ var async = require('async');
  - Возвращаем объект сообщения
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var date         = options["date"] || new Date();
-  var opened       = options["opened"];
+  var date         = options[PF.DATE] || new Date();
+  var opened       = options[PF.OPENED];
 
-  if (!date || !uid || !options["companionid"] || !options["text"] || !options["companionvid"]) {
+  if (!date || !uid || !options[PF.ID] || !options[PF.TEXT] || !options[PF.VID]) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
@@ -27,7 +29,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERMESSAGES);
 
-      var params = [id, uid, date, options["companionid"], options["companionvid"], options["incoming"], options["text"]];
+      var params = [id, uid, date, options[PF.ID], options[PF.VID], options[PF.INCOMING], options[PF.TEXT]];
 
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
@@ -48,7 +50,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       } else cb(null, null);
     }, //////////////////////////////////////////////////////////////////////////////////////////
     function(res, cb) { // Добавляем чат
-      var params = [uid, options["companionid"], opened];
+      var params = [uid, options[PF.ID], opened];
       var fields = ["userid", "companionid", "isnew"];
 
       //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
@@ -63,7 +65,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   ], function(err, res) {
     if (err) {  return callback(err); }
 
-    options["messageid"] = id.toString();
+    options[PF.MESSAGEID] = id.toString();
 
     callback(null, options);
   });

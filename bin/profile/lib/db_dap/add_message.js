@@ -8,11 +8,11 @@ module.exports = function(companion, incoming, date, text, callback) {
   
   var message = {};
   message[db.CONST.DATE]            = date;
-  message[db.CONST.MS_COMPANIONID]  = companion.getID();
-  message[db.CONST.MS_COMPANIONVID] = companion.getVID();
-  message[db.CONST.MS_INCOMING]     = incoming;
-  message[db.CONST.MS_TEXT]         = text;
-  message[db.CONST.MS_OPENED]       = self.isPrivateChat(companion.getID()); // Если чат открыт, сообщение уже прочитано
+  message[db.CONST.ID]  = companion.getID();
+  message[db.CONST.VID] = companion.getVID();
+  message[db.CONST.INCOMING]     = incoming;
+  message[db.CONST.TEXT]         = text;
+  message[db.CONST.OPENED]       = self.isPrivateChat(companion.getID()); // Если чат открыт, сообщение уже прочитано
 
   db.addMessage(self._pID, message, function(err) {
     if (err) { return callback(err, null); }

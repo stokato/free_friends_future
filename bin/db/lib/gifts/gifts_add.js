@@ -2,6 +2,7 @@ var async = require('async');
 
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF  = require('./../../constants').PFIELDS;
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
  - Провека: все поля
@@ -14,8 +15,8 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
-  if (!options["giftid"] || !options["src"] || !options["date"] || !options["fromid"]
-    || !options["fromvid"]) {
+  if (!options[PF.GIFTID] || !options[PF.SRC] || !options[PF.DATE] || !options[PF.ID]
+    || !options[PF.VID]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
@@ -29,18 +30,18 @@ module.exports = function(uid, options, callback) { options = options || {};
       var params = [];
       params.push(id);
       params.push(uid);
-      params.push(options["giftid"]);
-      params.push(options["type"]);
-      params.push(options["src"]);
-      params.push(options["date"]);
-      params.push(options["title"]);
-      params.push(options["fromid"]);
-      params.push(options["fromvid"]);
+      params.push(options[PF.GIFTID]);
+      params.push(options[PF.TYPE]);
+      params.push(options[PF.SRC]);
+      params.push(options[PF.DATE]);
+      params.push(options[PF.TITLE]);
+      params.push(options[PF.ID]);
+      params.push(options[PF.VID]);
   
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) {  return cb(err); }
     
-        options.gid = id.toString();
+        options[PF.GID] = id.toString();
     
         cb(null, null);
       });

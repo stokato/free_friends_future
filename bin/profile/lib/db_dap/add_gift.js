@@ -7,8 +7,8 @@ module.exports = function(giftMaker, date, gift, callback) {
   var self = this;
   
   var options = {};
-  options[db.CONST.FROMID]  = giftMaker.getID();
-  options[db.CONST.FROMVID] = giftMaker.getVID();
+  options[db.CONST.ID]  = giftMaker.getID();
+  options[db.CONST.VID] = giftMaker.getVID();
   options[db.CONST.DATE]    = date;
   options[db.CONST.SRC]     = gift.src;
   options[db.CONST.GIFTID]  = gift.id;

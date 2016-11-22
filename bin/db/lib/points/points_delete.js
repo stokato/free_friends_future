@@ -2,6 +2,7 @@ var async = require('async');
 
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF = require('./../../constants').PFIELDS;
 
 /*
  Удалить очки пользователя
@@ -11,7 +12,7 @@ var cdb = require('./../common/cassandra_db');
  */
 module.exports = function(options, callback) { options = options || {};
 
-  if (!options["userid"] || !options["sex"]) {
+  if (!options[PF.ID] || !options[PF.SEX]) {
     return callback(new Error("Задан пустой Id игрока или пол"));
   }
 
@@ -22,7 +23,7 @@ module.exports = function(options, callback) { options = options || {};
 
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_POINTS, constFields, constValues);
 
-      var params = ["max", options["points"], options["userid"]];
+      var params = ["max", options[PF.POINTS], options[PF.ID]];
 
       cdb.client.execute(query, params, {prepare: true }, function(err) {
         if (err) {  return cb(err); }
@@ -31,7 +32,7 @@ module.exports = function(options, callback) { options = options || {};
       });
     }, ///////////////////////////////////////////////////////////
     function(params, constFields, constValues, cb) { // Удаляем записи из таблицы его пола
-      var db = (options["sex"] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
+      var db = (options[PF.SEX] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
 
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
       cdb.client.execute(query, params, {prepare: true }, function(err) {

@@ -1,5 +1,6 @@
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF = require('./../../constants').PFIELDS;
 
 /*
  Изменить сообщение в БД: Свойства сообщения
@@ -8,7 +9,7 @@ var cdb = require('./../common/cassandra_db');
  - Возвращаем объект сообщения
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  if (!options["id"] || !uid || !options["companionid"]) {
+  if (!options[PF.ID] || !uid || !options[PF.MESSAGEID]) {
     return callback(new Error("Задан пустй Id пользователя, его собеседника или сообщения"), null);
   }
 
@@ -17,7 +18,7 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USERMESSAGES, constFields, constValues);
 
-  var params = [uid, options["companionid"], options["id"]];
+  var params = [uid, options[PF.ID], options[PF.MESSAGEID]];
 
   // Получаем сообщение
   cdb.client.execute(query, params, {prepare: true }, function(err, result) {
@@ -26,11 +27,11 @@ module.exports = function(uid, options, callback) { options = options || {};
     if(result.rows.length == 0) { return callback(new Error("Сообщения с таким Id нет в базе данных"), null)}
 
     var fields = [];
-    if (options["date"])          { fields.push("date");          params.push(options["date"]); }
-    if (options["companionvid"])  { fields.push("companionvid");  params.push(options["companionvid"]); }
-    if (options["incoming"])      { fields.push("incoming");      params.push(options["incoming"]); }
-    if (options["text"])          { fields.push("text");          params.push(options["text"]); }
-    if (options["opened"])        { fields.push("opened");        params.push(options["opened"]); }
+    if (options[PF.DATE])          { fields.push("date");          params.push(options[PF.DATE]); }
+    if (options[PF.VID])           { fields.push("companionvid");  params.push(options[PF.VID]); }
+    if (options[PF.INCOMING])      { fields.push("incoming");      params.push(options[PF.INCOMING]); }
+    if (options[PF.TEXT])          { fields.push("text");          params.push(options[PF.TEXT]); }
+    if (options[PF.OPENED])        { fields.push("opened");        params.push(options[PF.OPENED]); }
 
     var constFields = ["userid", "companionid", "id"];
     var constValues = [1, 1, 1];

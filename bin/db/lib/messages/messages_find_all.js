@@ -1,5 +1,6 @@
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var PF  = require('./../../constants').PFIELDS;
 
 /*
  Найти сохраненные сообщения пользователя: ИД игрока
@@ -10,7 +11,7 @@ var cdb = require('./../common/cassandra_db');
 module.exports = function(uid, options, callback) { options = options || {};
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
 
-  var date = options["date"];
+  var date = options[PF.DATE];
   var params = [uid];
 
   var fields = ["companionid"];

@@ -32,14 +32,14 @@ module.exports = function(id, callback) {
       var row = result.rows[0];
 
       var gift = {};
-      gift[PF.GID] = id;
+      gift[PF.UGIFTID] = id;
       gift[PF.GIFTID]  = row[DBF.GIFTID_varchar];
       gift[PF.TYPE]       = row[DBF.TYPE_varchar];
       gift[PF.SRC]        = row[DBF.SRC_varhar];
       gift[PF.DATE]       = row[DBF.DATE_timestamp];
       gift[PF.TITLE]      = row[DBF.TITLE_varchar];
-      gift[PF.G_FROMID]   = row[DBF.FROMID_uuid].toString();
-      gift[PF.G_FROMVID]  = row[DBF.FROMVID_varchar];
+      gift[PF.FID]   = row[DBF.FROMID_uuid].toString();
+      gift[PF.FVID]  = row[DBF.FROMVID_varchar];
 
       callback(null, gift);
     } else {

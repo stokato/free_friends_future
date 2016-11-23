@@ -1,5 +1,6 @@
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GUESTS.fields;
 
 /*
  Удалить всех гостей игрока: ИД
@@ -11,10 +12,11 @@ module.exports = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   //var query = "DELETE FROM user_guests where user = ?";
-  var constFields = ["userid"];
+  var constFields = [DBF.USERID_uuid_p];
   var constValues = [1];
+  var dbName = dbConst.DB.USER_GUESTS.name;
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERGUESTS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
 
   cdb.client.execute(query, [uid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

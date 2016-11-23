@@ -2,7 +2,9 @@ var async = require('async');
 
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
-var PF = require('./../../constants').PFIELDS;
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.POINTS.fields;
+var PF = dbConst.PFIELDS;
 
 /*
  Удалить очки пользователя
@@ -16,12 +18,12 @@ module.exports = function(options, callback) { options = options || {};
     return callback(new Error("Задан пустой Id игрока или пол"));
   }
 
-  async.waterfall([ ///////////////////////////////////////////////
+  async.waterfall([ //----------------------------------------------------
     function(cb) { // Удаляем записи этого пользователя
-      var constFields = ["id", "points", "userid"];
+      var constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc, DBF.USERID_uuid];
       var constValues = [1, 1, 1];
 
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_POINTS, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.POINTS.name, constFields, constValues);
 
       var params = ["max", options[PF.POINTS], options[PF.ID]];
 
@@ -30,9 +32,9 @@ module.exports = function(options, callback) { options = options || {};
 
         cb(null, params, constFields, constValues);
       });
-    }, ///////////////////////////////////////////////////////////
+    }, //----------------------------------------------------------------
     function(params, constFields, constValues, cb) { // Удаляем записи из таблицы его пола
-      var db = (options[PF.SEX] == constants.GIRL)? constants.T_POINTS_GIRLS : constants.T_POINTS_GUYS;
+      var db = (options[PF.SEX] == constants.GIRL)? dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
 
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
       cdb.client.execute(query, params, {prepare: true }, function(err) {
@@ -41,7 +43,8 @@ module.exports = function(options, callback) { options = options || {};
         cb(null, options);
       });
     }
-  ], function(err, res) {
+  ], //--------------------------------------------------------------------
+    function(err, res) {
     if(err) { callback(err, null); }
 
     callback(null, options);

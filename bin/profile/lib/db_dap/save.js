@@ -16,10 +16,10 @@ module.exports = function(callback) {
  options[db.CONST.STATUS]      = self._pStatus;
  options[db.CONST.POINTS]      = self._pPoints;
  options[db.CONST.MONEY]       = self._pMoney;
- options[db.CONST.ISMESSAGES]  = self._pIsNewMessages;
- options[db.CONST.ISGIFTS]     = self._pIsNewGifts;
- options[db.CONST.ISFRIENDS]   = self._pIsNewFriends;
- options[db.CONST.ISGUESTS]    = self._pIsNewGuests;
+ // options[db.CONST.ISMESSAGES]  = self._pIsNewMessages;
+ // options[db.CONST.ISGIFTS]     = self._pIsNewGifts;
+ // options[db.CONST.ISFRIENDS]   = self._pIsNewFriends;
+ // options[db.CONST.ISGUESTS]    = self._pIsNewGuests;
  
  if(self._pGift1) {
    options[db.CONST.GIFT1]      = self._pGift1.gid;

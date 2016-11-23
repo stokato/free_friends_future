@@ -1,8 +1,10 @@
 var async = require('async');
 
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
-var PF = require('./../../constants').PFIELDS;
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GUESTS.fields;
+var DBFN = dbConst.DB.USER_NEW_GUESTS.fields;
+var PF = dbConst.PFIELDS;
 
 /*
  Добавить гостя в БД: ИД, объект с данными гостя
@@ -17,25 +19,46 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указан Id пользователя или его гостя, либо дата"), null);
   }
 
-  async.waterfall([
+  async.waterfall([ //----------------------------------------------
     function (cb) {
-      var fields = ["userid", "guestid", "guestvid", "date"];
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGUESTS);
+      var fields = [
+        DBF.USERID_uuid_p,
+        DBF.GUESTID_uuid_ci,
+        DBF.GUESTVID_varchar,
+        DBF.DATE_timestamp,
+        DBF.GUESTSEX_int,
+        DBF.GUESTBDAY_timestamp
+      ];
+      
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS);
   
-      var params = [uid, options[PF.ID], options[PF.VID], options[PF.DATE] ];
+      var params = [
+        uid,
+        options[PF.ID],
+        options[PF.VID],
+        options[PF.DATE],
+        options[PF.SEX],
+        options[PF.BDAY]
+      ];
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
     
         cb(null, options);
       });
-    },
+    }, //-----------------------------------------------------------------
       function (res, cb) {
-        var fields = ["userid", "guestid"];
+        var fields = [
+          DBFN.USERID_uuid_p,
+          DBFN.GUESTID_uuid_ci
+        ];
       
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USER_NEW_GUESTS);
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GUESTS);
       
-        var params = [uid, options[PF.ID]];
+        var params = [
+          uid,
+          options[PF.ID]
+        ];
       
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) { return cb(err); }
@@ -43,7 +66,7 @@ module.exports = function(uid, options, callback) { options = options || {};
           cb(null, null);
         });
       }
-  ],
+  ], //------------------------------------------------------------------
   function (err) {
     if (err) {  return callback(err); }
   

@@ -1,7 +1,11 @@
 var async = require('async');
 
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GUESTS.fields;
+var DBFN = dbConst.DB.USER_NEW_GUESTS.fields;
+var PF = dbConst.PFIELDS;
+var bdayToAge = require('./../common/bdayToAge');
 
 /*
  Найти гостей пользователя: ИД игрока
@@ -10,115 +14,88 @@ var cdb = require('./../common/cassandra_db');
  - Возвращаем массив объектв с данными (Если не нашли ничего - NULL)
  */
 module.exports = function(uid, isSelf, callback) {
-
+  
   if (!uid ) { return callback(new Error("Задан пустой Id"), null); }
-
-  async.waterfall([
+  
+  async.waterfall([ //---------------------------------------------------
       function (cb) {
         if(isSelf) {
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT,
-            ["guestid"], constants.T_USER_NEW_GUESTS, ["userid"], [1]);
-  
+          var fields = [DBFN.GUESTID_uuid_pc2i];
+          var dbName = dbConst.DB.USER_NEW_GUESTS.name;
+          var constFields = [DBFN.USERID_uuid_pc1i];
+          var constValues = [1];
+          
+          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+          
           cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
             if (err) { return cb(err, null); }
-    
+            
             var newIds = [];
-    
+            
             for(var i = 0; i < result.rows.length; i++) {
-              newIds.push(result.rows[i].guestid);
+              newIds.push(result.rows[i][DBFN.GUESTID_uuid_pc2i].toString());
             }
-    
+            
             cb(null, newIds);
           });
         } else { cb(null, []); }
-
-      },
-    function (newIds, cb) {
-  
-      // Отбираем всех гостей
-      var fields = ["guestid", "guestvid", "date"];
-      var constFields = ["userid"];
-      var constValues = [1];
-  
-      //var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERGUESTS, constFields, constValues);
-  
-      cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-        if (err) { return cb(err, null); }
-    
-        var guests = [];
-        var guestList = [];
-        var i, rowsLen = result.rows.length;
-  
-        var constValues = [rowsLen];
-    
-        if(rowsLen > 0) {
-          var row;
-          for(i = 0; i < rowsLen; i++) {
-            row = result.rows[i];
         
-            var guest = {
-              id    : row["guestid"].toString(),
-              vid   : row["guestvid"],
-              date  : row["date"]
-            };
-            
-            if(isSelf) {
-              guest.is_new = false;
-  
-              for(var nid = 0; nid < newIds.length; nid++) {
-                if(guest.id == newIds[nid]) {
-                  guest.is_new = true;
+      }, //---------------------------------------------------------------
+      function (newIds, cb) {
+        
+        // Отбираем всех гостей
+        var fields = [
+          DBF.GUESTID_uuid_ci,
+          DBF.GUESTVID_varchar,
+          DBF.DATE_timestamp,
+          DBF.GUESTBDAY_timestamp,
+          DBF.GUESTSEX_int
+        ];
+        
+        var constFields = [DBF.USERID_uuid_p];
+        var constValues = [1];
+        var dbName = dbConst.DB.USER_GUESTS;
+        
+        //var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+        
+        cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
+          if (err) { return cb(err, null); }
+          
+          var guests = [];
+          
+            var row;
+            for(var i = 0; i < result.rows.length; i++) {
+              row = result.rows[i];
+              
+              var guest = {};
+              guest[PF.ID]    = row[DBF.GUESTID_uuid_ci].toString();
+              guest[PF.VID]   = row[DBF.GUESTVID_varchar];
+              guest[PF.DATE]  = row[DBF.DATE_timestamp];
+              guest[PF.AGE]   = bdayToAge(row[DBF.GUESTBDAY_timestamp]);
+              guest[PF.SEX]   = row[DBF.GUESTSEX_int];
+              
+              if(isSelf) {
+                guest[PF.ISNEW] = false;
+                
+                for(var nid = 0; nid < newIds.length; nid++) {
+                  if(guest[PF.ID] == newIds[nid]) {
+                    guest[PF.ISNEW] = true;
+                  }
                 }
               }
+              
+              guests.push(guest);
             }
-        
-            guests.push(guest);
-            guestList.push(guest.id);
-          }
-      
-          cb(null, guests, constValues, guestList, newIds.length)
-        } else { return cb(null, null, null, null, null); }
-      });
-    },
-    function (guests, constValues, guestList, countNews, cb) {
-      if(guests) {
-        // Отбираем сведения по всем гостям
-        var fields = ["id", "vid", "age", "sex", "city", "country", "points"];
-        var constFields = ["id"];
   
-  
-        //var query = "select id, vid, age, sex, city, country, points FROM users where id in (" + fields + ")";
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, constFields, constValues);
-  
-        cdb.client.execute(query, guestList, {prepare: true }, function(err, result) {
-          if (err) { return cb(err, null); }
-    
-          // Сопоставляем результаты
-          for(var i = 0; i < result.rows.length; i++) {
-            var row = result.rows[i], index;
-      
-            for(var j = 0; j < guestList.length; j++) {
-              if(guestList[j] == row["id"]) {
-                index = j;
-              }
-            }
-      
-            guests[index]["age"]     = row["age"];
-            guests[index]["sex"]     = row["sex"];
-            guests[index]["city"]    = row["city"];
-            guests[index]["country"] = row["country"];
-            guests[index]["points"]  = row["points"];
-          }
-          cb(null, { guests : guests, new_guests : countNews });
+            cb(null, { guests : guests, new_guests : newIds.length });
         });
-      } else { cb(null, null); }
-    }
-  ],
-  function (err, guests) {
-    if (err) { return callback(err, null); }
-  
-    callback(null, guests);
-  });
+      }
+    ], // -------------------------------------------------------------
+    function (err, guests) {
+      if (err) { return callback(err, null); }
+      
+      callback(null, guests);
+    });
   
 };

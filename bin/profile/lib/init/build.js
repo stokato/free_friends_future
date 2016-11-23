@@ -35,10 +35,10 @@ module.exports = function(id, callback) {
    self._pAge           = foundUser[db.CONST.AGE];
    self._pIsInMenu      = foundUser[db.CONST.ISMENU];
 
-   self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
-   self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
-   self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
-   self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
+   // self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
+   // self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
+   // self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
+   // self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
   
    self._pMoney         = foundUser[db.CONST.MONEY]      || 0;
 

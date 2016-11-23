@@ -72,8 +72,8 @@ module.exports = function(uid, isSelf, callback) {
           gift = {};
           gift[PF.ID]         = row[DBF.ID_uuid_p].toString();
           gift[PF.GIFTID]     = row[DBF.GIFTID_varchar];
-          gift[PF.G_FROMID]   = row[DBF.FROMID_uuid].toString();
-          gift[PF.G_FROMVID]  = row[DBF.FROMVID_varchar];
+          gift[PF.FID]   = row[DBF.FROMID_uuid].toString();
+          gift[PF.FVID]  = row[DBF.FROMVID_varchar];
           gift[PF.TYPE]       = row[DBF.TYPE_varchar];
           gift[PF.SRC]        = row[DBF.SRC_varhar];
           gift[PF.DATE]       = row[DBF.DATE_timestamp];
@@ -89,10 +89,10 @@ module.exports = function(uid, isSelf, callback) {
             }
           }
           
-          if(!users[gift[PF.G_FROMID]]) {
+          if(!users[gift[PF.FID]]) {
             user = {};
-            user[PF.ID]     = gift[PF.G_FROMID];
-            user[PF.VID]    = gift[PF.G_FROMVID];
+            user[PF.ID]     = gift[PF.FID];
+            user[PF.VID]    = gift[PF.FVID];
             user[PF.AGE]    = bdayToAge(row[DBF.FROMBDAY_timestamp]);
             user[PF.SEX]    = row[DBF.FROMSEX_int];
             user[PF.GIFTS]  = [];

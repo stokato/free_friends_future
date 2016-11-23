@@ -1,5 +1,8 @@
-var constants = require('../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_MESSAGES.fields;
+var DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
+var DBFC = dbConst.DB.USER_CHATS.fields;
 
 /*
  Удалить все сообщения игрока: ИД
@@ -13,12 +16,13 @@ module.exports = function(uid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
   // Отбираем сообщения
-  var fields = ["companionid"];
-  var constFields =["userid"];
+  var fields = [DBFC.COMPANIONID_uuid_c];
+  var constFields =[DBFC.USERID_uuid_p];
   var constValues = [1];
+  var dbName = dbConst.DB.USER_CHATS.name;
 
   //var query = "select companionid FROM user_chats where userid = ?";
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERCHATS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
 
   cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
@@ -26,25 +30,35 @@ module.exports = function(uid, callback) {
     var params = [];
 
     for (var i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i]);
+      params.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2i]);
     }
 
     // Удаляем сообщения
-    var constFields = ["userid", "companionid"];
-    var constValues = [1, result.rows.length];
+    var constFields = [
+      DBF.USERID_uuid_pci,
+      DBF.COMPANIONID_uuid_pc2i
+    ];
+    
+    var constValues = [
+      1,
+      result.rows.length
+    ];
+    
+    var dbName = dbConst.DB.USER_MESSAGES.name;
 
     //var query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
-    query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERMESSAGES, constFields, constValues);
+    query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
 
     cdb.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       // Удаляем чат
       //query = "DELETE FROM user_chats WHERE userid = ?";
-      var constFields = ["userid"];
+      var constFields = [DBFC.USERID_uuid_p];
       var constValues = [1];
+      var dbName = dbConst.DB.USER_CHATS.name;
 
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERCHATS, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
 
       cdb.client.execute(query, [uid], {prepare: true }, function(err) {
         if (err) {  return callback(err); }

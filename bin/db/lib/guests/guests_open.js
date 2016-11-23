@@ -1,33 +1,37 @@
 /**
  * Created by s.t.o.k.a.t.o on 18.11.2016.
  */
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBFN = dbConst.DB.USER_NEW_GUESTS.fields;
 
 /*
  Снимаем поментку Новый со всех гостей пользователя
  */
 module.exports = function(uid, callback) {
-  var self = this;
   if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
   
   // Отбираем всех новых друзей
-  var fields = ["guestid"];
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USER_NEW_GUESTS, ["userid"], [1]);
+  var fields = [DBFN.GUESTID_uuid_pc2i];
+  var dbName = dbConst.DB.USER_NEW_GUESTS.name;
+  var constFields = [DBFN.USERID_uuid_pc1i];
+  var constValues = [1];
+  
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
   cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     // Удаляем их
     var params = [uid];
-    var constFields = ["userid", "guestid"];
+    var constFields = [DBFN.USERID_uuid_pc1i, DBFN.GUESTID_uuid_pc2i];
     var constValues = [ 1, result.rows.length ];
     
     for (var i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i].guestid);
+      params.push(result.rows[i][DBFN.GUESTID_uuid_pc2i]);
     }
     
-    var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USER_NEW_GUESTS, constFields, constValues);
+    var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
     cdb.client.execute(query, params, { prepare: true }, function(err) {
       if (err) { return callback(err); }
       

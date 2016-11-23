@@ -1,5 +1,7 @@
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.ORDERS.fields;
+var PF = dbConst.PFIELDS;
 
 /*
  Найти все заказы пользователя: ИД
@@ -10,25 +12,34 @@ var cdb = require('./../common/cassandra_db');
 module.exports = function(userid, callback) {
   if(!userid) { return callback(new Error("Не задан ИД пользователя"), null); }
 
-  var fields = ["id", "vid", "goodid", "sum", "date"];
-  var constFields = ["userid"];
+  var fields = [
+    DBF.ID_uuid_p,
+    DBF.VID_varchar,
+    DBF.GOODID_varchar,
+    DBF.SUM_int,
+    DBF.DATE_timestamp
+  ];
+  var constFields = [DBF.USERID_uuid_i];
   var constValues = [1];
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_ORDERS, constFields, constValues);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.ORDERS.name, constFields, constValues);
 
   cdb.client.execute(query,[userid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) { return callback(null, null); }
 
-    var orders = [];
-
-    var i;
-    var rowsLen = result.rows.length;
-    for (i = 0; i < rowsLen; i++) {
-
-      var order = result.rows[i];
-      order.id = order.id.toString();
+    var orders = [], order, row;
+    
+    for (var i = 0; i < result.rows.length; i++) {
+      row = result.rows[i];
+      
+      order = {};
+      order[PF.ORDERID]   = row[DBF.ID_uuid_p].toString();
+      order[PF.ORDERVID]  = row[DBF.VID_varchar];
+      order[PF.GOODID]    = row[DBF.GOODID_varchar];
+      order[PF.SUM]       = row[DBF.SUM_int];
+      order[PF.DATE]      = row[DBF.DATE_timestamp];
 
       orders.push(order);
     }

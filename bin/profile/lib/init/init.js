@@ -37,10 +37,10 @@ module.exports = function(socket, options, callback) {
         db.CONST.CITY,
         db.CONST.STATUS,
         db.CONST.ISMENU,
-        db.CONST.ISFRIENDS,
-        db.CONST.ISGUESTS,
-        db.CONST.ISGIFTS,
-        db.CONST.ISMESSAGES,
+        // db.CONST.ISFRIENDS,
+        // db.CONST.ISGUESTS,
+        // db.CONST.ISGIFTS,
+        // db.CONST.ISMESSAGES,
         db.CONST.GIFT1
       ];
 
@@ -58,10 +58,10 @@ module.exports = function(socket, options, callback) {
           self._pCity    = (self._pCity)    ? self._pCity    : foundUser[db.CONST.CITY];
           self._pIsInMenu = foundUser[db.CONST.ISMENU] || false;
 
-          self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
-          self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
-          self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
-          self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
+          // self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
+          // self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
+          // self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
+          // self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
 
           if(foundUser.gift1) {
             db.findGift(foundUser[db.CONST.GIFT1], function(err, gift) {

@@ -140,6 +140,19 @@ CREATE TABLE IF NOT EXISTS user_chats(
 );
 
 
+-- Таблица со списком приватных чатов между пользователями, содержащими новые сообщения
+-- ИД пользователя (users) (ключевое поле),
+-- ИД отправителя/получателя (users) (связанный ключ),
+
+CREATE TABLE IF NOT EXISTS user_new_chats(
+  userid uuid,
+  companionid uuid,
+  PRIMARY KEY ((userid, companionid))
+);
+
+CREATE INDEX IF NOT EXISTS user_new_chats_userid ON user_new_chats(userid);
+
+
 -- Таблица новые личные сообщеня пользователя user_new_messages:
 -- ИД: генерируется (ключевое поле),
 -- ИД пользователя (users) (ключевое поле),

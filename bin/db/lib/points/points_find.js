@@ -1,7 +1,8 @@
-var async = require('async');
-
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.POINTS.fields;
+var PF = dbConst.PFIELDS;
 
 /*
  Найти 100 пользователей по набранным очкам
@@ -11,14 +12,19 @@ var cdb = require('./../common/cassandra_db');
 
 module.exports = function(sex, callback) {
   var users = [];
-  var fields = ["points", "userid", "uservid", "sex"];
+  var fields = [
+    DBF.POINTS_c_desc,
+    DBF.USERID_uuid,
+    DBF.USERVID_varchar,
+    DBF.SEX_int
+  ];
 
   // Определяем - к какой таблице обращаться
-  var db = constants.T_POINTS;
+  var db = dbConst.DB.POINTS.name;
   if(sex == constants.GIRL) {
-    db = constants.T_POINTS_GIRLS;
+    db = dbConst.DB.POINTS_GIRLS.name;
   } else if(sex == constants.GUY) {
-    db = constants.T_POINTS_GUYS;
+    db = dbConst.DB.POINTS_GUYS.name;
   }
 
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, constants.TOP_USERS);
@@ -27,21 +33,19 @@ module.exports = function(sex, callback) {
   cdb.client.execute(query, [], {prepare: true }, function(err, result) {
     if (err) { return cb(err, null); }
 
-    var i, rows = result.rows;
+    var user, row;
     var counter = 1;
-    for(i = 0; i < rows.length; i++) {
-      var user = {};
-
-      user["id"]      = rows[i]["userid"].toString();
-      user["vid"]     = rows[i]["uservid"];
-      user["points"]  = rows[i]["points"];
-      user["sex"]     = rows[i]["sex"];
-
-      //var user = rows[i];
-      //user.userid = user.userid.toString();
+    for(var i = 0; i < result.rows.length; i++) {
+      row = result.rows[i];
+      
+      user = {};
+      user[PF.ID]      = rows[i][DBF.USERID_uuid].toString();
+      user[PF.VID]     = rows[i][DBF.USERVID_varchar];
+      user[PF.POINTS]  = rows[i][DBF.POINTS_c_desc];
+      user[PF.SEX]     = rows[i][DBF.SEX_int];
 
       // Добавляем номер
-      user.number     = counter++;
+      user[PF.NUMBER]  = counter++;
       users.push(user);
     }
 

@@ -34,7 +34,9 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.DATE_timestamp,
         DBF.TITLE_varchar,
         DBF.FROMID_uuid,
-        DBF.FROMVID_varchar
+        DBF.FROMVID_varchar,
+        DBF.FROMSEX_int,
+        DBF.FROMBDAY_timestamp
       ];
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
   
@@ -48,11 +50,13 @@ module.exports = function(uid, options, callback) { options = options || {};
       params.push(options[PF.TITLE]);
       params.push(options[PF.ID]);
       params.push(options[PF.VID]);
+      params.push(options[PF.SEX]);
+      params.push(options[PF.BDAY]);
   
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) {  return cb(err); }
     
-        options[PF.GID] = id.toString();
+        options[PF.UGIFTID] = id.toString();
     
         cb(null, null);
       });

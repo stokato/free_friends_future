@@ -3,42 +3,46 @@
  */
 
 module.exports.PFIELDS = {
-    DATE            : 'date',
-    SRC             : 'src',
-    GIFTID          : 'giftid',
-    TYPE            : 'type',
-    TITLE           : 'title',
-    INCOMING        : 'incoming',
-    TEXT            : 'text',
-    OPENED          : 'opened',
-    SEX             : 'sex',
-    POINTS          : 'points',
-    ID_LIST         : 'id_list',
-    DATE_FROM       : 'first_date',
-    DATE_TO         : 'second_date',
-    MONEY           : 'money',
-    ID              : 'id',
-    VID             : 'vid',
-    AGE             : 'age',
-    COUNTRY         : 'country',
-    CITY            : 'city',
-    STATUS          : 'status',
-    ISMESSAGES      : 'newmessages',
-    ISGIFTS         : 'newgifts',
-    ISFRIENDS       : 'newfriends',
-    ISGUESTS        : 'newguests',
-    GIFT1           : 'gift1',
-    ISMENU          : 'ismenu',
-    GID             : 'gid',
-    UID             : 'userid',
-    UVID            : 'uservid',
-    SUM             : 'sum',
-    PRICE           : 'price',
-    GOODTYPE        : 'goodtype',
-    ISNEW           : 'is_new',
-    G_FROMID        : 'fromid',
-    G_FROMVID       : 'fromvid',
-    GIFTS           : 'gifts'
+  DATE            : 'date',
+  DATE_FROM       : 'first_date',
+  DATE_TO         : 'second_date',
+  SRC             : 'src',
+  TYPE            : 'type',
+  TITLE           : 'title',
+  INCOMING        : 'incoming',
+  TEXT            : 'text',
+  OPENED          : 'opened',
+  SEX             : 'sex',
+  POINTS          : 'points',
+  ID_LIST         : 'id_list',
+  MONEY           : 'money',
+  ID              : 'id',
+  VID             : 'vid',
+  UGIFTID         : 'gid',
+  ORDERID         : 'userid',
+  ORDERVID        : 'uservid',
+  GIFTID          : 'giftid',
+  GOODID          : 'goodid',
+  FID             : 'fromid',
+  FVID            : 'fromvid',
+  GIFT1           : 'gift1',
+  AGE             : 'age',
+  COUNTRY         : 'country',
+  CITY            : 'city',
+  STATUS          : 'status',
+  ISMENU          : 'ismenu',
+  SUM             : 'sum',
+  PRICE           : 'price',
+  GOODTYPE        : 'goodtype',
+  ISNEW           : 'is_new',
+  GIFTS           : 'gifts',
+  BDAY            : 'bday',
+  CHATID          : 'chat',
+  CHATVID         : 'chatVID',
+  NUMBER          : 'number',
+  PRICE2          : 'price2',
+  FSEX            : 'usex',
+  FBDAY           : 'ubday'
 };
 
 module.exports.DB = {
@@ -62,7 +66,6 @@ module.exports.DB = {
     fields  : {
       ID_uuid_p       : 'id',
       VID_varchar_i   : 'vid',
-      AGE_int         : 'age',
       BDAY_timestamp  : 'bday',
       COUNTRY_int     : 'country',
       CITY_int        : 'city',
@@ -70,10 +73,6 @@ module.exports.DB = {
       MONEY_int       : 'money',
       SEX_int         : 'sex',
       POINTS_int      : 'points',
-      NEWMESSAGES_int : 'newmessages',
-      NEWGIFTS_int    : 'newgifts',
-      NEWFRIENDS_int  : 'newfriends',
-      NEWGUESTS_int   : 'newguests',
       GIFT1_uuid      : 'gift1'
     }
   },
@@ -145,7 +144,9 @@ module.exports.DB = {
       TEXT_text                 : 'text',
       DATE_timestamp            : 'date',
       COMPANIONBDAY_timestamp   : 'companionbday',
-      COMPANIONSEX_int          : 'companionsex'
+      COMPANIONSEX_int          : 'companionsex',
+      USERBDAY_timestamp        : 'userbday',
+      USERSEX_int               : 'usersex'
     }
   },
   
@@ -181,6 +182,20 @@ module.exports.DB = {
       COMPANIONSEX_int          : 'companionsex',
       COMPANIONBDAY_timestamp   : 'companionbday',
       ISNEW_boolean             : 'isnew'
+    }
+  },
+  
+  /*
+   Таблица со списком приватных чатов между пользователями, содержащими новые сообщения
+   ИД пользователя (users) (ключевое поле),
+   ИД отправителя/получателя (users) (связанный ключ),
+   */
+ 
+  USER_NEW_CHATS : {
+    name   : 'user_new_chats',
+    fields : {
+      USERID_uuid_pc1i             : 'userid',
+      COMPANIONID_uuid_pc2         : 'companionid'
     }
   },
   
@@ -232,7 +247,7 @@ module.exports.DB = {
     fields : {
       USERID_uuid_p         : 'userid',
       GUESTID_uuid_ci       : 'guestid',
-      GUESTVID_varhcar      : 'guestvid',
+      GUESTVID_varchar      : 'guestvid',
       GUESTBDAY_timestamp   : 'guestbday',
       GUESTSEX_int          : 'guestsex',
       DATE_timestamp        : 'date'
@@ -268,6 +283,7 @@ module.exports.DB = {
       ID_varchar_p        : 'id',
       TITLE_varchar       : 'title',
       PRICE_int           : 'price',
+      PRICE2_int          : 'price2',
       SRC_varchar         : 'src',
       TYPE_varchar        : 'type',
       GOODTYPE_varchar_i  : 'goodtype'

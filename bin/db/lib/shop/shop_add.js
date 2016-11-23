@@ -1,6 +1,7 @@
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
-var PF  = require('./../../constants').PFIELDS;
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.SHOP.fields;
+var PF = dbConst.PFIELDS;
 
 /*
  Добавить товар в БД: ИД, объект с данными
@@ -17,11 +18,26 @@ module.exports = function(options, callback) { options    = options || {};
 
   var id = cdb.uuid.random();
 
-  var fields = ["id", "title", "price", "src", "type", "goodtype"];
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_SHOP);
-
-  var params = [id, options[PF.TITLE], options[PF.PRICE], options[PF.SRC], options[PF.TYPE], options[PF.GOODTYPE]];
-
+  var fields = [
+    DBF.ID_varchar_p,
+    DBF.TITLE_varchar,
+    DBF.PRICE_int,
+    DBF.SRC_varchar,
+    DBF.TYPE_varchar,
+    DBF.GOODTYPE_varchar_i
+  ];
+  
+  var params = [
+    id,
+    options[PF.TITLE],
+    options[PF.PRICE],
+    options[PF.SRC],
+    options[PF.TYPE],
+    options[PF.GOODTYPE]
+  ];
+  
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.SHOP.name);
+  
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 

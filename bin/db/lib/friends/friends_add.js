@@ -25,14 +25,18 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.USERID_uuid_pi,
         DBF.FRIENDID_uuid_c,
         DBF.FRIENDVID_varhcar,
-        DBF.DATE_timestamp
+        DBF.DATE_timestamp,
+        DBF.FRIENDSEX_int,
+        DBF.FRIENDBDAY_timestamp
       ];
       
       var params = [
         uid,
         options[PF.ID],
         options[PF.VID],
-        options[PF.DATE]
+        options[PF.DATE],
+        options[PF.SEX],
+        options[PF.BDAY]
       ];
   
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_FRIENDS.name);

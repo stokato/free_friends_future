@@ -32,7 +32,9 @@ module.exports.PFIELDS = {
     GID             : "gid",
     UID             : "userid",
     UVID            : "uservid",
-    SUM             : "sum"
+    SUM             : "sum",
+    PRICE           : "price",
+    GOODTYPE        : "goodtype"
 };
 
 

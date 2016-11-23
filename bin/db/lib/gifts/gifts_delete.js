@@ -1,5 +1,6 @@
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GIFTS.fields;
 
 /*
  Удалить все подарки игрока: ИД
@@ -9,26 +10,31 @@ var cdb = require('./../common/cassandra_db');
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-  var self = this;
+
   if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
   
   // Отбираем все подарки
-  var fields = ["id", "userid"];
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERGIFTS, ["userid"], [1]);
+  var fields = [DBF.ID_uuid_p, DBF.USERID_uuid_i];
+  var constFields = [DBF.USERID_uuid_i];
+  var constValues = [1];
+  var dbName = dbConst.DB.USER_GIFTS.name;
+  
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
   cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     // Удаляем их
     var params = [];
-    var constValues = result.rows.length;
+    var constFields = [DBF.ID_uuid_p];
+    var constValues = [result.rows.length];
     
     for (var i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i]);
+      params.push(result.rows[i][DBF.ID_uuid_p]);
     }
     
-    var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], constants.T_USERGIFTS, ["id"], [constValues]);
-    cdb.client.execute(query, [params], { prepare: true }, function(err) {
+    var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+    cdb.client.execute(query, params, { prepare: true }, function(err) {
       if (err) {  return callback(err); }
       
       callback(null, uid);

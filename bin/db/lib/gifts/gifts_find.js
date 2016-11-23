@@ -1,7 +1,11 @@
 var async = require('async');
 
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GIFTS.fields;
+var DBFN = dbConst.DB.USER_NEW_GIFTS.fields;
+var PF = dbConst.PFIELDS;
+var bdayToAge = require('./../common/bdayToAge');
 
 /*
  Найти все подарки игрока: ИД игрока
@@ -15,7 +19,12 @@ module.exports = function(uid, isSelf, callback) {
   async.waterfall([ // Отбираем сведения по новым подаркам
     function (cb) {
       if(isSelf) {
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, ["id"], constants.T_USER_NEW_GIFTS, ["userid"], [1]);
+        var fields = [DBFN.ID_uuid_p];
+        var dbName = dbConst.DB.USER_NEW_GIFTS.name;
+        var constFields = [DBFN.USERID_uuid_i];
+        var constValues = [1];
+        
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
         cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
@@ -23,7 +32,7 @@ module.exports = function(uid, isSelf, callback) {
           var newIds = [];
     
           for(var i = 0; i < result.rows.length; i++) {
-            newIds.push(result.rows[i].id);
+            newIds.push(result.rows[i][DBFN.ID_uuid_p]);
           }
     
           cb(null, newIds);
@@ -31,103 +40,79 @@ module.exports = function(uid, isSelf, callback) {
         });
       } else { cb(null, []); }
       
-    },
+    }, //-------------------------------------------------------------------------------
     function (newIds, cb) {
-      var fields = ["id", "giftid", "type", "src", "date", "title", "fromid", "fromvid"];
-      var constFields = ["userid"];
+      var fields = [
+        DBF.ID_uuid_p,
+        DBF.GIFTID_varchar,
+        DBF.TYPE_varchar,
+        DBF.SRC_varhar,
+        DBF.DATE_timestamp,
+        DBF.TITLE_varchar,
+        DBF.FROMID_uuid,
+        DBF.FROMVID_varchar,
+        DBF.FROMSEX_int,
+        DBF.FROMBDAY_timestamp
+      ];
+      var constFields = [DBF.USERID_uuid_i];
       var constValues = [1];
+      var dbName = dbConst.DB.USER_GIFTS.name;
   
       // Отбираем все подарки пользователя
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERGIFTS, constFields, constValues);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
       cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
         if (err) { return cb(err, null); }
-    
-        var gifts = [];
   
-        var userList = [];
-        var constValues = 0;
-  
+        var users = {}, arrUsers = [], user, gift, row;
+        
         for(var i = 0; i < result.rows.length; i++) {
-    
-          var gift = result.rows[i];
-          gift.id       = gift.id.toString();
-          gift.giftid   = gift.giftid.toString();
-          gift.fromid   = gift.fromid.toString();
-          gift.fromvid  = gift.fromvid.toString();
+          row = result.rows[i];
           
-          if(isSelf) {
-            gift.is_new   = false;
+          gift = {};
+          gift[PF.ID]         = row[DBF.ID_uuid_p].toString();
+          gift[PF.GIFTID]     = row[DBF.GIFTID_varchar];
+          gift[PF.G_FROMID]   = row[DBF.FROMID_uuid].toString();
+          gift[PF.G_FROMVID]  = row[DBF.FROMVID_varchar];
+          gift[PF.TYPE]       = row[DBF.TYPE_varchar];
+          gift[PF.SRC]        = row[DBF.SRC_varhar];
+          gift[PF.DATE]       = row[DBF.DATE_timestamp];
+          gift[PF.TITLE]      = row[DBF.TITLE_varchar];
   
+          if(isSelf) {
+            gift[PF.ISNEW]   = false;
+    
             for(var nid = 0; nid < newIds.length; nid++) {
-              if(gift.id == newIds[nid]) {
-                gift.is_new = true;
+              if(gift[PF.ID] == newIds[nid]) {
+                gift[PF.ISNEW] = true;
               }
             }
           }
-    
-          gifts.push(gift);
-          if(userList.indexOf(gift.fromid) < 0) {
-            constValues ++;
-            userList.push(gift.fromid);
-          }
-        }
-  
-        cb(null, gifts, constValues, userList, newIds.length);
-        
-      });
-    },
-    function (gifts, constValues, userList, countNews, cb) {// Отбираем сведения по подарившим
-      
-      var fields = ["id", "vid", "sex", "city", "country", "points"];
-      var constFields = ["id"];
-  
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, constFields, [constValues]);
-  
-      cdb.client.execute(query, userList, {prepare: true }, function(err, result) {
-        if (err) { return cb(err, null); }
-    
-        var users = [], i;
-    
-        for(i = 0; i < result.rows.length; i++) {
-          var user = result.rows[i];
-          user.id = user.id.toString();
-      
-          users.push(user);
-        }
-    
-        // Разбиваем подарки по подарившим
-        var giftsLen = gifts.length;
-        var j, usersLen = users.length;
-        for(i = 0; i < giftsLen; i++) {
-          for(j = 0; j < usersLen; j++) {
-        
-            if(users[j].id == gifts[i].fromid) {
-              if (!users[j].gifts) { users[j].gifts = []; }
           
-              users[j].gifts.push({
-                giftid : gifts[i].giftid,
-                type   : gifts[i].type,
-                title  : gifts[i].title,
-                src    : gifts[i].src,
-                date   : gifts[i].date,
-                is_new : gifts[i].is_new
-              });
-            }
-        
+          if(!users[gift[PF.G_FROMID]]) {
+            user = {};
+            user[PF.ID]     = gift[PF.G_FROMID];
+            user[PF.VID]    = gift[PF.G_FROMVID];
+            user[PF.AGE]    = bdayToAge(row[DBF.FROMBDAY_timestamp]);
+            user[PF.SEX]    = row[DBF.FROMSEX_int];
+            user[PF.GIFTS]  = [];
+            
+            users[user[PF.ID]] = user;
           }
-        }
+  
+          users[user[PF.ID]].push(gift);
     
-        for(i = 0; i < users.length; i++) {
-          users[i].gifts.sort(function (gift1, gift2) {
-            return (gift1.date < gift2.date)? 1 : -1;
-          })
         }
-    
-        cb(null, { gifts : users, new_gifts : countNews });
+        
+        for(var index in users) if(users.hasOwnProperty(index)) {
+          arrUsers.push(users[index]);
+        }
+  
+        cb(null, { gifts : arrUsers, new_gifts : newIds.length });
+        
       });
     }
-  ],
+  ], //-----------------------------------------------------------------------
   function (err, res) {
     if(err) { return callback(err, null); }
     

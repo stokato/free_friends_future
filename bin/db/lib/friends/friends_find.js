@@ -1,7 +1,11 @@
 var async = require('async');
 
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
+var dbConst = require('./../../constants');
+var DBFN = dbConst.DB.USER_NEW_FRIENDS.fields;
+var DBF = dbConst.DB.USER_FRIENDS.fields;
+var PF = dbConst.PFIELDS;
+var bdayToAge = require('./../common/bdayToAge');
 
 /*
  Найти друзей пользователя: ИД игрока
@@ -12,11 +16,15 @@ var cdb = require('./../common/cassandra_db');
 module.exports = function(uid, friendsID, isSelf, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
   
-  async.waterfall([
+  async.waterfall([ //--------------------------------------------------------
       function (cb) {
         if(isSelf) {
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT,
-            ["friendid"], constants.T_USER_NEW_FRIENDS, ["userid"], [1]);
+          var fields = [DBFN.FRIENDID_uuid_c];
+          var dbName = dbConst.DB.USER_NEW_FRIENDS.name;
+          var constFields = [DBFN.USERID_uuid_pi];
+          var constValues = [1];
+          
+          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
           cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
             if (err) { return cb(err, null); }
@@ -24,101 +32,72 @@ module.exports = function(uid, friendsID, isSelf, callback) {
             var newIds = [];
     
             for(var i = 0; i < result.rows.length; i++) {
-              newIds.push(result.rows[i].friendid);
+              newIds.push(result.rows[i][DBFN.FRIENDID_uuid_c]);
             }
     
             cb(null, newIds);
           });
         } else { cb(null, [])}
-      },
+      }, //-----------------------------------------------------------------
       function (newIds, cb) {
-        var constFields = ["userid"];
+        var fields = [
+          DBF.FRIENDID_uuid_c,
+          DBF.FRIENDVID_varhcar,
+          DBF.DATE_timestamp,
+          DBF.FRIENDSEX_int,
+          DBF.FRIENDBDAY_timestamp
+        ];
+        var constFields = [DBF.USERID_uuid_pi];
         var constCount = [1];
+        var dbName = dbConst.DB.USER_FRIENDS.name;
         var params = [uid];
   
         if(friendsID) {
-          constFields.push("friendid");
+          constFields.push(DBF.FRIENDID_uuid_c);
           constCount.push(friendsID.length);
     
           for(var i = 0; i < friendsID.length; i++) {
             params.push(friendsID[i]);
           }
         }
-  
-        var fields = ["friendid", "friendvid", "date"];
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERFRIENDS, constFields, constCount);
+          
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constCount);
   
         // Отбираем всех друзей или по списку friendsID
         cdb.client.execute(query, params, {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
+          
+          var user, users = [];
     
-          var friends = [];
-          var friend = null;
-          var friendList = [];
-          var constValues = 0;
-    
-          if(result.rows.length > 0) {
-            var i, rowsLen = result.rows.length;
-            constValues = rowsLen;
+     
       
-            for(i = 0; i < rowsLen; i++) {
+            for(var i = 0; i < result.rows.length; i++) {
               var row = result.rows[i];
         
-              friend = {
-                id    : row["friendid"].toString(),
-                vid   : row["friendvid"],
-                date  : row["date"]
-              };
+              user = {};
+              user[PF.ID] = row[DBF.FRIENDID_uuid_c].toString();
+              user[PF.VID] = row[DBF.FRIENDVID_varhcar];
+              user[PF.AGE] = bdayToAge(row[DBF.FRIENDBDAY_timestamp]);
+              user[PF.SEX] = row[DBF.FRIENDSEX_int];
               
               if(isSelf) {
-                friend.is_new = false;
+                user[PF.ISNEW] = false;
   
                 for(var nid = 0; nid < newIds.length; nid++) {
-                  if(friend.id == newIds[nid]) {
-                    friend.is_new = true;
+                  if(user[PF.ID] == newIds[nid]) {
+                    user[PF.ISNEW] = true;
                   }
                 }
               }
-        
-              friends.push(friend);
-              friendList.push(friend["id"].toString());
+              
+              users.push(user);
             }
-            
-            cb(null, friends, constValues, friendList, newIds.length);
-          } else { cb(null, null, null, null, null); }
-        });
-      },
-      function (friends, constValues, friendList, countNews, cb) {
-        if(friends) {
-          // Отбираем сведения по всем друзьям
-          var fields = ["id", "vid", "age", "sex", "city", "country", "points"];
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, constants.T_USERS, ["id"], [constValues]);
   
-          cdb.client.execute(query, friendList, {prepare: true }, function(err, result) {
-            if (err) { return cb(err, null); }
-    
-            for(var i = 0; i < result.rows.length; i++) {
-              var row = result.rows[i];
-              var index, j;
-              var friendsLen = friendList.length;
-              for(j = 0; j < friendsLen; j++) {
-                if(friendList[j] == row["id"].toString()) {
-                  index = j;
-                }
-              }
-              friends[index]["age"]     = row["age"];
-              friends[index]["sex"]     = row["sex"];
-              friends[index]["city"]    = row["city"];
-              friends[index]["country"] = row["country"];
-              friends[index]["points"]  = row["points"];
-            }
-    
-            cb(null, { friends : friends, new_friends : countNews });
-          });
-        } else { cb(null, null); }
-        
+            cb(null, { friends : users, new_friends : newIds.length });
+          
+        });
       }
-    ],
+    ], //--------------------------------------------------------------------
     function (err, friends) {
       if(err) { return callback(err, null); }
       

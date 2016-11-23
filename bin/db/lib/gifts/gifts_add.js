@@ -1,8 +1,11 @@
 var async = require('async');
 
-var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
-var PF  = require('./../../constants').PFIELDS;
+var dbConst = require('./../../constants');
+var DBF = dbConst.DB.USER_GIFTS.fields;
+var DBFN = dbConst.DB.USER_NEW_GIFTS.fields;
+var PF = dbConst.PFIELDS;
+
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
  - Провека: все поля
@@ -11,21 +14,29 @@ var PF  = require('./../../constants').PFIELDS;
  - Возвращаем объект подарка
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  //var f = C.IO.FIELDS;
 
   if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
 
-  if (!options[PF.GIFTID] || !options[PF.SRC] || !options[PF.DATE] || !options[PF.ID]
-    || !options[PF.VID]) {
+  if (!options[PF.GIFTID] || !options[PF.SRC] || !options[PF.DATE] || !options[PF.ID] || !options[PF.VID]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
   var id = cdb.uuid.random();
 
-  async.waterfall([
+  async.waterfall([ //--------------------------------------------------------------
     function (cb) {
-      var fields = ["id", "userid", "giftid", "type", "src", "date", "title", "fromid", "fromvid"];
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, constants.T_USERGIFTS);
+      var fields = [
+        DBF.ID_uuid_p,
+        DBF.USERID_uuid_i,
+        DBF.GIFTID_varchar,
+        DBF.TYPE_varchar,
+        DBF.SRC_varhar,
+        DBF.DATE_timestamp,
+        DBF.TITLE_varchar,
+        DBF.FROMID_uuid,
+        DBF.FROMVID_varchar
+      ];
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
   
       var params = [];
       params.push(id);
@@ -45,9 +56,14 @@ module.exports = function(uid, options, callback) { options = options || {};
     
         cb(null, null);
       });
-    },
+    }, //-----------------------------------------------------------
     function (res, cb) {
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, ["id", "userid"], constants.T_USER_NEW_GIFTS);
+      var fields = [
+        DBFN.ID_uuid_p,
+        DBFN.USERID_uuid_i
+      ];
+      
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GIFTS.name);
   
       var params = [id, uid];
   
@@ -57,7 +73,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         cb(null, null);
       });
     }
-  ],
+  ], //-------------------------------------------------------------------
   function (err) {
     if (err) {  return callback(err); }
     

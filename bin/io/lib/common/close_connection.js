@@ -2,6 +2,7 @@ var async     =  require('async');
 
 var IOError         = require('./../common/io_error'),
     constants       = require('./../../../constants'),     // Константы
+    PF              = constants.PFIELDS,
     emitAllRooms    = require('../common/emit_all_rooms'),
     sendUsersInRoom = require('./send_users_in_room');
 
@@ -11,20 +12,19 @@ module.exports = function(socket) {
 
   var selfProfile = oPool.userList[socket.id];
 
-  async.waterfall([
-    ///////////////////////////////////////////////////////////////////////////////////
+  async.waterfall([//----------------------------------------------------------------
     function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
-      var info = {
-        id  : selfProfile.getID(),
-        vid : selfProfile.getVID()
-      };
+      
+      var info = {};
+      info[PF.ID] = selfProfile.getID();
+      info[PF.VID] = selfProfile.getVID();
 
       for(var r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
         socket.broadcast.in(oPool.rooms[r].getName()).emit(constants.IO_OFFLINE, info);
       }
 
       cb(null, null);
-    }, ///////////////////////////////////////////////////////////////////////////////////////
+    }, //----------------------------------------------------------------
     function (res, cb) { // сохраняем профиль в базу
 
       selfProfile.save(function (err) {
@@ -33,7 +33,7 @@ module.exports = function(socket) {
         cb(null, null);
       });
 
-    }, /////////////////////////////////////////////////////////////////////////////////////
+    }, //----------------------------------------------------------------
     function (res, cb) { // удалеяем профиль и сокет из памяти
       delete oPool.userList[socket.id];
 
@@ -54,7 +54,7 @@ module.exports = function(socket) {
         }
       }
       cb(null, room);
-    },///////////////////////////////////////////////////////////////
+    },//----------------------------------------------------------------
     function (room, cb) { // Получаем данные по игрокам в комнате (для стола)
       if(room) {
         
@@ -63,7 +63,11 @@ module.exports = function(socket) {
         sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
           if(err) { return cb(err); }
     
-          emitAllRooms(socket, constants.IO_OFFLINE, {id : selfProfile.getID(), vid : selfProfile.getVID() });
+          var params = {};
+          params[PF.ID] = selfProfile.getID();
+          params[PF.VID] = selfProfile.getVID();
+          
+          emitAllRooms(socket, constants.IO_OFFLINE, params);
     
           cb(null, null);
         });
@@ -71,10 +75,10 @@ module.exports = function(socket) {
       } else {
         cb(null, null);
       }
-    }//////////////////////////////////////////////////////////////////////////////////////
+    }//----------------------------------------------------------------
   ], function (err) {
     if (err) { new IOError(null, constants.IO_DISCONNECT, err.message)  }
 
     socket.disconnect(); // отключаемся
-  }); ///////////////////////////////////////////////////////////////////////////////////////
+  });
 };

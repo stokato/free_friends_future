@@ -1,6 +1,7 @@
 var async = require('async');
 
 var constants = require('../../../constants');
+var PF = constants.PFIELDS;
 var GameError = require('./../common/game_error');
 var ProfileJS  =  require('../../../profile/index');
 var handleError = require('../common/handle_error');
@@ -23,10 +24,9 @@ module.exports = function(game) {
       var count = 0;
       var bonus = constants.CARD_BOUNUS;
 
-      var result = {
-        picks : [],
-        gold  : gold
-      };
+      var result = {};
+      result[PF.PICKS] = [];
+      result[PF.GOLD] = gold;
 
       var item, playerInfo, picks;
       for (item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
@@ -35,13 +35,14 @@ module.exports = function(game) {
         picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
-          result.picks.push({
-            id   : playerInfo.id,
-            vid  : playerInfo.vid,
-            pick : picks[0].pick
-          });
+          var pick = {}
+          pick[PF.ID] = playerInfo.id;
+          pick[PF.VID] = playerInfo.vid;
+          pick[PF.PICK] = picks[0][PF.PICK];
+          
+          result[PF.PICKS].push(pick);
 
-          if(picks[0].pick == gold) {
+          if(picks[0][PF.PICK] == gold) {
             winners.push(playerInfo);
           }
         }
@@ -66,9 +67,8 @@ module.exports = function(game) {
               cb(null, player, true);
             } else {
               player = new ProfileJS();
-              player.build(winners[count].id, function (err, info) {
+              player.build(winners[count].id, function (err) {
                 if(err) {
-                  //new GameError(winners[count].player.getSocket(),  constants.G_CARDS, "Ошибка при создании профиля игрока");
                   return cb(err, null);
                 }
 
@@ -105,7 +105,10 @@ module.exports = function(game) {
           }
 
           if(isOnline) {
-            player.getSocket().emit(constants.IO_GET_MONEY, { money : money });
+            var res = {};
+            res[PF.MONEY] = money;
+            
+            player.getSocket().emit(constants.IO_GET_MONEY, res);
           }
 
           // Повторяем для всех пользователей

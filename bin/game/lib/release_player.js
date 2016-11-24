@@ -1,4 +1,5 @@
-var constants = require('../../constants');
+var constants = require('../../constants'),
+    PF = constants.PFIELDS;
 
 var oPool = require('./../../objects_pool');
 
@@ -21,7 +22,10 @@ module.exports = function (socket, options, callback) {
     selfProfile.pay(constants.RANSOM_PRICE, function (err, money) {
       if(err) { return callback(err); }
       
-      socket.emit(constants.IO_GET_MONEY, { money : money });
+      var res = {};
+      res[PF.MONEY] = money;
+      
+      socket.emit(constants.IO_GET_MONEY, res);
   
       // Снимаем блокировку
       game.clearPrison();
@@ -36,10 +40,9 @@ module.exports = function (socket, options, callback) {
         game._activePlayers[prisonerInfo.id] = prisonerInfo;
       }
   
-      var result = {
-        id  : prisonerInfo.id,
-        vid : prisonerInfo.vid
-      };
+      var result = {};
+      result[PF.ID] = prisonerInfo.id;
+      result[PF.VID] = prisonerInfo.vid;
   
       // Оповещаем игроков в комнате
       socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);

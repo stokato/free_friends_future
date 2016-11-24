@@ -13,7 +13,7 @@ module.exports = function (profileID, callback) {
   } else {                           // Если нет - берем из базы
     
     profile = new ProfileJS();
-    profile.build(profileID, function (err, info) {  // Нужен VID и все поля, как при подключении
+    profile.build(profileID, function (err) {  // Нужен VID и все поля, как при подключении
       if (err) { return callback(err, null); }
   
       callback(null, profile);

@@ -1,4 +1,5 @@
-var constants = require('../../../constants');
+var constants = require('../../../constants'),
+    PF = constants.PFIELDS;
 
 var addPoints = require('./../common/add_points');
 
@@ -22,12 +23,12 @@ module.exports = function(game) {
         var selfPicks = game._actionsQueue[selfID];
         
         for(var selfPickOptions = 0; selfPickOptions < selfPicks.length; selfPickOptions++) {
-          var selfPick = selfPicks[selfPickOptions].pick;
+          var selfPick = selfPicks[selfPickOptions][PF.PICK];
           
           var otherPicks = game._actionsQueue[selfPick];
           if(otherPicks) {
             for(var otherPickOptions = 0; otherPickOptions < otherPicks.length; otherPickOptions++) {
-              var otherPick = otherPicks[otherPickOptions].pick;
+              var otherPick = otherPicks[otherPickOptions][PF.PICK];
               if(otherPick && otherPick == selfID) {
                 players.push(selfID);
               }
@@ -60,18 +61,17 @@ module.exports = function(game) {
                   + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 10;
 
       // Отправляем результаты
-      var result = {
-        next_game   : game._nextGame,
-        players     : game.getPlayersID(),
-        prison      : null
-      };
+      var result = {};
+      result[PF.NEXTGAME] = game._nextGame;
+      result[PF.PLAYERS] = game.getPlayersID();
+      result[PF.PRISON] = null;
+      
       
       if(game._prisoner !== null) {
-        result.prison = {
-          id : game._prisoner.id,
-          vid: game._prisoner.vid,
-          sex: game._prisoner.sex
-        }
+        result[PF.PRISON] = {};
+        result[PF.PRISON][PF.ID]  = game._prisoner.id;
+        result[PF.PRISON][PF.VID] = game._prisoner.vid;
+        result[PF.PRISON][PF.SEX] = game._prisoner.sex;
       }
 
       game.emit(result);

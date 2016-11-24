@@ -1,4 +1,5 @@
-var constants     = require('../../../constants');
+var constants     = require('../../../constants'),
+    PF = constants.PFIELDS;
 
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
@@ -38,17 +39,16 @@ module.exports = function(game) {
 
       game._nextGame = constants.G_LOT;
 
-      var result = {
-        next_game   : game._nextGame,
-        players     : game.getPlayersID()
-      };
-      result.prison = null;
+      var result = {};
+      result[PF.NEXTGAME] = game._nextGame;
+      result[PF.PLAYERS]  = game.getPlayersID();
+      result[PF.PRISON]   = null;
+      
       if(game._prisoner !== null) {
-        result.prison = {
-          id : game._prisoner.id,
-          vid: game._prisoner.vid,
-          sex: game._prisoner.sex
-        }
+        result[PF.PRISON] = {};
+        result[PF.PRISON][PF.ID] = game._prisoner.id;
+        result[PF.PRISON][PF.VID] = game._prisoner.vid;
+        result[PF.PRISON][PF.SEX] = game._prisoner.sex;
       }
 
       game.emit(result);

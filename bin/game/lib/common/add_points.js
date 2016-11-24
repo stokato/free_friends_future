@@ -18,7 +18,7 @@ module.exports = function (uid, count, callback) {
     // Либо создаем
   } else {
     player = new ProfileJS();
-    player.build(uid, function (err, info) {
+    player.build(uid, function (err) {
       if(err) { return callback(err);  }
       
       player.addPoints(count, onPoints(player));
@@ -27,7 +27,7 @@ module.exports = function (uid, count, callback) {
   
   // Функция обрабатывает результы начисления очков, оповещает игрока
   function onPoints(player) {
-    return function(err, res) {
+    return function(err, points) {
       var socket = player.getSocket();
       
       if(err) {
@@ -40,7 +40,10 @@ module.exports = function (uid, count, callback) {
         return callback(err);
       }
       
-      socket.emit(constants.IO_ADD_POINTS, { points : res });
+      var res = {};
+      res[constants.PFIELDS.POINTS] = points;
+      
+      socket.emit(constants.IO_ADD_POINTS, res);
       
       callback(null, null);
     }

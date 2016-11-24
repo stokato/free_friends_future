@@ -15,7 +15,7 @@ module.exports = function(callback) {
   self._pSocket   = null;
 
   self._pVID      = null;
-  self._pAge      = null;
+  self._pBDate    = null;
   self._pCountry  = null;
   self._pCity     = null;
   self._pStatus   = null;

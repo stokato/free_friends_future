@@ -1,4 +1,5 @@
 var constants = require('./../../../constants'),
+    PF        = constants.PFIELDS,
     oPool     = require('./../../../objects_pool');
 
 // Добавляем дизлайк к треку
@@ -8,16 +9,17 @@ module.exports = function(socket, options, callback) {
   var mPlayer = room.getMusicPlayer();
   var selfProfile = oPool.userList[socket.id];
   
-  var trackID = options.track_id;
+  var trackID = options[PF.TRACKID];
   
   var isTrack = mPlayer.dislike(selfProfile.getID(), trackID);
   
   if(!isTrack) { return callback(constants.errors.NO_SUCH_TRACK); }
   
-  var trackList = mPlayer.getTrackList();
+  var res = {};
+  res[PF.TRACKLIST] = mPlayer.getTrackList();
   
-  socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, { track_list : trackList });
-  socket.emit(constants.IO_GET_TRACK_LIST, { track_list : trackList });
+  socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
+  socket.emit(constants.IO_GET_TRACK_LIST, res);
   
   callback(null, null);
 };

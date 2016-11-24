@@ -1,4 +1,5 @@
-var constants = require('../../../constants');
+var constants = require('../../../constants'),
+    PF = constants.PFIELDS;
 var oPool = require('./../../../objects_pool');
 var GameError = require('./../common/game_error');
 var handleError = require('../common/handle_error');
@@ -15,42 +16,44 @@ module.exports = function(game) {
       selfProfile.pay(constants.SYMPATHY_PRICE, function (err, money) {
         if(err) { return onError(err, selfProfile);  }
   
+        var res = {};
+        res[PF.MONEY] = money;
+        
         var socket = selfProfile.getSocket();
-        socket.emit(constants.IO_GET_MONEY, { money : money });
+        socket.emit(constants.IO_GET_MONEY, res);
         
         onPick();
       });
       
       function onPick() {
         
-        var result = {
-          picks : []
-        };
+        var result = {}, pick = {};
+        result[PF.PICKS] = [];
         
         // Получаем все его ходы игрока, о котором хочет узнать текущий и отправляем
-        var pickedId, playerInfo, sympathy = game._storedOptions[options.pick];
+        var pickedId, playerInfo, sympathy = game._storedOptions[options[PF.PICK]];
         if(sympathy) {
           
           for(var i = 0; i < sympathy.length; i ++) {
             pickedId = sympathy[i].pick;
             
-            playerInfo = game._activePlayers[options.pick];
+            playerInfo = game._activePlayers[options[PF.PICK]];
             
-            result.picks.push({
-              id    : playerInfo.id,
-              vid   : playerInfo.vid,
-              pick  : {
-                id    : pickedId,
-                vid   : game._activePlayers[pickedId].vid
-              }
-            });
+            pick = {};
+            pick[PF.ID] = playerInfo.id;
+            pick[PF.VID] = playerInfo.vid;
+            pick[PF.PICK] = {};
+            pick[PF.PICK][PF.ID] = pickedId;
+            pick[PF.PICK][PF.VID] = game._activePlayers[pickedId].vid;
+            
+            result[PF.PICK].push(pick);
           }
         } else {
-          result.picks.push({
-            id    : options.pick,
-            vid   : (options.pick)? game._activePlayers[options.pick].vid : null,
-            pick  : null
-          });
+          pick[PF.ID] = options[PF.PICK];
+          pick[PF.VID] = (options[PF.PICK])? game._activePlayers[options[PF.PICK]].vid : null;
+          pick[PF.PICK] = null;
+          
+          result[PF.PICK].push(pick);
         }
         
         var socket = game._activePlayers[uid].player.getSocket();

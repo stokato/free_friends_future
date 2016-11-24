@@ -1,6 +1,6 @@
-var constants  = require('./../../../constants');            // Верификация
-
-var oPool = require('./../../../objects_pool');
+var constants  = require('./../../../constants'),
+    PF         = constants.PFIELDS,
+    oPool      = require('./../../../objects_pool');
 
 // Добавляем трек в очередь плей-листа комнаты
 module.exports = function(socket, options, callback) {
@@ -13,7 +13,7 @@ module.exports = function(socket, options, callback) {
   
   // Проверяем - есть ли такой трек в очереди
   for (var i = 0; i < trackList.length; i++) {
-    if (trackList[i].track_id == options.track_id) {
+    if (trackList[i][PF.TRACKID] == options[PF.TRACKID]) {
       return callback(constants.errors.ALREADY_IS_TRACK);
     }
   }
@@ -22,7 +22,10 @@ module.exports = function(socket, options, callback) {
   selfProfile.pay(constants.TRACK_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
-    socket.emit(constants.IO_GET_MONEY, { money : money });
+    var res = {};
+    res[PF.MONEY] = money;
+    
+    socket.emit(constants.IO_GET_MONEY, res);
   
     var track = {
       track_id    : options.track_id,
@@ -33,6 +36,12 @@ module.exports = function(socket, options, callback) {
       duration    : options.duration
     };
     
+    track[PF.TRACKID] = options[PF.TRACKID];
+    track[PF.ID]      = selfProfile.getID();
+    track[PF.VID]     = selfProfile.getVID();
+    track[PF.LIKES]   = 0;
+    track[PF.DISLIKES] = 0;
+    track[PF.DURATION] = options[PF.DURATION];
     
     // Если очередь пустая, запускаем сразу
     if (trackList.length == 0) {
@@ -42,10 +51,11 @@ module.exports = function(socket, options, callback) {
   
     mPlayer.addTrack(track);
     
-    // socket.emit(constants.IO_ADD_TRECK, {operation_status: constants.RS_GOODSTATUS});
+    var res = {};
+    res[PF.TRACKLIST] = trackList;
   
-    socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, {track_list: trackList});
-    socket.emit(constants.IO_GET_TRACK_LIST, {track_list: trackList});
+    socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
+    socket.emit(constants.IO_GET_TRACK_LIST, res);
   
     callback(null, null);
   });
@@ -59,20 +69,26 @@ module.exports = function(socket, options, callback) {
     var trackList = mPlayer.getTrackList();
     
     timerID = setTimeout(function () {
-      mPlayer.deleteTrack(track.track_id);
+      mPlayer.deleteTrack(track[PF.TRACKID]);
       
       if (trackList.length > 0) {
         var newTrack = trackList[0];
         startTrack(socket, room, newTrack, timerID);
       }
       
-    }, track.duration * 1000);
+    }, track[PF.DURATION] * 1000);
     
-    var options = {track: track, passed_time: 0};
-    socket.emit(constants.IO_START_TRACK, options);
-    socket.broadcast.in(room.getName()).emit(constants.IO_START_TRACK, options);
+    var res = {};
+    res[PF.TRACK]       = track;
+    res[PF.PASSED_TIME] = 0;
     
-    socket.emit(constants.IO_GET_TRACK_LIST, {track_list: trackList} );
-    socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, {track_list: trackList});
+    socket.emit(constants.IO_START_TRACK, res);
+    socket.broadcast.in(room.getName()).emit(constants.IO_START_TRACK, res);
+    
+    res = {};
+    res[PF.TRACKLIST] = trackList;
+    
+    socket.emit(constants.IO_GET_TRACK_LIST, res );
+    socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
   }
 };

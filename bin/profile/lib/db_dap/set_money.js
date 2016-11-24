@@ -1,4 +1,5 @@
 var db = require('./../../../db_manager');
+var IOF = require('./../../../constants').PFIELDS;
 
 /*
   Устанавливаем количество монет игрока
@@ -10,9 +11,9 @@ module.exports = function(num, callback) {
   var self = this;
 
   var options = {};
-  options[db.CONST.ID]    = self._pID;
-  options[db.CONST.VID]   = self._pVID;
-  options[db.CONST.MONEY] = num;
+  options[IOF.ID]    = self._pID;
+  options[IOF.VID]   = self._pVID;
+  options[IOF.MONEY] = num;
 
   db.updateUser(options, function(err) {
     if (err) {return callback(err, null); }

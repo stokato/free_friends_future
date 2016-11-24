@@ -1,4 +1,4 @@
-
+var constants = require('./../../../constants');
 var oPool = require('./../../../objects_pool');
 
 /*
@@ -8,13 +8,16 @@ var oPool = require('./../../../objects_pool');
  - Возвращаем клиенту новый статус
  */
 module.exports = function (socket, options, callback) {
-
-    var selfProfile = oPool.userList[socket.id];
-    selfProfile.setStatus(options.status, function (err, status) {
-      if (err) { return callback(err); }
-      
-      callback(null, { status : status });
-    });
+  
+  var selfProfile = oPool.userList[socket.id];
+  selfProfile.setStatus(options[constants.PFIELDS.STATUS], function (err, status) {
+    if (err) { return callback(err); }
+    
+    var res = {};
+    res[constants.PFIELDS.STATUS] = status;
+    
+    callback(null, res);
+  });
   
 };
 

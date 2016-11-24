@@ -1,3 +1,5 @@
+var PF = require('./../../../constants').PFIELDS;
+
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {
   return function(timer) {
@@ -8,9 +10,8 @@ module.exports = function(game) {
         return game.stop();
       }
 
-      var result = {
-        picks : []
-      };
+      var result = {};
+      result[PF.PICKS] = [];
 
       var playerInfo, picks;
       for (var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
@@ -18,11 +19,12 @@ module.exports = function(game) {
         picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
-          result.picks.push({
-            id    : playerInfo.id,
-            vid   : playerInfo.vid,
-            pick  : picks[0].pick
-          });
+          var pick = {};
+          pick[PF.ID] = playerInfo.id;
+          pick[PF.VID] = playerInfo.vid;
+          pick[PF.PICK] = picks[0][PF.PICK];
+          
+          result[PF.PICKS].push(pick);
         }
       }
 

@@ -2,6 +2,7 @@ var async     =  require('async');
 
 // Свои модули
 var constants         = require('../../../constants'),
+    PF                = constants.PFIELDS,
     oPool             = require('../../../objects_pool'),
     init              = require('../profile/init_profile'),
     handleError       = require('../common/handle_error'),
@@ -23,10 +24,14 @@ module.exports = function (socket) {
   
           info.operation_status = constants.errors.RS_GOODSTATUS;
           socket.emit(constants.IO_INIT, info);
+          
+          var params = {};
+          params[PF.ID]   = info[PF.ID];
+          params[PF.VID]  = info[PF.VID];
+          
+          emitAllRooms(socket, constants.IO_ONLINE, params);
   
-          emitAllRooms(socket, constants.IO_ONLINE, {id : info.id, vid : info.vid });
-  
-          getLastMessages(socket, oPool.rooms[info.room.name]);
+          getLastMessages(socket, oPool.rooms[info[PF.ROOM][PF.ROOMNAME]]);
           
           sendPrivateChats(socket, cb);
         }

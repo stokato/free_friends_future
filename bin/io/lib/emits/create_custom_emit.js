@@ -24,7 +24,7 @@ module.exports = function (socket, emit, handler, withoutStatus) {
       [
         function (cb) {  cb(null, emit, socket, options); },
         checkInput,
-        handler,
+        handler
       ],
       function(err, result) { result = result || {};
         if(err) { return handleError(socket, emit, err); }

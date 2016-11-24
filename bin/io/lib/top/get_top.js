@@ -1,7 +1,6 @@
 var constants  = require('./../../../constants'),
     db         = require('./../../../db_manager');
 
-
 /*
  Показать топ пользователей
  - Получаем пользоватлей, всех вместе и по полам
@@ -12,16 +11,16 @@ module.exports = function (socket, options, callback) {
     var res = {};
     db.findPoints(null, function (err, users) {
       if (err) { return callback(options, err.message); }
-      res.all = users;
+      res[constants.PFIELDS.ALL] = users;
 
       db.findPoints(constants.GIRL, function (err, users) {
         if (err) { return callback(options, err.message); }
-        res.girls = users;
+        res[constants.PFIELDS.GIRLS] = users;
 
         db.findPoints(constants.GUY, function (err, users) {
           if (err) { return callback(options, err.message); }
 
-          res.guys = users;
+          res[constants.PFIELDS.GUYS] = users;
 
           callback(null, res);
         });

@@ -1,4 +1,5 @@
-var constants = require('../../../constants');
+var constants = require('../../../constants'),
+    PF = constants.PFIELDS;
 
 // Выбор следующей игры
 module.exports = function(game) {
@@ -28,10 +29,9 @@ module.exports = function(game) {
     // Очищаем настройки
     game._actionsQueue = {};
 
-    var result = {
-      next_game    : game._nextGame,
-      players      : []
-    };
+    var result = {};
+    result[PF.NEXTGAME] = game._nextGame;
+    result[PF.PLAYERS] = [];
 
     var countPrisoners = (game._prisoner === null)? 0 : 1;
 
@@ -53,7 +53,7 @@ module.exports = function(game) {
         game._actionsCount = game._room.getCountInRoom(constants.GIRL)
                                   + game._room.getCountInRoom(constants.GUY) - countPrisoners;
 
-        result.question =  game.getRandomQuestion();
+        result[PF.QUESTION] =  game.getRandomQuestion();
         break;
       ////////////////////// КАРТЫ /////////////////////////////////////////////////////
       case constants.G_CARDS : // для карт ходят все
@@ -95,15 +95,17 @@ module.exports = function(game) {
         var secondPlayer = game.getPlayerInfo(randPlayer);
 
         var bestPlayers = [firstPlayer.id, secondPlayer.id];
-        var bestPlayerInfo = [{
-          id  : firstPlayer.id,
-          vid : firstPlayer.vid,
-          sex : firstPlayer.sex
-        }, {
-          id  : secondPlayer.id,
-          vid : secondPlayer.vid,
-          sex : secondPlayer.sex
-        }];
+        var best1 = {};
+        best1[PF.ID]  = firstPlayer.id;
+        best1[PF.VID] = firstPlayer.vid;
+        best1[PF.SEX] = firstPlayer.sex;
+        
+        var best2 = {};
+        best2[PF.ID]  = secondPlayer.id;
+        best2[PF.VID] = secondPlayer.vid;
+        best2[PF.SEX] = secondPlayer.sex;
+        
+        var bestPlayerInfo = [best1, best2];
 
         // Сохраняем опции
         game._storedOptions = {};
@@ -132,9 +134,6 @@ module.exports = function(game) {
       //////////////////// ТЮРЬМА ///////////////////////////////////////////////////////
       case constants.G_PRISON:           // По истечении таймаута, добавляем в тюрьму
 
-        //game._actionsCount = 1;
-        //game.setActionLimit(1);
-
         timeout = constants.TIMEOUT_PRISON;
         break;
     }
@@ -144,13 +143,13 @@ module.exports = function(game) {
 
     // Добавляем данные об игроке в темнице и отправляем результаты игрокам
     if(game._prisoner !== null) {
-      result.prison = {
-        id : game._prisoner.id,
-        vid: game._prisoner.vid,
-        sex: game._prisoner.sex
-      }
+      
+      result[PF.PRISON] = {};
+      result[PF.PRISON][PF.ID] = game._prisoner.id;
+      result[PF.PRISON][PF.VID] = game._prisoner.vid;
+      result[PF.PRISON][PF.SEX] = game._prisoner.sex;
     } else {
-      result.prison = null;
+      result[PF.PRISON] = null;
     }
 
     game.emit(result);

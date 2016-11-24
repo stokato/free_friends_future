@@ -1,6 +1,5 @@
 // Свои модули
 var constants  = require('./../../../constants');
-
 var oPool = require('./../../../objects_pool');
 
 /*
@@ -28,5 +27,8 @@ module.exports = function (socket, options, callback) {
     }
   }
   
-  callback(null, { rooms : resRooms });
+  var res = {};
+  res[constants.PFIELDS.ROOMS] = resRooms;
+  
+  callback(null, res);
 };

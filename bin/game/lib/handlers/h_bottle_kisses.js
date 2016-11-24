@@ -1,8 +1,7 @@
-var GameError = require('./../common/game_error');
-var constants = require('../../../constants');
-// var ProfileJS =  require('../../../profile/index');
-// var handleError = require('../../../handle_error');
-var addPoints = require('./../common/add_points');
+var GameError = require('./../common/game_error'),
+    constants = require('../../../constants'),
+    PF        = constants.PFIELDS,
+    addPoints = require('./../common/add_points');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
@@ -25,7 +24,7 @@ module.exports = function(game) {
       var playerInfo, item, allKissed = true;
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         playerInfo  = game._activePlayers[item];
-        if(!game._actionsQueue[playerInfo.id] || !game._actionsQueue[playerInfo.id][0].pick === true) {
+        if(!game._actionsQueue[playerInfo.id] || !game._actionsQueue[playerInfo.id][0][PF.PICK] === true) {
           allKissed = false;
         }
       }
@@ -45,15 +44,15 @@ module.exports = function(game) {
     function broadcastPick(uid) {
       var playerInfo = game._activePlayers[uid];
 
-      var result = {
-        id   : uid,
-        vid  : playerInfo.vid,
-        pick : options.pick
-      };
+      var result = {};
+      result[PF.ID] = uid;
+      result[PF.VID] = playerInfo.vid;
+      result[PF.PICK] = options[PF.PICK];
+      
       game.emit(result);
 
-      if(!game._gameState.picks) { game._gameState.picks = []; }
-      game._gameState.picks.push(result);
+      if(!game._gameState[PF.PICKS]) { game._gameState[PF.PICKS] = []; }
+      game._gameState[PF.PICKS].push(result);
     }
 
     function onComplete(err) {

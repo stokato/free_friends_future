@@ -1,4 +1,5 @@
 var db        = require('./../../../db_manager');
+var IOF       = require('./../../../constants').PFIELDS;
 
 /*
     Добавляем очки пользователю
@@ -12,10 +13,10 @@ module.exports = function(num, callback) {
   self._pPoints = self._pPoints || 0;
   
   var options = {};
-  options[db.CONST.ID]      = self._pID;
-  options[db.CONST.VID]     = self._pVID;
-  options[db.CONST.SEX]     = self._pSex;
-  options[db.CONST.POINTS]  = self._pPoints + num;
+  options[IOF.ID]      = self._pID;
+  options[IOF.VID]     = self._pVID;
+  options[IOF.SEX]     = self._pSex;
+  options[IOF.POINTS]  = self._pPoints + num;
   
   db.addPoints(options, function(err) {
     if(err) { return callback(err, null); }

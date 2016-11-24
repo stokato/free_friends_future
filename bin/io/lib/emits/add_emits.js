@@ -1,6 +1,6 @@
 var constants     = require('../../../constants');
 
-var emitDisconnect          = require('./emit_disconnect');
+var emitDisconnect      = require('./emit_disconnect');
 var createCustomEvent   = require('./create_custom_emit');
 
 var addTorFriend        = require('../profile/add_to_friends'),
@@ -28,7 +28,7 @@ var addTorFriend        = require('../profile/add_to_friends'),
     releasePlayer       = require('../../../game/lib/release_player'),
     addQuestion         = require('../admin/add_question'),
     delQuestion         = require('../admin/delete_question'),
-    showQuestions        = require('../admin/show_all_questions'),
+    showQuestions       = require('../admin/show_all_questions'),
     deleteAllQuestions  = require('../admin/delete_all_questions'),
     likeProfile         = require('../profile/like_profile'),
     setViewed           = require('../profile/set_viewed');

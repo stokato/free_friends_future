@@ -1,4 +1,5 @@
-var constants = require('../../../constants');
+var constants = require('../../../constants'),
+    PF = constants.PFIELDS;
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
@@ -43,16 +44,17 @@ module.exports = function(game) {
 
     // Отправляем результаты
     var result = {};
-    result.players = game.getPlayersID();
-    result.next_game = constants.G_BOTTLE_KISSES;
-
-    result.prison = null;
+    result[PF.PLAYERS]  = game.getPlayersID();
+    result[PF.NEXTGAME] = constants.G_BOTTLE_KISSES;
+    result[PF.PRISON] = null;
+    
     if(game._prisoner !== null) {
-      result.prison = {
-        id : game._prisoner.id,
-        vid: game._prisoner.vid,
-        sex: game._prisoner.sex
-      }
+  
+      result[PF.PRISON] = {};
+      result[PF.PRISON][PF.ID]  = game._prisoner.id;
+      result[PF.PRISON][PF.VID] = game._prisoner.vid;
+      result[PF.PRISON][PF.SEX] = game._prisoner.sex;
+      
     }
 
     game.emit(result);

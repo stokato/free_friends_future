@@ -1,6 +1,5 @@
-var db      = require('./../../../db_manager'),
-  constants = require('./../../../constants');
-
+var db        = require('./../../../db_manager'),
+    constants = require('./../../../constants');
 
 /*
  Получить денежные лоты для пополнения счета пользователя
@@ -12,7 +11,10 @@ module.exports = function (socket, options, callback) {
     db.findAllGoods(constants.GT_MONEY, function (err, goods) {
       if (err) {  return callback(err);  }
       
-      callback(null, { lots : goods });
+      var res = {};
+      res[constants.PFIELDS.LOTS] = goods;
+      
+      callback(null, res);
     });
 
 };

@@ -1,5 +1,5 @@
 var constants  = require('./../../../constants');
-var IOError = require('./io_error');
+var IOError    = require('./io_error');
 
 module.exports = function (socket, emit, err, res) { res = res || {};
   res.operation_status = constants.RS_BADSTATUS;

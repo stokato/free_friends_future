@@ -1,13 +1,13 @@
 
 // Свои модули
-var async = require('async'),      // Ошибки
-  constants = require('./../../../constants'),     // Константы
-  createRoom = require('./../common/create_room'),
+var async         = require('async'),      // Ошибки
+  constants       = require('./../../../constants'),     // Константы
+  PF              = constants.PFIELDS,
+  createRoom      = require('./../common/create_room'),
   getLastMessages = require('./../common/get_last_messages'),
   sendUsersInRoom = require('./../common/send_users_in_room'),
-  playTrackInRoom = require('./../player/play_track_in_room');
-
-var oPool = require('./../../../objects_pool');
+  playTrackInRoom = require('./../player/play_track_in_room'),
+  oPool           = require('./../../../objects_pool');
 
 /*
  Сменить комнату: Идентификатор новой комнаты
@@ -25,11 +25,11 @@ var oPool = require('./../../../objects_pool');
  */
 module.exports = function (socket, options, callback) {
   
-  if(!oPool.rooms[options.room] && options.room != constants.NEW_ROOM) {
+  if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != constants.NEW_ROOM) {
     return callback(constants.errors.NO_SUCH_ROOM);
   }
   
-  if(oPool.roomList[socket.id].getName() == options.room){
+  if(oPool.roomList[socket.id].getName() == options[PF.ROOM]){
     // return callback(constants.errors.ALREADY_IN_ROOM);
     return callback(null, null); // Если уже в этой комнате - ничего не делаем
   }
@@ -53,7 +53,7 @@ module.exports = function (socket, options, callback) {
   } else {                                  // Либо ищем указанную
     var item;
     for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
-      if (oPool.rooms[item].getName() == options.room) {
+      if (oPool.rooms[item].getName() == options[PF.ROOM]) {
         if (oPool.rooms[item].getCountInRoom(userSex) >= constants.ONE_SEX_IN_ROOM) {
           return callback(constants.errors.ROOM_IS_FULL);
         }
@@ -103,7 +103,7 @@ module.exports = function (socket, options, callback) {
       cb(null, info);
     },
     function (info, cb) {
-      sendUsersInRoom(info, null, function(err, res) {
+      sendUsersInRoom(info, null, function(err) {
         if(err) { return cb(err) }
     
         cb(null, null);

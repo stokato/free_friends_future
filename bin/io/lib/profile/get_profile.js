@@ -1,10 +1,10 @@
 var async     =  require('async');
 
 // Свои модули
-var constants = require('./../../../constants'),
-  getUserProfile = require('./../common/get_user_profile');
-
-var oPool = require('./../../../objects_pool');
+var constants       = require('./../../../constants'),
+    PF              = constants.PFIELDS;
+    getUserProfile  = require('./../common/get_user_profile'),
+    oPool           = require('./../../../objects_pool');
 
 /*
  Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,
@@ -20,16 +20,15 @@ module.exports = function (socket, options, callback) {
   
   var selfProfile = oPool.userList[socket.id];
   
-  var selfInfo = {
-    id      : selfProfile.getID(),
-    vid     : selfProfile.getVID(),
-    age     : selfProfile.getAge(),
-    sex     : selfProfile.getSex(),
-    city    : selfProfile.getCity(),
-    country : selfProfile.getCountry(),
-    status  : selfProfile.getStatus(),
-    points  : selfProfile.getPoints()
-  };
+  var selfInfo = {};
+  selfInfo[PF.ID]       = selfProfile.getID();
+  selfInfo[PF.VID]      = selfProfile.getVID();
+  selfInfo[PF.AGE]      = selfProfile.getAge();
+  selfInfo[PF.SEX]      = selfProfile.getSex();
+  selfInfo[PF.CITY]     = selfProfile.getCity();
+  selfInfo[PF.COUNTRY]  = selfProfile.getCountry();
+  selfInfo[PF.STATUS]   = selfProfile.getStatus();
+  selfInfo[PF.POINTS]   = selfProfile.getPoints();
   
   if (selfProfile.getID() == options.id) { // Если открываем свой профиль
     async.waterfall([
@@ -37,39 +36,39 @@ module.exports = function (socket, options, callback) {
         selfProfile.getPrivateChats(function (err, chatsInfo) { chatsInfo = chatsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.chats = chatsInfo.chats;
-          selfInfo.new_messages = chatsInfo.new_chats || 0;
+          selfInfo[PF.CHATS]        = chatsInfo[PF.CHATS];
+          selfInfo[PF.NEWMESSAGES]  = chatsInfo[PF.NEWCHATS] || 0;
           
           cb(null, null);
         });
-      }, /////////////////////////////////////////////////////////////
+      }, //----------------------------------------------------------------------
       function (res, cb) { // Получаем подарки
         selfProfile.getGifts(true, function (err, giftsInfo) { giftsInfo = giftsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.gifts = giftsInfo.gifts;
-          selfInfo.new_gifts = giftsInfo.new_gifts || 0;
+          selfInfo[PF.GIFTS]    = giftsInfo[PF.GIFTS];
+          selfInfo[PF.NEWGIFTS] = giftsInfo[PF.NEWGIFTS] || 0;
           cb(null, null);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (res, cb) { // Получаем друзей
         selfProfile.getFriends(true, function (err, friendsInfo) { friendsInfo = friendsInfo || {};
           if (err) {  return cb(err, null); }
           
-          selfInfo.friends = friendsInfo.friends;
-          selfInfo.new_friends = friendsInfo.new_friends || 0;
+          selfInfo[PF.FRIENDS]    = friendsInfo[PF.FRIENDS];
+          selfInfo[PF.NEWFRIENDS] = friendsInfo[PF.NEWFRIENDS] || 0;
           cb(null, null);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (res, cb) { // Получаем гостей
         selfProfile.getGuests(true, function (err, guestsInfo) { guestsInfo = guestsInfo || {};
           if (err) { return cb(err, null); }
           
-          selfInfo.guests = guestsInfo.guests;
-          selfInfo.new_guests = guestsInfo.new_guests || 0;
+          selfInfo[PF.GUESTS]    = guestsInfo[PF.GUESTS];
+          selfInfo[PF.NEWGUESTS] = guestsInfo[PF.NEWGUESTS] || 0;
           cb(null, null);
         });
-      }/////////////////////////////////////////////////////////////////////
+      }//----------------------------------------------------------------------
     ], function(err) {
       if (err) { return callback(err); }
       
@@ -78,50 +77,51 @@ module.exports = function (socket, options, callback) {
     
   } else {
     
-    async.waterfall([///////////////////////////////////////////////////////////////////
+    async.waterfall([//----------------------------------------------------------------------
       function (cb) { // Получаем профиль того, чей просматриваем
         
         getUserProfile(options.id, function (err, friendProfile) {
           if(err) { return cb(err); }
           
-          cb(null, friendProfile, {
-            id      : friendProfile.getID(),
-            vid     : friendProfile.getVID(),
-            age     : friendProfile.getAge(),
-            sex     : friendProfile.getSex(),
-            city    : friendProfile.getCity(),
-            country : friendProfile.getCountry(),
-            status  : friendProfile.getStatus(),
-            points  : friendProfile.getPoints()
-          });
+          var friendInfo = {};
+          friendInfo[PF.ID]       = friendProfile.getID();
+          friendInfo[PF.VID]      = friendProfile.getVID();
+          friendInfo[PF.AGE]      = friendProfile.getAge();
+          friendInfo[PF.SEX]      = friendProfile.getSex();
+          friendInfo[PF.CITY]     = friendProfile.getCity();
+          friendInfo[PF.COUNTRY]  = friendProfile.getCountry();
+          friendInfo[PF.STATUS]   = friendProfile.getStatus();
+          friendInfo[PF.POINTS]   = friendProfile.getPoints();
+          
+          cb(null, friendProfile, friendInfo);
         });
         
-      },///////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Получаем подарки
         friendProfile.getGifts(false, function (err, giftsInfo) { giftsInfo = giftsInfo || {};
           if (err) {  return cb(err, null); }
           
           
-          friendInfo.gifts = giftsInfo.gifts;
+          friendInfo[PF.GIFTS] = giftsInfo[PF.GIFTS];
           cb(null, friendProfile, friendInfo);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Проверяем, наш ли это друг
         friendProfile.isFriend([selfProfile.getID()], function (err, res) {
           if (err) {  return cb(err, null); }
           
-          friendInfo.is_friend = res[0].isFriend;
+          friendInfo[PF.ISFRIEND] = res[0][PF.ISFRIEND];
           cb(null, friendProfile, friendInfo);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Получаем друзей
         friendProfile.getFriends(false, function (err, friendsInfo) { friendsInfo = friendsInfo || {};
           if (err) {  return cb(err, null); }
           
-          friendInfo.friends = friendsInfo.friends;
+          friendInfo[PF.FRIENDS] = friendsInfo[PF.FRIENDS];
           cb(null, friendProfile, friendInfo);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
         var date = new Date();
         friendProfile.addToGuests(selfProfile, date, function (err) {
@@ -129,22 +129,23 @@ module.exports = function (socket, options, callback) {
           
           cb(null, friendProfile, friendInfo);
         });
-      },/////////////////////////////////////////////////////////////////////
+      },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Получаем гостей
         friendProfile.getGuests(false, function (err, guestsInfo) { guestsInfo = guestsInfo || {};
           if (err) { return cb(err, null); }
           
-          friendInfo.guests = guestsInfo.guests;
+          friendInfo[PF.GUESTS] = guestsInfo[PF.GUESTS];
           cb(null, friendProfile, friendInfo);
         });
-      }/////////////////////////////////////////////////////////////////////
+      }//----------------------------------------------------------------------
     ], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
       if (err) { return callback(err); }
       
       if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
+        
         var friendSocket = friendProfile.getSocket();
+        
         friendSocket.emit(constants.IO_ADD_GUEST, selfInfo);
-        // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
       }
       
       callback(null, friendInfo);

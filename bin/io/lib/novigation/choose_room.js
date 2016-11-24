@@ -1,8 +1,8 @@
 var async     =  require('async');
 
-var constants = require('./../../../constants');
-
-var oPool = require('../../../objects_pool');
+var constants = require('./../../../constants'),
+    PF        = constants.PFIELDS,
+    oPool = require('../../../objects_pool');
 
 /*
  Предлагаем способ смены комнаты
@@ -28,7 +28,7 @@ module.exports = function (socket, options, callback) {
       // Отбираем комнаты со свободными для нашего пола местами
       for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)
         && oPool.rooms[item].getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM &&
-        oPool.roomList[socket.id].name != oPool.rooms[item].getName()) {
+        oPool.roomList[socket.id].getName() != oPool.rooms[item].getName()) {
         
         freeRooms.push(oPool.rooms[item]);
       }
@@ -45,10 +45,10 @@ module.exports = function (socket, options, callback) {
     },////////////////////////////////// Получаем всех друзей пользователя
     function (roomInfo, cb) {
       
-      selfProfile.getFriends(false, function (err, allFriends) {
+      selfProfile.getFriends(false, function (err, allFriendsInfo) {
         if (err) { return cb(err, null); }
         
-        cb(null, roomInfo, allFriends.friends);
+        cb(null, roomInfo, allFriendsInfo[PF.FRIENDS]);
       });
       
     },///////////////////////// Составляем список друзей с неполными коматами
@@ -61,15 +61,15 @@ module.exports = function (socket, options, callback) {
           var friendSocket = currFriend.getSocket();
           var friendsRoom = oPool.roomList[friendSocket.id];
           if (friendsRoom.getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM) {
-            var currInfo = {
-              id      : currFriend.getID(),
-              vid     : currFriend.getVID(),
-              age     : currFriend.getAge(),
-              sex     : currFriend.getSex(),
-              city    : currFriend.getCity(),
-              country : currFriend.getCountry(),
-              room    : friendsRoom.name
-            };
+            
+            var currInfo = {};
+            currInfo[PF.ID] = currFriend.getID();
+            currInfo[PF.VID] = currFriend.getVID();
+            currInfo[PF.AGE] = currFriend.getAge();
+            currInfo[PF.SEX] = currFriend.getSex();
+            currInfo[PF.CITY] = currFriend.getCity();
+            currInfo[PF.COUNTRY] = currFriend.getCountry();
+            currInfo[PF.ROOM] = friendsRoom.getName();
             
             friendList.push(currInfo);
           }
@@ -81,7 +81,11 @@ module.exports = function (socket, options, callback) {
   ], function (err, roomInfo, friendList) {
     if (err) { return callback(err); }
     
-      callback(null, { random : roomInfo, friends : friendList });
+      var res = {};
+      res[PF.RANDOM] = roomInfo;
+      res[PF.FRIENDS] = friendList;
+    
+      callback(null, res);
   });
   
 };

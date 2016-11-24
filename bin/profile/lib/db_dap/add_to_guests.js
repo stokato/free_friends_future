@@ -1,4 +1,5 @@
 var db = require('./../../../db_manager');
+var IOF = require('./../../../constants').PFIELDS;
 
 /*
     Добавляем гостя в БД
@@ -7,11 +8,11 @@ module.exports = function(guestProfile, date, callback) {
  var self = this;
   
  var options = {};
- options[db.CONST.ID]   = guestProfile.getID();
- options[db.CONST.VID]  = guestProfile.getVID();
- options[db.CONST.SEX]  = guestProfile.getSex();
- options[db.CONST.BDATE] = guestProfile.getBDay();
- options[db.CONST.DATE]         = date;
+ options[IOF.ID]    = guestProfile.getID();
+ options[IOF.VID]   = guestProfile.getVID();
+ options[IOF.SEX]   = guestProfile.getSex();
+ options[IOF.BDATE] = guestProfile.getBDay();
+ options[IOF.DATE]  = date;
   
  db.addGuest(self._pID, options, function(err, guest) {
    if (err) { return callback(err, null); }

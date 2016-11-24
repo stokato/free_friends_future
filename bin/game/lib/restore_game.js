@@ -1,4 +1,5 @@
-var constants = require('../../constants');
+var constants = require('../../constants'),
+  PF = constants.PFIELDS;
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего
 // выбираем произвольно одного из них и переходим к розыгышу волчка
@@ -12,15 +13,15 @@ module.exports = function(result, isTimeout) { result = result || {}; isTimeout 
   this._actionsQueue = {};
 
   // Отправляем результаты игрокам
-  result.next_game = this._nextGame;
-  result.players = this.getPlayersID();
-  result.prison = null;
+  result[PF.NEXTGAME] = this._nextGame;
+  result[PF.PLAYERS]  = this.getPlayersID();
+  result[PF.PRISON] = null;
+  
   if(this._prisoner !== null) {
-    result.prison = {
-      id : this._prisoner.id,
-      vid: this._prisoner.vid,
-      sex: this._prisoner.sex
-    }
+    result.prison = {};
+    result[PF.PRISON][PF.ID]  = this._prisoner.id;
+    result[PF.PRISON][PF.VID] = this._prisoner.vid;
+    result[PF.PRISON][PF.SEX] = this._prisoner.sex;
   }
 
   this.emit(result);

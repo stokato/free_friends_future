@@ -48,8 +48,8 @@ function Profile() {
   this._pID           = null;   // Внутренний ИД
   this._pVID          = null;   // Внешний
   this._pBDate        = null;
-
-  this._pAge      = 0;      // Возраст
+  
+  this._pBDate    = null;
   this._pCountry  = null;   // Страна
   this._pCity     = null;   // Город
   this._pSex      = null;   // пол игрока (1 - женский, 2 - мужской)
@@ -88,14 +88,14 @@ Profile.prototype.getVID          = function() { return this._pVID; };
 Profile.prototype.getStatus       = function() { return this._pStatus; };
 Profile.prototype.getPoints       = function() { return this._pPoints; };
 Profile.prototype.getSex          = function() { return this._pSex; };
-Profile.prototype.getAge          = function() { return this._pAge; };
+Profile.prototype.getAge          = function() { return new Date().getYear() - this._pBDate.getYear(); };
 Profile.prototype.getCity         = function() { return this._pCity; };
 Profile.prototype.getCountry      = function() { return this._pCountry; };
 Profile.prototype.getGame         = function() { return this._pGame; };
 Profile.prototype.isInMenu        = function() { return this._pIsInMenu; };
 Profile.prototype.getGameIndex    = function() { return this._pGameIndex; };
 Profile.prototype.getGift1        = function() { return this._pGift1; };
-
+Profile.prototype.getBDate        = function() { return this._pBDate; };
 Profile.prototype.setGameIndex    = function(val)     { this._pGameIndex = val; };
 Profile.prototype.setGame         = function(game)    { this._pGame = game; };
 Profile.prototype.setSocket       = function(socket)  { this._pSocket = socket; };

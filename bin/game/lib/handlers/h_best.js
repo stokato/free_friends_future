@@ -1,4 +1,5 @@
 var constants = require('../../../constants');
+var PF        = constants.PFIELDS;
 var addPoints = require('./../common/add_points');
 
 var GameError = require('./../common/game_error');
@@ -39,20 +40,19 @@ module.exports = function(game) {
     function broadcastPick(game, uid) {
       var playerInfo = game._activePlayers[uid];
 
-      var result = {
-        pick : {
-          id    : uid,
-          vid   : playerInfo.vid,
-          pick  : options.pick
-        }
-      };
+      var result = {};
+      result[PF.PICK] = {};
+      result[PF.PICK][PF.ID] = uid;
+      result[PF.PICK][PF.VID] = playerInfo.vid;
+      result[PF.PICK][PF.PICK] = options[PF.PICK];
+      
       game.emit(result);
 
       // Сохраняем состояние игры
-      if(!game._gameState.picks) {
-        game._gameState.picks = [];
+      if(!game._gameState[PF.PICKS]) {
+        game._gameState[PF.PICKS] = [];
       }
-      game._gameState.picks.push(result.pick);
+      game._gameState[PF.PICKS].push(result[PF.PICK]);
     }
   
     // Проверяем - врдуг все проголосовали за этого игрока

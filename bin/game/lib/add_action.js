@@ -13,15 +13,15 @@ module.exports = function (socket, options, callback) {
   if(game._activePlayers[uid] && game._actionsLimits[uid] > 0) {
     
     // Если нет такого пользоателя среди кандидатов
-    if(game._nextGame == constants.G_BEST && !game._storedOptions[options.pick]) {
+    if(game._nextGame == constants.G_BEST && !game._storedOptions[options[constants.PFIELDS.PICK]]) {
       return callback(constants.errors.NO_THAT_PLAYER);
     }
     
     // В игре симпатии нельзя указать себя
-    if(game._nextGame == constants.G_SYMPATHY && uid == options.pick) {
+    if(game._nextGame == constants.G_SYMPATHY && uid == options[constants.PFIELDS.PICK]) {
       return callback(constants.errors.SELF_ILLEGAL);
     }
-    if(game._nextGame == constants.G_SYMPATHY_SHOW && uid == options.pick) {
+    if(game._nextGame == constants.G_SYMPATHY_SHOW && uid == options[constants.PFIELDS.PICK]) {
       return callback(constants.errors.SELF_ILLEGAL);
     }
     
@@ -32,14 +32,14 @@ module.exports = function (socket, options, callback) {
     // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
     // И выбрать того, кого нет
     if(game._nextGame == constants.G_SYMPATHY || game._nextGame == constants.G_SYMPATHY_SHOW) {
-      if(!game._activePlayers[options.pick]) {
+      if(!game._activePlayers[options[constants.PFIELDS.PICK]]) {
         return callback(constants.errors.IS_ALREADY_SELECTED);
       }
       
       var actions = game._actionsQueue[uid];
       
       for( var i = 0; i < actions.length; i++) {
-        if(actions[i].pick == options.pick) {
+        if(actions[i][constants.PFIELDS.PICK] == options[constants.PFIELDS.PICK]) {
           return callback(constants.errors.FORBIDDEN_CHOICE);
         }
       }

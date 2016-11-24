@@ -1,8 +1,9 @@
 // Отправляем пользователям информацию о комнате, в которой они находятся
 var async = require('async');
 
-var constants = require('./../../../constants');
-var oPool = require('./../../../objects_pool');
+var constants = require('./../../../constants'),
+  PF          = constants.PFIELDS,
+  oPool       = require('./../../../objects_pool');
 
 
 module.exports = function(info, selfId, callback) {
@@ -10,17 +11,17 @@ module.exports = function(info, selfId, callback) {
   var usersID = [], i;
 
   for(i = 0; i < info.guys.length; i++) {
-    usersID.push(info.guys[i].id);
+    usersID.push(info.guys[i][PF.ID]);
   }
 
   for(i = 0; i < info.girls.length; i++) {
-    usersID.push(info.girls[i].id);
+    usersID.push(info.girls[i][PF.ID]);
   }
 
   async.map(usersID, function(id, cb) {
-    var profile = oPool.profiles[id];
+    var profile   = oPool.profiles[id];
     var roomUsers = usersID.slice();
-    var pos = usersID.indexOf(id);
+    var pos       = usersID.indexOf(id);
     roomUsers.splice(pos, 1);
 
     if(roomUsers.length > 0) {
@@ -32,14 +33,14 @@ module.exports = function(info, selfId, callback) {
         for(var i = 0; i < friends.length; i++) {
           var j;
           for(j = 0; j < newInfo.guys.length; j++) {
-            if(friends[i].id == newInfo.guys[j].id) {
-              newInfo.guys[j].is_friend = friends[i].isFriend;
+            if(friends[i][PF.ID] == newInfo.guys[j][PF.ID]) {
+              newInfo.guys[j][PF.ISFRIEND] = friends[i][PF.ISFRIEND];
             }
           }
 
           for(j = 0; j < newInfo.girls.length; j++) {
-            if(friends[i].id == newInfo.girls[j].id) {
-              newInfo.girls[j].is_friend = friends[i].isFriend;
+            if(friends[i][PF.ID] == newInfo.girls[j][PF.ID]) {
+              newInfo.girls[j][PF.ISFRIEND] = friends[i][PF.ISFRIEND];
             }
           }
         }

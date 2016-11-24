@@ -8,21 +8,26 @@ var oPool = require('./../../../objects_pool');
 
 module.exports = function(socket, options, callback) {
   
-  async.waterfall([ ///////////////////////////////////////////////////////////////////
+  async.waterfall([ //-----------------------------------------------------
     function(cb) {
       
-      getUserProfile(options.id, cb);
+      getUserProfile(options[constants.PFIELDS.ID], cb);
       
-    }, ////////////////////////////////////////////////////////////////////////
+    }, //------------------------------------------------------------------
     function(friendProfile, cb) { // Получаем историю
       var selfProfile = oPool.userList[socket.id];
       
-      if(selfProfile.getID() == options.id) {
+      if(selfProfile.getID() == options[constants.PFIELDS.ID]) {
         return cb(constants.errors.SELF_ILLEGAL);
       }
       
       if(selfProfile.isPrivateChat(friendProfile.getID())) {
-        selfProfile.getHistory(options, function(err, history) {
+        
+        var id        = options[constants.PFIELDS.ID],
+            dateFrom  = options[constants.PFIELDS.DATE_FROM],
+            dateTo    = options[constants.PFIELDS.DATE_TO];
+        
+        selfProfile.getHistory(id, dateFrom, dateTo, function(err, history) {
           if(err) { return cb(err, null); }
           
           history = history || [];
@@ -35,7 +40,7 @@ module.exports = function(socket, options, callback) {
       } else {
         return cb(new Error(constants.errors.NO_SUCH_CHAT));
       }
-    }
+    } //------------------------------------------------------------------------
   ], function(err, res) {
     if (err) { return callback(err); }
     

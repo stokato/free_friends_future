@@ -1,7 +1,7 @@
 {
   "auth" : {
-    "api_id" : "4853914",
-    "api_secret" : "06G0eKuPliE1M4mHQU3S"
+    "APIID": "4853914",
+    "APISECRET": "06G0eKuPliE1M4mHQU3S"
   },
   "sessions" : {
     "secret" : "kd07LNsJC0KjdQcSa",
@@ -26,13 +26,43 @@
   },
   "user" : {
     "settings" : {
-      "start_money" : "50"
+      "start_money" : "50",
+      "top_size" : "100",
+      "gift_timeout" : "120000",
+      "like_timeout" : "86400000",
+      "room_change_timeout" : "15000"
     },
     "constants" : {
       "sex" : {
         "male" : "2",
         "female" : "1"
       }
+    }
+  },
+  "moneys" : {
+    "menu_bonus" : "5",
+    "gift_price" : "10",
+    "start_money" : "50",
+    "track_price" : "5",
+    "card_bonus" : "100",
+    "ransom_price" : "10",
+    "sympathy_price" : "1"
+  },
+  "game" : {
+    "card_count" : "5",
+    "players_min" : "2",
+    "show_sympathy_limit" : "2",
+    "kiss_points" : "1",
+    "sympathy_points" : "1",
+    "best_points"  : "1",
+    "questions_timeout" : "86400000",
+    "timeouts" : {
+      "lot" : "5000",
+      "bottle" : "7000",
+      "results" : "5000",
+      "prison" : "4000",
+      "sympathy_show" : "15000",
+      "default" : "18000"
     }
   },
   "io" : {

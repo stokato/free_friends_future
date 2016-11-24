@@ -5,13 +5,10 @@ var constants             = require('./../../../constants'),
 module.exports = function (socket, callback) { // Получаем данные по приватным чатам
   var secondDate = new Date();
   var firstDate = genDateHistory(secondDate);
-  
-  var params = {
-    first_date : firstDate,
-    second_date : secondDate
-  };
 
-  oPool.userList[socket.id].getPrivateChatsWithHistory(params, function(err, history) { history = history || [];
+  oPool.userList[socket.id].getPrivateChatsWithHistory(firstDate, secondDate, function(err, history) {
+    history = history || [];
+    
     if(err) { return callback(err, null) }
     
     for(var i = 0; i < history.length; i++) {

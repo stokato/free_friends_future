@@ -51,7 +51,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       params.push(options[PF.ID]);
       params.push(options[PF.VID]);
       params.push(options[PF.SEX]);
-      params.push(options[PF.BDAY]);
+      params.push(options[PF.BDATE]);
   
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) {  return cb(err); }

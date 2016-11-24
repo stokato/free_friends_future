@@ -25,7 +25,7 @@ VK.prototype.handle = function(req, profiles, callback) { var request = req || {
     fields.push(key + "=" + request[key]);
   }
   fields.sort();
-  var authStr = fields.join("") + constants.api_secret;
+  var authStr = fields.join("") + constants.APISECRET;
 
   if (sig !== md5(authStr)) {
     var response = {};

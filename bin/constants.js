@@ -1,48 +1,50 @@
 var Config = require('./../config.json');
 
 // Макс. количество игроков одного пола в комнате
-module.exports.ONE_SEX_IN_ROOM = Config.io.one_sex_in_room;
+module.exports.ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 
 // Пол игрока
-module.exports.ANY = -100;
-module.exports.GUY = Config.user.constants.sex.male;
-module.exports.GIRL = Config.user.constants.sex.female;
+module.exports.GUY              = Config.user.constants.sex.male;
+module.exports.GIRL             = Config.user.constants.sex.female;
 
 // Поля для защищенной подписи
-module.exports.api_id = Config.auth.api_id;
-module.exports.api_secret = Config.auth.api_secret;
+module.exports.APIID            = Config.auth.APIID;
+module.exports.APISECRET        = Config.auth.APISECRET;
 
 // Размер истории комнаты
 module.exports.LEN_ROOM_HISTORY = Config.io.len_room_history;
 
 // Таймаут отключения от сервера
-module.exports.EXIT_TIMEOUT = Config.io.exit_timeout;
+module.exports.EXIT_TIMEOUT     = Config.io.exit_timeout;
 
 // Таймаут ожидания запроса от клиента перед отключением ???
-module.exports.REQUEST_TIMEOUT = 3600000;
+module.exports.REQUEST_TIMEOUT  = 3600000;
 
 // Идентификатор для создания новой комнаты
-module.exports.NEW_ROOM = "new_room";
+module.exports.NEW_ROOM         = "new_room";
 // Размер топа
-module.exports.TOP_USERS = 100;
+module.exports.TOP_USERS        = Number(Config.user.settings.top_size);
 // Бонус за добавление в меню
-module.exports.MENU_BONUS = 5;
+module.exports.MENU_BONUS       = Number(Config.moneys.menu_bonus);
 // Цена подарка
-module.exports.GIFT_MONEY = 10;
+module.exports.GIFT_MONEY       = Number(Config.moneys.gift_price);
+
+// Старовый баланы
+module.exports.START_MONEY      = Number(Config.moneys.start_money);
 
 // Длительность отображения подарка на аве
-module.exports.GIFT_TIMEOUT = 120 * 1000; // 1800 *
+module.exports.GIFT_TIMEOUT     = Number(Config.user.settings.gift_timeout);
 
 // Типы товаров
-module.exports.GT_GIFT = "gift";
-module.exports.GT_MONEY = "money";
+module.exports.GT_GIFT          = "gift";
+module.exports.GT_MONEY         = "money";
 
 // Цена добавления трека
-module.exports.TRACK_PRICE = 5;
+module.exports.TRACK_PRICE      = Number(Config.moneys.track_price);
 
 // статусы операций
-module.exports.RS_GOODSTATUS = "success";
-module.exports.RS_BADSTATUS = "fail";
+module.exports.RS_GOODSTATUS    = "success";
+module.exports.RS_BADSTATUS     = "fail";
 
 // ошибки
 module.exports.errors = {
@@ -139,79 +141,111 @@ var G_START         = 'results',
     G_SYMPATHY_SHOW = 'sympathy_show',
     G_PRISON        = 'prison';
 
-module.exports.G_START            = G_START;
-module.exports.G_LOT              = G_LOT;
-module.exports.G_BOTTLE           = G_BOTTLE;
-module.exports.G_BOTTLE_KISSES    = G_BOTTLE_KISSES;
-module.exports.G_QUESTIONS        = G_QUESTIONS;
-module.exports.G_CARDS            = G_CARDS;
-module.exports.G_BEST             = G_BEST;
-module.exports.G_SYMPATHY         = G_SYMPATHY;
-module.exports.G_SYMPATHY_SHOW    = G_SYMPATHY_SHOW;
-module.exports.G_PRISON           = G_PRISON;
+module.exports.G_START                = G_START;
+module.exports.G_LOT                  = G_LOT;
+module.exports.G_BOTTLE               = G_BOTTLE;
+module.exports.G_BOTTLE_KISSES        = G_BOTTLE_KISSES;
+module.exports.G_QUESTIONS            = G_QUESTIONS;
+module.exports.G_CARDS                = G_CARDS;
+module.exports.G_BEST                 = G_BEST;
+module.exports.G_SYMPATHY             = G_SYMPATHY;
+module.exports.G_SYMPATHY_SHOW        = G_SYMPATHY_SHOW;
+module.exports.G_PRISON               = G_PRISON;
 
 // Игры с тюрьмой и без
-module.exports.GAMES = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
+module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
 //  module.exports.GAMES = [ G_BEST, G_PRISON ];
-module.exports.GAMES_WITHOUT_PRISON = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
+module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
 // module.exports.GAMES_WITHOUT_PRISON = [G_BEST];
 
 // Количество карт в игре
-module.exports.CARD_COUNT = 7;
+module.exports.CARD_COUNT             = Number(Config.game.card_count);
 
 // Выигрышь за угаданную карту
-module.exports.CARD_BOUNUS = 100;
+module.exports.CARD_BOUNUS            = Number(Config.moneys.card_bonus);
 
 // Минимальное количество игроков одного пола в игре
-module.exports.PLAYERS_COUNT = 2;
+module.exports.PLAYERS_COUNT          = Number(Config.game.players_min);
 
 // Максимальное количество игроков, которых можно указать в игре симпатии
-module.exports.SHOW_SYMPATHY_LIMIT = 2;
+module.exports.SHOW_SYMPATHY_LIMIT    = (Config.game.show_sympathy_limit);
 
 // Количество очков, начисляющихся за обоюдный поцелуй
-module.exports.KISS_POINTS = 1;
-module.exports.SYMPATHY_POINTS = 1;
-module.exports.BEST_POINTS = 1;
+module.exports.KISS_POINTS            = Number(Config.game.kiss_points);
+module.exports.SYMPATHY_POINTS        = Number(Config.game.sympathy_points);
+module.exports.BEST_POINTS            = Number(Config.game.best_points);
 
 // Раз в сутки получать из базы список вопросов
-module.exports.QUESTIONS_TIMEOUT = 24 * 60 * 60 * 1000;
+module.exports.QUESTIONS_TIMEOUT      = Number(Config.game.questions_timeout); //24 * 60 * 60 * 1000;
 
 // Величина выкупа из тюрьмы
-module.exports.RANSOM_PRICE = 10;
+module.exports.RANSOM_PRICE           = Number(Config.moneys.ransom_price);
 
 // Цена просмтора чужоко выбора
-module.exports.SYMPATHY_PRICE = 1;
+module.exports.SYMPATHY_PRICE         = Number(Config.moneys.sympathy_price);
 
 // Таймауты
-module.exports.TIMEOUT_LOT      = 5 * 1000;
-module.exports.TIMEOUT_GAME     = 18 * 1000;
-module.exports.TIMEOUT_BOTTLE   = 7 * 1000;
-module.exports.TIMEOUT_RESULTS  = 5 * 1000;
-module.exports.TIMEOUT_PRISON   = 4 * 1000;
-module.exports.TIMEOUT_SYMPATHY_SHOW = 15 * 1000;
+module.exports.TIMEOUT_LOT            = Number(Config.game.timeouts.lot);
+module.exports.TIMEOUT_GAME           = Number(Config.game.timeouts.default);
+module.exports.TIMEOUT_BOTTLE         = Number(Config.game.timeouts.bottle);
+module.exports.TIMEOUT_RESULTS        = Number(Config.game.timeouts.results);
+module.exports.TIMEOUT_PRISON         = Number(Config.game.timeouts.prison);
+module.exports.TIMEOUT_SYMPATHY_SHOW  = Number(Config.game.timeouts.sympathy_show);
 
 // Таймаут лайка пользователю - 24 часа
-module.exports.TIMEOUT_LIKE     = 24 * 60 * 60 * 1000;
-module.exports.TIMEOUT_ROOM_CHANGE   = 15 * 1000;
+module.exports.TIMEOUT_LIKE           = Number(Config.user.settings.like_timeout);
+module.exports.TIMEOUT_ROOM_CHANGE    = Number(Config.user.settings.room_change_timeout);
 
-// Таблицы базы данных
-module.exports.T_USERS            = 'users';
-module.exports.T_USERCHATS        = 'user_chats';
-module.exports.T_USERFRIENDS      = 'user_friends';
-module.exports.T_USERGIFTS        = 'user_gifts';
-module.exports.T_USERGUESTS       = 'user_guests';
-module.exports.T_USERMESSAGES     = 'user_messages';
-module.exports.T_USERNEWMESSAGES  = 'user_new_messages';
-module.exports.T_ORDERS           = 'orders';
-module.exports.T_USERGOODS        = 'user_goods';
-module.exports.T_SHOP             = 'shop';
-module.exports.T_USERPOINTS       = 'user_points';
-module.exports.T_POINTS           = 'points';
-module.exports.T_POINTS_GIRLS     = 'points_girls';
-module.exports.T_POINTS_GUYS      = 'points_guys';
-module.exports.T_MAX_HANDRED      = 'hundreds';
-module.exports.T_QUESTIONS        = 'questions';
-module.exports.T_USER_NEW_GIFTS   = 'user_new_gifts';
-module.exports.T_USER_NEW_FRIENDS = 'user_new_friends';
-module.exports.T_USER_NEW_GUESTS  = 'user_new_guests';
 
+module.exports.PFIELDS = {
+  DATE            : 'date',
+  DATE_FROM       : 'first_date',
+  DATE_TO         : 'second_date',
+  SRC             : 'src',
+  TYPE            : 'type',
+  TITLE           : 'title',
+  INCOMING        : 'incoming',
+  TEXT            : 'text',
+  OPENED          : 'opened',
+  SEX             : 'sex',
+  POINTS          : 'points',
+  ID_LIST         : 'id_list',
+  MONEY           : 'money',
+  ID              : 'id',
+  VID             : 'vid',
+  UGIFTID         : 'gid',
+  ORDERID         : 'userid',
+  ORDERVID        : 'uservid',
+  GIFTID          : 'giftid',
+  GOODID          : 'goodid',
+  FID             : 'fromid',
+  FVID            : 'fromvid',
+  GIFT1           : 'gift1',
+  AGE             : 'age',
+  COUNTRY         : 'country',
+  CITY            : 'city',
+  STATUS          : 'status',
+  ISMENU          : 'ismenu',
+  SUM             : 'sum',
+  PRICE           : 'price',
+  GOODTYPE        : 'goodtype',
+  ISNEW           : 'is_new',
+  GIFTS           : 'gifts',
+  BDATE           : 'bdate',
+  CHATID          : 'chat',
+  CHATVID         : 'chatVID',
+  NUMBER          : 'number',
+  PRICE2          : 'price2',
+  FSEX            : 'usex',
+  FBDAY           : 'ubday',
+  INDEX           : 'index',
+  ISFRIEND        : 'is_friend',
+  ISPRIVATE       : 'is_private',
+  MESSAGEID       : 'messageid',
+  ROOM            : 'room',
+  TARGET          : 'target',
+  PICK            : 'pick',
+  AUTHKEY         : 'auth_key',
+  TRACKID         : 'track_id',
+  DURATION        : 'duration'
+};

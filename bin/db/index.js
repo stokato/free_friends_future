@@ -34,6 +34,8 @@ var addUser           = require('./lib/users/users_add'),
   openGuests          = require('./lib/guests/guests_open'),
   openGifts           = require('./lib/gifts/gifts_open');
 
+var dbConstants       = require('./constants').PFIELDS;
+
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра
@@ -89,34 +91,5 @@ DBManager.prototype.openGifts         = openGifts;
 
 module.exports = DBManager;
 
-var dbConstants = {
-  DATE            : "date",
-  SRC             : "src",
-  GIFTID          : "giftid",
-  TYPE            : "type",
-  TITLE           : "title",
-  INCOMING        : "incoming",
-  TEXT            : "text",
-  OPENED          : "opened",
-  SEX             : "sex",
-  POINTS          : "points",
-  ID_LIST         : "id_list",
-  DATE_FROM       : "first_date",
-  DATE_TO         : "second_date",
-  MONEY           : "money",
-  ID              : "id",
-  VID             : "vid",
-  AGE             : "age",
-  COUNTRY         : "country",
-  CITY            : "city",
-  STATUS          : "status",
-  ISMESSAGES      : "newmessages",
-  ISGIFTS         : "newgifts",
-  ISFRIENDS       : "newfriends",
-  ISGUESTS        : "newguests",
-  GIFT1           : "gift1",
-  ISMENU          : "ismenu",
-  MESSAGEID       : "messageid"
-};
 
 

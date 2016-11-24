@@ -1,7 +1,8 @@
 var async     =  require('async');
 
 // Свои модули
-var constants       = require('./../../../constants'),
+var constants     = require('./../../../constants'),
+  PF              = constants.PFIELDS,
   openPrivateChat = require('./open_private_chat'),
   getUserProfile  = require('./../common/get_user_profile'),
   sendInRoom      = require('./../common/send_in_room'),
@@ -32,21 +33,21 @@ module.exports = function (socket, options, callback) {
   
   var date = new Date();
   
-  var info = {
-    id      : selfProfile.getID(),
-    vid     : selfProfile.getVID(),
-    age     : selfProfile.getAge(),
-    sex     : selfProfile.getSex(),
-    city    : selfProfile.getCity(),
-    country : selfProfile.getCountry(),
-    text    : options.text,
-    date    : date
-  };
+  var info = {};
+  
+  info[PF.ID]       = selfProfile.getID();
+  info[PF.VID]      = selfProfile.getVID();
+  info[PF.AGE]      = selfProfile.getAge();
+  info[PF.SEX]      = selfProfile.getSex();
+  info[PF.CITY]     = selfProfile.getCity();
+  info[PF.COUNTRY]  = selfProfile.getCountry();
+  info[PF.TEXT]     = options[PF.TEXT];
+  info[PF.DATE]     = date;
   
   if(!isChat) {
     var currRoom = oPool.roomList[socket.id];
     
-    info.messageid = cdb.timeUuid.fromDate(date);
+    info[PF.MESSAGEID] = cdb.timeUuid.fromDate(date);
     
     sendInRoom(socket, currRoom, info);
     
@@ -54,16 +55,19 @@ module.exports = function (socket, options, callback) {
   }
   
   
-  async.waterfall([//////////////////////////////////////////////////////////////
+  async.waterfall([//--------------------------------------------------------------------------
     function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
       
-      getUserProfile(options.id, cb);
+      getUserProfile(options[PF.ID], cb);
       
-    }, ///////////////////////////////////////////////////////////////////////////////
+    }, //--------------------------------------------------------------------------
     function(friendProfile, cb) { // Открываем чат, если еще не открыт
       if(!selfProfile.isPrivateChat(friendProfile.getID())) {
         
-        openPrivateChat(socket, {id : friendProfile.getID() }, function (err) {
+        var params = {};
+        params[PF.ID] = friendProfile.getID();
+        
+        openPrivateChat(socket, params, function (err) {
           if(err) { cb(err); }
           
           cb(null, friendProfile);
@@ -72,13 +76,16 @@ module.exports = function (socket, options, callback) {
       } else {
         cb(null, friendProfile);
       }
-    },//////////////////////////////////////////////////////////////////////
+    },//--------------------------------------------------------------------------
     function(friendProfile, cb) { // Открываем чат, если еще не открыт
       
       // Если собеседник онлайн и у него не открыт чат с нами
-      if (oPool.profiles[options.id] && !friendProfile.isPrivateChat(selfProfile.getID())) {
+      if (oPool.profiles[options[PF.ID]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
         
-        openPrivateChat(friendProfile.getSocket(), { id : selfProfile.getID() }, function (err) {
+        var params = {};
+        params[PF.ID] = selfProfile.getID();
+        
+        openPrivateChat(friendProfile.getSocket(), params, function (err) {
           if(err) { cb(err); }
           
           cb(null, friendProfile);
@@ -87,42 +94,41 @@ module.exports = function (socket, options, callback) {
       } else {
         cb(null, friendProfile);
       }
-    },
+    },//--------------------------------------------------------------------------
     function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
       
-      friendProfile.addMessage(selfProfile, true, date, options.text, function (err, message) {
+      friendProfile.addMessage(selfProfile, true, date, options[PF.TEXT], function (err, message) {
         if (err) { return cb(err, null); }
         
-        if (oPool.profiles[options.id]) {
+        if (oPool.profiles[options[PF.ID]]) {
           var friendSocket = friendProfile.getSocket();
           
           if(!friendProfile.isPrivateChat(selfProfile.getID())) {
             
-            info.chat = selfProfile.getID();
-            info.chatVID = selfProfile.getVID();
-            info.messageid = message.messageid;
+            info[PF.CHATID]     = selfProfile.getID();
+            info[PF.CHATVID]    = selfProfile.getVID();
+            info[PF.MESSAGEID]  = message[PF.MESSAGEID];
+            
             sendOne(friendSocket, info);
           }
-          // else {
-          // friendSocket.emit(constants.IO_GET_NEWS, friendProfile.getNews());
-          // }
         }
         cb(null, friendProfile);
       });
-    }, //////////////////////////////////////////////////////////////////////////////////////
+    }, //--------------------------------------------------------------------------
     function (friendProfile, cb) { // Сохраняем сообщение в историю отправителя
       
       selfProfile.addMessage(friendProfile, false, date, options.text, function (err, message) {
         if (err) { cb(err, null); }
         
-        info.chat = friendProfile.getID();
-        info.chatVID = friendProfile.getVID();
-        info.messageid = message.messageid;
+        info[PF.CHATID]         = friendProfile.getID();
+        info[PF.CHATVID]        = friendProfile.getVID();
+        info[PF.MESSAGEID]      = message[PF.MESSAGEID];
+        
         sendOne(socket, info);
         
         cb(null, null);
       });
-    }/////////////////////////////////////////////////////////////////////////////////
+    }//--------------------------------------------------------------------------
   ], function (err) { // Вызывается последней или в случае ошибки
     if (err) { return callback(err); }
     

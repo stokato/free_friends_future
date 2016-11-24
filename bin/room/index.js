@@ -8,7 +8,7 @@ var constants = require('./../constants'),
 
 var addProfile      = require('./lib/add_profile'),
     deleteProfile   = require('./lib/delete_profile'),
-    getUsersInfo    = require('./lib/get_users_info'),
+    getUsersInfo    = require('./lib/common/get_users_info'),
     getInfo         = require('./lib/get_info'),
     getAnySocket    = require('./lib/get_any_socket'),
     getAllPlayers   = require('./lib/get_all_players'),

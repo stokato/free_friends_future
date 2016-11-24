@@ -66,7 +66,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Отбираем все записи для этого пользователя
-      delOldPoints(fields, constants.T_POINTS, function () {
+      delOldPoints(fields, dbConst.DB.POINTS.name, function () {
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////

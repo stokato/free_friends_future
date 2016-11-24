@@ -1,4 +1,4 @@
-var constants  = require('./constants');
+var constants  = require('./../../../constants');
 var GameError = require('./game_error');
 
 module.exports = function (socket, emit, err, res) { res = res || {};

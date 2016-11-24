@@ -8,13 +8,7 @@ module.exports = function(isSelf, callback) {
   
  db.findGifts(self._pID, isSelf, function(err, gifts) {
    if (err) { callback(err, null); }
-
-   // self._pIsNewGifts = 0;
    
-   // self.save(function(err) {
-   //   if (err) { return callback(err, null); }
-   //
       callback(null, gifts);
-   // });
  });
 };

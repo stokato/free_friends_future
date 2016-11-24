@@ -9,7 +9,10 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.NO_SUCH_CHAT);
   }
   
-  selfProfile.deletePrivateChat(options.id);
+  selfProfile.deletePrivateChat(options[constants.PFIELDS.ID]);
   
-  callback(null, { id : options.id });
+  var res = {};
+  res[constants.PFIELDS.ID] = options[constants.PFIELDS.ID];
+  
+  callback(null, res);
 };

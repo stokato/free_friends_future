@@ -2,7 +2,7 @@ var constants = require('../../../constants');
 
 var addPoints = require('./../common/add_points');
 
-var GameError = require('./../../../game_error');
+var GameError = require('./../common/game_error');
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {

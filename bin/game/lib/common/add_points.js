@@ -1,8 +1,8 @@
 var constants     = require('./../../../constants'),
     oPool         = require('./../../../objects_pool'),
     ProfileJS     = require('./../../../profile/index'),
-    GameError     = require('./../../../game_error'),
-    handleError   = require('../../../handle_error');
+    GameError     = require('./game_error'),
+    handleError   = require('handle_error');
 
 /*
     Добавляем пользователю очки

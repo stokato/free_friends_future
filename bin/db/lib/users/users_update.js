@@ -22,7 +22,7 @@ module.exports = function(options, callback) { options = options || {};
 
   var params = [];
   params.push(options[PF.VID]);
-  if (PF.BDAY in options)          { fields.push(DBF.BDAY_timestamp);    params.push(options[PF.AGE]); }
+  if (PF.BDATE in options)          { fields.push(DBF.BDAY_timestamp);    params.push(options[PF.AGE]); }
   if (PF.COUNTRY in options)       { fields.push(DBF.COUNTRY_int);       params.push(options[PF.COUNTRY]); }
   if (PF.CITY in options)          { fields.push(DBF.CITY_int);          params.push(options[PF.CITY]); }
   if (PF.STATUS in options)        { fields.push(DBF.STATUS_varchar);    params.push(options[PF.STATUS]); }

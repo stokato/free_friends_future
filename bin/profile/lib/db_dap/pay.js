@@ -17,7 +17,7 @@ module.exports = function (price, callback) {
     var newMoney = money - price;
     
     if(newMoney < 0) {
-      return callback(constants.errors.TOO_LITTLE_MONEY); // onComplete(constants.errors.TOO_LITTLE_MONEY);
+      return callback(constants.errors.TOO_LITTLE_MONEY);
     }
     
     self.setMoney(newMoney, function(err, money) {

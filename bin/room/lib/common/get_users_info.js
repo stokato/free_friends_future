@@ -2,8 +2,8 @@
  * Created by s.t.o.k.a.t.o on 17.11.2016.
  */
 
-var constants = require('./../../constants'),
-    fillInfo  = require('./common/fill_info');
+var constants = require('./../../../constants'),
+    fillInfo  = require('./fill_info');
 
 module.exports = function (sex) {
   var item, info = [], gInfo;

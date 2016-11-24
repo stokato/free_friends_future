@@ -36,7 +36,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.VID],
         options[PF.DATE],
         options[PF.SEX],
-        options[PF.BDAY]
+        options[PF.BDATE]
       ];
   
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_FRIENDS.name);

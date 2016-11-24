@@ -22,10 +22,10 @@ module.exports = function (socket,  callback) {
   // Получаем название текущей комнаты (если есть такая)
   var selfRoomName = '';
   if(oPool.roomList[socket.id]) {
-    selfRoomName = oPool.roomList[socket.id].name;
+    selfRoomName = oPool.roomList[socket.id].getName();
   }
 
-  // Выбираем комнату с наименьшим количеством пустующих мест для этого пола
+  // Выбирае комнату с наименьшим количеством пустующих мест для этого пола
   var item;
   for(item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {

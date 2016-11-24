@@ -1,6 +1,6 @@
 var async     =  require('async');
 
-var GameError       = require('../../../game_error'),      // Ошбики
+var IOError         = require('./../common/io_error'),
     constants       = require('./../../../constants'),     // Константы
     emitAllRooms    = require('../common/emit_all_rooms'),
     sendUsersInRoom = require('./send_users_in_room');
@@ -73,7 +73,7 @@ module.exports = function(socket) {
       }
     }//////////////////////////////////////////////////////////////////////////////////////
   ], function (err) {
-    if (err) { new GameError(null, constants.IO_DISCONNECT, err.message)  }
+    if (err) { new IOError(null, constants.IO_DISCONNECT, err.message)  }
 
     socket.disconnect(); // отключаемся
   }); ///////////////////////////////////////////////////////////////////////////////////////

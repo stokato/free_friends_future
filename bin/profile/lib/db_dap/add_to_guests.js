@@ -9,16 +9,13 @@ module.exports = function(guestProfile, date, callback) {
  var options = {};
  options[db.CONST.ID]   = guestProfile.getID();
  options[db.CONST.VID]  = guestProfile.getVID();
+ options[db.CONST.SEX]  = guestProfile.getSex();
+ options[db.CONST.BDATE] = guestProfile.getBDay();
  options[db.CONST.DATE]         = date;
   
  db.addGuest(self._pID, options, function(err, guest) {
    if (err) { return callback(err, null); }
 
-   // self._pIsNewGuests ++;
-   // self.save(function(err) {
-   //   if (err) { return callback(err, null); }
-
      callback(null, guest);
-   // });
  })
 };

@@ -1,4 +1,4 @@
-var GameError = require('./../../../game_error');
+var GameError = require('./../common/game_error');
 var constants = require('../../../constants');
 // var ProfileJS =  require('../../../profile/index');
 // var handleError = require('../../../handle_error');

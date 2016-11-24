@@ -12,7 +12,7 @@ var db = require('./../../../db_manager');
 module.exports = function(callback) {
 
   var self = this;
-  self._pSoket   = null;
+  self._pSocket   = null;
 
   self._pVID      = null;
   self._pAge      = null;

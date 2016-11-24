@@ -4,7 +4,6 @@
 var constants = require('./../../../constants');
 var db = require('./../../../db_manager');
 
-
 module.exports = function (target, callback) {
   
   switch (target) {

@@ -1,5 +1,5 @@
-var constants = require('./constants');
-var logger = require('./../lib/log')(module);
+var constants = require('./../../../constants');
+var logger = require('./../../../../lib/log')(module);
 
 // Свой объект ошибок
 function GameError(func, message) {

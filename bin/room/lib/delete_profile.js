@@ -20,7 +20,7 @@ module.exports = function (sex, profile) {
   
   var socket = profile.getSocket();
   if(socket) {
-    socket.leave(this._nameOfRoom);
+    socket.leave(this._nameOfRoom, function () {});
   } else {
     logger.error("Room_delete_profile : Не удалось получить сокет профиля");
   }

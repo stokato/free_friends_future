@@ -8,15 +8,7 @@ module.exports = function(isSelf, callback) {
   
  db.findFriends(self._pID, null, isSelf, function(err, friends) {
    if (err) { return callback(err, null); }
-
-   // if(isSelf) {
-   //   self._pIsNewFriends = 0;
-   // }
-
-   // self.save(function(err) {
-   //   if (err) { return callback(err, null); }
-
+   
      callback(null, friends);
-   // });
  });
 };

@@ -13,7 +13,6 @@ var init                            = require('./lib/init/init'),
     getPrivateChatsWithHistory      = require('./lib/db_dap/get_private_chats_with_history'),
     getHistory                      = require('./lib/db_dap/get_history'),
     getMoney                        = require('./lib/db_dap/get_money'),
-    getNews                         = require('./lib/db_undep/get_news'),
     remove                          = require('./lib/db_dap/remove'),
     save                            = require('./lib/db_dap/save'),
     setMoney                        = require('./lib/db_dap/set_money'),
@@ -43,7 +42,8 @@ var clearExitTimeout                = require('./lib/db_undep/clear_exit_timeout
  *         удалить текущий профиль из базы и очистить все свойства
  */
 function Profile() {
-  this._pSoket   = null;   // Сокет
+  
+  this._pSocket   = null;   // Сокет
 
   this._pID           = null;   // Внутренний ИД
   this._pVID          = null;   // Внешний
@@ -82,7 +82,7 @@ function Profile() {
 
 }
 
-Profile.prototype.getSocket       = function() { return this._pSoket; };
+Profile.prototype.getSocket       = function() { return this._pSocket; };
 Profile.prototype.getID           = function() { return this._pID; };
 Profile.prototype.getVID          = function() { return this._pVID; };
 Profile.prototype.getStatus       = function() { return this._pStatus; };
@@ -98,13 +98,12 @@ Profile.prototype.getGift1        = function() { return this._pGift1; };
 
 Profile.prototype.setGameIndex    = function(val)     { this._pGameIndex = val; };
 Profile.prototype.setGame         = function(game)    { this._pGame = game; };
-Profile.prototype.setSocket       = function(socket)  { this._pSoket = socket; };
+Profile.prototype.setSocket       = function(socket)  { this._pSocket = socket; };
 Profile.prototype.setExitTimeout  = function(tm)      { this._pIsExitTimeout = tm; };
 
 Profile.prototype.init            = init;
 Profile.prototype.build           = build;
 Profile.prototype.getMoney        = getMoney;
-Profile.prototype.getNews         = getNews;
 Profile.prototype.addGift         = addGift;
 Profile.prototype.getGifts        = getGifts;
 Profile.prototype.addMessage      = addMessage;

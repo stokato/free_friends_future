@@ -4,8 +4,8 @@ var oPool = require('./../../../objects_pool');
 
 // Свои модули
 var constants     = require('../../../constants'),
-  handleError     = require('../../../handle_error'),
-  checkInput      = require('../../../check_input');
+  handleError     = require('../common/handle_error'),
+  checkInput      = require('../common/check_input');
 
 /*
   Создает обработчик для указанного эмита, получает так же функцию, которая выполняется при срабатывании

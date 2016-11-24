@@ -3,13 +3,13 @@ var db = require('./../../../db_manager');
 /*
     Получить историю приватного чата за заданный период времени
  */
-module.exports = function(options, callback) {
+module.exports = function(id, fdate, sdate, callback) {
   var self = this;
   
   var params = {};
-  params[db.CONST.ID_LIST]    = [options.id];
-  params[db.CONST.DATE_FROM]  = options.first_date;
-  params[db.CONST.DATE_TO]    = options.second_date;
+  params[db.CONST.ID_LIST]    = [id];
+  params[db.CONST.DATE_FROM]  = fdate;
+  params[db.CONST.DATE_TO]    = sdate;
 
   db.findMessages(self._pID, params, function(err, messages) { messages = messages || [];
     if (err) { return callback(err, null); }

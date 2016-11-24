@@ -1,7 +1,7 @@
 var constants = require('../../../constants');
 var oPool = require('./../../../objects_pool');
-var GameError = require('./../../../game_error');
-var handleError = require('../../../handle_error');
+var GameError = require('./../common/game_error');
+var handleError = require('../common/handle_error');
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {

@@ -38,7 +38,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.VID],
         options[PF.DATE],
         options[PF.SEX],
-        options[PF.BDAY]
+        options[PF.BDATE]
       ];
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {

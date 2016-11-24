@@ -1,9 +1,9 @@
 var async = require('async');
 
 var constants = require('../../../constants');
-var GameError = require('./../../../game_error');
+var GameError = require('./../common/game_error');
 var ProfileJS  =  require('../../../profile/index');
-var handleError = require('../../../handle_error');
+var handleError = require('../common/handle_error');
 var oPool = require('./../../../objects_pool');
 
 

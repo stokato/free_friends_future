@@ -11,5 +11,4 @@ module.exports = function (track) {
   
   this._likers[track.track_id] = {};
   this._dislikers[track.track_id] = {};
-  
 };

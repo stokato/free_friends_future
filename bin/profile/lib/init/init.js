@@ -12,7 +12,7 @@ module.exports = function(socket, options, callback) {
 
   async.waterfall([//////////////////////////////////////////////////////////////////////////
     function (cb) {  // Устанавливаем свойства
-      self._pSoket    = socket;
+      self._pSocket    = socket;
       self._pVID      = options.vid;
       self._pBDate    = new Date(options.bdate);
       self._pAge      = new Date().getFullYear() - self._pBDate.getFullYear();
@@ -20,7 +20,7 @@ module.exports = function(socket, options, callback) {
       self._pCity     = options.city;
       self._pSex      = options.sex;
 
-      if (!self._pSoket) { return cb(new Error("Не задан Socket Id"), null); }
+      if (!self._pSocket) { return cb(new Error("Не задан Socket Id"), null); }
       if (!self._pVID ||  !self._pAge || !self._pCountry || !self._pCity || !self._pSex) {
         return cb(new Error("Не задана одна из опций"), null);
       }
@@ -37,10 +37,6 @@ module.exports = function(socket, options, callback) {
         db.CONST.CITY,
         db.CONST.STATUS,
         db.CONST.ISMENU,
-        // db.CONST.ISFRIENDS,
-        // db.CONST.ISGUESTS,
-        // db.CONST.ISGIFTS,
-        // db.CONST.ISMESSAGES,
         db.CONST.GIFT1
       ];
 
@@ -57,11 +53,6 @@ module.exports = function(socket, options, callback) {
           self._pCountry = (self._pCountry) ? self._pCountry : foundUser[db.CONST.COUNTRY];
           self._pCity    = (self._pCity)    ? self._pCity    : foundUser[db.CONST.CITY];
           self._pIsInMenu = foundUser[db.CONST.ISMENU] || false;
-
-          // self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
-          // self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
-          // self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
-          // self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
 
           if(foundUser.gift1) {
             db.findGift(foundUser[db.CONST.GIFT1], function(err, gift) {
@@ -120,25 +111,8 @@ module.exports = function(socket, options, callback) {
     //////////////////////////////////////////////////////////////////////////////////
   ], function (err) { // Вызвается последней или в случае ошибки
     if (err) { return  callback(err); }
-  
-    var info = {
-      id          : self._pID,
-      vid         : self._pVID,
-      status      : self._pStatus,
-      points      : self._pPoints,
-      money       : self._pMoney,
-      sex         : self._pSex,
-      age         : self._pAge,
-      city        : self._pCity,
-      country     : self._pCountry,
-      gift1       : self._pGift1,
-      newmessages : self._pIsNewMessages,
-      newgifts    : self._pIsNewGifts,
-      newfriends  : self._pIsNewFriends,
-      newguests   : self._pIsNewGuests
-    };
 
-    callback(null, info);
+    callback(null, self._pID);
   }); // waterfall
 
 };

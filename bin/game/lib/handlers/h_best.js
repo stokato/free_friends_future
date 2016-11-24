@@ -1,7 +1,7 @@
 var constants = require('../../../constants');
 var addPoints = require('./../common/add_points');
 
-var GameError = require('./../../../game_error');
+var GameError = require('./../common/game_error');
 
 // Игра - кто лучший, рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
 module.exports = function(game) {

@@ -51,7 +51,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.INCOMING],
         options[PF.TEXT],
         options[PF.SEX],
-        options[PF.BDAY],
+        options[PF.BDATE],
         options[PF.FSEX],
         options[PF.FBDAY]
       ];
@@ -104,7 +104,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         uid,
         options[PF.ID],
         opened,
-        options[PF.BDAY],
+        options[PF.BDATE],
         options[PF.SEX],
         options[PF.VID]
       ];

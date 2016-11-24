@@ -34,11 +34,6 @@ module.exports = function(id, callback) {
    self._pCity          = foundUser[db.CONST.CITY];
    self._pAge           = foundUser[db.CONST.AGE];
    self._pIsInMenu      = foundUser[db.CONST.ISMENU];
-
-   // self._pIsNewMessages = foundUser[db.CONST.ISMESSAGES] || 0;
-   // self._pIsNewGifts    = foundUser[db.CONST.ISGIFTS]    || 0;
-   // self._pIsNewFriends  = foundUser[db.CONST.ISFRIENDS]  || 0;
-   // self._pIsNewGuests   = foundUser[db.CONST.ISGUESTS]   || 0;
   
    self._pMoney         = foundUser[db.CONST.MONEY]      || 0;
 
@@ -48,34 +43,10 @@ module.exports = function(id, callback) {
 
        self._pGift1 = gift || null;
 
-       var info = pullInfo(self);
-
-       callback(null, info);
+       callback(null, self._pID);
      });
    } else {
-     var info = pullInfo(self);
-     callback(null, info);
+     callback(null, self._pID);
    }
  });
 };
-
-function pullInfo(profile) {
-
-  return {
-    id       : profile._pID,
-    vid      : profile._pVID,
-    age      : profile._pAge,
-    country  : profile._pCountry,
-    city     : profile._pCity,
-    status   : profile._pStatus,
-    points   : profile._pPoints,
-    money    : profile._pMoney,
-    sex      : profile._pSex,
-    messages : profile._pIsNewMessages,
-    gifts    : profile._pIsNewGifts,
-    friends  : profile._pIsNewFriends,
-    guests   : profile._pIsNewGifts,
-    ismenu   : profile._pIsInMenu,
-    gift1    : profile._pGift1
-  };
-}

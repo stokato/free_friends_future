@@ -1,4 +1,4 @@
-var constants = require('../../constants');
+var constants = require('../../../constants');
 
 // Начинаем игру если достаточно игроков
 module.exports = function() {

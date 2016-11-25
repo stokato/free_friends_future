@@ -1,9 +1,22 @@
 var constants = require('../../../constants'),
     PF = constants.PFIELDS;
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
 
 // Выбор следующей игры
 module.exports = function(game) {
-  return function(timer, uid) {
+  return function(timer, socket, options) {
+  
+    if(!timer) {
+      var uid = oPool.userList[socket.id].getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      addAction(game, uid, options);
+    }
+    
     clearTimeout(game._timer);
 
     var timeout = constants.TIMEOUT_GAME;
@@ -16,8 +29,8 @@ module.exports = function(game) {
     var rand;
     var games = (game._prisoner !== null ||
                   game._room.getCountInRoom(constants.GIRL) <= 2 ||
-                    game._room.getCountInRoom(constants.GUY) <= 2)? constants.GAMES_WITHOUT_PRISON : constants.GAMES;
-
+                    game._room.getCountInRoom(constants.GUY) <= 2)?
+                      constants.GAMES_WITHOUT_PRISON : constants.GAMES;
     do {
       rand = Math.floor(Math.random() * games.length);
     } while(rand == game.gStoredRand);

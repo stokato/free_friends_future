@@ -1,21 +1,52 @@
 var constants = require('../../../constants'),
     PF = constants.PFIELDS;
-
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
+var handleError     = require('./../common/handle_error');
 var addPoints = require('./../common/add_points');
-
 var GameError = require('./../common/game_error');
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
-  return function (timer) {
+  return function (timer, socket, options) {
+  
+    if(!timer) {
+      var selfProfile = oPool.userList[socket.id];
+      var uid = selfProfile.getID();
+  
+      // В игре симпатии нельзя указать себя
+      if(game._nextGame == constants.G_SYMPATHY && uid == options[constants.PFIELDS.PICK]) {
+        return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY, constants.errors.SELF_ILLEGAL);
+      }
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
+      // И выбрать того, кого нет
+      if(!game._activePlayers[options[constants.PFIELDS.PICK]]) {
+        return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY, constants.errors.IS_ALREADY_SELECTED);
+      }
+  
+      var actions = game._actionsQueue[uid];
+  
+      for( var i = 0; i < actions.length; i++) {
+        if(actions[i][constants.PFIELDS.PICK] == options[constants.PFIELDS.PICK]) {
+          return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY, constants.errors.FORBIDDEN_CHOICE);
+        }
+      }
+  
+      addAction(game, uid, options);
+    }
+  
+    //---------------------------------------------------------------------------------
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
-      
-      // game._actionsQueue = { id : [ { pick - id other player }, {...} ], id : ... }
       
       var players = [], count = 0;
       
@@ -40,7 +71,6 @@ module.exports = function(game) {
       if(players.length > 0) {
         addPoints(players[count], constants.SYMPATHY_POINTS, onComplete);
       }
-      
 
       game._nextGame = constants.G_SYMPATHY_SHOW;
 

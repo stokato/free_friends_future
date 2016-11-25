@@ -2,17 +2,36 @@ var GameError = require('./../common/game_error'),
     constants = require('../../../constants'),
     PF        = constants.PFIELDS,
     addPoints = require('./../common/add_points');
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
 
 // Бутылочка поцелуи, сообщаем всем выбор пары
 module.exports = function(game) {
-  return function (timer, uid, options) {
-
-    if(uid) { // Отправляем всем выбор игрока
-      broadcastPick(uid);
+  return function (timer, socket, options) {
+  
+    if(!timer) {
+      var uid = oPool.userList[socket.id].getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+      addAction(game, uid, options);
+  
+      // Отправляем всем выбор игрока
+      var playerInfo = game._activePlayers[uid];
+  
+      var result = {};
+      result[PF.ID] = uid;
+      result[PF.VID] = playerInfo.vid;
+      result[PF.PICK] = options[PF.PICK];
+  
+      game.emit(result);
+  
+      if(!game._gameState[PF.PICKS]) { game._gameState[PF.PICKS] = []; }
+      game._gameState[PF.PICKS].push(result);
     }
-
-    var count = 0, players = [];
-
+    
+    //------------------------------------------------------------------------------------
     // Если все игроки сделали выбор, проверяем - оба ли поцеловали
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
@@ -20,11 +39,13 @@ module.exports = function(game) {
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
+  
+      var count = 0, players = [];
 
-      var playerInfo, item, allKissed = true;
+      var item, allKissed = true;
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
-        playerInfo  = game._activePlayers[item];
-        if(!game._actionsQueue[playerInfo.id] || !game._actionsQueue[playerInfo.id][0][PF.PICK] === true) {
+        var pInf  = game._activePlayers[item];
+        if(!game._actionsQueue[pInf.id] || !game._actionsQueue[pInf.id][0][PF.PICK] === true) {
           allKissed = false;
         }
       }
@@ -41,20 +62,6 @@ module.exports = function(game) {
     }
 
     //----------------
-    function broadcastPick(uid) {
-      var playerInfo = game._activePlayers[uid];
-
-      var result = {};
-      result[PF.ID] = uid;
-      result[PF.VID] = playerInfo.vid;
-      result[PF.PICK] = options[PF.PICK];
-      
-      game.emit(result);
-
-      if(!game._gameState[PF.PICKS]) { game._gameState[PF.PICKS] = []; }
-      game._gameState[PF.PICKS].push(result);
-    }
-
     function onComplete(err) {
       if(err) { return new GameError(constants.G_BOTTLE_KISSES, err.message); }
       

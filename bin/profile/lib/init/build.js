@@ -13,6 +13,7 @@ module.exports = function(id, callback) {
  if (!self._pID) { return callback(new Error("Не задан ИД"), null); }
 
  var fList = [
+   IOF.VID,
    IOF.SEX,
    IOF.POINTS,
    IOF.STATUS,
@@ -37,12 +38,24 @@ module.exports = function(id, callback) {
    self._pIsInMenu      = foundUser[IOF.ISMENU];
   
    self._pMoney         = foundUser[IOF.MONEY]      || 0;
+   
+   var info = {};
+   info[IOF.ID]       = self._pID;
+   info[IOF.VID]      = self._pVID;
+   info[IOF.AGE]      = self.getAge();
+   info[IOF.SEX]      = self._pSex;
+   info[IOF.MONEY]    = self._pMoney;
+   info[IOF.POINTS]   = self._pPoints;
+   info[IOF.STATUS]   = self._pStatus;
+   info[IOF.CITY]     = self._pCity;
+   info[IOF.COUNTRY]  = self._pCountry;
 
    if(foundUser[IOF.GIFT1]) {
      db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
        if (err) { return  callback(err, null); }
 
        self._pGift1 = gift || null;
+       info[IOF.GIFT1] = self._pGift1;
 
        callback(null, self._pID);
      });

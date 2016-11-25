@@ -47,7 +47,6 @@ function Profile() {
 
   this._pID           = null;   // Внутренний ИД
   this._pVID          = null;   // Внешний
-  this._pBDate        = null;
   
   this._pBDate    = null;
   this._pCountry  = null;   // Страна
@@ -88,7 +87,13 @@ Profile.prototype.getVID          = function() { return this._pVID; };
 Profile.prototype.getStatus       = function() { return this._pStatus; };
 Profile.prototype.getPoints       = function() { return this._pPoints; };
 Profile.prototype.getSex          = function() { return this._pSex; };
-Profile.prototype.getAge          = function() { return new Date().getYear() - this._pBDate.getYear(); };
+Profile.prototype.getAge          = function() {
+  if(this._pBDate) {
+    return new Date().getYear() - this._pBDate.getYear();
+  }
+   return null;
+};
+  
 Profile.prototype.getCity         = function() { return this._pCity; };
 Profile.prototype.getCountry      = function() { return this._pCountry; };
 Profile.prototype.getGame         = function() { return this._pGame; };

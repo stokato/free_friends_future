@@ -1,10 +1,25 @@
 var constants = require('../../../constants'),
     PF = constants.PFIELDS;
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
 
 // Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
 module.exports = function(game) {
-  return function(timer, uid) {
-    if(!timer) { clearTimeout(game._timer); }
+  return function(timer, socket, options) {
+    
+    var uid;
+    
+    if(!timer) {
+      uid = oPool.userList[socket.id].getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      addAction(game, uid, options);
+      
+      clearTimeout(game._timer);
+    }
 
     if(!game.checkCountPlayers()) {
       return game.stop();

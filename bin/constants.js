@@ -161,6 +161,8 @@ module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST
 // Количество карт в игре
 module.exports.CARD_COUNT             = Number(Config.game.card_count);
 
+module.exports.QUESTIONS_COUNT        = 3;
+
 // Выигрышь за угаданную карту
 module.exports.CARD_BOUNUS            = Number(Config.moneys.card_bonus);
 
@@ -240,6 +242,7 @@ module.exports.PFIELDS = {
   FBDAY           : 'ubday',
   INDEX           : 'index',
   ISFRIEND        : 'is_friend',
+  
   ISPRIVATE       : 'is_private',
   MESSAGEID       : 'messageid',
   ROOM            : 'room',

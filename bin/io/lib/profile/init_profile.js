@@ -34,19 +34,8 @@ module.exports = function (socket, options, callback) {
       
       var selfProfile = new ProfileJS();
         
-      selfProfile.init(socket, options, function (err) {
+      selfProfile.init(socket, options, function (err, info) {
         if (err) { return cb(err, null); }
-        
-        var info = {};
-        info[PF.ID]       = selfProfile.getID();
-        info[PF.VID]      = selfProfile.getVID();
-        info[PF.AGE]      = selfProfile.getAge();
-        info[PF.SEX]      = selfProfile.getSex();
-        info[PF.MONEY]    = selfProfile.getMoney();
-        info[PF.POINTS]   = selfProfile.getPoints();
-        info[PF.STATUS]   = selfProfile.getStatus();
-        info[PF.CITY]     = selfProfile.getCity();
-        info[PF.COUNTRY]  = selfProfile.getCountry();
         
         var isNewConnect = addProfileToPool(selfProfile, socket);
         
@@ -62,7 +51,13 @@ module.exports = function (socket, options, callback) {
         });
       } else {
         var room = oPool.roomList[socket.id];
-        info[PF.GAME] = room.getGame().getGameState(); // Получаем состояние игры в комнате
+  
+        // Получаем состояние игры в комнате
+        var game = room.getGame();
+        if(game) {
+          info[PF.GAME] = game.getGameState();
+        }
+        
         socket.join(room.getName());
   
         startTrack(room, socket);
@@ -105,10 +100,12 @@ module.exports = function (socket, options, callback) {
     function(info, room, cb) {
   
       // Запускаем игру
-      room.getGame().start(socket);
+      var game = room.getGame();
+      game.addEmits(socket);
+      game.start(socket);
       
       addEmits(socket);
-      
+            
       cb(null, info);
     } //------------------------------------------------------------
   ], function (err, info) { // Обрабатываем ошибки, либо передаем данные клиенту

@@ -5,6 +5,7 @@ var sanitize        = require('./sanitizer');
 var md5 = require('md5');
 
 var constants = require('./constants');
+var PF = constants.PFIELDS;
 
 var oPool = require('./objects_pool');
 
@@ -87,10 +88,10 @@ function getItem(request, callback) {
       };
     } else {
       response["response"] = {
-        "item_id"   : goodInfo.id,
-        "title"     : goodInfo.title,
-        "photo_url" : goodInfo.data,
-        "price"     : goodInfo.price
+        "item_id"   : goodInfo[PF.ID],
+        "title"     : goodInfo[PF.TITLE],
+        "photo_url" : goodInfo[PF.DATE],
+        "price"     : goodInfo[PF.PRICE]
       };
     }
 
@@ -110,10 +111,10 @@ function changeOrderStatus(request, profiles, callback) {
     var payInfo = request["item"].split("_");
 
     var options = {};
-    options.vid      = sanitize(request["user_id"]);
-    options.ordervid = orderId;
-    options.goodid   = payInfo[0];
-    options.price    = sanitize(request["item_price"]);
+    options[PF.VID]      = sanitize(request["user_id"]);
+    options[PF.ORDERVID] = orderId;
+    options[PF.GOODID]   = payInfo[0];
+    options[PF.PRICE]    = sanitize(request["item_price"]);
 
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
@@ -121,7 +122,7 @@ function changeOrderStatus(request, profiles, callback) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
-            if(goodInfo.price != options.price)
+            if(goodInfo[PF.PRICE] != options[PF.PRICE])
               cb(new Error("Неверно указана цена товара"), null);
             else
               cb(null, goodInfo);
@@ -129,7 +130,7 @@ function changeOrderStatus(request, profiles, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        db.findUser(null, options.vid, ["money"], function(err, info) {
+        db.findUser(null, options[PF.VID], [PF.MONEY], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
@@ -139,18 +140,18 @@ function changeOrderStatus(request, profiles, callback) {
       },/////////////////////////////////////////////////////////////////////
       function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        var newMoney = info.money - goodInfo.price;
-        if(newMoney < 0 && goodInfo.goodtype != constants.GT_MONEY) {
+        var newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
+        if(newMoney < 0 && goodInfo[PF.GOODTYPE] != constants.GT_MONEY) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
         var ordOptions = {};
-        ordOptions.vid = options.ordervid;
-        ordOptions.goodid = goodInfo.goodid;
-        ordOptions.userid = info.id;
-        ordOptions.uservid = info.vid;
-        ordOptions.sum = goodInfo.price;
-        ordOptions.date = new Date();
+        ordOptions[PF.VID]    = options[PF.ORDERVID];
+        ordOptions[PF.GOODID] = goodInfo[PF.GOODID];
+        ordOptions[PF.ID]     = info[PF.ID];
+        ordOptions[PF.VID]    = info[PF.VID];
+        ordOptions[PF.SUM]    = goodInfo[PF.PRICE];
+        ordOptions[PF.DATE]   = new Date();
 
         db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
@@ -160,34 +161,33 @@ function changeOrderStatus(request, profiles, callback) {
       }, ///////////////////////////////////////////////////////////////////////////////
       function(goodInfo, selfInfo, orderid, cb) { // пополняем баланс, себе или другому пользователю
         var options = {};
-        options.from_id = selfInfo.id;
-        options.from_vid = selfInfo.vid;
+        options.from_id = selfInfo[PF.ID];
+        options.from_vid = selfInfo[PF.VID];
 
         if(payInfo[1]) {
-          db.findUser(null, payInfo[1], ["money"], function(err, info) {
+          db.findUser(null, payInfo[1], [PF.MONEY], function(err, info) {
             if(err) { return cb(err, null); }
 
             if (info) {
               //cb(null, goodInfo, info);
 
-              options.id = info.id;
-              options.vid = info.vid;
-              options.money = info.money + goodInfo.price2;
+              options[PF.ID] = info[PF.ID];
+              options[PF.VID] = info[PF.VID];
+              options[PF.MONEY] = info[PF.MONEY] + goodInfo[PF.PRICE2];
 
               db.updateUser(options, function(err, id) {
                 if (err) { return cb(err, null); }
 
-                options.money = goodInfo.price2;
-                //socket.emit('give_money', options);
+                options[PF.MONEY] = goodInfo[PF.PRICE2];
 
-                if(profiles[options.id]) {
-                  var socket = profiles[options.id].getSocket();
-                  socket.emit('give_money', options);
+                if(profiles[options[PF.ID]]) {
+                  var socket = profiles[options[PF.ID]].getSocket();
+                  socket.emit(constants.IO_GIVE_MONEY, options);
 
                   var roomList = oPool.roomList;
                   var room = roomList[socket.id];
                   if(room) {
-                    socket.broadcast.in(room.name).emit('give_money', options);
+                    socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
                   }
                 }
 
@@ -198,18 +198,18 @@ function changeOrderStatus(request, profiles, callback) {
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options.id = selfInfo.id;
-          options.vid = selfInfo.vid;
-          options.money = selfInfo.money + goodInfo.price2;
+          options[PF.ID] = selfInfo[PF.ID];
+          options[PF.VID] = selfInfo[PF.VID];
+          options[PF.MONEY] = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
 
-          db.updateUser(options, function(err, id) {
+          db.updateUser(options, function(err) {
             if (err) { return cb(err, null); }
 
-            options.money = goodInfo.price2;
+            options.money = goodInfo[PF.PRICE2];
             //socket.emit('give_money', options);
 
             if(profiles[options.id]) {
-              profiles[options.id].getSocket().emit('give_money', options);
+              profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
             }
 
             var result = {};

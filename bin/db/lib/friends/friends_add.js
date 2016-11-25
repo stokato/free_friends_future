@@ -27,7 +27,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FRIENDVID_varhcar,
         DBF.DATE_timestamp,
         DBF.FRIENDSEX_int,
-        DBF.FRIENDBDAY_timestamp
+        DBF.FRIENDBDATE_timestamp
       ];
       
       var params = [

@@ -1,5 +1,5 @@
 var async     = require('async');
-var Config = require('./../../../../config.json').user;
+var Config = require('./../../../../config.json');
 var constants = require('../../../constants'),
     IOF = constants.PFIELDS;
 var db = require('./../../../db_manager');
@@ -14,14 +14,14 @@ module.exports = function(socket, options, callback) {
   async.waterfall([//////////////////////////////////////////////////////////////////////////
     function (cb) {  // Устанавливаем свойства
       self._pSocket    = socket;
-      self._pVID      = options.vid;
-      self._pBDate    = new Date(options.bdate);
-      self._pCountry  = options.country;
-      self._pCity     = options.city;
-      self._pSex      = options.sex;
+      self._pVID      = options[IOF.VID];
+      self._pBDate    = new Date(options[IOF.BDATE]);
+      self._pCountry  = options[IOF.COUNTRY];
+      self._pCity     = options[IOF.CITY];
+      self._pSex      = options[IOF.SEX];
 
       if (!self._pSocket) { return cb(new Error("Не задан Socket Id"), null); }
-      if (!self._pVID ||  !self._pAge || !self._pCountry || !self._pCity || !self._pSex) {
+      if (!self._pVID ||  !self._pBDate || !self._pCountry || !self._pCity || !self._pSex) {
         return cb(new Error("Не задана одна из опций"), null);
       }
 
@@ -48,13 +48,13 @@ module.exports = function(socket, options, callback) {
           self._pPoints = foundUser[IOF.POINTS];
           self._pMoney  = foundUser[IOF.MONEY];
 
-          self._pBDate   = (self._pBDate)   ? self.BDATE     : foundUser[IOF.BDATE];
+          self._pBDate   = (self._pBDate)   ? self._pBDate     : foundUser[IOF.BDATE];
           self._pSex     = (self._pSex)     ? self._pSex     : foundUser[IOF.SEX];
           self._pCountry = (self._pCountry) ? self._pCountry : foundUser[IOF.COUNTRY];
           self._pCity    = (self._pCity)    ? self._pCity    : foundUser[IOF.CITY];
           self._pIsInMenu = foundUser[IOF.ISMENU] || false;
 
-          if(foundUser.gift1) {
+          if(foundUser[IOF.GIFT1]) {
             db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
               if (err) { return  callback(err, null); }
 
@@ -96,7 +96,7 @@ module.exports = function(socket, options, callback) {
         newUser[IOF.COUNTRY]  = self._pCountry;
         newUser[IOF.CITY]     = self._pCity;
         newUser[IOF.SEX]      = self._pSex;
-        newUser[IOF.MONEY]    = self._pMoney = Config.settings.start_money;
+        newUser[IOF.MONEY]    = self._pMoney = Config.moneys.start_money;
         newUser[IOF.ISMENU]   = self._pIsInMenu;
 
         db.addUser(newUser, function(err, user) {
@@ -112,7 +112,18 @@ module.exports = function(socket, options, callback) {
   ], function (err) { // Вызвается последней или в случае ошибки
     if (err) { return  callback(err); }
 
-    callback(null, self._pID);
+    var info = {};
+    info[IOF.ID]       = self._pID;
+    info[IOF.VID]      = self._pVID;
+    info[IOF.AGE]      = self.getAge();
+    info[IOF.SEX]      = self._pSex;
+    info[IOF.MONEY]    = self._pMoney;
+    info[IOF.POINTS]   = self._pPoints;
+    info[IOF.STATUS]   = self._pStatus;
+    info[IOF.CITY]     = self._pCity;
+    info[IOF.COUNTRY]  = self._pCountry;
+    
+    callback(null, info);
   }); // waterfall
 
 };

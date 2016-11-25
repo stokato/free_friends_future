@@ -48,13 +48,13 @@ module.exports = function(uid, isSelf, callback) {
           DBF.GUESTID_uuid_ci,
           DBF.GUESTVID_varchar,
           DBF.DATE_timestamp,
-          DBF.GUESTBDAY_timestamp,
+          DBF.GUESTBDATE_timestamp,
           DBF.GUESTSEX_int
         ];
         
         var constFields = [DBF.USERID_uuid_p];
         var constValues = [1];
-        var dbName = dbConst.DB.USER_GUESTS;
+        var dbName = dbConst.DB.USER_GUESTS.name;
         
         //var query = "select guestid, guestvid, date FROM user_guests where userid = ?";
         var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
@@ -72,7 +72,7 @@ module.exports = function(uid, isSelf, callback) {
               guest[PF.ID]    = row[DBF.GUESTID_uuid_ci].toString();
               guest[PF.VID]   = row[DBF.GUESTVID_varchar];
               guest[PF.DATE]  = row[DBF.DATE_timestamp];
-              guest[PF.AGE]   = bdayToAge(row[DBF.GUESTBDAY_timestamp]);
+              guest[PF.AGE]   = bdayToAge(row[DBF.GUESTBDATE_timestamp]);
               guest[PF.SEX]   = row[DBF.GUESTSEX_int];
               
               if(isSelf) {

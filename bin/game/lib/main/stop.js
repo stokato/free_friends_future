@@ -1,4 +1,4 @@
-var constants = require('../../constants');
+var constants = require('../../../constants');
 
 // Останавливаем игру
 module.exports = function() {

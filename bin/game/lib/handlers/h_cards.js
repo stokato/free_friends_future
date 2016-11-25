@@ -2,6 +2,7 @@ var async = require('async');
 
 var constants = require('../../../constants');
 var PF = constants.PFIELDS;
+var addAction = require('./../common/add_action');
 var GameError = require('./../common/game_error');
 var ProfileJS  =  require('../../../profile/index');
 var handleError = require('../common/handle_error');
@@ -10,8 +11,21 @@ var oPool = require('./../../../objects_pool');
 
 // Карты, ждем, кода все ответят, потом показываем ответы и где золото
 module.exports = function(game) {
-  return function (timer) {
+  return function (timer, socket) {
+  
+    if(!timer) {
+      var selfProfile = oPool.userList[socket.id];
+      var uid = selfProfile.getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      addAction(game, uid, oPool);
+    }
 
+
+    //----------------------------------------------------------------------------
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
@@ -99,7 +113,7 @@ module.exports = function(game) {
             new GameError(constants.G_CARDS, err.message);
             
             if(isOnline) {
-              handleError(player.getSocket(), constants.IO_GAME_ERROR, err);
+              handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);
             }
             return;
           }

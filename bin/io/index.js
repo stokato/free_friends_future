@@ -10,8 +10,6 @@ var session     = require('./../../lib/session');
 
 var oPool       = require('./../objects_pool');
 
-var sanitize    = require()
-
 var io = null;                                      // Сокет
 
 /*

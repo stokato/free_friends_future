@@ -36,7 +36,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FROMID_uuid,
         DBF.FROMVID_varchar,
         DBF.FROMSEX_int,
-        DBF.FROMBDAY_timestamp
+        DBF.FROMBDATE_timestamp
       ];
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
   

@@ -1,4 +1,4 @@
-var constants = require('../../constants'),
+var constants = require('../../../constants'),
   PF = constants.PFIELDS;
 
 // Начальный этап с волчком, все игроки должны сделать вызов, после чего

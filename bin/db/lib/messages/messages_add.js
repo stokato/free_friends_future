@@ -5,6 +5,7 @@ var dbConst = require('./../../constants');
 var DBF = dbConst.DB.USER_MESSAGES.fields;
 var DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
 var DBFC = dbConst.DB.USER_CHATS.fields;
+var DBFCN = dbConst.DB.USER_NEW_CHATS.fields;
 var PF = dbConst.PFIELDS;
 var bdayToAge = require('./../common/bdayToAge');
 
@@ -37,9 +38,9 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.INCOMING_boolean,
         DBF.TEXT_text,
         DBF.COMPANIONSEX_int,
-        DBF.COMPANIONBDAY_timestamp,
+        DBF.COMPANIONBDATE_timestamp,
         DBF.USERSEX_int,
-        DBF.USERBDAY_timestamp
+        DBF.USERBDATE_timestamp
       ];
   
       var params = [
@@ -84,7 +85,31 @@ module.exports = function(uid, options, callback) { options = options || {};
 
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) {  return cb(err); }
+          
+          
 
+          cb(null, null);
+        });
+      } else cb(null, null);
+    }, //-------------------------------------------------------------------
+    function(res, cb) { // Добавляем в новые чаты
+      if(!opened) {
+        var fields = [
+          DBFCN.USERID_uuid_pc1i,
+          DBFCN.COMPANIONID_uuid_pc2
+        ];
+  
+        var params = [
+          uid,
+          options[PF.ID]
+        ];
+  
+        //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_CHATS.name);
+  
+        cdb.client.execute(query, params, { prepare: true },  function(err) {
+          if (err) { return cb(err); }
+    
           cb(null, null);
         });
       } else cb(null, null);
@@ -96,7 +121,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBFC.COMPANIONID_uuid_c,
         DBFC.ISNEW_boolean,
         DBFC.COMPANIONSEX_int,
-        DBFC.COMPANIONBDAY_timestamp,
+        DBFC.COMPANIONBDATE_timestamp,
         DBFC.COMPANIONVID_varchar
       ];
   
@@ -104,8 +129,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         uid,
         options[PF.ID],
         opened,
-        options[PF.BDATE],
         options[PF.SEX],
+        options[PF.BDATE],
         options[PF.VID]
       ];
 

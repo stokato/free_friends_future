@@ -19,9 +19,9 @@ module.exports = function(uid, friendsID, isSelf, callback) {
   async.waterfall([ //--------------------------------------------------------
       function (cb) {
         if(isSelf) {
-          var fields = [DBFN.FRIENDID_uuid_c];
+          var fields = [DBFN.FRIENDID_uuid_pc2];
           var dbName = dbConst.DB.USER_NEW_FRIENDS.name;
-          var constFields = [DBFN.USERID_uuid_pi];
+          var constFields = [DBFN.USERID_uuid_pc1i];
           var constValues = [1];
           
           var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
@@ -45,7 +45,7 @@ module.exports = function(uid, friendsID, isSelf, callback) {
           DBF.FRIENDVID_varhcar,
           DBF.DATE_timestamp,
           DBF.FRIENDSEX_int,
-          DBF.FRIENDBDAY_timestamp
+          DBF.FRIENDBDATE_timestamp
         ];
         var constFields = [DBF.USERID_uuid_pi];
         var constCount = [1];
@@ -77,7 +77,7 @@ module.exports = function(uid, friendsID, isSelf, callback) {
               user = {};
               user[PF.ID] = row[DBF.FRIENDID_uuid_c].toString();
               user[PF.VID] = row[DBF.FRIENDVID_varhcar];
-              user[PF.AGE] = bdayToAge(row[DBF.FRIENDBDAY_timestamp]);
+              user[PF.AGE] = bdayToAge(row[DBF.FRIENDBDATE_timestamp]);
               user[PF.SEX] = row[DBF.FRIENDSEX_int];
               
               if(isSelf) {

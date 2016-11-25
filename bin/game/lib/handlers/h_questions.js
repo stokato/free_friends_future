@@ -1,8 +1,23 @@
 var PF = require('./../../../constants').PFIELDS;
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
 
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {
-  return function(timer) {
+  return function(timer, socket, options) {
+  
+    if(!timer) {
+      var selfProfile = oPool.userList[socket.id];
+      var uid = selfProfile.getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      addAction(game, uid, options);
+    }
+
+    //---------------------------------------------------------------
     if(game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 

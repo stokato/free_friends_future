@@ -1,4 +1,4 @@
-var constants = require('../../constants');
+var constants = require('../../../constants');
 
 // Вызвать эмиты у клиентов
 // Если передан сокет, шлем только на него, если нет

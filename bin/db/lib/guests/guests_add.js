@@ -27,7 +27,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.GUESTVID_varchar,
         DBF.DATE_timestamp,
         DBF.GUESTSEX_int,
-        DBF.GUESTBDAY_timestamp
+        DBF.GUESTBDATE_timestamp
       ];
       
       var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS);

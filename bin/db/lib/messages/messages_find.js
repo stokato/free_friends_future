@@ -87,12 +87,12 @@ module.exports = function(uid, options, callback) { options = options || {};
               message[PF.ID] = row[DBF.COMPANIONID_uuid_pc2i].toString();
               message[PF.VID] = row[DBF.COMPANIONVID_varchar];
               message[PF.SEX] = row[DBF.COMPANIONSEX_int];
-              message[PF.AGE] = bdayToAge(row[DBF.COMPANIONBDAY_timestamp]);
+              message[PF.AGE] = bdayToAge(row[DBF.COMPANIONBDATE_timestamp]);
             } else {
               message[PF.ID] = row[DBF.USERID_uuid_pci].toString();
               message[PF.VID] = row[DBF.USERVID_varchar];
               message[PF.SEX] = row[DBF.USERSEX_int];
-              message[PF.AGE] = bdayToAge(row[DBF.USERBDAY_timestamp]);
+              message[PF.AGE] = bdayToAge(row[DBF.USERBDATE_timestamp]);
             }
             
             message[PF.ISNEW] = false;
@@ -125,7 +125,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     function(messages, cb) {
   
       var params = [uid];
-      var constFields = [DBFCN.USERID_uuid_p, DBFCN.COMPANIONID_uuid_c];
+      var constFields = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
       var constValues = [ 1, companions.length ];
       var dbName = dbConst.DB.USER_NEW_CHATS.name;
       

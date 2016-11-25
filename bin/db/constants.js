@@ -70,14 +70,15 @@ module.exports.DB = {
     fields  : {
       ID_uuid_p       : 'id',
       VID_varchar_i   : 'vid',
-      BDAY_timestamp  : 'bday',
+      BDATE_timestamp  : 'bdate',
       COUNTRY_int     : 'country',
       CITY_int        : 'city',
       STATUS_varchar  : 'status',
       MONEY_int       : 'money',
       SEX_int         : 'sex',
       POINTS_int      : 'points',
-      GIFT1_uuid      : 'gift1'
+      GIFT1_uuid      : 'gift1',
+      ISMENU_boolean  : 'ismenu'
     }
   },
   
@@ -107,7 +108,7 @@ module.exports.DB = {
       FROMID_uuid         : 'fromid',
       FROMVID_varchar     : 'fromvid',
       FROMSEX_int         : 'fromsex',
-      FROMBDAY_timestamp  : 'frombday'
+      FROMBDATE_timestamp  : 'frombdate'
     }
   },
   
@@ -147,9 +148,9 @@ module.exports.DB = {
       INCOMING_boolean          : 'incoming',
       TEXT_text                 : 'text',
       DATE_timestamp            : 'date',
-      COMPANIONBDAY_timestamp   : 'companionbday',
+      COMPANIONBDATE_timestamp   : 'companionbdate',
       COMPANIONSEX_int          : 'companionsex',
-      USERBDAY_timestamp        : 'userbday',
+      USERBDATE_timestamp        : 'userbdate',
       USERSEX_int               : 'usersex'
     }
   },
@@ -184,7 +185,7 @@ module.exports.DB = {
       COMPANIONID_uuid_c        : 'companionid',
       COMPANIONVID_varchar      : 'companionvid',
       COMPANIONSEX_int          : 'companionsex',
-      COMPANIONBDAY_timestamp   : 'companionbday',
+      COMPANIONBDATE_timestamp   : 'companionbdate',
       ISNEW_boolean             : 'isnew'
     }
   },
@@ -217,7 +218,7 @@ module.exports.DB = {
       USERID_uuid_pi        : 'userid',
       FRIENDID_uuid_c       : 'friendid',
       FRIENDVID_varhcar     : 'friendvid',
-      FRIENDBDAY_timestamp  : 'friendbday',
+      FRIENDBDATE_timestamp  : 'friendbdate',
       FRIENDSEX_int         : 'friendsex',
       DATE_timestamp        : 'date'
     }
@@ -252,7 +253,7 @@ module.exports.DB = {
       USERID_uuid_p         : 'userid',
       GUESTID_uuid_ci       : 'guestid',
       GUESTVID_varchar      : 'guestvid',
-      GUESTBDAY_timestamp   : 'guestbday',
+      GUESTBDATE_timestamp   : 'guestbdate',
       GUESTSEX_int          : 'guestsex',
       DATE_timestamp        : 'date'
     }

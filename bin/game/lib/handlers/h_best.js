@@ -1,15 +1,46 @@
 var constants = require('../../../constants');
 var PF        = constants.PFIELDS;
 var addPoints = require('./../common/add_points');
-
-var GameError = require('./../common/game_error');
+var addAction = require('./../common/add_action');
+var oPool = require('./../../../objects_pool');
+var handleError     = require('./../common/handle_error');
 
 // Игра - кто лучший, рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
 module.exports = function(game) {
-  return function(timer, uid, options) {
-    if(uid) { broadcastPick(game, uid);  }
+  return function(timer, socket, options) {
+  
+    // Если нет такого пользоателя среди кандидатов
+    if(!game._storedOptions[options[PF.PICK]]) {
+      return handleError(socket, constants.IO_GAME, constants.G_BEST, constants.errors.NO_THAT_PLAYER);
+    }
+  
+    if(!timer) {
+      var uid = oPool.userList[socket.id].getID();
+  
+      if(!game._actionsQueue[uid]) {
+        game._actionsQueue[uid] = [];
+      }
+  
+      addAction(game, uid, options);
+        
+      var playerInfo = game._activePlayers[uid];
+  
+      var result = {};
+      result[PF.PICK] = {};
+      result[PF.PICK][PF.ID] = uid;
+      result[PF.PICK][PF.VID] = playerInfo.vid;
+      result[PF.PICK][PF.PICK] = options[PF.PICK];
+  
+      game.emit(result);
+  
+      // Сохраняем состояние игры
+      if(!game._gameState[PF.PICKS]) {
+        game._gameState[PF.PICKS] = [];
+      }
+      game._gameState[PF.PICKS].push(result[PF.PICK]);
+    }
 
-    // После голосования
+    //------------------------------------------------------------------------------------
     if(game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
@@ -24,7 +55,10 @@ module.exports = function(game) {
           
           if(checkBestOfBest(bestID) == true) {
             addPoints(bestID, constants.BEST_POINTS, function (err) {
-              if(err) { return new GameError(constants.G_BOTTLE_KISSES, err.message); }
+              if(err) {
+                var socket = game._room.getAnySocket();
+                return handleError(socket, constants.IO_GAME, constants.G_BEST, err.message);
+              }
             })
           }
         }
@@ -36,25 +70,6 @@ module.exports = function(game) {
     }
 
     //---------------
-    // Обрабатываем ход каждого игрока
-    function broadcastPick(game, uid) {
-      var playerInfo = game._activePlayers[uid];
-
-      var result = {};
-      result[PF.PICK] = {};
-      result[PF.PICK][PF.ID] = uid;
-      result[PF.PICK][PF.VID] = playerInfo.vid;
-      result[PF.PICK][PF.PICK] = options[PF.PICK];
-      
-      game.emit(result);
-
-      // Сохраняем состояние игры
-      if(!game._gameState[PF.PICKS]) {
-        game._gameState[PF.PICKS] = [];
-      }
-      game._gameState[PF.PICKS].push(result[PF.PICK]);
-    }
-  
     // Проверяем - врдуг все проголосовали за этого игрока
     function checkBestOfBest(bestID) {
       
@@ -64,7 +79,7 @@ module.exports = function(game) {
           for(var otherPicksOptions = 0; otherPicksOptions < otherPicks.length; otherPicksOptions++) {
   
             // Если хотя бы один не проголосовал - возвращаем ложь
-            if(otherPicks[otherPicksOptions].pick != bestID) {
+            if(otherPicks[otherPicksOptions][PF.PICK] != bestID) {
               return false;
             }
           }

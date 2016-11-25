@@ -39,10 +39,10 @@ module.exports = function(sex, callback) {
       row = result.rows[i];
       
       user = {};
-      user[PF.ID]      = rows[i][DBF.USERID_uuid].toString();
-      user[PF.VID]     = rows[i][DBF.USERVID_varchar];
-      user[PF.POINTS]  = rows[i][DBF.POINTS_c_desc];
-      user[PF.SEX]     = rows[i][DBF.SEX_int];
+      user[PF.ID]      = row[DBF.USERID_uuid].toString();
+      user[PF.VID]     = row[DBF.USERVID_varchar];
+      user[PF.POINTS]  = row[DBF.POINTS_c_desc];
+      user[PF.SEX]     = row[DBF.SEX_int];
 
       // Добавляем номер
       user[PF.NUMBER]  = counter++;

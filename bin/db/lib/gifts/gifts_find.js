@@ -52,7 +52,7 @@ module.exports = function(uid, isSelf, callback) {
         DBF.FROMID_uuid,
         DBF.FROMVID_varchar,
         DBF.FROMSEX_int,
-        DBF.FROMBDAY_timestamp
+        DBF.FROMBDATE_timestamp
       ];
       var constFields = [DBF.USERID_uuid_i];
       var constValues = [1];
@@ -93,7 +93,7 @@ module.exports = function(uid, isSelf, callback) {
             user = {};
             user[PF.ID]     = gift[PF.FID];
             user[PF.VID]    = gift[PF.FVID];
-            user[PF.AGE]    = bdayToAge(row[DBF.FROMBDAY_timestamp]);
+            user[PF.AGE]    = bdayToAge(row[DBF.FROMBDATE_timestamp]);
             user[PF.SEX]    = row[DBF.FROMSEX_int];
             user[PF.GIFTS]  = [];
             

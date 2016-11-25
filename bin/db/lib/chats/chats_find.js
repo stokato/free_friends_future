@@ -23,20 +23,18 @@ module.exports = function(uid, callback) {
   var fields = [
     DBF.COMPANIONID_uuid_c,
     DBF.ISNEW_boolean,
-    DBF.COMPANIONBDAY_timestamp,
+    DBF.COMPANIONBDATE_timestamp,
     DBF.COMPANIONSEX_int,
     DBF.COMPANIONVID_varchar
   ];
   
-  var const_fields = [DBF.USERID_uuid];
+  var const_fields = [DBF.USERID_uuid_p];
   var const_values = [1];
   
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, DBC.name, const_fields, const_values);
   
   cdb.client.execute(query, params, {prepare: true}, function (err, result) {
     if (err) { return callback(err, null); }
-    
-    if (result.rows.length == 0) return cb(null, null, null, null, null);
     
     var row, user, users = [];
 
@@ -48,7 +46,7 @@ module.exports = function(uid, callback) {
       user = {};
       user[PF.ID]     = row[DBF.COMPANIONID_uuid_c].toString();
       user[PF.VID]    = row[DBF.COMPANIONVID_varchar];
-      user[PF.AGE]    = bdayToAge(row[DBF.COMPANIONBDAY_timestamp]);
+      user[PF.AGE]    = bdayToAge(row[DBF.COMPANIONBDATE_timestamp]);
       user[PF.SEX]    = row[DBF.COMPANIONSEX_int];
       user[PF.ISNEW]  = row[DBF.ISNEW_boolean];
       
@@ -59,6 +57,10 @@ module.exports = function(uid, callback) {
       }
     }
     
-    callback(null, { chats : users, new_chats : countNew });
+    var res = {};
+    res[PF.CHATS] = users;
+    res[PF.NEWCHATS] = countNew;
+    
+    callback(null, res);
   });
 };

@@ -132,7 +132,7 @@ CREATE INDEX IF NOT EXISTS user_messages_opened ON user_messages(opened );
 CREATE TABLE IF NOT EXISTS user_chats(
   userid uuid,
   companionid uuid,
-  companionvid uuid,
+  companionvid varchar,
   companionsex int,
   companionbday timestamp,
   isnew boolean,

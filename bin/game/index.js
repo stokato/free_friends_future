@@ -3,10 +3,10 @@ var db = require ('./../db_manager');
 
 var logger = require('./../../lib/log')(module);
 
-var start                 = require('./lib/start'),
-    stop                  = require('./lib/stop'),
-    emit                  = require('./lib/emit'),
-    restoreGame           = require('./lib/restore_game'),
+var start                 = require('./lib/main/start'),
+    stop                  = require('./lib/main/stop'),
+    emit                  = require('./lib/emits/emit'),
+    restoreGame           = require('./lib/main/restore_game'),
     setActionLimit        = require('./lib/common/set_action_limits'),
     activateAllPlayers    = require('./lib/common/activate_all_players'),
     getPlayersId          = require('./lib/common/get_players_id'),
@@ -14,7 +14,8 @@ var start                 = require('./lib/start'),
     getRandomQuestion     = require('./lib/common/get_random_question'),
     getPlayerInfo         = require('./lib/common/get_player_info'),
     getNextPlayer         = require('./lib/common/get_next_player'),
-    checkCountPlayers     = require('./lib/common/check_count_players');
+    checkCountPlayers     = require('./lib/common/check_count_players'),
+    addEmits               = require('./lib/emits/add_emits');
 
 var hStart                  = require('./lib/handlers/h_start'),
     hLot                    = require('./lib/handlers/h_lot'),
@@ -26,8 +27,6 @@ var hStart                  = require('./lib/handlers/h_start'),
     hSympathy               = require('./lib/handlers/h_sympathy'),
     hSympathyShow           = require('./lib/handlers/h_sympathy_show'),
     hPrison                 = require('./lib/handlers/h_prison');
-
-var oPool = require('./../objects_pool');
 
 var gameQuestions = [];
 /**
@@ -105,6 +104,7 @@ Game.prototype.setActionLimit         = setActionLimit;
 Game.prototype.activateAllPlayers     = activateAllPlayers;
 Game.prototype.startTimer             = startTimer;
 Game.prototype.getNextPlayer          = getNextPlayer;
+Game.prototype.addEmits               = addEmits;
 
 // Получаем вопросы
 Game.prototype.getQuestions = function() {

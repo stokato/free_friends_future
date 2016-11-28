@@ -39,7 +39,6 @@ module.exports = function(game) {
       addAction(game, uid, options);
       
       // Если обработчик вызван игроком а не таймером
-      
       selfProfile.pay(constants.SYMPATHY_PRICE, function (err, money) {
         if(err) { return onError(err, selfProfile);  }
         

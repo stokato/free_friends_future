@@ -87,7 +87,7 @@ module.exports = function(game) {
           pick[PF.PICK][PF.ID] = pickedId;
           pick[PF.PICK][PF.VID] = game._activePlayers[pickedId].vid;
         
-          result[PF.PICK].push(pick);
+          result[PF.PICKS].push(pick);
         }
       } else {
         pick[PF.ID] = options[PF.PICK];
@@ -110,7 +110,7 @@ module.exports = function(game) {
           var socket = player.getSocket();
         
           if(socket) {
-            handleError(socket, constants.IO_GAME_ERROR, err);
+            handleError(socket, constants.IO_GAME_ERROR, game._nextGame, err);
           }
         }
       

@@ -46,7 +46,7 @@ module.exports.PFIELDS = constants.PFIELDS;
 //   NUMBER          : 'number',
 //   PRICE2          : 'price2',
 //   FSEX            : 'usex',
-//   FBDAY           : 'ubday'
+//   FBDATE           : 'ubday'
 // };
 
 module.exports.DB = {
@@ -151,7 +151,8 @@ module.exports.DB = {
       COMPANIONBDATE_timestamp   : 'companionbdate',
       COMPANIONSEX_int          : 'companionsex',
       USERBDATE_timestamp        : 'userbdate',
-      USERSEX_int               : 'usersex'
+      USERSEX_int               : 'usersex',
+      USERVID_varchar           : 'uservid'
     }
   },
   

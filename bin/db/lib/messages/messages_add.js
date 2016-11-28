@@ -20,7 +20,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   var date         = options[PF.DATE] || new Date();
   var opened       = options[PF.OPENED];
 
-  if (!date || !uid || !options[PF.ID] || !options[PF.TEXT] || !options[PF.VID]) {
+  if (!date || !uid || !options[PF.FID] || !options[PF.TEXT] || !options[PF.VID] || !options[PF.FVID]) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
@@ -40,21 +40,23 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.COMPANIONSEX_int,
         DBF.COMPANIONBDATE_timestamp,
         DBF.USERSEX_int,
-        DBF.USERBDATE_timestamp
+        DBF.USERBDATE_timestamp,
+        DBF.USERVID_varchar
       ];
   
       var params = [
         id,
         uid,
         date,
-        options[PF.ID],
-        options[PF.VID],
+        options[PF.FID],
+        options[PF.FVID],
         options[PF.INCOMING],
         options[PF.TEXT],
+        options[PF.FSEX],
+        options[PF.FBDATE],
         options[PF.SEX],
         options[PF.BDATE],
-        options[PF.FSEX],
-        options[PF.FBDAY]
+        options[PF.VID]
       ];
 
       //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
@@ -77,7 +79,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         var params = [
           id,
           uid,
-          options[PF.ID]
+          options[PF.FID]
         ];
         
         //var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
@@ -101,7 +103,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   
         var params = [
           uid,
-          options[PF.ID]
+          options[PF.FID]
         ];
   
         //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
@@ -127,11 +129,11 @@ module.exports = function(uid, options, callback) { options = options || {};
   
       var params = [
         uid,
-        options[PF.ID],
+        options[PF.FID],
         opened,
-        options[PF.SEX],
-        options[PF.BDATE],
-        options[PF.VID]
+        options[PF.FSEX],
+        options[PF.FBDATE],
+        options[PF.FVID]
       ];
 
       //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";

@@ -239,7 +239,7 @@ module.exports.PFIELDS = {
   NUMBER          : 'number',
   PRICE2          : 'price2',
   FSEX            : 'usex',
-  FBDAY           : 'ubday',
+  FBDATE           : 'ubdate',
   INDEX           : 'index',
   ISFRIEND        : 'is_friend',
   

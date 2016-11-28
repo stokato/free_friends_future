@@ -34,17 +34,17 @@ CREATE TABLE IF NOT EXISTS users (
   id uuid,
   vid varchar,
 --   age int,
-  bday timestamp,
+  bdate timestamp,
   country int,
   city int,
   status varchar,
   money int,
   sex int,
   points int,
-  newmessages int,
-  newgifts int,
-  newfriends int,
-  newguests int,
+--   newmessages int,
+--   newgifts int,
+--   newfriends int,
+--   newguests int,
   gift1 uuid,
   PRIMARY KEY (id)
 );
@@ -70,12 +70,12 @@ CREATE TABLE IF NOT EXISTS user_gifts (
   giftid varchar,
   type varchar,
   title varchar,
-  data varchar,
+  src varchar,
   date timestamp,
   fromid uuid,
   fromvid varchar,
   fromsex int,
-  frombday timestamp,
+  frombdate timestamp,
   PRIMARY KEY (id)
 );
 
@@ -114,8 +114,10 @@ CREATE TABLE IF NOT EXISTS user_messages(
   text text,
   date timestamp,
 --   opened boolean,
-  companionbday timestamp,
+  companionbdate timestamp,
   companionsex int,
+  usersex int,
+  userbdate timestamp,
   PRIMARY KEY ((userid, companionid), id)
 );
 
@@ -134,7 +136,7 @@ CREATE TABLE IF NOT EXISTS user_chats(
   companionid uuid,
   companionvid varchar,
   companionsex int,
-  companionbday timestamp,
+  companionbdate timestamp,
   isnew boolean,
   PRIMARY KEY (userid, companionid)
 );
@@ -189,7 +191,7 @@ CREATE TABLE IF NOT EXISTS user_friends (
   userid uuid,
   friendid uuid,
   friendvid varchar,
-  friendbday timestamp,
+  friendbdate timestamp,
   friendsex int,
   date timestamp,
   PRIMARY KEY (userid, friendid)
@@ -219,7 +221,7 @@ CREATE INDEX IF NOT EXISTS user_new_friends_userid ON user_new_friends (userid);
    userid uuid,
    guestid uuid,
    guestvid varchar,
-   guestbday timestamp,
+   guestbdate timestamp,
    guestsex int,
    date timestamp,
    PRIMARY KEY (userid, guestid)
@@ -254,7 +256,7 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
     id varchar,
     title varchar,
     price int,
-    data varchar,
+    src varchar,
     type varchar,
     goodtype varchar,
     PRIMARY KEY (id)

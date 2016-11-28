@@ -103,7 +103,7 @@ module.exports = function (socket, options, callback) {
         if (oPool.profiles[options[PF.ID]]) {
           var friendSocket = friendProfile.getSocket();
           
-          if(!friendProfile.isPrivateChat(selfProfile.getID())) {
+          if(friendProfile.isPrivateChat(selfProfile.getID())) {
             
             info[PF.CHATID]     = selfProfile.getID();
             info[PF.CHATVID]    = selfProfile.getVID();

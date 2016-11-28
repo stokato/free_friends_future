@@ -94,7 +94,7 @@ module.exports = function(game) {
         pick[PF.VID] = (options[PF.PICK])? game._activePlayers[options[PF.PICK]].vid : null;
         pick[PF.PICK] = null;
       
-        result[PF.PICK].push(pick);
+        result[PF.PICKS].push(pick);
       }
     
       var socket = game._activePlayers[uid].player.getSocket();

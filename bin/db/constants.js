@@ -163,7 +163,7 @@ module.exports.DB = {
    */
   
   USER_NEW_MESSAGES : {
-    name    : 'user_messages',
+    name    : 'user_new_messages',
     fields  : {
       ID_timeuuid_c             : 'id',
       USERID_uuid_pci           : 'userid',

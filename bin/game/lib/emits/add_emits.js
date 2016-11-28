@@ -6,7 +6,7 @@ var async     =  require('async');
 var constants     = require('../../../constants');
 var oPool = require('./../../../objects_pool'),
   handleError     = require('./../common/handle_error'),
-  checkInput      = require('./../common/check_input');
+  checkInput      = require('./../common/check__game_input');
 
 var
   addAction           = require('./../main/game_action'),
@@ -25,19 +25,16 @@ module.exports = function(socket) {
     var selfProfile = oPool.userList[socket.id];
     var game = selfProfile.getGame();
     
-    async.waterfall(
-      [
-        function (cb) {  cb(null, emit, null, options); },
-        checkInput,
-        handler
-      ],
-      function(err, result) { result = result || {};
-        if(err) { return handleError(socket, emit, game.getNextGame(), err); }
-        
-        result.operation_status = constants.RS_GOODSTATUS;
-        socket.emit(constants.IO_GAME, result);
-      });
-    
+    async.waterfall([
+      function (cb) { cb(null, emit, socket, game.getNextGame(), options); },
+      checkInput,
+      handler
+    ],function (err, result) {
+      if(err) { return handleError(socket, emit, game.getNextGame(), err); }
+
+      result.operation_status = constants.RS_GOODSTATUS;
+      socket.emit(constants.IO_GAME, result);
+    });
   });
   
 };

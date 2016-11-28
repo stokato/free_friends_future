@@ -50,8 +50,8 @@ module.exports = function(uid, options, callback) { options = options || {};
     function (res, cb) {
       
       var fields = [
-        DBFN.USERID_uuid_pi,
-        DBFN.FRIENDID_uuid_c
+        DBFN.USERID_uuid_pc1i,
+        DBFN.FRIENDID_uuid_pc2
       ];
       
       var params = [

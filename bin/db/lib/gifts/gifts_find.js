@@ -100,7 +100,7 @@ module.exports = function(uid, isSelf, callback) {
             users[user[PF.ID]] = user;
           }
   
-          users[user[PF.ID]].push(gift);
+          users[user[PF.ID]][PF.GIFTS].push(gift);
     
         }
         
@@ -111,8 +111,7 @@ module.exports = function(uid, isSelf, callback) {
         cb(null, { gifts : arrUsers, new_gifts : newIds.length });
         
       });
-    }
-  ], //-----------------------------------------------------------------------
+    }], //-----------------------------------------------------------------------
   function (err, res) {
     if(err) { return callback(err, null); }
     

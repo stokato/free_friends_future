@@ -3,5 +3,9 @@
  */
 
 module.exports = function (bday) {
+  if(!bday) {
+    return 0;
+  }
+  
   return (new Date().getYear() - bday.getYear());
 };

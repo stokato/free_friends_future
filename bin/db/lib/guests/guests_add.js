@@ -30,7 +30,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.GUESTBDATE_timestamp
       ];
       
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS.name);
   
       var params = [
         uid,
@@ -49,11 +49,11 @@ module.exports = function(uid, options, callback) { options = options || {};
     }, //-----------------------------------------------------------------
       function (res, cb) {
         var fields = [
-          DBFN.USERID_uuid_p,
-          DBFN.GUESTID_uuid_ci
+          DBFN.USERID_uuid_pc1i,
+          DBFN.GUESTID_uuid_pc2i
         ];
       
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GUESTS);
+        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GUESTS.name);
       
         var params = [
           uid,

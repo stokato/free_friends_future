@@ -8,15 +8,15 @@ module.exports = function(giftMaker, date, gsrc, gid, gtype, gtitle, callback) {
   var self = this;
   
   var options = {};
-  options[IOF.ID]         = giftMaker.getID();
-  options[IOF.ID.VID]     = giftMaker.getVID();
-  options[IOF.ID.SEX]     = giftMaker.getSex();
-  options[IOF.ID.BDATE]   = giftMaker.getBDate();
-  options[IOF.ID.DATE]    = date;
-  options[IOF.ID.SRC]     = gsrc;
-  options[IOF.ID.GIFTID]  = gid;
-  options[IOF.ID.TYPE]    = gtype;
-  options[IOF.ID.TITLE]   = gtitle;
+  options[IOF.ID]      = giftMaker.getID();
+  options[IOF.VID]     = giftMaker.getVID();
+  options[IOF.SEX]     = giftMaker.getSex();
+  options[IOF.BDATE]   = giftMaker.getBDate();
+  options[IOF.DATE]    = date;
+  options[IOF.SRC]     = gsrc;
+  options[IOF.GIFTID]  = gid;
+  options[IOF.TYPE]    = gtype;
+  options[IOF.TITLE]   = gtitle;
 
   db.addGift(self._pID, options, function(err, result) {
     if (err) { return callback(err, null); }

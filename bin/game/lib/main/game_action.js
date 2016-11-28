@@ -1,6 +1,6 @@
 var async     =  require('async');
 var constants = require('../../../constants');
-var checkInput = require('./../common/check_input');
+var checkInput = require('./../common/check__game_input');
 var oPool = require('./../../../objects_pool');
 var handleError     = require('./../common/handle_error');
 

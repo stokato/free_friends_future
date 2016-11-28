@@ -8,7 +8,7 @@ var oPool = require('./../../../objects_pool');
 module.exports = function(game) {
   return function(timer, socket, options) {
   
-    if(!timer) {
+    if(!timer && socket) {
       var selfProfile = oPool.userList[socket.id];
       var uid = selfProfile.getID();
   

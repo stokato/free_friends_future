@@ -146,8 +146,8 @@ function changeOrderStatus(request, profiles, callback) {
         }
 
         var ordOptions = {};
-        ordOptions[PF.VID]    = options[PF.ORDERVID];
-        ordOptions[PF.GOODID] = goodInfo[PF.GOODID];
+        ordOptions[PF.ORDERVID]    = options[PF.ORDERVID];
+        ordOptions[PF.GOODID] = goodInfo[PF.ID];
         ordOptions[PF.ID]     = info[PF.ID];
         ordOptions[PF.VID]    = info[PF.VID];
         ordOptions[PF.SUM]    = goodInfo[PF.PRICE];

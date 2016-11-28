@@ -29,7 +29,7 @@ module.exports.MENU_BONUS       = Number(Config.moneys.menu_bonus);
 // Цена подарка
 module.exports.GIFT_MONEY       = Number(Config.moneys.gift_price);
 
-// Старовый баланы
+// Старовый баланс
 module.exports.START_MONEY      = Number(Config.moneys.start_money);
 
 // Длительность отображения подарка на аве
@@ -188,7 +188,7 @@ module.exports.SYMPATHY_PRICE         = Number(Config.moneys.sympathy_price);
 
 // Таймауты
 module.exports.TIMEOUT_LOT            = Number(Config.game.timeouts.lot);
-module.exports.TIMEOUT_GAME           = Number(Config.game.timeouts.default);
+module.exports.TIMEOUT_GAME           = 40000;//Number(Config.game.timeouts.default);
 module.exports.TIMEOUT_BOTTLE         = Number(Config.game.timeouts.bottle);
 module.exports.TIMEOUT_RESULTS        = Number(Config.game.timeouts.results);
 module.exports.TIMEOUT_PRISON         = Number(Config.game.timeouts.prison);

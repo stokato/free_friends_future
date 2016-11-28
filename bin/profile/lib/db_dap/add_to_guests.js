@@ -11,7 +11,7 @@ module.exports = function(guestProfile, date, callback) {
  options[IOF.ID]    = guestProfile.getID();
  options[IOF.VID]   = guestProfile.getVID();
  options[IOF.SEX]   = guestProfile.getSex();
- options[IOF.BDATE] = guestProfile.getBDay();
+ options[IOF.BDATE] = guestProfile.getBDate();
  options[IOF.DATE]  = date;
   
  db.addGuest(self._pID, options, function(err, guest) {

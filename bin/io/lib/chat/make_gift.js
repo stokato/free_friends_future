@@ -63,49 +63,49 @@ module.exports = function (socket, options, callback) {
       },//---------------------------------------------------------------
       function (friendProfile, gift, cb) { // Сохраняем подарок
 
-        friendProfile.addGift(selfProfile, date, gift, function (err, result) {
+        friendProfile.addGift(selfProfile, date, gift[PF.SRC], gift[PF.ID],  gift[PF.TYPE], gift[PF.TITLE],
+                                                                      function (err, result) {
           if (err) { return cb(err, null); }
 
-          cb(null, null);
+          cb(null, friendProfile);
         });
 
       } //---------------------------------------------------------------
-    ], function (err) { // Вызывается последней. Обрабатываем ошибки
+    ], function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
       if (err) { return callback(err); }
-
-      if (oPool.isProfile(options[PF.ID])) {
-        var friendProfile = oPool.profiles[options[PF.ID]];
+  
+      var gift = friendProfile.getGift1();
+  
+      var res = {};
+      res[PF.FID]       = selfProfile.getID();
+      res[PF.FVID]      = selfProfile.getVID();
+      res[PF.ID]        = friendProfile.getID();
+      res[PF.VID]       = friendProfile.getVID();
+      res[PF.GIFTID]    = gift[PF.GIFTID];
+      res[PF.SRC]       = gift[PF.SRC];
+      res[PF.TYPE]      = gift[PF.TYPE];
+      res[PF.TITLE]     = gift[PF.TITLE];
+      res[PF.DATE]      = gift[PF.DATE];
+      res[PF.UGIFTID]   = gift[PF.UGIFTID];
+      res[PF.ISPRIVATE] = options[PF.ISPRIVATE];
+  
+      var room = oPool.roomList[socket.id];
+  
+      socket.emit(constants.IO_NEW_GIFT, res);
+  
+      if(!options[PF.ISPRIVATE]) {
+        socket.broadcast.in(room.getName()).emit(constants.IO_NEW_GIFT, res);
+      } else if(oPool.isProfile(friendProfile.getID())) {
         var friendSocket = friendProfile.getSocket();
-
-        var gift = friendProfile.getGift1();
-
-        var res = {};
-        res[PF.FID] = selfProfile.getID();
-        res[PF.FVID] = selfProfile.getVID();
-        res[PF.ID] = friendProfile.getID();
-        res[PF.VID] = friendProfile.getVID();
-        res[PF.GIFTID] = gift[PF.GIFTID];
-        res[PF.SRC] = gift[PF.SRC];
-        res[PF.TYPE] = gift[PF.TYPE];
-        res[PF.TITLE] = gift[PF.TITLE];
-        res[PF.DATE] = gift[PF.DATE];
-        res[PF.UGIFTID] = gift[PF.UGIFTID];
-        res[PF.ISPRIVATE] = options[PF.ISPRIVATE];
-
-        var room = oPool.roomList[socket.id];
-
-        socket.emit(constants.IO_NEW_GIFT, res);
-        
-        if(!options[PF.ISPRIVATE]) {
-          socket.broadcast.in(room.getName()).emit(constants.IO_NEW_GIFT, res);
-        } else {
-          friendSocket.emit(constants.IO_NEW_GIFT, res);
-        }
-        
-        setGiftTimeout(friendProfile.getID());
-        
-        callback(null, null);
+        friendSocket.emit(constants.IO_NEW_GIFT, res);
       }
+  
+      if(oPool.isProfile(friendProfile.getID())) {
+        setGiftTimeout(friendProfile.getID());
+      }
+  
+      callback(null, null);
+      
     }); // waterfall
 };
 

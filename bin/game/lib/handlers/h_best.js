@@ -9,12 +9,13 @@ var handleError     = require('./../common/handle_error');
 module.exports = function(game) {
   return function(timer, socket, options) {
   
-    // Если нет такого пользоателя среди кандидатов
-    if(!game._storedOptions[options[PF.PICK]]) {
-      return handleError(socket, constants.IO_GAME, constants.G_BEST, constants.errors.NO_THAT_PLAYER);
-    }
-  
     if(!timer) {
+  
+      // Если нет такого пользоателя среди кандидатов
+      if(!game._storedOptions[options[PF.PICK]]) {
+        return handleError(socket, constants.IO_GAME, constants.G_BEST, constants.errors.NO_THAT_PLAYER);
+      }
+      
       var uid = oPool.userList[socket.id].getID();
   
       if(!game._actionsQueue[uid]) {

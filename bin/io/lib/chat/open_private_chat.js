@@ -26,7 +26,7 @@ module.exports = function(socket, options, callback) {
       var secondDate = new Date();
       var firstDate = genDateHistory(secondDate);
       
-      selfProfile.addPrivateChat(friendProfile, firstDate, secondDate);
+      selfProfile.addPrivateChat(friendProfile);
       
       selfProfile.getHistory(friendProfile.getID(), firstDate, secondDate, function(err, history) {
         history = history || [];

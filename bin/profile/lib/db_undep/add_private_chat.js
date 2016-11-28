@@ -1,7 +1,7 @@
 /*
     Добавить приватный чат  в список открытых чатов
  */
-module.exports = function(companion, firstDate, secondDate) {
+module.exports = function(companion) {
   
   var cid = companion.getID();
   

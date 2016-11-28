@@ -29,7 +29,7 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.MONEY in options)         { fields.push(DBF.MONEY_int);         params.push(options[PF.MONEY]); }
   if (PF.SEX in options)           { fields.push(DBF.SEX_int);           params.push(options[PF.SEX]); }
   if (PF.POINTS in options)        { fields.push(DBF.POINTS_int);        params.push(options[PF.POINTS]); }
-  if (PF.ISMENU in options)        { fields.push(DBF.ISMENU);            params.push(options[PF.ISMENU]); }
+  if (PF.ISMENU in options)        { fields.push(DBF.ISMENU_boolean);    params.push(options[PF.ISMENU]); }
   if (PF.GIFT1 in options)         { fields.push(DBF.GIFT1_uuid);        params.push(options[PF.GIFT1]); }
 
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);

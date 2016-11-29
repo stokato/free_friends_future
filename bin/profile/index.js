@@ -77,7 +77,6 @@ function Profile() {
   this._pGameIndex = 0;
 
   this._pIsInMenu = false;
-
 }
 
 Profile.prototype.getSocket       = function() { return this._pSocket; };

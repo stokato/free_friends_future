@@ -27,7 +27,6 @@ var init                            = require('./lib/init/init'),
     clearGiftInfo                   = require('./lib/db_dap/clear_gift_info'),
     view                            = require('./lib/db_dap/view');
 
-var clearExitTimeout                = require('./lib/db_undep/clear_exit_timeout');
 
 /**
  * Класс профиль пользователя, хранит, обменивается с базой и обрабатывает данные о пользователе
@@ -66,7 +65,7 @@ function Profile() {
 
   this._pIsPrivateChats = [];  // Сприсок открытых приватных чатов
 
-  this._pIsExitTimeout;
+  this._pIsExitTimeout = 0;
 
   this._pGift1   = null;    // На игрвом столе на аватарах игроков весят подарки
   this._pGift1Time = null;
@@ -105,6 +104,7 @@ Profile.prototype.setGameIndex    = function(val)     { this._pGameIndex = val; 
 Profile.prototype.setGame         = function(game)    { this._pGame = game; };
 Profile.prototype.setSocket       = function(socket)  { this._pSocket = socket; };
 Profile.prototype.setExitTimeout  = function(tm)      { this._pIsExitTimeout = tm; };
+Profile.prototype.clearExitTimeout  = function() { clearTimeout(this._pIsExitTimeout); };
 
 Profile.prototype.init            = init;
 Profile.prototype.build           = build;
@@ -125,7 +125,6 @@ Profile.prototype.getGuests       = getGuests;
 Profile.prototype.save            = save;
 Profile.prototype.remove          = remove;
 
-Profile.prototype.clearExitTimeout           = clearExitTimeout;
 Profile.prototype.addPrivateChat             = addPrivateChat;
 Profile.prototype.deletePrivateChat          = deletePrivateChat;
 Profile.prototype.isPrivateChat              = isPrivateChat;

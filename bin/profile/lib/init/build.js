@@ -28,16 +28,16 @@ module.exports = function(id, callback) {
    if (err) { return  callback(err, null); }
    if (!foundUser) { return callback(new Error("Такого пользователя нет в БД"), null); }
 
-   self._pVID           = foundUser[IOF.VID];
-   self._pStatus        = foundUser[IOF.STATUS];
-   self._pPoints        = foundUser[IOF.POINTS];
-   self._pSex           = foundUser[IOF.SEX];
-   self._pCountry       = foundUser[IOF.COUNTRY];
-   self._pCity          = foundUser[IOF.CITY];
-   self._pBDate         = foundUser[IOF.BDATE];
-   self._pIsInMenu      = foundUser[IOF.ISMENU];
+   self._pVID       = foundUser[IOF.VID];
+   self._pStatus    = foundUser[IOF.STATUS];
+   self._pPoints    = foundUser[IOF.POINTS];
+   self._pSex       = foundUser[IOF.SEX];
+   self._pCountry   = foundUser[IOF.COUNTRY];
+   self._pCity      = foundUser[IOF.CITY];
+   self._pBDate     = foundUser[IOF.BDATE];
+   self._pIsInMenu  = foundUser[IOF.ISMENU];
   
-   self._pMoney         = foundUser[IOF.MONEY]      || 0;
+   self._pMoney     = foundUser[IOF.MONEY]      || 0;
    
    var info = {};
    info[IOF.ID]       = self._pID;

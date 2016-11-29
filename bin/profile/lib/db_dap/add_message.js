@@ -17,7 +17,7 @@ module.exports = function(companion, incoming, date, text, callback) {
   message[IOF.SEX]         = self.getSex();
   message[IOF.BDATE]       = self.getBDate();
   message[IOF.FSEX]        = companion.getSex();
-  message[IOF.FBDATE]       = companion.getBDate();
+  message[IOF.FBDATE]      = companion.getBDate();
   message[IOF.FVID]        = companion.getVID();
   
   db.addMessage(self._pID, message, function(err) {

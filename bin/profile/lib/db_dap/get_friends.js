@@ -9,6 +9,6 @@ module.exports = function(isSelf, callback) {
  db.findFriends(self._pID, null, isSelf, function(err, friends) {
    if (err) { return callback(err, null); }
    
-     callback(null, friends);
+   callback(null, friends);
  });
 };

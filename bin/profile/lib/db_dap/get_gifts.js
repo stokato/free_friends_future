@@ -9,6 +9,6 @@ module.exports = function(isSelf, callback) {
  db.findGifts(self._pID, isSelf, function(err, gifts) {
    if (err) { callback(err, null); }
    
-      callback(null, gifts);
+   callback(null, gifts);
  });
 };

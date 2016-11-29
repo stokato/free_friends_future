@@ -13,7 +13,7 @@ module.exports = function(socket, options, callback) {
 
   async.waterfall([//////////////////////////////////////////////////////////////////////////
     function (cb) {  // Устанавливаем свойства
-      self._pSocket    = socket;
+      self._pSocket   = socket;
       self._pVID      = options[IOF.VID];
       self._pBDate    = new Date(options[IOF.BDATE]);
       self._pCountry  = options[IOF.COUNTRY];
@@ -48,10 +48,10 @@ module.exports = function(socket, options, callback) {
           self._pPoints = foundUser[IOF.POINTS];
           self._pMoney  = foundUser[IOF.MONEY];
 
-          self._pBDate   = (self._pBDate)   ? self._pBDate     : foundUser[IOF.BDATE];
-          self._pSex     = (self._pSex)     ? self._pSex     : foundUser[IOF.SEX];
-          self._pCountry = (self._pCountry) ? self._pCountry : foundUser[IOF.COUNTRY];
-          self._pCity    = (self._pCity)    ? self._pCity    : foundUser[IOF.CITY];
+          self._pBDate    = (self._pBDate)   ? self._pBDate     : foundUser[IOF.BDATE];
+          self._pSex      = (self._pSex)     ? self._pSex     : foundUser[IOF.SEX];
+          self._pCountry  = (self._pCountry) ? self._pCountry : foundUser[IOF.COUNTRY];
+          self._pCity     = (self._pCity)    ? self._pCity    : foundUser[IOF.CITY];
           self._pIsInMenu = foundUser[IOF.ISMENU] || false;
 
           if(foundUser[IOF.GIFT1]) {

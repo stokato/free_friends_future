@@ -8,6 +8,6 @@ module.exports = function(isSelf, callback) {
  db.findGuests(self._pID, isSelf, function(err, guests) {
    if (err) { return callback(err, null); }
 
-     callback(null, guests);
+   callback(null, guests);
  });
 };

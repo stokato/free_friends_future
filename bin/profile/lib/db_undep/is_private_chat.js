@@ -1,5 +1,3 @@
-var IOF = require('./../../../constants').PFIELDS;
-
 /*
   Проверить - есть ли такой чат
  */

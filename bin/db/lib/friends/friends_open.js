@@ -1,21 +1,23 @@
 /**
  * Created by s.t.o.k.a.t.o on 18.11.2016.
+ *
+ * Отбираем сведения о новых друзьях из базы
+ * И удаляем их
+ *
+ * @param String uid - ид пользователя, func callback
+ * @return String uid - ид пользователя
  */
 
-var cdb = require('./../common/cassandra_db');
+var cdb     = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
-var DBFN = dbConst.DB.USER_NEW_FRIENDS.fields;
+var DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
 
-
-/*
- Снимаем поментку Новый со всех друзей пользователя
- */
 module.exports = function(uid, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
   
   // Отбираем всех новых друзей
-  var fields = [DBFN.FRIENDID_uuid_pc2];
-  var dbName = dbConst.DB.USER_NEW_FRIENDS.name;
+  var fields      = [DBFN.FRIENDID_uuid_pc2];
+  var dbName      = dbConst.DB.USER_NEW_FRIENDS.name;
   var constFields = [DBFN.USERID_uuid_pc1i];
   var constValues = [1];
   
@@ -25,7 +27,7 @@ module.exports = function(uid, callback) {
     if (err) { return callback(err, null); }
     
     // Удаляем их
-    var params = [uid];
+    var params      = [uid];
     var constFields = [DBFN.USERID_uuid_pc1i, DBFN.FRIENDID_uuid_pc2];
     var constValues = [ 1, result.rows.length ];
     

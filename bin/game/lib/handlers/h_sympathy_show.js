@@ -23,7 +23,6 @@ module.exports = function(game) {
       
       // В игре Симпатии нельзя выбрать несколько раз одного и того же игрока
       // И выбрать того, кого нет
-      
       if(!game._activePlayers[options[constants.PFIELDS.PICK]]) {
         return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY_SHOW, constants.errors.IS_ALREADY_SELECTED);
       }

@@ -1,10 +1,18 @@
+/**
+ * Добавляем запись в базу о друге
+ * Добавляем запись в таблицу новых друзей
+ *
+ * @param String uid - ид пользователя, Object options - набор полей для записи в базу, func callback
+ * @return Object options
+ */
+
 var async = require('async');
 
-var cdb = require('./../common/cassandra_db');
+var cdb     = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USER_FRIENDS.fields;
-var DBFN = dbConst.DB.USER_NEW_FRIENDS.fields;
-var PF = dbConst.PFIELDS;
+var DBF     = dbConst.DB.USER_FRIENDS.fields;
+var DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
+var PF      = dbConst.PFIELDS;
 
 /*
  Добавить друга в БД: ИД, объект с данными друга

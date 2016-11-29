@@ -1,3 +1,5 @@
+
+
 var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
 var DBF = dbConst.DB.USER_GIFTS.fields;

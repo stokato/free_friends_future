@@ -1,3 +1,7 @@
+/**
+ * Набор инструментов для работы с БД
+ */
+
 var configCassandra = require('./../../../../config.json').cassandra; // Настойки доступа к БД
 var cassandra = require('cassandra-driver');
 var buildQuery = require('./build_query');

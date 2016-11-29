@@ -33,7 +33,7 @@ module.exports = function(socket) {
       if(err) { return handleError(socket, emit, game.getNextGame(), err); }
 
       result.operation_status = constants.RS_GOODSTATUS;
-      socket.emit(constants.IO_GAME, result);
+      socket.emit(constants.IO_RELEASE_PLAYER, result);
     });
   });
   

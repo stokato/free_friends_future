@@ -1,19 +1,20 @@
+/**
+ *   Получаем индексы чатов с новыми сообщениями,
+ *   Получаем все чаты пользоателя
+ *   Указываем какие из них с новыми сообщениями - is_new
+ *
+ *   @param String uid - ид пользователя, func callback
+ *   @return Object - массив с чатами и количество новых
+ */
+
 var async = require('async');
 
 var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
-var DBC = dbConst.DB.USER_CHATS;
-var DBF = DBC.fields;
+var DBF = dbConst.DB.USER_CHATS.fields;
 var DBFN = dbConst.DB.USER_NEW_CHATS.fields;
 var PF = dbConst.PFIELDS;
 var bdayToAge = require('./../common/bdayToAge');
-
-/*
- Найти пользователей, с которыми были чаты, показать наличине новых сообщений
- - Проверка ИД
- - Строим запрос (все поля) и выполняем
- - Возвращаем массив с пользователями (если ничего нет null)
- */
 
 module.exports = function(uid, callback) {
   
@@ -21,7 +22,7 @@ module.exports = function(uid, callback) {
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
   
-  async.waterfall([
+  async.waterfall([ //-----------------------------------------------------------------
     function (cb) {
       var params = [uid];
       var fields = [DBFN.COMPANIONID_uuid_pc2];
@@ -43,7 +44,7 @@ module.exports = function(uid, callback) {
         
         cb(null, newIds);
       })
-    },
+    }, //-----------------------------------------------------------------
     function (newIds, cb) {
       var params = [uid];
   
@@ -57,8 +58,9 @@ module.exports = function(uid, callback) {
   
       var const_fields = [DBF.USERID_uuid_p];
       var const_values = [1];
+      var dbName        = dbConst.DB.USER_CHATS.name;
   
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, DBC.name, const_fields, const_values);
+      var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, const_fields, const_values);
   
       cdb.client.execute(query, params, {prepare: true}, function (err, result) {
         if (err) { return cb(err, null); }
@@ -76,32 +78,27 @@ module.exports = function(uid, callback) {
           
           user[PF.ISNEW]  = false;
       
-          users.push(user);
-      
           for (var n = 0; i < newIds.length; i++) {
             if(user[PF.ID] == newIds[n][PF.ID]) {
               user[PF.ISNEW] = true;
             }
           }
-          
-          // if(user[PF.ISNEW] == true) {
-          //   countNew++;
-          // }
+  
+          users.push(user);
+ 
         }
     
         var res = {};
-        res[PF.CHATS] = users;
-        res[PF.NEWCHATS] = newIds.length;
+        res[PF.CHATS]     = users;
+        res[PF.NEWCHATS]  = newIds.length;
     
         cb(null, res);
       });
-    }
-  ], //--------------------------------------------------------------------------
+    }], //--------------------------------------------------------------------------
   function (err, chats) {
     if(err) { return callback(err); }
     
     callback(null, chats);
   });
-  
-  
+    
 };

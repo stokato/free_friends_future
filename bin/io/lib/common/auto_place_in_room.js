@@ -1,17 +1,14 @@
-var constants = require('./../../../constants'),
-    createRoom = require('./create_room');
-
-var oPool = require('./../../../objects_pool');
-/*
- Помещаем пользователя в случайную комнату (при подключении)
- - Получаем свой профиль
- - Узнаем пол
- - Ищем комнату где не хватает наименьшее число игроков нашего пола
- - Если нет свободных комнат, созадем новую
- - Отвязываемся от старой комнаты (наверное лишнее)
- - Привязываемся к новой
- - Возвращаем выбранную комнату
+/**
+ * Помещаем профиль в произвольную комнату (из числа не полных)
+ *
+ * @param socket, callback
+ * @return newRoom
  */
+
+var constants = require('./../../../constants'),
+    createRoom = require('./create_room'),
+    oPool = require('./../../../objects_pool');
+
 module.exports = function (socket,  callback) {
   var selfProfile = oPool.userList[socket.id];
   var newRoom = null;
@@ -25,7 +22,7 @@ module.exports = function (socket,  callback) {
     selfRoomName = oPool.roomList[socket.id].getName();
   }
 
-  // Выбирае комнату с наименьшим количеством пустующих мест для этого пола
+  // Выбираем комнату с наименьшим количеством пустующих мест для этого пола
   var item;
   for(item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
@@ -46,7 +43,7 @@ module.exports = function (socket,  callback) {
   
   var oldRoom = oPool.roomList[socket.id];
   if(oldRoom) {
-    oldRoom.deleteProfile(sex, selfProfile);
+    oldRoom.deleteProfile(selfProfile);
     
     if(oldRoom.getCountInRoom(constants.GUY) == 0 &&
       oldRoom.getCountInRoom(constants.GIRL) == 0)  {
@@ -54,7 +51,7 @@ module.exports = function (socket,  callback) {
     }
   }
   
-  newRoom.addProfile(sex, selfProfile);
+  newRoom.addProfile(selfProfile);
   
   selfProfile.setGame(newRoom.getGame());
   oPool.roomList[socket.id] = newRoom;

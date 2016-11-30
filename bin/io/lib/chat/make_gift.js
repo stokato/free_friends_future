@@ -1,20 +1,18 @@
+/**
+ *  Делаем подарок пользователю
+ *
+ *  @param socket, options - объект и ид пользователя, которому дарим и ид подарка, callback
+ */
+
 var async      =  require('async');
 
-// Свои модули
-var constants         = require('./../../../constants'),
-  PF                  = constants.PFIELDS,
-  getUserProfile      = require('./../common/get_user_profile'),
-  setGiftTimeout      = require('./../common/set_gift_timeout'),
-  db                  = require('./../../../db_manager'),
-  oPool               = require('./../../../objects_pool');
+var constants      = require('./../../../constants'),
+  PF               = constants.PFIELDS,
+  getUserProfile   = require('./../common/get_user_profile'),
+  setGiftTimeout   = require('./../common/set_gift_timeout'),
+  db               = require('./../../../db_manager'),
+  oPool            = require('./../../../objects_pool');
 
-/*
- Сделать подарок: ИД подарка, объект с инф. о получателе (VID, еще что то?)
- - Ищем подарок по ИД в базе
- - Получаем профиль адресата (из ОЗУ или БД)
- - Добавляем адресату подарок (пишем сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
- */
 module.exports = function (socket, options, callback) {
 
     var selfProfile = oPool.userList[socket.id];
@@ -49,7 +47,7 @@ module.exports = function (socket, options, callback) {
           cb(null, friendProfile, gift);
         });
       }, //---------------------------------------------------------------
-      function (friendProfile, gift, cb) { // Снимаем деньги с пользователя
+      function (friendProfile, gift, cb) { // Снимаем деньги с пользователя и уведомляем его об этом
         selfProfile.pay(gift[PF.PRICE], function (err, money) {
           if(err) { return cb(err, null); }
           
@@ -61,7 +59,7 @@ module.exports = function (socket, options, callback) {
           cb(null, friendProfile, gift);
         });
       },//---------------------------------------------------------------
-      function (friendProfile, gift, cb) { // Сохраняем подарок
+      function (friendProfile, gift, cb) { // Добавляем подарко адресату
 
         friendProfile.addGift(selfProfile, date, gift[PF.SRC], gift[PF.ID],  gift[PF.TYPE], gift[PF.TITLE],
                                                                       function (err, result) {
@@ -71,7 +69,7 @@ module.exports = function (socket, options, callback) {
         });
 
       } //---------------------------------------------------------------
-    ], function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+    ], function (err, friendProfile) { // Вызывается последней. Рассылаем уведомления о подарке
       if (err) { return callback(err); }
   
       var gift = friendProfile.getGift1();

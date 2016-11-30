@@ -1,5 +1,13 @@
-var db = require('./../../../db_manager');
-var constants = require('./../../../constants');
+/**
+ * Получаем баланс пользователя
+ * Сохраняем в свойство профиля
+ *
+ * @param callback
+ * @return money - количество монет у пользоателя
+ */
+
+var db = require('./../../db_manager');
+var constants = require('./../../constants');
 
 /*
     Получаем деньги

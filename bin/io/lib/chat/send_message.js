@@ -1,4 +1,11 @@
-var async     =  require('async');
+/**
+ * Отправляем сообщение в комнату, либо в приватный чат
+ *
+ * @param socket, options - объект с ид адресата и текстом сообщения, callback
+ *
+ */
+
+var async         = require('async');
 
 // Свои модули
 var constants     = require('./../../../constants'),
@@ -6,35 +13,23 @@ var constants     = require('./../../../constants'),
   openPrivateChat = require('./open_private_chat'),
   getUserProfile  = require('./../common/get_user_profile'),
   sendInRoom      = require('./../common/send_in_room'),
-  sendOne         = require('./../common/send_one');
-
-var cdb = require('./../../../db/lib/common/cassandra_db');
-
-var oPool = require('./../../../objects_pool');
+  sendOne         = require('./../common/send_one'),
+  cdb             = require('./../../../db/lib/common/cassandra_db'),
+  oPool           = require('./../../../objects_pool');
 
 
-/*
- Отправить личное сообщение: Сообщение, объект с инф. о получателе (VID, еще что то?)
- - Получаем свой профиль
- - Получаем профиль адресата (из ОЗУ или БД)
- - Сохраняем адресату сообщение
- - Сохраняем сообщение себе                                       ???
- - Сообщаем клиену (и второму, если он онлайн) (а что сообщаем?)
- */
 module.exports = function (socket, options, callback) {
   
   var selfProfile = oPool.userList[socket.id];
   
-  if (selfProfile.getID() == options.id) {
+  if (selfProfile.getID() == options[PF.ID]) {
     return callback(constants.errors.SELF_ILLEGAL);
   }
   
-  var isChat = options.id || false;
-  
+  var isPrivate = options[PF.ID] || false;
   var date = new Date();
   
   var info = {};
-  
   info[PF.ID]       = selfProfile.getID();
   info[PF.VID]      = selfProfile.getVID();
   info[PF.AGE]      = selfProfile.getAge();
@@ -44,24 +39,24 @@ module.exports = function (socket, options, callback) {
   info[PF.TEXT]     = options[PF.TEXT];
   info[PF.DATE]     = date;
   
-  if(!isChat) {
+  // Если сообщение не приватное, шлем в комнату и все
+  if(!isPrivate) {
     var currRoom = oPool.roomList[socket.id];
     
     info[PF.MESSAGEID] = cdb.timeUuid.fromDate(date);
     
     sendInRoom(socket, currRoom, info);
     
-    callback(null, null);
+    return callback(null, null);
   }
-  
-  
+    
   async.waterfall([//--------------------------------------------------------------------------
-    function (cb) { // Получаем данные адресата и готовим сообщение к добавлению в историю
+    function (cb) { // Получаем профиль адресата
       
       getUserProfile(options[PF.ID], cb);
       
     }, //--------------------------------------------------------------------------
-    function(friendProfile, cb) { // Открываем чат, если еще не открыт
+    function(friendProfile, cb) { // Открываем чат с адресатом, если еще не открыт
       if(!selfProfile.isPrivateChat(friendProfile.getID())) {
         
         var params = {};
@@ -77,9 +72,8 @@ module.exports = function (socket, options, callback) {
         cb(null, friendProfile);
       }
     },//--------------------------------------------------------------------------
-    function(friendProfile, cb) { // Открываем чат, если еще не открыт
+    function(friendProfile, cb) { // Если собеседник онлайн и у него не открыт чат с нами - открываем
       
-      // Если собеседник онлайн и у него не открыт чат с нами
       if (oPool.profiles[options[PF.ID]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
         
         var params = {};

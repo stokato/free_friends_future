@@ -1,9 +1,12 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
- Добавляем подарок в БД
+/**
+ * Добавляем подарок в БД
+ *
+ * При этом обновляем сведения о подарке, весяцем на аве и сохраняем это так же в БД
  */
+
+var db  = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(giftMaker, date, gsrc, gid, gtype, gtitle, callback) {
   var self = this;
   

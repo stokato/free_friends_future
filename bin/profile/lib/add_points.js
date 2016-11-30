@@ -1,9 +1,12 @@
-var db        = require('./../../../db_manager');
-var IOF       = require('./../../../constants').PFIELDS;
-
-/*
-    Добавляем очки пользователю
+/**
+ * Добавляем очки пользователю
+ *
+ * Сохраняем обновленные данные в БД
  */
+
+var db        = require('./../../db_manager');
+var IOF       = require('./../../constants').PFIELDS;
+
 module.exports = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Количество очков задано некорректно"));
@@ -28,6 +31,7 @@ module.exports = function(num, callback) {
   
 };
 
+//-------------------------------
 function isNumeric(n) { // Проверка - явлеется ли аргумент числом
   return !isNaN(parseFloat(n)) && isFinite(n);
 }

@@ -1,15 +1,17 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Удалить (отвязать) профиль
+ *
+ * @param sex - пол пользователя, @profile - его профиль
  */
 
 var constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
 
-/*
-    Удалить (отвязать) профиль
-  */
-module.exports = function (sex, profile) {
+module.exports = function (profile) {
   
+  var sex = profile.getSex();
   if(sex == constants.GUY) {
     delete  this._guys[profile.getID()];
     this._guys_count--;

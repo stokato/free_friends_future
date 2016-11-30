@@ -1,12 +1,13 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Получаем сведения о комнате
+ *
+ * @return roomInfo
  */
 
 var constants = require('./../../constants');
 
-/*
-    Получаем сведения о комнате
- */
 module.exports = function () {
   return {
     name : this.getName(),

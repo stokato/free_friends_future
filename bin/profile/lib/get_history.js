@@ -1,9 +1,13 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
-    Получить историю приватного чата за заданный период времени
+/**
+ * Получаем историю приватного чата за заданный период времени
+ *
+ * @param id - ид пользователя, с которым открывается чат, fdate, sdate - временной период, callback
+ * @return список сообщений
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(id, fdate, sdate, callback) {
   var self = this;
   

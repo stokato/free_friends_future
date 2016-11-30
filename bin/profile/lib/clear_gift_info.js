@@ -1,6 +1,7 @@
-
-/*
-    Убираем из профиля сведения о последнем подарке
+/**
+ * Убираем из профиля сведения о последнем подарке
+ *
+ * @param callback
  */
 module.exports = function(callback) {
   this._pGift1 = null;

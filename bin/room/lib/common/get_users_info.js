@@ -1,5 +1,7 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Получаем сведения о пользователях одного пола в комнате
  */
 
 var constants = require('./../../../constants'),

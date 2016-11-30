@@ -1,3 +1,10 @@
+/**
+ * Обрабатываем ошибки
+ *
+ * @param socket, emit, err, res
+ *
+ */
+
 var constants  = require('./../../../constants');
 var IOError    = require('./io_error');
 

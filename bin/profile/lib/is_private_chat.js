@@ -1,6 +1,9 @@
-/*
-  Проверить - есть ли такой чат
+/**
+ * Проверяем, октрыт ли чат с таким пользователем
+ * @param id - ид пользователя
+ * @return {boolean}
  */
+
 module.exports = function(id) {
   var chats = this._pIsPrivateChats;
 

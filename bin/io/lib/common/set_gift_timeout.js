@@ -1,3 +1,13 @@
+/**
+ * Устанавливаем таймаут времени,
+ * в течение которого профиль будет хранить информацию о
+ * полседнем подарке пользователю
+ *
+ * По истечении времени шлем всем в комнате обновленные сведения (убрать подарок с авы на игровом столе)
+ *
+ * @param id - ид пользователя
+ */
+
 var constants     = require('./../../../constants'),
   sendUsersInRoom = require('./send_users_in_room'),
   IOError         = require('./../common/io_error'),
@@ -16,10 +26,7 @@ module.exports = function(id) {
           if(err) {
             return new IOError(constants.IO_MAKE_GIFT, err.message || constants.errors.OTHER.message);
           }
-    
-          
         });
-        
       });
     }
   }, constants.GIFT_TIMEOUT);

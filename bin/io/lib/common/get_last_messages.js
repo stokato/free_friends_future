@@ -1,6 +1,9 @@
+/**
+ * Отправляем пользователю последние сообщения общего чата
+ */
+
 var sendOne = require('./send_one');
 
-// Показать последние сообщения
 module.exports = function (socket, room) {
   var messages = room.getMessages();
 
@@ -8,5 +11,3 @@ module.exports = function (socket, room) {
     sendOne(socket, messages[i]);
   }
 };
-
-

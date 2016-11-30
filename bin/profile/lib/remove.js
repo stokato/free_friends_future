@@ -1,4 +1,4 @@
-var db = require('./../../../db_manager');
+var db = require('./../../db_manager');
 
 /*
  Удаляем польлзователя из БД
@@ -33,7 +33,6 @@ module.exports = function(callback) {
         if(err) { return callback(err, null) }
         db.deleteGuests(id, function(err, id) { // и гостей
           if(err) { return callback(err, null) }
-
           db.deleteUser(id, function(err, id) { // и самого пользователя
             if(err) { return callback(err, null) }
 

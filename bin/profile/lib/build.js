@@ -1,10 +1,16 @@
-var constants = require('../../../constants'),
-    IOF = constants.PFIELDS;
-var db = require('./../../../db_manager');
-
-/*
-    Инициализируем профиль
+/**
+ * Инициализируем профиль для внутренних операций
+ *
+ * Ищем прфиль по его ид *
+ * @param String id - ид пользователя
+ *
+ * @return id
  */
+
+var constants = require('../../constants'),
+    IOF       = constants.PFIELDS,
+    db        = require('./../../db_manager');
+
 module.exports = function(id, callback) {
  var self = this;
 

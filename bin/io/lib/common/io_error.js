@@ -1,10 +1,15 @@
 /**
  * Created by s.t.o.k.a.t.o on 24.11.2016.
+ *
+ * Свой объект ошибок для IO
+ *
+ * @param func - эмит, при обработке которого произошла ошибка, message - сообщение об ошибке
  */
-var constants = require('../../../constants');
+
 var logger = require('./../../../../lib/log')(module);
 
-// Свой объект ошибок
+var constants = require('../../../constants');
+
 function IOError(func, message) {
   var err = {};
   err.message = message;
@@ -43,10 +48,12 @@ function IOError(func, message) {
     default:  err.name =   "Неизвестная ошибка"
   }
   
+  // Логируем
   logger.error(err.name + " : " + err.message);
   logger.error(err.stack);
-  
 }
+
+// Наследуем стек
 IOError.prototype = Object.create(Error.prototype);
 IOError.prototype.constructor = IOError;
 

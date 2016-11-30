@@ -1,20 +1,25 @@
+/**
+ * Получаем историю сообщений по приватному чату
+ *
+ * @param socket, options - обект с ид пользователя, чат с которым нужно поулучить и временной период
+ */
+
 var async           = require('async');
 
 var constants       = require('./../../../constants'),
   getUserProfile    = require('./../common/get_user_profile'),
-  sendOne           = require('./../common/send_one');
-
-var oPool = require('./../../../objects_pool');
+  sendOne           = require('./../common/send_one'),
+  oPool             = require('./../../../objects_pool');
 
 module.exports = function(socket, options, callback) {
   
   async.waterfall([ //-----------------------------------------------------
-    function(cb) {
+    function(cb) { // Получаем профиль
       
       getUserProfile(options[constants.PFIELDS.ID], cb);
       
     }, //------------------------------------------------------------------
-    function(friendProfile, cb) { // Получаем историю
+    function(friendProfile, cb) { // Получаем историю и отправляем отдельными сообщениями
       var selfProfile = oPool.userList[socket.id];
       
       if(selfProfile.getID() == options[constants.PFIELDS.ID]) {

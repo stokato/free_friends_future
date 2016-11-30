@@ -1,3 +1,7 @@
+/**
+ * Парсинг строк
+ */
+
 var xssFilter = require('xss-filters');
 var validator = require('validator');
 

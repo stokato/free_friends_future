@@ -1,10 +1,11 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Удаляем трек из трек-листа
+ *
+ * @param tid - ид трека
  */
 
-/*
-    Удаляем трек из трек-листа
- */
 module.exports = function (tid) {
   for (var i = 0; i < this._track_list.length; i++) {
     if (this._track_list[i].track_id == tid) {

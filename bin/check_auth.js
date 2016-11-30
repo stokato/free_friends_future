@@ -1,5 +1,7 @@
 /**
  * Created by s.t.o.k.a.t.o on 24.11.2016.
+ *
+ * Проверяем аутентификацию
  */
 var md5 = require('md5');
 

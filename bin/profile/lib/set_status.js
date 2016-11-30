@@ -1,9 +1,13 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
-    Устанавливаем статус игрока
+/**
+ * Устанавливаем статус игрока
+ *
+ * @param status - новый статус, callback
+ * @return status
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(status, callback) {
   var self = this;
 

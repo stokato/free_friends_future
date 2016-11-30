@@ -1,3 +1,10 @@
+/**
+ * Проверяем поля объектов, полученных от клиента, на соответствие требованиям
+ *
+ * @param em - эмит, socket, options - объект с опциями для проверки, callback
+ * @return socket, options - проверенные и санитаризированные опции
+ */
+
 var validator = require('validator');
 
 var constants = require('./../../../constants'),
@@ -67,7 +74,6 @@ module.exports = function (em, socket, options, callback) {
     case constants.IO_GET_PROFILE :
       isValid = checkID(options[PF.ID]);
       
-      
       err.message = "Некорректно задан ИД";
       
       options[PF.ID] = sanitize(options[PF.ID]);
@@ -85,7 +91,6 @@ module.exports = function (em, socket, options, callback) {
       
       isValid = (PF.MONEY in options)?             isValid : false;
       isValid = (validator.isInt(options[PF.MONEY]))?  isValid : false;
-      
       break;
     
     case constants.IO_ADD_FRIEND :
@@ -145,7 +150,6 @@ module.exports = function (em, socket, options, callback) {
       err.message = "Не задано свойство target";
       
       options[PF.TARGET] = sanitize(options[PF.TARGET]);
-      
       break;
     
     
@@ -156,7 +160,6 @@ module.exports = function (em, socket, options, callback) {
       
       isValid = (PF.DURATION in options)? isValid : false;
       isValid = (validator.isInt(options[PF.DURATION]))? isValid : false;
-      
       
       err.message = "Не задана продолжительность трека";
       
@@ -183,7 +186,6 @@ module.exports = function (em, socket, options, callback) {
       err.message = "Не задан текст вопроса";
       
       options[PF.TEXT] = sanitize(options[PF.TEXT]);
-      
       break;
     
     case constants.IO_DEL_QUESTION :
@@ -211,12 +213,12 @@ module.exports = function (em, socket, options, callback) {
   
 };
 
-
 function checkID(id) {
   var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
   var ID_LEN = 36;
   
   var res = (id + "").search(idRegExp);
+  
   return !!(res == 0 && id.length == ID_LEN);
 }
 

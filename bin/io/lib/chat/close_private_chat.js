@@ -1,3 +1,10 @@
+/**
+ * Закрываем приватный чат
+ *
+ * @param socket, options - объект с ид чата, callback
+ * @return res - объект с ид чата
+ */
+
 var constants     = require('./../../../constants'),
     oPool         = require('./../../../objects_pool');
 

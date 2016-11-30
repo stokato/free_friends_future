@@ -1,11 +1,12 @@
-/*
-    Добавить приватный чат  в список открытых чатов
+/**
+ * Добавляем приватный чат  в список открытых чатов
+ *
+ * Есть он уже там, ничего  не делаем
  */
 module.exports = function(companion) {
   
   var cid = companion.getID();
   
-  // Если уже есть такой чат, ничего не делаем
   for(var i = 0; i < this._pIsPrivateChats.length; i++) {
     if(this._pIsPrivateChats[i] == cid) {
       return;

@@ -1,4 +1,10 @@
-// Отправляем пользователям информацию о комнате, в которой они находятся
+/**
+ * Отправляем пользователям информацию о комнате, в которой они находятся
+ *
+ * @param info - сведения о комнате, selfID - ид пользователя, сведения о котором следует вернуть, callback
+ * @return info
+ */
+
 var async = require('async');
 
 var constants = require('./../../../constants'),
@@ -8,6 +14,8 @@ var constants = require('./../../../constants'),
 
 module.exports = function(info, selfId, callback) {
 
+  // Сосовтавляем список ид всех пользователей в комнате
+  // TODO: следуте изменить
   var usersID = [], i;
 
   for(i = 0; i < info.guys.length; i++) {
@@ -18,6 +26,8 @@ module.exports = function(info, selfId, callback) {
     usersID.push(info.girls[i][PF.ID]);
   }
 
+  // Для каждого  пользователя проверяем - кто из остальных является его другом,
+  // отправляем измененные сведения этому пользователю
   async.map(usersID, function(id, cb) {
     var profile   = oPool.profiles[id];
     var roomUsers = usersID.slice();
@@ -53,7 +63,7 @@ module.exports = function(info, selfId, callback) {
       var res = emitRoomInfo(profile, info);
       cb(null, res);
     }
-  }, function(err, results) {
+  }, function(err, results) { // Возвращаем измененные сведения укзаанному пользователю
     if(err) { callback(err); }
 
     var res = null;
@@ -66,7 +76,7 @@ module.exports = function(info, selfId, callback) {
     callback(null, res);
   });
 
-  //-------------
+  //-------------------------------------
   function emitRoomInfo(profile, info) {
     var res = null;
     if(selfId && profile.getID() == selfId) {

@@ -1,9 +1,13 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
-  Устанавливаем количество монет игрока
+/**
+ * Устанавливаем баланс
+ *
+ * @param value - новый баланс, callback
+ * @return money - новый баланс
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Количество монет задано некорректно"));
@@ -24,6 +28,7 @@ module.exports = function(num, callback) {
   });
 };
 
+//----------------------------------------------
 function isNumeric(n) { // Проверка - явлеется ли аргумент числом
   return !isNaN(parseFloat(n)) && isFinite(n);
 }

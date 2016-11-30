@@ -1,8 +1,12 @@
-var db = require('./../../../db_manager');
-
-/*
-  Возвращаем историю чатов
+/**
+ * Возвращаем историю чатов
+ *
+ * @param callback
+ * @return chats - список чатов
  */
+
+var db = require('./../../db_manager');
+
 module.exports = function(callback) {
  var self = this;
   

@@ -1,8 +1,13 @@
 /**
  * Created by s.t.o.k.a.t.o on 21.11.2016.
+ *
+ * Убираем у друзей/гостей/подарков метку is_new - новый
+ *
+ * @param target - флаг, кого отментить просмотренным
+ * @return target
  */
-var constants = require('./../../../constants');
-var db = require('./../../../db_manager');
+var constants = require('./../../constants');
+var db = require('./../../db_manager');
 
 module.exports = function (target, callback) {
   
@@ -23,6 +28,7 @@ module.exports = function (target, callback) {
       callback(new Error("Не задана цель для обновления"));
   }
   
+  //-----------------------------------------
   function onComplete(err) {
     if(err) { return callback(err); }
     

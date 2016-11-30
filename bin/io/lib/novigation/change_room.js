@@ -66,7 +66,7 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.NO_SUCH_ROOM);
   }
   
-  currRoom.deleteProfile(userSex, selfProfile);
+  currRoom.deleteProfile(selfProfile);
   
   var isCurrRoom = true;
   if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
@@ -74,7 +74,7 @@ module.exports = function (socket, options, callback) {
     isCurrRoom = false;
   }
   
-  newRoom.addProfile(userSex, selfProfile);
+  newRoom.addProfile(selfProfile);
   
   oPool.roomList[socket.id] = newRoom;
   

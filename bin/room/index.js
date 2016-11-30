@@ -1,5 +1,12 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * @class Комната
+ *
+ * @param name - имя комнаты
+ *
+ * Комната содержит несколько игроков разного пола, экземпляр класса Игра, экземпляр класса Плеер
+ * Пердоставляет инструменты для доступа к ним и получения сведений
  */
 
 var constants = require('./../constants'),
@@ -45,34 +52,22 @@ function Room(name)  {
   
 }
 
+// Есть ли прфофиль с таким ИД
 Room.prototype.isProfile = function (uid) {
-  
   return (uid in this._guys || uid in this._girls);
 };
 
+// Получить количество человек указанного пола в комнате
 Room.prototype.getCountInRoom = function (sex) {
   return (sex == constants.GUY)? this._guys_count : this._girls_count;
 };
 
-Room.prototype.setGame = function(game) {
-  this._game = game;
-};
 
-Room.prototype.getGame = function() {
-  return this._game;
-};
-
-Room.prototype.getName = function() {
-  return this._nameOfRoom;
-};
-
-Room.prototype.getMusicPlayer = function () {
-  return this._mplayer;
-};
-
-Room.prototype.getMessages = function () {
-  return this._messages;
-};
+Room.prototype.setGame        = function(game) { this._game = game; };
+Room.prototype.getGame        = function() {  return this._game; };
+Room.prototype.getName        = function() {  return this._nameOfRoom; };
+Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
+Room.prototype.getMessages    = function () {  return this._messages; };
 
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;

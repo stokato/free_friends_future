@@ -1,9 +1,10 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
- Сохраняем личное сообщение в БД
+/**
+ * Сохраняем личное сообщение в БД
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(companion, incoming, date, text, callback) {
   var self = this;
   
@@ -22,15 +23,7 @@ module.exports = function(companion, incoming, date, text, callback) {
   
   db.addMessage(self._pID, message, function(err) {
     if (err) { return callback(err, null); }
-
-    if (!self.isPrivateChat(companion.getID())) {
-      self._pIsNewMessages ++;
-      
-      self.save(function(err) {
-        if (err) { return callback(err, null); }
-
-        callback(null, message);
-      });
-    } else callback(null, message);
+    
+    callback(null, message);
   });
 };

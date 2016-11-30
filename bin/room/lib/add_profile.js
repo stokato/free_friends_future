@@ -1,16 +1,19 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Добавить (связать) профиль
+ *
+ * @param profile - профиль
  */
 
 var constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
 
-/*
-    Добавить (связать) профиль
- */
-module.exports = function (sex, profile) {
+module.exports = function (profile) {
+  
+  var sex = profile.getSex();
   if(sex == constants.GUY) {
-    this._guys[profile.getID()] = profile;
+    this._guys[profile.getID()]  = profile;
     this._guys_count++;
   } else {
     this._girls[profile.getID()] = profile;

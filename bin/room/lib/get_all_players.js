@@ -1,5 +1,10 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ *  Получить профили всех пользователей в комнате
+ *
+ *  @param sex - пол профиля (не обязательный)
+ *  @return players - список пользователей
  */
 
 var constants = require('./../../constants');

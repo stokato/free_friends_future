@@ -1,9 +1,9 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
- */
-
-/*
-    Вернуть первый попавщийся сокет
+ *
+ * Вернуть первый попавшийся сокет
+ *
+ * @return socket
  */
 
 module.exports = function () {
@@ -15,15 +15,13 @@ module.exports = function () {
       break;
     }
     if(!profile) {
-      for(index in room.girls) if(room.girls.hasOwnProperty(index)) {
-        profile = room.girls[index];
+      for(index in this._girls) if(this._girls.hasOwnProperty(index)) {
+        profile = this._girls[index];
         break;
       }
     }
     
-    if(!profile) {
-      return null;
-    }
+    if(!profile) { return null;  }
     
     return profile.getSocket();
 };

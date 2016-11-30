@@ -1,27 +1,33 @@
-var socketio  =  require('socket.io');
+/**
+ * Инициализируем сокет-сервер
+ * Добавляем поддержку кросс-доменных соединений
+ * Добавляем поддержку сессий
+ * Вешаем эмит на соединение
+ *
+ * @type {Server}
+ *
+ * @return profiles - коллекция профилей для модуля vk
+ */
+
+var socketio  = require('socket.io');
 var ios       = require('socket.io-express-session');
-
-var ioClient = require('socket.io-client');
-
-var emitInit = require('./lib/emits/emit_init');
-
-var session     = require('./../../lib/session');
+var ioClient  = require('socket.io-client');
+var emitInit  = require('./lib/emits/emit_init');
+var session   = require('./../../lib/session');
 //var checkSession = require('./checkSession');
 
-var oPool       = require('./../objects_pool');
+var oPool     = require('./../objects_pool');
 
 var io = null;                                      // Сокет
 
-/*
-При подключении выполняем инициализацию и вешаем эмиттеры
- */
 module.exports.listen = function(server, callback) {
-  //io = socketio.listen(server);
   io = socketio(server);
 
   //io.set('log level', 1);
-  io.set('origins', '*:*'); // 'dev.foo.com:* foo.com:* 10.10.17.252:* www.foo.com:* https://dev.foo.com:* https://foo.com:* https://10.10.17.252:* https://www.foo.com:*'
-
+  /*
+   'dev.foo.com:* foo.com:* 10.10.17.252:* www.foo.com:* https://dev.foo.com:* https://foo.com:* https://10.10.17.252:* https://www.foo.com:*'
+   */
+  io.set('origins', '*:*');
   io.use(ios(session));
 
   //io.use(checkSession);

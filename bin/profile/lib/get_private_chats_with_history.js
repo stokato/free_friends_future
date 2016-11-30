@@ -1,9 +1,13 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
-    Получаем историю сообщений одного собеседника
+/**
+ * Получаем историю по всем открытым чатам пользователя
+ *
+ * @param fdate, sdate - временной период, callback
+ * @return messages - осписок сообщений пользователя
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
+
 module.exports = function(fdate, sdate, callback) {
  var self = this;
 

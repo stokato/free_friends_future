@@ -1,3 +1,9 @@
+/**
+ * Отправляем всем аутентифицированным клиентам
+ *
+ * @param socket, emit, message
+ */
+
 var oPool = require('./../../../objects_pool');
 
 module.exports = function (socket, emit, message) {

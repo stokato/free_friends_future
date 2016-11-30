@@ -1,5 +1,10 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Возвращаем случайный профиль
+ *
+ * @param sex - пол пользователя, excessIds - ид, которые следует исключить
+ * @return profile - профиль выбранного пользователя
  */
 
 module.exports = function (sex, excessIds) { excessIds = excessIds || [];

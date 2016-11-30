@@ -1,3 +1,9 @@
+/**
+ * Отправляем сообщение на указанный сокет
+ *
+ * @param socket, message
+ */
+
 var constants = require('./../../../constants');
 
 // Отправить сообщение одному

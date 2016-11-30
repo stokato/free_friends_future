@@ -1,12 +1,14 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.11.2016.
+ *
+ * Снимае указанную сумму монет с баланса пользователя
+ *
+ * @param price - сумма с счислению, callback
+ * @return money - новый баланс
  */
 
-var constants = require('../../../constants');
+var constants = require('../../constants');
 
-/*
-    Снимаем монеты с пользователя
- */
 module.exports = function (price, callback) {
   
   var self = this;

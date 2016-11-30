@@ -1,9 +1,14 @@
-var db = require('./../../../db_manager');
-var IOF = require('./../../../constants').PFIELDS;
-
-/*
-    Проверяем, является ли пользватель другом
+/**
+ * Проверяем, являются ли пользователи из списка друзьями
+ *
+ * Ищем в базе друзей, свяряем с полученным списком - друзьям меняем свойство is_friend на true
+ *
+ * @param usersID - список ид для проверки, callback
+ * @result results - список пользователей с признаком is_friend
  */
+
+var db = require('./../../db_manager');
+var IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(usersID, callback) {
   var self = this;
@@ -15,9 +20,8 @@ module.exports = function(usersID, callback) {
     for(var i = 0; i < usersID.length; i++) {
       
       var info = {};
-      info[IOF.ID] = usersID[i];
-      info[IOF.ISFRIEND] = false;
-      
+      info[IOF.ID]        = usersID[i];
+      info[IOF.ISFRIEND]  = false;
       results.push(info);
       
       if(friendsInfo.friends) {

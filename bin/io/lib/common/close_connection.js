@@ -1,12 +1,17 @@
+/**
+ * Закрываем соединение
+ *
+ * @param socket
+ */
+
 var async     =  require('async');
 
 var IOError         = require('./../common/io_error'),
     constants       = require('./../../../constants'),     // Константы
     PF              = constants.PFIELDS,
     emitAllRooms    = require('../common/emit_all_rooms'),
-    sendUsersInRoom = require('./send_users_in_room');
-
-var oPool = require('./../../../objects_pool');
+    sendUsersInRoom = require('./send_users_in_room'),
+    oPool           = require('./../../../objects_pool');
 
 module.exports = function(socket) {
 
@@ -55,7 +60,7 @@ module.exports = function(socket) {
       }
       cb(null, room);
     },//----------------------------------------------------------------
-    function (room, cb) { // Получаем данные по игрокам в комнате (для стола)
+    function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
       if(room) {
         
         var roomInfo = room.getInfo();

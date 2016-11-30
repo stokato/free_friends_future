@@ -1,3 +1,7 @@
+/**
+ * Модуль обработки запросов от Вконтакте
+ */
+
 var async = require('async');
 var db = require('./db_manager');
 
@@ -9,14 +13,13 @@ var PF = constants.PFIELDS;
 
 var oPool = require('./objects_pool');
 
-//var secret_key = "hiUl8U4F9q3BcbAl28va"; // Защищенный ключ приложения
-function VK () {
 
-}
+function VK () {}
 
-VK.prototype.handle = function(req, profiles, callback) { var request = req || {};
+VK.prototype.handle = function(req, profiles, callback) {
+  var request = req || {};
 
-// Сначала проверка
+  // Сначала проверка
   var sig = request["sig"];
 
   var fields= [];
@@ -57,7 +60,6 @@ VK.prototype.handle = function(req, profiles, callback) { var request = req || {
     default : sendError(callback);
   }
 
-  //console.log(request);
 };
 
 module.exports = VK;
@@ -103,7 +105,6 @@ function getItem(request, callback) {
 function changeOrderStatus(request, profiles, callback) {
   // Изменение статуса заказа
   var response = {};
-  //var f = constants.FIELDS;
 
   if (request["status"] == "chargeable") {
     var orderId = request["order_id"];
@@ -146,12 +147,12 @@ function changeOrderStatus(request, profiles, callback) {
         }
 
         var ordOptions = {};
-        ordOptions[PF.ORDERVID]    = options[PF.ORDERVID];
-        ordOptions[PF.GOODID] = goodInfo[PF.ID];
-        ordOptions[PF.ID]     = info[PF.ID];
-        ordOptions[PF.VID]    = info[PF.VID];
-        ordOptions[PF.SUM]    = goodInfo[PF.PRICE];
-        ordOptions[PF.DATE]   = new Date();
+        ordOptions[PF.ORDERVID]   = options[PF.ORDERVID];
+        ordOptions[PF.GOODID]     = goodInfo[PF.ID];
+        ordOptions[PF.ID]         = info[PF.ID];
+        ordOptions[PF.VID]        = info[PF.VID];
+        ordOptions[PF.SUM]        = goodInfo[PF.PRICE];
+        ordOptions[PF.DATE]       = new Date();
 
         db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
@@ -169,10 +170,9 @@ function changeOrderStatus(request, profiles, callback) {
             if(err) { return cb(err, null); }
 
             if (info) {
-              //cb(null, goodInfo, info);
 
-              options[PF.ID] = info[PF.ID];
-              options[PF.VID] = info[PF.VID];
+              options[PF.ID]    = info[PF.ID];
+              options[PF.VID]   = info[PF.VID];
               options[PF.MONEY] = info[PF.MONEY] + goodInfo[PF.PRICE2];
 
               db.updateUser(options, function(err, id) {
@@ -198,15 +198,14 @@ function changeOrderStatus(request, profiles, callback) {
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options[PF.ID] = selfInfo[PF.ID];
-          options[PF.VID] = selfInfo[PF.VID];
+          options[PF.ID]    = selfInfo[PF.ID];
+          options[PF.VID]   = selfInfo[PF.VID];
           options[PF.MONEY] = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
 
           db.updateUser(options, function(err) {
             if (err) { return cb(err, null); }
 
             options.money = goodInfo[PF.PRICE2];
-            //socket.emit('give_money', options);
 
             if(profiles[options.id]) {
               profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);

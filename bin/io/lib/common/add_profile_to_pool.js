@@ -1,9 +1,16 @@
+/**
+ * Добавляем профиль в пул
+ *
+ * @param profile, socket
+ * @return {boolean} - если уже есть старый - false, если не было - true
+ */
+
 var oPool = require('./../../../objects_pool');
 
-module.exports = function (selfProfile, socket) {
+module.exports = function (profile, socket) {
   
   // Если присутствует старый профиль этого пользователя, меняем его на новый
-  var oldProfile = oPool.profiles[selfProfile.getID()];
+  var oldProfile = oPool.profiles[profile.getID()];
   
   if (oldProfile)  {
     oldProfile.clearExitTimeout();
@@ -20,10 +27,10 @@ module.exports = function (selfProfile, socket) {
     
     return false;
   }
-  // либо сохраняем новый
+  // либо просто сохраняем новый
   else {
-    oPool.userList[socket.id] = selfProfile;
-    oPool.profiles[selfProfile.getID()] = selfProfile;
+    oPool.userList[socket.id] = profile;
+    oPool.profiles[profile.getID()] = profile;
     
     return true;
   }

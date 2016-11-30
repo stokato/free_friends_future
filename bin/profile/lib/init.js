@@ -1,17 +1,22 @@
-var async     = require('async');
-var Config = require('./../../../../config.json');
-var constants = require('../../../constants'),
-    IOF = constants.PFIELDS;
-var db = require('./../../../db_manager');
-
-/*
-    Инициализируем профиль
+/**
+ * Инициализируем профиль
+ * @param socket, options - вид, дата рождения, страна, город, пол, callback
+ *
+ * @return info - сведения о пользователе
  */
+
+var async     = require('async');
+
+var Config    = require('./../../../config.json'),
+    constants = require('../../constants'),
+    IOF       = constants.PFIELDS,
+    db        = require('./../../db_manager');
+
+
 module.exports = function(socket, options, callback) {
   var self = this;
-  //var f = constants.FIELDS;
 
-  async.waterfall([//////////////////////////////////////////////////////////////////////////
+  async.waterfall([//---------------------------------------------------
     function (cb) {  // Устанавливаем свойства
       self._pSocket   = socket;
       self._pVID      = options[IOF.VID];
@@ -21,12 +26,13 @@ module.exports = function(socket, options, callback) {
       self._pSex      = options[IOF.SEX];
 
       if (!self._pSocket) { return cb(new Error("Не задан Socket Id"), null); }
+      
       if (!self._pVID ||  !self._pBDate || !self._pCountry || !self._pCity || !self._pSex) {
         return cb(new Error("Не задана одна из опций"), null);
       }
 
       cb(null, null);
-    },
+    },//---------------------------------------------------
     function (res, cb) {  // Ищем пользователя в базе
       var fList = [
         IOF.SEX,
@@ -70,7 +76,7 @@ module.exports = function(socket, options, callback) {
           cb(null, null);
         }
       });
-    },////////////////////////////////////////////////////////////////////////
+    },//---------------------------------------------------
     function (foundUser, cb) {  // Если изменились нужные  поля, обмновляем их в базе
       if(foundUser) {
         if(self._pSex    != foundUser[IOF.SEX]     || self._pBDate != foundUser[IOF.BDATE]  ||
@@ -85,7 +91,7 @@ module.exports = function(socket, options, callback) {
         } else cb(null, foundUser);
       } else cb(null, foundUser);
     },
-    ////////////////////////////////////////////////////////////////////////////
+    //---------------------------------------------------
     function (foundUser, cb) { // Если в базе такого нет, добавляем
       if (!foundUser) {
         // Добавляем пользователя
@@ -108,7 +114,7 @@ module.exports = function(socket, options, callback) {
         });
       } else cb(null, null);
     }
-    //////////////////////////////////////////////////////////////////////////////////
+    //---------------------------------------------------
   ], function (err) { // Вызвается последней или в случае ошибки
     if (err) { return  callback(err); }
 

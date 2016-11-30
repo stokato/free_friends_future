@@ -1,24 +1,21 @@
+/**
+ * Привязываем обработчик к эмиту
+ *
+ * @param socket, emit, handler, withoutStatus - флаг, не требуется отправлять ответ со статусом операции
+ */
+
 var async     =  require('async');
 
-var oPool = require('./../../../objects_pool');
-
-// Свои модули
 var constants     = require('../../../constants'),
   handleError     = require('../common/handle_error'),
-  checkInput      = require('../common/check_input');
+  checkInput      = require('../common/check_input'),
+  oPool = require('./../../../objects_pool');
 
 /*
   Создает обработчик для указанного эмита, получает так же функцию, которая выполняется при срабатывании
  */
 module.exports = function (socket, emit, handler, withoutStatus) {
   socket.on(emit, function(options) {
-    
-    if(emit == constants.IO_GAME) {
-      var selfProfile = oPool.userList[socket.id];
-      var game = selfProfile.getGame();
-  
-      options._nextGame = game.getNextGame();
-    }
   
     async.waterfall(
       [

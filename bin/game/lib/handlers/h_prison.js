@@ -1,11 +1,16 @@
-var constants = require('../../../constants');
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
+/**
+ * Помещаем игрока в темницу
+ *
+ * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
+ */
+var constants = require('../../../constants'),
+    addAction = require('./../common/add_action'),
+    oPool     = require('./../../../objects_pool');
 
-// Помещаем игрока в темницу
 module.exports = function(game) {
   return function(timer, socket, options) {
   
+    // Если вызов произведен игроком, сохраняем его выбор
     if(!timer) {
       var selfProfile = oPool.userList[socket.id];
       var uid = selfProfile.getID();
@@ -18,9 +23,11 @@ module.exports = function(game) {
     }
     
     //-----------------------------------------------------------
+    // Если все игроки походили или истек таймаут
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
+      // Если игроков не хватает - останавливаем игру
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
@@ -30,6 +37,7 @@ module.exports = function(game) {
         game._prisoner = game._activePlayers[item];
       }
 
+      //
       game._actionsCount = 0;
 
       // Переходим к волчку

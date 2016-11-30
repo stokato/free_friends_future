@@ -1,7 +1,13 @@
+/**
+ * Сохраняем признак того, что игра добавлена в меню пользователя
+ *
+ * @param socket, options, callback
+ *
+ */
 var async = require('async');
 
 var constants  = require('./../../../constants'),
-    PF             = constants.PFIELDS,
+    PF         = constants.PFIELDS,
     oPool      = require('./../../../objects_pool');
 
 module.exports = function(socket, options, callback) {
@@ -12,7 +18,7 @@ module.exports = function(socket, options, callback) {
     return callback(constants.errors.ALREADY_IS_MENU);
   }
   
-  async.waterfall([ //---------------------------------------------------------------------------
+  async.waterfall([ //-------------------------------------------------------------
     function(cb) { // Запоминаем, что пользователь добавил свое приложение в меню
       
       selfProfile.setInMenu(true, function(err) {

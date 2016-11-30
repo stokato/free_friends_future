@@ -1,12 +1,12 @@
-var constants = require('./../../../constants');
-var oPool = require('./../../../objects_pool');
-
-/*
- Отправить изменить статус игрока: Статус
- - Получаем свой профиль
- - Устанавливаем новый статус (пишем в БД)
- - Возвращаем клиенту новый статус
+/**
+ * Меняем статус пользователя
+ *
+ * @param socket, options - объект со статусом, callback
+ * @return {Object} - с новым статусом
  */
+var constants = require('./../../../constants'),
+   oPool      = require('./../../../objects_pool');
+
 module.exports = function (socket, options, callback) {
   
   var selfProfile = oPool.userList[socket.id];
@@ -20,5 +20,3 @@ module.exports = function (socket, options, callback) {
   });
   
 };
-
-

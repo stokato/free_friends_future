@@ -1,6 +1,8 @@
+/**
+ * Останавливаем игру
+ */
 var constants = require('../../../constants');
 
-// Останавливаем игру
 module.exports = function() {
   clearTimeout(this._timer);
 

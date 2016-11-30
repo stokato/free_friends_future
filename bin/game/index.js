@@ -1,8 +1,17 @@
-var constants             = require('../constants');
-var db = require ('./../db_manager');
-
+/**
+ * Класс Игра, стартует, когда набирается достаточное количество игроков и отанавливается, когди их меньше
+ * С заданной периодичностью запускает случайную игру из списка, обрабатывает действия игроков, начисляет
+ * призовые очки и монеты
+ *
+ * @param room
+ * @constructor
+ */
 var logger = require('./../../lib/log')(module);
 
+var constants             = require('../constants');
+var db                    = require ('./../db_manager');
+
+// Методы
 var start                 = require('./lib/main/start'),
     stop                  = require('./lib/main/stop'),
     emit                  = require('./lib/emits/emit'),
@@ -15,8 +24,9 @@ var start                 = require('./lib/main/start'),
     getPlayerInfo         = require('./lib/common/get_player_info'),
     getNextPlayer         = require('./lib/common/get_next_player'),
     checkCountPlayers     = require('./lib/common/check_count_players'),
-    addEmits               = require('./lib/emits/add_emits');
+    addEmits              = require('./lib/emits/add_emits');
 
+// Обработчики игр
 var hStart                  = require('./lib/handlers/h_start'),
     hLot                    = require('./lib/handlers/h_lot'),
     hBottle                 = require('./lib/handlers/h_bottle'),
@@ -28,24 +38,15 @@ var hStart                  = require('./lib/handlers/h_start'),
     hSympathyShow           = require('./lib/handlers/h_sympathy_show'),
     hPrison                 = require('./lib/handlers/h_prison');
 
+// Вопросы
 var gameQuestions = [];
-/**
- * Класс Игра
- * @param room
- * @constructor
- * Метод start запускает игру, выполняетя обработчик start, котоырй дает клиентам команду показать волчек
- *       и назначает ведущего игрока
- * Далее игра реагирует на вызовы клиентов запуская один обработчик за другим согласно логики игры
- * Метод emit вызвает событие игры у клиентов
- * Если не все игроки сделали свой ход за установленное время, обработчик срабатывает автоматически
- * Метод stop останавливает игру
- */
+
 module.exports = Game;
 
 function Game(room) {
   var self = this;
 
-  this._room = room;                  // Стол этой игры
+  this._room = room;                  // Комната, которй принадлежить эта игра
 
   this._actionsQueue  = {};           // Очередь действий игроков
   this._actionsLimits = {};           // Лимиты ответов для игроков
@@ -59,12 +60,12 @@ function Game(room) {
 
   this._timer = null;                 // Таймер, ограничивает время действия игроков, вызвывает следующую игру
 
-  this._gameState = null;              // Состояние игры (отпавляется игроку в случае разрыва соединения)
+  this._gameState = null;             // Состояние игры (отпавляется игроку в случае разрыва соединения)
 
-  this._girlsIndex = 0;                // Индекс играющей девушки
-  this._guysIndex = 0;                 // и парня
-  this._currentSex = 1;                // текущий пол
-
+  this._girlsIndex = 0;               // Индекс играющей девушки
+  this._guysIndex = 0;                // и парня
+  this._currentSex = 1;               // текущий пол
+  
   this._handlers = {};           // Обработчики игр
   this._handlers[constants.G_START]         = hStart(self);
   this._handlers[constants.G_LOT]           = hLot(self);

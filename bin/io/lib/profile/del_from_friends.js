@@ -1,3 +1,9 @@
+/**
+ * Удаляем пользователя из друзей, отправляем сведения о бывшем друге
+ *
+ * @param socket, options - объект с ид бывешго друга, callback
+ *
+ */
 var async     =  require('async');
 
 // Свои модули
@@ -6,17 +12,9 @@ var constants       = require('./../../../constants'),
     getUserProfile  = require('./../common/get_user_profile'),
     oPool           = require('./../../../objects_pool');
 
-/*
- Удалить пользователя из друзей: Информация о друге (VID, или что то еще?)
- - Получаем свой профиль
- - Получаем профиль друга (из ОЗУ или БД)
- - Удаляем друг у друга из друзей (Сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн) ???
- */
 module.exports = function (socket, options, callback) {
 
     var selfProfile = oPool.userList[socket.id];
-
 
     if (selfProfile.getID() == options[PF.ID]) {
       return callback(constants.errors.SELF_ILLEGAL);
@@ -48,7 +46,7 @@ module.exports = function (socket, options, callback) {
         })
 
       }], //--------------------------------------------------------
-      function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+      function (err, friendProfile) { // Отправляем сведения о бывшем друге
         if (err) { return callback(err); }
 
         var friendInfo = fillInfo(friendProfile, date);

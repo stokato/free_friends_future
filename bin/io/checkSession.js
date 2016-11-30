@@ -1,3 +1,7 @@
+/**
+ * Проверяем, получена ли сессия
+ *
+ */
 var cookie = require('cookie');
 
 var log = require('./../../lib/log')(module);

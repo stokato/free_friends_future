@@ -1,9 +1,12 @@
+/**
+ * Сообщаем результаты игры и готовим запуск следующей игры
+ *
+ * @param result - объект с результатами предидущей игры, istimeout - устанавливать таймаут на старт следующей игры
+ */
 var constants = require('../../../constants'),
-  PF = constants.PFIELDS;
+    PF        = constants.PFIELDS;
 
-// Начальный этап с волчком, все игроки должны сделать вызов, после чего
-// выбираем произвольно одного из них и переходим к розыгышу волчка
-module.exports = function(result, isTimeout) { result = result || {}; isTimeout = isTimeout || false;
+module.exports = function(result, istimeout) { result = result || {}; istimeout = istimeout || false;
 
   // Переход к показу результатов игры
   this._nextGame = constants.G_START;
@@ -15,7 +18,7 @@ module.exports = function(result, isTimeout) { result = result || {}; isTimeout 
   // Отправляем результаты игрокам
   result[PF.NEXTGAME] = this._nextGame;
   result[PF.PLAYERS]  = this.getPlayersID();
-  result[PF.PRISON] = null;
+  result[PF.PRISON]   = null;
   
   if(this._prisoner !== null) {
     result.prison = {};
@@ -28,6 +31,6 @@ module.exports = function(result, isTimeout) { result = result || {}; isTimeout 
   this._gameState = result;
 
   // Устанавливаем таймаут
-  var timeout = (isTimeout)? constants.TIMEOUT_RESULTS : 0;
+  var timeout = (istimeout)? constants.TIMEOUT_RESULTS : 0;
   this.startTimer(this._handlers[this._nextGame], timeout);
 };

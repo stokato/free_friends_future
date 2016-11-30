@@ -1,21 +1,28 @@
-var constants = require('../../../constants');
-var PF        = constants.PFIELDS;
-var addPoints = require('./../common/add_points');
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
-var handleError     = require('./../common/handle_error');
+/**
+ * Игра - кто лучший, получаем и рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
+ *
+ * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
+ */
 
-// Игра - кто лучший, рассылаем всем выбор игроков, сообщаем - кто выбран лучшим
+var constants   = require('../../../constants'),
+    PF          = constants.PFIELDS,
+    addPoints   = require('./../common/add_points'),
+    addAction   = require('./../common/add_action'),
+    oPool       = require('./../../../objects_pool'),
+    handleError = require('./../common/handle_error');
+
+
 module.exports = function(game) {
   return function(timer, socket, options) {
   
+    // Если обработчек вызван не таймером
     if(!timer) {
-  
-      // Если нет такого пользоателя среди кандидатов
+      // Ошибка - если выбранного пользоателя нет среди кандидатов
       if(!game._storedOptions[options[PF.PICK]]) {
         return handleError(socket, constants.IO_GAME, constants.G_BEST, constants.errors.NO_THAT_PLAYER);
       }
       
+      // Сохраняем ход игрока
       var uid = oPool.userList[socket.id].getID();
   
       if(!game._actionsQueue[uid]) {
@@ -24,6 +31,7 @@ module.exports = function(game) {
   
       addAction(game, uid, options);
         
+      // Оповещаем о ходе всех в комнате
       var playerInfo = game._activePlayers[uid];
   
       var result = {};
@@ -42,9 +50,11 @@ module.exports = function(game) {
     }
 
     //------------------------------------------------------------------------------------
+    // После исчерпания всех ходов или истечения таймаута
     if(game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
+      // Если игроков недостаточно - останавливаем игру
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
@@ -54,6 +64,7 @@ module.exports = function(game) {
   
         for(var bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
           
+          // Если одини из игроков выбран лучшим всеми, начисляем ему очки
           if(checkBestOfBest(bestID) == true) {
             addPoints(bestID, constants.BEST_POINTS, function (err) {
               if(err) {
@@ -79,7 +90,7 @@ module.exports = function(game) {
         
           for(var otherPicksOptions = 0; otherPicksOptions < otherPicks.length; otherPicksOptions++) {
   
-            // Если хотя бы один не проголосовал - возвращаем ложь
+            // Если хотя бы один не проголосовал - отбой
             if(otherPicks[otherPicksOptions][PF.PICK] != bestID) {
               return false;
             }

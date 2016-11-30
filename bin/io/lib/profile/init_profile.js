@@ -1,3 +1,9 @@
+/**
+ * Выполняем инициализацию профиля
+ *
+ * @param socket, options, callback
+ * @return {Object} - объект со сведениями о пользователе, комнате, игре
+ */
 var async = require('async');
 
 var oPool                 = require('./../../../objects_pool'),
@@ -9,20 +15,10 @@ var oPool                 = require('./../../../objects_pool'),
     addEmits              = require('../emits/add_emits'),
     PF                    = require('./../../../constants').PFIELDS;
 
-/*
- Выполняем инициализацию
- - Создаем профиль
- - Добавляем его в массив онлайн профилей
- - Помещаем в комнату
- - Получаем данные профиля (какие именно в этот момент нужны???)
- - Получаем данные профилей игроков в комнате (для игрового стола)
- - Отправляем все клиенту
- */
-
 module.exports = function (socket, options, callback) {
-  async.waterfall([
-    
+  async.waterfall([ //---------------------------------------------------------------
     function(cb) { // Сохраняем в сессию признак пройденной авторизации
+      
       socket.handshake.session.authorized = true;
       socket.handshake.sessionStore.set(socket.handshake.sessionID, socket.handshake.session, function(err) {
         if(err) {cb (err, null); }
@@ -60,7 +56,7 @@ module.exports = function (socket, options, callback) {
         
         socket.join(room.getName());
   
-        startTrack(room, socket);
+        startTrack(socket, room);
         
         cb(null, info, room, selfProfile);
       }
@@ -88,7 +84,7 @@ module.exports = function (socket, options, callback) {
       }
     },//------------------------------------------------------------
     function(info, room, roomInfo, cb) { // Отравляем в комнату сведения о пользователях в ней
-      //socket.broadcast.in(room.name).emit(constants.IO_ROOM_USERS, roomInfo);
+
       sendUsersInRoom(roomInfo, info[PF.ID], function(err, roomInfo) {
         if(err) { return cb(err); }
         

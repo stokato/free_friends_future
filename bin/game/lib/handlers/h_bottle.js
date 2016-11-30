@@ -1,14 +1,20 @@
-var constants = require('../../../constants'),
-    PF = constants.PFIELDS;
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
+/**
+ * Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
+ *
+ * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
+ */
 
-// Бутылочка, крутившему бутылочку выбираем пару проитивоположного пола, ходят они двое
+var constants   = require('../../../constants'),
+    PF          = constants.PFIELDS,
+    addAction   = require('./../common/add_action'),
+    oPool       = require('./../../../objects_pool');
+
 module.exports = function(game) {
   return function(timer, socket, options) {
     
     var uid;
     
+    // Если вызов произведен игроком - сохраняем его выбор и останавливаем таймер
     if(!timer) {
       uid = oPool.userList[socket.id].getID();
   
@@ -21,6 +27,7 @@ module.exports = function(game) {
       clearTimeout(game._timer);
     }
 
+    // Если пользователей недостаточно - останавливаем игру
     if(!game.checkCountPlayers()) {
       return game.stop();
     }

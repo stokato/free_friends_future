@@ -46,6 +46,8 @@ module.exports.TRACK_PRICE      = Number(Config.moneys.track_price);
 module.exports.RS_GOODSTATUS    = "success";
 module.exports.RS_BADSTATUS     = "fail";
 
+module.exports.LIKE_BONUS_POINTS = "1";
+
 // ошибки
 module.exports.errors = {
   NO_SUCH_GOOD        : { message: "Нет такого товара",                                                   code : 401},
@@ -153,10 +155,10 @@ module.exports.G_SYMPATHY_SHOW        = G_SYMPATHY_SHOW;
 module.exports.G_PRISON               = G_PRISON;
 
 // Игры с тюрьмой и без
-module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
-//  module.exports.GAMES = [ G_BEST, G_PRISON ];
-module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
-// module.exports.GAMES_WITHOUT_PRISON = [G_BEST];
+// module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
+ module.exports.GAMES = [ G_SYMPATHY, G_SYMPATHY ];
+// module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
+module.exports.GAMES_WITHOUT_PRISON = [G_SYMPATHY, G_SYMPATHY];
 
 // Количество карт в игре
 module.exports.CARD_COUNT             = Number(Config.game.card_count);
@@ -188,7 +190,7 @@ module.exports.SYMPATHY_PRICE         = Number(Config.moneys.sympathy_price);
 
 // Таймауты
 module.exports.TIMEOUT_LOT            = Number(Config.game.timeouts.lot);
-module.exports.TIMEOUT_GAME           = 40000;//Number(Config.game.timeouts.default);
+module.exports.TIMEOUT_GAME           = 40000;//= Number(Config.game.timeouts.default);
 module.exports.TIMEOUT_BOTTLE         = Number(Config.game.timeouts.bottle);
 module.exports.TIMEOUT_RESULTS        = Number(Config.game.timeouts.results);
 module.exports.TIMEOUT_PRISON         = Number(Config.game.timeouts.prison);

@@ -1,5 +1,11 @@
+/**
+ * Выкупаем игрока из тюрьмы и сообщаем об этом в комнату
+ *
+ * @param socket, options, callback
+ */
+
 var constants = require('../../../constants'),
-  PF = constants.PFIELDS;
+    PF = constants.PFIELDS;
 
 var oPool = require('./../../../objects_pool');
 
@@ -15,10 +21,12 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.NOT_IN_PRISON);
   }
   
+  // Себя выкупить нельзя
   if(selfProfile.getID() == prisonerInfo.id) {
     return callback(constants.errors.SELF_ILLEGAL);
   }
   
+  // Снимаем с пользователя монеты
   selfProfile.pay(constants.RANSOM_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
@@ -46,7 +54,6 @@ module.exports = function (socket, options, callback) {
     
     // Оповещаем игроков в комнате
     socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);
-    
     callback(null, result);
   });
 };

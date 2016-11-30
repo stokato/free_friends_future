@@ -1,3 +1,9 @@
+/**
+ * Переходим в другую комнату
+ *
+ * @param socket, options - объект с идентификатором комнаты
+ * @return rooms - список комнат
+ */
 
 // Свои модули
 var async         = require('async'),      // Ошибки
@@ -6,37 +12,26 @@ var async         = require('async'),      // Ошибки
   createRoom      = require('./../common/create_room'),
   getLastMessages = require('./../common/get_last_messages'),
   sendUsersInRoom = require('./../common/send_users_in_room'),
-  playTrackInRoom = require('./../player/play_track_in_room'),
+  startTrack      = require('./../player/start_track'),
   oPool           = require('./../../../objects_pool');
 
-/*
- Сменить комнату: Идентификатор новой комнаты
- - Получаем свой профиль
- - Узнаем пол
- - Если создаем комнату (клиент может создавать комнаты ?)
- -- Созадем новый объект комнаты и геним ему идентификатор
- - Если выбираем из имеющихся
- -- Отправляем клиенту последние сообщения комнаты (сколько ???)
- - Отвязываеся от старой комнаты
- - Связываемся с новой
- - Получаем данные профиля (какие ???)
- - Добавляем к ним данные игроков (девушки и парни на игровом столе)
- - Отправляем клиенту
- */
+
 module.exports = function (socket, options, callback) {
   
+  // Ошибка, если нет комнаты с таким идентификатором
   if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != constants.NEW_ROOM) {
     return callback(constants.errors.NO_SUCH_ROOM);
   }
   
+  // Если уже в этой комнате - ничего не делаем
   if(oPool.roomList[socket.id].getName() == options[PF.ROOM]){
     // return callback(constants.errors.ALREADY_IN_ROOM);
-    return callback(null, null); // Если уже в этой комнате - ничего не делаем
+    return callback(null, null);
   }
   
   var selfProfile = oPool.userList[socket.id];
   
-  // Если таймаут на смену комнаты еще не истек, возвращаем ошибку
+  // Ошибка - если таймаут на смену комнаты еще не истек
   if(oPool.roomChangeLocks[selfProfile.getID()]) {
     return callback(constants.errors.ACTON_TIMEOUT);
   }
@@ -68,6 +63,7 @@ module.exports = function (socket, options, callback) {
   
   currRoom.deleteProfile(selfProfile);
   
+  // Удаляем комнату, если она опустела
   var isCurrRoom = true;
   if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
     delete oPool.rooms[currRoom.getName()];
@@ -78,9 +74,8 @@ module.exports = function (socket, options, callback) {
   
   oPool.roomList[socket.id] = newRoom;
   
-  async.waterfall([
-    function (cb) {
-      // Если пользователь перешел из другой комнаты, обновляем в ней список участников
+  async.waterfall([//-----------------------------------------------------------------------
+    function (cb) { // Если пользователь перешел из другой комнаты, обновляем в ней список участников
       if(isCurrRoom) {
         var currRoomInfo = currRoom.getInfo();
   
@@ -93,22 +88,22 @@ module.exports = function (socket, options, callback) {
       } else {
         cb(null, null);
       }
-    },
-    function (res, cb) {
+    },//-----------------------------------------------------------------------
+    function (res, cb) { // Устанавливаем таймаут на смену комнаты для этого пользователя
       
       var info = newRoom.getInfo();
       oPool.roomChangeLocks[selfProfile.getID()] = true;
       setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), constants.TIMEOUT_ROOM_CHANGE);
     
       cb(null, info);
-    },
-    function (info, cb) {
+    },//-----------------------------------------------------------------------
+    function (info, cb) { // Отправляем в комнату новые слведения
       sendUsersInRoom(info, null, function(err) {
         if(err) { return cb(err) }
     
         cb(null, null);
       });
-    }
+    }//-----------------------------------------------------------------------
   ], function (err) {
     if(err) {
       return callback(err);
@@ -118,9 +113,9 @@ module.exports = function (socket, options, callback) {
   
     newRoom.getGame().start(socket);
   
-    playTrackInRoom(socket, newRoom);
+    startTrack(socket, newRoom);
     getLastMessages(socket, newRoom);
-  });
+  });//-----------------------------------------------------------------------
   
   
   //---------------------

@@ -48,7 +48,7 @@ module.exports = function(socket) {
 
       if (room) {
         
-        room.deleteProfile(sex, selfProfile);
+        room.deleteProfile(selfProfile);
         
         delete oPool.roomList[socket.id];
         delete oPool.profiles[selfProfile.getID()];

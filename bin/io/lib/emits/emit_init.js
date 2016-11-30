@@ -1,3 +1,7 @@
+/**
+ * Устанавливаем обработчик на эмит инициализации
+ */
+
 var async     =  require('async');
 
 // Свои модули
@@ -29,10 +33,13 @@ module.exports = function (socket) {
           params[PF.ID]   = info[PF.ID];
           params[PF.VID]  = info[PF.VID];
           
+          // Уведомляем всех о том, что пользователь онлайн
           emitAllRooms(socket, constants.IO_ONLINE, params);
   
+          // Отправляем пользовелю последние сообщеиня их общего чата
           getLastMessages(socket, oPool.rooms[info[PF.ROOM][PF.ROOMNAME]]);
           
+          // Отправляем пользователю открытные приватные чаты (если он обновляет страницу)
           sendPrivateChats(socket, cb);
         }
       ],

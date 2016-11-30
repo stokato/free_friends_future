@@ -1,21 +1,26 @@
+/**
+ * Карты, ждем, кода все ответят, потом показываем ответы и где золото
+ *
+ * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
+ */
+
 var async = require('async');
 
-var constants = require('../../../constants');
-var PF = constants.PFIELDS;
-var addAction = require('./../common/add_action');
-var GameError = require('./../common/game_error');
-var ProfileJS  =  require('../../../profile/index');
-var handleError = require('../common/handle_error');
-var oPool = require('./../../../objects_pool');
+var constants     = require('../../../constants'),
+    PF            = constants.PFIELDS,
+    addAction     = require('./../common/add_action'),
+    GameError     = require('./../common/game_error'),
+    ProfileJS     = require('../../../profile/index'),
+    handleError   = require('../common/handle_error'),
+    oPool         = require('./../../../objects_pool');
 
-
-// Карты, ждем, кода все ответят, потом показываем ответы и где золото
 module.exports = function(game) {
   return function (timer, socket) {
   
+    // Если вызов произведен игроком, сохраняем его выбор
     if(!timer) {
       var selfProfile = oPool.userList[socket.id];
-      var uid = selfProfile.getID();
+      var uid         = selfProfile.getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -24,23 +29,25 @@ module.exports = function(game) {
       addAction(game, uid, oPool);
     }
 
-
     //----------------------------------------------------------------------------
+    // Если ходы закончились или изтек таймаут
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
+      // Если игроков недостаточно - останавливаем игру
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
 
-      var gold = Math.floor(Math.random() * constants.CARD_COUNT);
+      // Готовим сведения о выборе игорков и отбираем победителей
+      var gold    = Math.floor(Math.random() * constants.CARD_COUNT);
       var winners = [];
-      var count = 0;
-      var bonus = constants.CARD_BOUNUS;
+      var count   = 0;
+      var bonus   = constants.CARD_BOUNUS;
 
       var result = {};
-      result[PF.PICKS] = [];
-      result[PF.GOLD] = gold;
+      result[PF.PICKS]  = [];
+      result[PF.GOLD]   = gold;
 
       var item, playerInfo, picks;
       for (item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
@@ -50,8 +57,8 @@ module.exports = function(game) {
 
         if(picks) {
           var pick = {}
-          pick[PF.ID] = playerInfo.id;
-          pick[PF.VID] = playerInfo.vid;
+          pick[PF.ID]   = playerInfo.id;
+          pick[PF.VID]  = playerInfo.vid;
           pick[PF.PICK] = picks[0][PF.PICK];
           
           result[PF.PICKS].push(pick);
@@ -73,7 +80,7 @@ module.exports = function(game) {
       // Функция проверяет, если игрок не онлайн, создает его профиль.
       // Добавляет всем монеты
       function addMoney() {
-        async.waterfall([ ///////////////////////////////////////////////////////////////
+        async.waterfall([ //-------------------------------------------------------
           function(cb) { // Получаем профиль пользователя
             var player = oPool.userList[winners[count].socketId];
 
@@ -89,7 +96,7 @@ module.exports = function(game) {
                 cb(null, player, false);
               });
             }
-          },/////////////////////////////////////////////////////////////////////////////
+          },//-------------------------------------------------------
           function(player, isOnline, cb) { // Получаем баланс
             player.getMoney(function (err, money) {
               if (err) {  cb(err, null); }
@@ -97,7 +104,7 @@ module.exports = function(game) {
               var newMoney = money + bonus;
               cb(null, player, newMoney, isOnline);
             });
-          },////////////////////////////////////////////////////////////////////////
+          },//-------------------------------------------------------
           function(player, newMoney, isOnline, cb) { // Добавляем монет
             player.setMoney(newMoney, function (err, money) {
               if (err) {  cb(err, null); }
@@ -105,12 +112,9 @@ module.exports = function(game) {
               cb(null, player, money, isOnline);
             });
 
-          }////////////////////////////////////////////////////////////////////
+          }//-------------------------------------------------------
         ], function(err, player, money, isOnline) { // Оповещаем об изменениях
-          if(err) {
-            //new GameError(player.getSocket(),  constants.G_CARDS, "Ошибка при начислении монет пользователю");
-            // return  game.stop();
-            new GameError(constants.G_CARDS, err.message);
+          if(err) { return new GameError(constants.G_CARDS, err.message);
             
             if(isOnline) {
               handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);
@@ -118,6 +122,7 @@ module.exports = function(game) {
             return;
           }
 
+          // Сообщяем о начислении моент
           if(isOnline) {
             var res = {};
             res[PF.MONEY] = money;
@@ -132,9 +137,8 @@ module.exports = function(game) {
           } else {
             game.restoreGame(result, true);
           }
-        });///////////////////////////////////////////////////////
+        });//-------------------------------------------------------
       } // addMoney
-
     }
   }
 };

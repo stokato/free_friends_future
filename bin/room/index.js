@@ -63,9 +63,9 @@ Room.prototype.getCountInRoom = function (sex) {
 };
 
 
-Room.prototype.setGame        = function(game) { this._game = game; };
-Room.prototype.getGame        = function() {  return this._game; };
-Room.prototype.getName        = function() {  return this._nameOfRoom; };
+Room.prototype.setGame        = function (game) { this._game = game; };
+Room.prototype.getGame        = function () {  return this._game; };
+Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
 

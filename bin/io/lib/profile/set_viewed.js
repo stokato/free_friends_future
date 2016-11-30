@@ -1,5 +1,9 @@
 /**
  * Created by s.t.o.k.a.t.o on 21.11.2016.
+ *
+ * Помечаем друзей/гостей/подарки как просмотренными (убираем признак is_new)
+ *
+ * @param socket, options - объект с флагом, указывающим что помечать, callback
  */
 var constants =  require('./../../../constants'),
     oPool    = require('./../../../objects_pool');

@@ -1,14 +1,19 @@
+/**
+ * Запускаем трек
+ *
+ * @param room, socket
+ * @return {Object} - с треком временем и количеством секунд со старта
+ */
 var constants = require('./../../../constants'),
     PF        = constants.PFIELDS;
 
-module.exports = function (room, socket) {
-  var mPlayer = room.getMusicPlayer();
+module.exports = function (socket, room) {
+  var mPlayer   = room.getMusicPlayer();
   var trackList = mPlayer.getTrackList();
   
   if(trackList.length > 0) {
     
     var passedTime = Math.round((new Date() - mPlayer.getTrackTime()) * 0.001);
-    
     var info = {};
     info[PF.TRACK]        = trackList[0];
     info[PF.PASSED_TIME]  = passedTime;

@@ -1,21 +1,23 @@
+/**
+ * Получаем сведения о профиле, своем или другого пользователя
+ *
+ * @param socket, options - объект с ид пользователя, callback
+ * @return {Object} - объект с данными о пользователе:
+ *  - общие сведения
+ *  - список чатов
+ *  - список пользователей, даривших подарки с коллекциями подарков
+ *  - список друзей
+ *  - список гостей
+ *  - количество чатов с новыми сообщениями, новых друзей, гостей, подарков
+ */
+
 var async     =  require('async');
 
-// Свои модули
 var constants       = require('./../../../constants'),
-    PF              = constants.PFIELDS;
+    PF              = constants.PFIELDS,
     getUserProfile  = require('./../common/get_user_profile'),
     oPool           = require('./../../../objects_pool');
 
-/*
- Получаем профиль (Нужна ли вообще такая функция, если в окне профиля только инф,
- которую можно достать из соц. сетей ????)
- - Если смотрим свой профиль - отправляем клиенту наши данные (какие ?)
- - Если чужой
- -- Получам профиль того, кого смотрим (из ОЗУ или БД)
- -- Добавляем себя ему в гости (пишем сразу в БД)
- -- Отправлем клиенту данные профиля (????)
- -- Если тот, кого смотрим, онлайн, наверно нужно его сразу уведомить о гостях ???
- */
 module.exports = function (socket, options, callback) {
   
   var selfProfile = oPool.userList[socket.id];
@@ -30,8 +32,9 @@ module.exports = function (socket, options, callback) {
   selfInfo[PF.STATUS]   = selfProfile.getStatus();
   selfInfo[PF.POINTS]   = selfProfile.getPoints();
   
-  if (selfProfile.getID() == options.id) { // Если открываем свой профиль
-    async.waterfall([
+  // Если открываем свой профиль
+  if (selfProfile.getID() == options[PF.ID]) {
+    async.waterfall([//---------------------------------------------------------
       function (cb) { // Получаем историю чатов
         selfProfile.getPrivateChats(function (err, chatsInfo) { chatsInfo = chatsInfo || {};
           if (err) {  return cb(err, null); }
@@ -69,18 +72,17 @@ module.exports = function (socket, options, callback) {
           cb(null, null);
         });
       }//----------------------------------------------------------------------
-    ], function(err) {
+    ], function(err) { // Отправляем сведения
       if (err) { return callback(err); }
       
       callback(null, selfInfo);
     });
     
   } else {
-    
     async.waterfall([//----------------------------------------------------------------------
       function (cb) { // Получаем профиль того, чей просматриваем
         
-        getUserProfile(options.id, function (err, friendProfile) {
+        getUserProfile(options[PF.ID], function (err, friendProfile) {
           if(err) { return cb(err); }
           
           var friendInfo = {};
@@ -138,10 +140,10 @@ module.exports = function (socket, options, callback) {
           cb(null, friendProfile, friendInfo);
         });
       }//----------------------------------------------------------------------
-    ], function (err, friendProfile, friendInfo) { // Вызывается последней. Обрабатываем ошибки
+    ], function (err, friendProfile, friendInfo) { // Отправляем сведения
       if (err) { return callback(err); }
       
-      if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о посещении
+      if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о госте
         
         var friendSocket = friendProfile.getSocket();
         

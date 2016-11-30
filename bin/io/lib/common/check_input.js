@@ -31,9 +31,9 @@ module.exports = function (em, socket, options, callback) {
   }
   
   // Проверка подписи
-  if(!checkAuth(em, socket, options)) {
-    return callback(constants.errors.NO_AUTH);
-  }
+  // if(!checkAuth(em, socket, options)) {
+  //   return callback(constants.errors.NO_AUTH);
+  // }
   
   var isValid = true;
   

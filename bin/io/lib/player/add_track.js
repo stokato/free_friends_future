@@ -1,8 +1,15 @@
+/**
+ * Добавляем трек в очередь, отправляем в комнату обновленный трек-лист
+ *
+ * @param socket, options - объект с ид трека (из вк), callback
+ *
+ */
+
 var constants  = require('./../../../constants'),
     PF         = constants.PFIELDS,
     oPool      = require('./../../../objects_pool');
 
-// Добавляем трек в очередь плей-листа комнаты
+
 module.exports = function(socket, options, callback) {
   
   var selfProfile = oPool.userList[socket.id];
@@ -51,7 +58,7 @@ module.exports = function(socket, options, callback) {
   
     mPlayer.addTrack(track);
     
-    var res = {};
+    res = {};
     res[PF.TRACKLIST] = trackList;
   
     socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);

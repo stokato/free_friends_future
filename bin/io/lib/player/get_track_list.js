@@ -1,6 +1,12 @@
+/**
+ * Получаем трек-лист
+ *
+ * @param socket, options, callback
+ * @return trackList - очередь треков для этой комнаты
+ */
+
 var oPool = require('./../../../objects_pool');
 
-// Возвращаем плей-лист комнаты
 module.exports = function(socket, options, callback) {
   
   var room = oPool.roomList[socket.id];

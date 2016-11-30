@@ -1,9 +1,15 @@
+/**
+ * Добавляем лайк к профилю пользователя, добавляем ему очки
+ *
+ * @param socket, options - объект с ид пользователя, callback
+ *
+ */
 var constants = require('./../../../constants'),
     PF        = constants.PFIELDS,
     oPool     = require('./../../../objects_pool'),
     ProfileJS = require('./../../../profile/index');
 
-// Добавляем пользователю очки
+
 module.exports = function (socket, options, callback) {
  
   var selfProfile = oPool.userList[socket.id];
@@ -13,20 +19,23 @@ module.exports = function (socket, options, callback) {
     return callback(constants.errors.SELF_ILLEGAL);
   }
   
+  // Получаем замок и проверяем, не заблокирована ли возможнасть ставить лайк
   var lock = String(selfProfile.getID() + "_" + options[PF.ID]);
   
+  // Если таймаут еще не истек, ничего не начисляем
   if(oPool.likeLocks[lock]) {
-    return callback(null, null); // Если таймаут еще не истек, ничего не начисляем
+    return callback(null, null);
   }
   
+  // Добавляе мочки
   if(friendProfile) {
-    friendProfile.addPoints(1, onPoints(friendProfile));
+    friendProfile.addPoints(constants.LIKE_BONUS_POINTS, onPoints(friendProfile));
   } else {
     friendProfile = new ProfileJS();
     friendProfile.build(options[PF.ID], function (err) {
       if(err) { return callback(err);  }
       
-      friendProfile.addPoints(1, onPoints(friendProfile));
+      friendProfile.addPoints(constants.LIKE_BONUS_POINTS, onPoints(friendProfile));
     });
   }
   
@@ -49,6 +58,7 @@ module.exports = function (socket, options, callback) {
     }
   }
   
+  // Функция блокирует добавление лайков от этого пользователя на заданный период времени
   function setLikeTimeout(locks, selfid, friendid, delay) {
     setTimeout(function () {
       var lock = String(selfid + "_" + friendid);

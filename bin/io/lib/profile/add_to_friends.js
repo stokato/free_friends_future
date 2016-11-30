@@ -1,17 +1,17 @@
-var async     =  require('async');
-
-var constants      = require('./../../../constants'),
-    PF             = constants.PFIELDS,
-    getUserProfile = require('./../common/get_user_profile'),
-    oPool = require('./../../../objects_pool');
-
-/*
- Добавить пользователя в друзья: Информация о друге (VID)
- - Получаем свой профиль
- - Получаем профиль друга (из ОЗУ или БД)
- - Добдавляем друг другу в друзья (Сразу в БД)
- - Сообщаем клиену (и второму, если он онлайн)
+/**
+ * Добавляем пользователя в друзья
+ *
+ * @param socket, options - объект с ид нового друга, callback
+ * @return {Object} - сведения о новом друге
  */
+
+var async =  require('async');
+
+var constants       = require('./../../../constants'),
+    PF              = constants.PFIELDS,
+    getUserProfile  = require('./../common/get_user_profile'),
+    oPool           = require('./../../../objects_pool');
+
 module.exports = function (socket, options, callback) {
     
     var selfProfile = oPool.userList[socket.id];
@@ -28,7 +28,7 @@ module.exports = function (socket, options, callback) {
         getUserProfile(options[PF.ID], cb);
         
       },//-----------------------------------------------------
-      function (friendProfile, cb) {
+      function (friendProfile, cb) { // Добавляем первому друго
         
         selfProfile.addToFriends(friendProfile, date, function (err) {
           if (err) { return cb(err, null); }
@@ -37,7 +37,7 @@ module.exports = function (socket, options, callback) {
         })
 
       },//-----------------------------------------------------
-      function (selfProfile, friendProfile, date, cb) {
+      function (selfProfile, friendProfile, date, cb) { // И второму
   
         friendProfile.addToFriends(selfProfile, date, function (err) {
           if (err) { return cb(err, null); }
@@ -46,7 +46,7 @@ module.exports = function (socket, options, callback) {
         })
         
       }], //-----------------------------------------------------
-      function (err, friendProfile) { // Вызывается последней. Обрабатываем ошибки
+      function (err, friendProfile) { // Отправляем сведения о новом друге
         if (err) { return callback(err); }
       
         var friendInfo = fillInfo(friendProfile, date);

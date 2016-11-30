@@ -1,13 +1,20 @@
-var constants     = require('../../../constants'),
-    PF = constants.PFIELDS;
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
+/**
+ * Начальный этап с волчком, все игроки должны сделать вызов, после чего
+ * выбираем произвольно одного из них и переходим к розыгышу волчка
+ *
+ * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
+ */
 
-// Начальный этап с волчком, все игроки должны сделать вызов, после чего
-// выбираем произвольно одного из них и переходим к розыгышу волчка
+var constants   = require('../../../constants'),
+    PF          = constants.PFIELDS,
+    addAction   = require('./../common/add_action'),
+    oPool       = require('./../../../objects_pool');
+
+
 module.exports = function(game) {
   return function(timer, socket, options) {
   
+    // Если вызов не произведен таймером, сохраняем дейсвие
     if(!timer && socket) {
       var selfProfile = oPool.userList[socket.id];
       var uid = selfProfile.getID();
@@ -20,16 +27,18 @@ module.exports = function(game) {
     }
     
     //----------------------------------------------------------------
+    // После всех действий или по истечении таймаута
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
+      // Если игроков недостаточно - останавливаем игру
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
-
-      var nextPlayerInfo;
+    
       // Если игрока в темнице нет в комнате - очищаем темницу
       // Получаем следующего игрока
+      var nextPlayerInfo;
       if(game._nextGame != constants.G_PRISON) {
         if(game._prisoner) {
           if(!game._room.isProfile(game._prisoner.id)) {
@@ -45,14 +54,16 @@ module.exports = function(game) {
       game._activePlayers = {};
       game._actionsQueue = {};
 
-      // Игрок ходит 1 раз
+      // Игрок 1 и ходит 1 раз
       game._activePlayers[nextPlayerInfo.id] = nextPlayerInfo;
 
       game.setActionLimit(1);
       game._actionsCount = 1;
 
+      // Следующий этап - волчек
       game._nextGame = constants.G_LOT;
 
+      // Отправляем результат
       var result = {};
       result[PF.NEXTGAME] = game._nextGame;
       result[PF.PLAYERS]  = game.getPlayersID();

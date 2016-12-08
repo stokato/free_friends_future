@@ -48,7 +48,13 @@ module.exports = function(game) {
     var female = constants.GIRL;
 
     var secondGender = (firstGender == male)? female : male;
-    var secondPlayer = game._room.randomProfile(secondGender);
+
+    var excludeIDs = [];
+    if(game.getPrisonerInfo()) {
+      excludeIDs.push(game.getPrisonerInfo().id);
+    }
+
+    var secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
 
     if(!secondPlayer) {
       return game.stop();

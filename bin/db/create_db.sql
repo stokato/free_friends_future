@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS users (
   money int,
   sex int,
   points int,
+  ismenu boolean,
 --   newmessages int,
 --   newgifts int,
 --   newfriends int,
@@ -123,7 +124,7 @@ CREATE TABLE IF NOT EXISTS user_messages(
 
 CREATE INDEX IF NOT EXISTS user_messages_userid ON user_messages(userid);
 CREATE INDEX IF NOT EXISTS user_messages_compid ON user_messages(companionid );
-CREATE INDEX IF NOT EXISTS user_messages_opened ON user_messages(opened );
+-- CREATE INDEX IF NOT EXISTS user_messages_opened ON user_messages(opened );
 
 
 -- Таблица со списком приватных чатов между пользователями

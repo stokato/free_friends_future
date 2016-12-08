@@ -15,7 +15,7 @@ var constants     = require('../../../constants'),
     oPool         = require('./../../../objects_pool');
 
 module.exports = function(game) {
-  return function (timer, socket) {
+  return function (timer, socket, options) {
   
     // Если вызов произведен игроком, сохраняем его выбор
     if(!timer) {
@@ -26,7 +26,7 @@ module.exports = function(game) {
         game._actionsQueue[uid] = [];
       }
   
-      addAction(game, uid, oPool);
+      addAction(game, uid, options);
     }
 
     //----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ module.exports = function(game) {
         picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
-          var pick = {}
+          var pick = {};
           pick[PF.ID]   = playerInfo.id;
           pick[PF.VID]  = playerInfo.vid;
           pick[PF.PICK] = picks[0][PF.PICK];

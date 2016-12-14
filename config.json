@@ -30,7 +30,8 @@
       "top_size" : "100",
       "gift_timeout" : "120000",
       "like_timeout" : "86400000",
-      "room_change_timeout" : "15000"
+      "room_change_timeout" : "15000",
+      "user_block_timeout"  : "86400000"
     },
     "constants" : {
       "sex" : {
@@ -67,7 +68,7 @@
   },
   "io" : {
     "len_room_history" : "5",
-    "one_sex_in_room"  : "5",
+    "one_sex_in_room"  : "6",
     "exit_timeout"  : "30000"
   },
   "static" : "public",

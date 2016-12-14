@@ -14,7 +14,7 @@ module.exports = function (socket, options, callback) {
     if (err) {  return callback(err); }
     
     var res = {};
-    res[constants.PFIELDS.money] = money;
+    res[constants.PFIELDS.MONEY] = money;
     
     callback(null, res);
   });

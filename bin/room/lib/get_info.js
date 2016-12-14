@@ -11,6 +11,7 @@ var constants = require('./../../constants');
 module.exports = function () {
   return {
     name : this.getName(),
+    title: this._title,
     guys : this.getUsersInfo(constants.GUY),
     girls : this.getUsersInfo(constants.GIRL),
     track_list : this._mplayer.getTrackList()

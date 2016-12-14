@@ -14,6 +14,7 @@ var countRoom = 0;    // Счетчики комнат (сейчас нужен 
 
 module.exports = function () {
   var name = "Room" + (++countRoom);
+  var title = "Комната № " + countRoom;
   
-  return new Room(name);
+  return new Room(name, title);
 };

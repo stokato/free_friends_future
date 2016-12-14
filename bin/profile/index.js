@@ -46,7 +46,9 @@ var init                            = require('./lib/init'),
     setInMenu                       = require('./lib/set_in_menu'),
     delFromFriends                  = require('./lib/del_from_friends'),
     clearGiftInfo                   = require('./lib/clear_gift_info'),
-    view                            = require('./lib/view');
+    view                            = require('./lib/view'),
+    addToBlackList                  = require('./lib/add_to_black_list'),
+    deleteFromBlackList             = require('./lib/delete_from_black_list');
 
 
 function Profile() {
@@ -65,11 +67,11 @@ function Profile() {
   this._pPoints       = 0;      // очки
   this._pMoney        = 0;      // деньги (БД)
 
-  this._pIsPrivateChats = [];  // Сприсок открытых приватных чатов
+  this._pIsPrivateChats = [];   // Сприсок открытых приватных чатов
 
   this._pIsExitTimeout  = 0;
 
-  this._pGift1        = null;    // На игрвом столе на аватарах игроков весят подарки
+  this._pGift1        = null;   // На игрвом столе на аватарах игроков весят подарки
   this._pGift1Time    = null;
 
   this._pGift2        = null;
@@ -78,6 +80,8 @@ function Profile() {
   this._pGameIndex    = 0;
 
   this._pIsInMenu     = false;
+
+  this._blackList     = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
 }
 
 Profile.prototype.getSocket         = function() { return this._pSocket; };
@@ -136,5 +140,7 @@ Profile.prototype.delFromFriends    = delFromFriends;
 Profile.prototype.clearGiftInfo     = clearGiftInfo;
 Profile.prototype.pay               = pay;
 Profile.prototype.view              = view;
+Profile.prototype.addToBlackList    = addToBlackList;
+Profile.prototype.delFromBlackList  = deleteFromBlackList;
 
 module.exports = Profile;

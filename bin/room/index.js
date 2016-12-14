@@ -24,9 +24,10 @@ var addProfile      = require('./lib/add_profile'),
 /*
     Класс комнаты
  */
-function Room(name)  {
+function Room(name, title)  {
   
   this._nameOfRoom = name; // Как-нибудь генерируем новое имя (????)
+  this._title = title;
   
   // Пользователи в комнате
   this._guys = {};
@@ -46,7 +47,7 @@ function Room(name)  {
   this._mplayer = new MusicPlayer();
   
   for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
-    this._girls_indexes.push(i);
+    this._girls_indexes.push(constants.ONE_SEX_IN_ROOM+i);
     this._guys_indexes.push(i);
   }
   

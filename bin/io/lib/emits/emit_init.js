@@ -37,7 +37,7 @@ module.exports = function (socket) {
           emitAllRooms(socket, constants.IO_ONLINE, params);
   
           // Отправляем пользовелю последние сообщеиня их общего чата
-          getLastMessages(socket, oPool.rooms[info[PF.ROOM][PF.ROOMNAME]]);
+          //getLastMessages(socket, oPool.rooms[info[PF.ROOM][PF.ROOMNAME]]);
           
           // Отправляем пользователю открытные приватные чаты (если он обновляет страницу)
           sendPrivateChats(socket, cb);

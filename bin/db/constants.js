@@ -395,5 +395,15 @@ module.exports.DB = {
       SEX_int           : 'sex',
       UID_uuid_i        : 'uid'
     }
+  },
+
+  BLOCKED : {
+    name    : 'user_blocked',
+    fields  : {
+      USERID_uuid_p         : 'userid',
+      BLOCKEDID_uuid_ci     : 'blockedid',
+      BLOCKEDVID_varchar    : 'blockedvid',
+      DATE_timestamp        : 'date'
+    }
   }
 };

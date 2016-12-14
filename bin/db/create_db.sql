@@ -358,3 +358,17 @@ CREATE INDEX IF NOT EXISTS points_guys_uid ON points_guys (uid);
   )  with clustering order by (points desc);
 
 CREATE INDEX IF NOT EXISTS points_girls_uid ON points_girls (uid);
+
+-- Таблица черного списка пользователя
+-- Ид пользователя (users) (ключевое поле)
+-- Ид заблокированного пользователя (users) (индес)
+-- ВИД заблокированного пользователя
+-- Дата блокировки
+
+CREATE TABLE IF NOT EXISTS user_blocked (
+  userid uuid,
+  blockedid uuid,
+  blockedvid varchar,
+  date timestamp,
+  PRIMARY KEY (userid, blockedid)
+);

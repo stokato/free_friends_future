@@ -32,7 +32,10 @@ var addUser           = require('./lib/users/users_add'),
   findGift            = require('./lib/gifts/gifts_find_one'),
   openFriends         = require('./lib/friends/friends_open'),
   openGuests          = require('./lib/guests/guests_open'),
-  openGifts           = require('./lib/gifts/gifts_open');
+  openGifts           = require('./lib/gifts/gifts_open'),
+  addBlocked          = require('./lib/bloked/blocked_add'),
+  findBlocked         = require('./lib/bloked/blocked_find'),
+  deleteBlocked       = require('./lib/bloked/blocked_delete');
 
 var dbConstants       = require('./constants').PFIELDS;
 
@@ -88,6 +91,9 @@ DBManager.prototype.deleteAllQuestions = deleteAllQuestions;
 DBManager.prototype.openFriends       = openFriends;
 DBManager.prototype.openGuests        = openGuests;
 DBManager.prototype.openGifts         = openGifts;
+DBManager.prototype.addBlocked        = addBlocked;
+DBManager.prototype.findBlocked       = findBlocked;
+DBManager.prototype.deleteBlocked     = deleteBlocked;
 
 module.exports = DBManager;
 

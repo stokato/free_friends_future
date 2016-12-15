@@ -92,6 +92,28 @@ module.exports = function(socket, options, callback) {
       } else cb(null, foundUser);
     },
     //---------------------------------------------------
+    function (foundUser, cb) {  // Получаем черный список
+      if(foundUser) {
+        db.findBlocked(self._pID, function(err, blockedUsers) {
+          if(err) { return cb(err, null); }
+          
+          var now = new Date();
+          for(var i = 0; i < blockedUsers.length; i++) {
+            if(now - blockedUsers[i][IOF.DATE] < constants.TIMEOUT_BLOCK_USER) {
+              
+              var delay = now - blockedUsers[i][IOF.DATE];
+              self._pBlackList[blockedUsers[i][IOF.ID]] = {
+                date : blockedUsers[i][IOF.DATE],
+                timeout : setBlockedTimeout(self, blockedUsers[i][IOF.ID], delay)
+              }
+            }
+          }
+          
+          return cb(null, foundUser);
+        });
+      } else cb(null, foundUser);
+    },
+    //---------------------------------------------------
     function (foundUser, cb) { // Если в базе такого нет, добавляем
       if (!foundUser) {
         // Добавляем пользователя
@@ -131,5 +153,16 @@ module.exports = function(socket, options, callback) {
     
     callback(null, info);
   }); // waterfall
-
+  
+  
+  function setBlockedTimeout(profile, blockedID, delay) {
+    
+    var timeout = setTimeout(function () {
+      profile.delFromBlackList(blockedID, function (err) {
+        if(err){ console.log("Ошибка при удалении пользователя из черного списка");}
+      })
+    }, delay);
+    
+    return timeout;
+  }
 };

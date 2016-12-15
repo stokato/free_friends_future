@@ -8,7 +8,8 @@ var addTrack      = require('./lib/add_track'),
     deleteTrack   = require('./lib/delete_track'),
     like          = require('./lib/like'),
     dislike       = require('./lib/dislike'),
-    getTrackTemp  = require('./lib/get_track_temp');
+    getTrackTemp  = require('./lib/get_track_temp'),
+    deleteTrackOfUser = require('./lib/delete_track_of_user');
 
 function MusicPlayer() {
   
@@ -17,6 +18,7 @@ function MusicPlayer() {
   this._dislikers = {};   // И дизлайк
   
   this._trackTime = null; // Время старта трека
+  this._trackTimer = null; // Текущий таймер трека
 }
 
 MusicPlayer.prototype.setTrackTime = function (time) {
@@ -31,8 +33,17 @@ MusicPlayer.prototype.getTrackList = function () {
   return this._track_list;
 };
 
+MusicPlayer.prototype.setTimer = function (timer) {
+  this._trackTimer = timer;
+};
+
+MusicPlayer.prototype.getTimer = function () {
+  return this._trackTimer;
+};
+
 MusicPlayer.prototype.addTrack      = addTrack;
-MusicPlayer.prototype.deleteTrack   = deleteTrack;
+MusicPlayer.prototype.deleteTrack   = deleteTrack
+MusicPlayer.prototype.deleteTrackOfUser = deleteTrackOfUser;
 MusicPlayer.prototype.like          = like;
 MusicPlayer.prototype.dislike       = dislike;
 MusicPlayer.prototype.getTrackTemp  = getTrackTemp;

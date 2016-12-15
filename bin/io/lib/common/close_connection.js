@@ -11,6 +11,7 @@ var IOError         = require('./../common/io_error'),
     PF              = constants.PFIELDS,
     emitAllRooms    = require('../common/emit_all_rooms'),
     sendUsersInRoom = require('./send_users_in_room'),
+    checkTrack      = require('./../player/check_track'),
     oPool           = require('./../../../objects_pool');
 
 module.exports = function(socket) {
@@ -42,8 +43,6 @@ module.exports = function(socket) {
     function (res, cb) { // удалеяем профиль и сокет из памяти
       delete oPool.userList[socket.id];
 
-      var sex = selfProfile.getSex();
-
       var room = oPool.roomList[socket.id];
 
       if (room) {
@@ -56,6 +55,8 @@ module.exports = function(socket) {
         if (room.getCountInRoom(constants.GUY) == 0 && room.getCountInRoom(constants.GIRL) == 0) {
           delete oPool.rooms[room.getName()];
           room = null;
+        } else {
+          checkTrack(room, selfProfile);
         }
       }
       cb(null, room);

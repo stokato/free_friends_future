@@ -60,6 +60,7 @@ module.exports.errors = {
   ALREADY_IN_ROOM     : { message: "Пользователь уже в этой комнате",                                     code : 421 },
   ROOM_IS_FULL        : { message: "Попытка перейти в комнату, в которой нет свободных мест",             code : 422 },
   NO_SUCH_CHAT        : { message: "Чат с этим пользователем не существует",                              code : 430 },
+  IN_BLACK_LIST       : { message: "Этот пользователь в черном списке",                                   code : 431 },
   NO_THAT_PLAYER      : { message: "Нельзя выбрать этого игрока",                                         code : 440 },
   NOT_IN_PRISON       : { message: "Этот игрок не находится в тюрьме",                                    code : 441 },
   IS_ALREADY_SELECTED : { message: "В игре Симпатии нельзя выбрать несколько раз одного и того же игрока",code : 442 },
@@ -115,6 +116,7 @@ module.exports.IO_GET_TRACK_LIST      = 'get_track_list';
 module.exports.IO_LIKE_TRACK          = 'like_track';
 module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
 module.exports.IO_START_TRACK         = 'start_track';
+module.exports.IO_STOP_TRACK          = 'stop_track';
 
 module.exports.IO_ADD_QUESTION        = 'add_question';
 module.exports.IO_DEL_QUESTION        = 'del_question';
@@ -123,6 +125,9 @@ module.exports.IO_DEL_ALL_QUESTIONS   = 'del_all_questions';
 module.exports.IO_GAME_ERROR          = 'game_error';
 module.exports.IO_LIKE_PROFILE        = 'like';
 module.exports.IO_SET_VIEWED          = 'viewed';
+module.exports.IO_BLOCK_USER          = 'block_user';
+module.exports.IO_UNBLOCK_USER        = 'unblock_user';
+module.exports.IO_BLOCK_USER_NOTIFY   = 'banned_user';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -190,7 +195,7 @@ module.exports.SYMPATHY_PRICE         = Number(Config.moneys.sympathy_price);
 
 // Таймауты
 module.exports.TIMEOUT_LOT            = Number(Config.game.timeouts.lot);
-module.exports.TIMEOUT_GAME           = 40000;//= Number(Config.game.timeouts.default);
+module.exports.TIMEOUT_GAME           = Number(Config.game.timeouts.default);
 module.exports.TIMEOUT_BOTTLE         = Number(Config.game.timeouts.bottle);
 module.exports.TIMEOUT_RESULTS        = Number(Config.game.timeouts.results);
 module.exports.TIMEOUT_PRISON         = Number(Config.game.timeouts.prison);
@@ -200,6 +205,7 @@ module.exports.TIMEOUT_SYMPATHY_SHOW  = Number(Config.game.timeouts.sympathy_sho
 module.exports.TIMEOUT_LIKE           = Number(Config.user.settings.like_timeout);
 module.exports.TIMEOUT_ROOM_CHANGE    = Number(Config.user.settings.room_change_timeout);
 
+module.exports.TIMEOUT_BLOCK_USER     = Number(Config.user.settings.user_block_timeout);
 
 module.exports.PFIELDS = {
   DATE            : 'date',

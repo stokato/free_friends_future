@@ -104,6 +104,10 @@ module.exports = function(game) {
         
         var excludeIds = [firstPlayer.id];
         
+        if(game.getPrisonerInfo()){
+          excludeIds.push(game.getPrisonerInfo().id);
+        }
+        
         if(game.getPrisonerInfo()) {
           excludeIds.push(game.getPrisonerInfo().id);
         }

@@ -203,6 +203,22 @@ module.exports = function (em, socket, options, callback) {
       
       options[PF.ID] = sanitize(options[PF.ID]);
       break;
+    
+    case constants.IO_BLOCK_USER :
+      isValid = checkID(options[PF.ID]);
+  
+      err.message = "Некорректно задан ИД вопроса";
+  
+      options[PF.ID] = sanitize(options[PF.ID]);
+      break;
+    
+    case constants.IO_UNBLOCK_USER :
+      isValid = checkID(options[PF.ID]);
+  
+      err.message = "Некорректно задан ИД вопроса";
+  
+      options[PF.ID] = sanitize(options[PF.ID]);
+      break;
   }
   
   if(isValid == true) {

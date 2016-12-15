@@ -56,7 +56,21 @@ module.exports = function (socket, options, callback) {
       getUserProfile(options[PF.ID], cb);
       
     }, //--------------------------------------------------------------------------
-    function(friendProfile, cb) { // Открываем чат с адресатом, если еще не открыт
+    function (friendProfile, cb) { // Если пользователь в черном списке, сообщаяем ему
+      if(friendProfile.isInBlackList(selfProfile.getID())) {
+        
+        var params = {};
+        params[PF.ID] = friendProfile.getID();
+        params[PF.VID] = friendProfile.getVID();
+        
+        socket.emit(constants.IO_BLOCK_USER_NOTIFY, params);
+        
+        cb(null, true, friendProfile);
+      } else cb(null, false, friendProfile);
+    },//--------------------------------------------------------------------------
+    function(isBanned, friendProfile, cb) { // Открываем чат отправителю, если еще не открыт
+      if(isBanned) { return cb(null, isBanned, friendProfile); };
+      
       if(!selfProfile.isPrivateChat(friendProfile.getID())) {
         
         var params = {};
@@ -65,14 +79,15 @@ module.exports = function (socket, options, callback) {
         openPrivateChat(socket, params, function (err) {
           if(err) { cb(err); }
           
-          cb(null, friendProfile);
+          cb(null, isBanned, friendProfile);
         });
         
       } else {
-        cb(null, friendProfile);
+        cb(null, isBanned, friendProfile);
       }
     },//--------------------------------------------------------------------------
-    function(friendProfile, cb) { // Если собеседник онлайн и у него не открыт чат с нами - открываем
+    function(isBanned, friendProfile, cb) { // Если собеседник онлайн и у него не открыт чат с нами - открываем
+      if(isBanned) { return cb(null, isBanned, friendProfile); }
       
       if (oPool.profiles[options[PF.ID]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
         
@@ -82,14 +97,15 @@ module.exports = function (socket, options, callback) {
         openPrivateChat(friendProfile.getSocket(), params, function (err) {
           if(err) { cb(err); }
           
-          cb(null, friendProfile);
+          cb(null, isBanned, friendProfile);
         })
         
       } else {
-        cb(null, friendProfile);
+        cb(null, isBanned, friendProfile);
       }
     },//--------------------------------------------------------------------------
-    function (friendProfile, cb) { // Сохраняем сообщение в историю получателя
+    function (isBanned, friendProfile, cb) { // Сохраняем сообщение в историю получателя
+      if(isBanned) { return cb(null, isBanned, friendProfile); }
       
       friendProfile.addMessage(selfProfile, true, date, options[PF.TEXT], function (err, message) {
         if (err) { return cb(err, null); }
@@ -106,10 +122,11 @@ module.exports = function (socket, options, callback) {
             sendOne(friendSocket, info);
           }
         }
-        cb(null, friendProfile);
+        cb(null, isBanned, friendProfile);
       });
     }, //--------------------------------------------------------------------------
-    function (friendProfile, cb) { // Сохраняем сообщение в историю отправителя
+    function (isBanned, friendProfile, cb) { // Сохраняем сообщение в историю отправителя
+      if(isBanned) { return cb(null, null); }
       
       selfProfile.addMessage(friendProfile, false, date, options.text, function (err, message) {
         if (err) { cb(err, null); }

@@ -48,7 +48,8 @@ var init                            = require('./lib/init'),
     clearGiftInfo                   = require('./lib/clear_gift_info'),
     view                            = require('./lib/view'),
     addToBlackList                  = require('./lib/add_to_black_list'),
-    deleteFromBlackList             = require('./lib/delete_from_black_list');
+    deleteFromBlackList             = require('./lib/delete_from_black_list'),
+    isInBlackList                   = require('./lib/is_in_black_list');
 
 
 function Profile() {
@@ -81,7 +82,7 @@ function Profile() {
 
   this._pIsInMenu     = false;
 
-  this._blackList     = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
+  this._pBlackList     = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
 }
 
 Profile.prototype.getSocket         = function() { return this._pSocket; };
@@ -142,5 +143,6 @@ Profile.prototype.pay               = pay;
 Profile.prototype.view              = view;
 Profile.prototype.addToBlackList    = addToBlackList;
 Profile.prototype.delFromBlackList  = deleteFromBlackList;
+Profile.prototype.isInBlackList     = isInBlackList;
 
 module.exports = Profile;

@@ -13,6 +13,7 @@ var async         = require('async'),      // Ошибки
   getLastMessages = require('./../common/get_last_messages'),
   sendUsersInRoom = require('./../common/send_users_in_room'),
   startTrack      = require('./../player/start_track'),
+  checkTrack      = require('./../player/check_track'),
   oPool           = require('./../../../objects_pool');
 
 
@@ -68,6 +69,8 @@ module.exports = function (socket, options, callback) {
   if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
     delete oPool.rooms[currRoom.getName()];
     isCurrRoom = false;
+  } else {
+    checkTrack(currRoom, selfProfile);
   }
   
   newRoom.addProfile(selfProfile);

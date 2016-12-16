@@ -9,10 +9,13 @@ var GameError = require('./../common/game_error'),
   PF        = constants.PFIELDS,
   addPoints = require('./../common/add_points'),
   addAction = require('./../common/add_action'),
-  oPool = require('./../../../objects_pool');
+  oPool = require('./../../../objects_pool'),
+  stat  = require('./../../../stat_manager');
 
 module.exports = function(game) {
   return function (timer, socket, options) {
+    
+    var item;
     
     // Если вызов произведен игроком - сохраняем его выбор и всех оповещаем
     if(!timer) {
@@ -22,6 +25,14 @@ module.exports = function(game) {
         game._actionsQueue[uid] = [];
       }
       addAction(game, uid, options);
+  
+      // Статистика
+      for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        var profInfo  = game._activePlayers[item];
+        if(options[PF.PICK] == profInfo.id) {
+          stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BOTTLE_KISSED, 1);
+        }
+      }
       
       // Отправляем всем выбор игрока
       var playerInfo = game._activePlayers[uid];
@@ -49,7 +60,7 @@ module.exports = function(game) {
       
       var count = 0, players = [];
       
-      var item, allKissed = true;
+      var allKissed = true;
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         var pInf  = game._activePlayers[item];
         if(!game._actionsQueue[pInf.id] || !game._actionsQueue[pInf.id][0][PF.PICK] === true) {

@@ -82,34 +82,37 @@ function Profile() {
 
   this._pIsInMenu     = false;
 
-  this._pBlackList     = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
+  this._pBlackList    = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
+  
+  this._pInitTime     = null;
 }
 
-Profile.prototype.getSocket         = function() { return this._pSocket; };
-Profile.prototype.getID             = function() { return this._pID; };
-Profile.prototype.getVID            = function() { return this._pVID; };
-Profile.prototype.getStatus         = function() { return this._pStatus; };
-Profile.prototype.getPoints         = function() { return this._pPoints; };
-Profile.prototype.getSex            = function() { return this._pSex; };
-Profile.prototype.getAge            = function() {
+Profile.prototype.getSocket         = function () { return this._pSocket; };
+Profile.prototype.getID             = function () { return this._pID; };
+Profile.prototype.getVID            = function () { return this._pVID; };
+Profile.prototype.getStatus         = function () { return this._pStatus; };
+Profile.prototype.getPoints         = function () { return this._pPoints; };
+Profile.prototype.getSex            = function () { return this._pSex; };
+Profile.prototype.getAge            = function () {
   if(this._pBDate) {
     return new Date().getYear() - this._pBDate.getYear();
   }
    return null;
 };
   
-Profile.prototype.getCity           = function() { return this._pCity; };
-Profile.prototype.getCountry        = function() { return this._pCountry; };
-Profile.prototype.getGame           = function() { return this._pGame; };
-Profile.prototype.isInMenu          = function() { return this._pIsInMenu; };
-Profile.prototype.getGameIndex      = function() { return this._pGameIndex; };
-Profile.prototype.getGift1          = function() { return this._pGift1; };
-Profile.prototype.getBDate          = function() { return this._pBDate; };
-Profile.prototype.setGameIndex      = function(val)     { this._pGameIndex = val; };
-Profile.prototype.setGame           = function(game)    { this._pGame = game; };
-Profile.prototype.setSocket         = function(socket)  { this._pSocket = socket; };
-Profile.prototype.setExitTimeout    = function(tm)      { this._pIsExitTimeout = tm; };
-Profile.prototype.clearExitTimeout  = function() { clearTimeout(this._pIsExitTimeout); };
+Profile.prototype.getCity           = function () { return this._pCity; };
+Profile.prototype.getCountry        = function () { return this._pCountry; };
+Profile.prototype.getGame           = function () { return this._pGame; };
+Profile.prototype.isInMenu          = function () { return this._pIsInMenu; };
+Profile.prototype.getGameIndex      = function () { return this._pGameIndex; };
+Profile.prototype.getGift1          = function () { return this._pGift1; };
+Profile.prototype.getBDate          = function () { return this._pBDate; };
+Profile.prototype.getInitTime       = function () { return this._pInitTime; };
+Profile.prototype.setGameIndex      = function (val)     { this._pGameIndex = val; };
+Profile.prototype.setGame           = function (game)    { this._pGame = game; };
+Profile.prototype.setSocket         = function (socket)  { this._pSocket = socket; };
+Profile.prototype.setExitTimeout    = function (tm)      { this._pIsExitTimeout = tm; };
+Profile.prototype.clearExitTimeout  = function () { clearTimeout(this._pIsExitTimeout); };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;

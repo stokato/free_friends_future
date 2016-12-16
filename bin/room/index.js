@@ -47,7 +47,7 @@ function Room(name, title)  {
   this._mplayer = new MusicPlayer();
   
   for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
-    this._girls_indexes.push(constants.ONE_SEX_IN_ROOM+i);
+    this._girls_indexes.push(i);
     this._guys_indexes.push(i);
   }
   

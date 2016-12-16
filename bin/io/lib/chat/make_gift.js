@@ -8,10 +8,12 @@ var async      =  require('async');
 
 var constants      = require('./../../../constants'),
   PF               = constants.PFIELDS,
+  SF               = constants.SFIELDS,
   getUserProfile   = require('./../common/get_user_profile'),
   setGiftTimeout   = require('./../common/set_gift_timeout'),
   db               = require('./../../../db_manager'),
-  oPool            = require('./../../../objects_pool');
+  oPool            = require('./../../../objects_pool'),
+  stat             = require('./../../../stat_manager');
 
 module.exports = function (socket, options, callback) {
 
@@ -32,6 +34,10 @@ module.exports = function (socket, options, callback) {
             if(gift[PF.GOODTYPE] != constants.GT_GIFT) {
               cb(constants.errors.NO_SUCH_GOOD, null);
             } else {
+              
+              //Статистика
+              addToStat(gift);
+              
               cb(null, gift);
             }
           } else {
@@ -56,15 +62,21 @@ module.exports = function (socket, options, callback) {
           
           socket.emit(constants.IO_GET_MONEY, res);
           
+          // Статистика
+          stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
+          
           cb(null, friendProfile, gift);
         });
       },//---------------------------------------------------------------
-      function (friendProfile, gift, cb) { // Добавляем подарко адресату
+      function (friendProfile, gift, cb) { // Добавляем подарок адресату
 
         friendProfile.addGift(selfProfile, date, gift[PF.SRC], gift[PF.ID],  gift[PF.TYPE], gift[PF.TITLE],
                                                                       function (err, result) {
           if (err) { return cb(err, null); }
 
+          // Статистика
+          stat.setUserStat(friendProfile.getID(), friendProfile.getVID(), constants.SFIELDS.GIFTS_TAKEN, 1);
+          
           cb(null, friendProfile);
         });
 
@@ -105,6 +117,22 @@ module.exports = function (socket, options, callback) {
       callback(null, null);
       
     }); // waterfall
+  
+  function addToStat(gift) {
+    var field, types = constants.GIFT_TYPES;
+    
+    switch (gift[PF.TYPE]) {
+      case types.BREATH     : field = SF.GIFTS_BREATH;      break;
+      case types.COMMON     : field = SF.GIFTS_COMMON;      break;
+      case types.DRINKS     : field = SF.GIFTS_DRINKS;      break;
+      case types.FLIRTATION : field = SF.GIFTS_FLIRTATION;  break;
+      case types.FLOWERS    : field = SF.FLOWERS;           break;
+      case types.LOVES      : field = SF.LOVES;             break;
+      case types.MERRY      : field = SF.GIFTS_MERRY;       break;
+    }
+    
+    stat.setMainStat(field, 1);
+  }
 };
 
 

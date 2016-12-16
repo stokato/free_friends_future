@@ -13,6 +13,7 @@ var log = require('./lib/log')(module);
 
 var io = require('./bin/io');
 var profiles;
+var stat;
 
 var app = express();
 
@@ -50,10 +51,11 @@ var server = app.listen(config.server.port, function() {
   log.info('Sever running at: ' + config.server.host + ':' + config.server.port );
 });
 
-io.listen(server, function(err, profs){
+io.listen(server, function(err, profs, st){
   if(err) return log.error('Socket error: %s', err.message);
 
   profiles = profs;
+  stat = st;
 
   app.set('profiles', profs);
 

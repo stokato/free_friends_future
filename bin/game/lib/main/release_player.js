@@ -51,6 +51,8 @@ module.exports = function (socket, options, callback) {
     var result = {};
     result[PF.ID] = prisonerInfo.id;
     result[PF.VID] = prisonerInfo.vid;
+    result[PF.FID] = selfProfile.getID();
+    result[PF.FVID] = selfProfile.getVID();
     
     // Оповещаем игроков в комнате
     socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);

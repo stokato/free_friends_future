@@ -7,26 +7,29 @@
 var constants = require('./../../../constants'),
   PF        = constants.PFIELDS;
 
-var startTrack = require('./start_track');
+var startTrack = require('./start_track_timer');
 
 module.exports = function (room, profile) {
   var mPlayer   = room.getMusicPlayer();
   var trackList = mPlayer.getTrackList();
   
+  if(trackList.length == 0) { return; }
+  
   if(profile.getID() == trackList[0][PF.ID]) {
   
     var socket = room.getAnySocket();
-    
-    var info = {};
-    info[PF.TRACK]        = trackList[0];
     
     clearTimeout(mPlayer.getTimer());
     // mPlayer.deleteTrack(trackList[0][PF.TRACKID]);
     mPlayer.deleteTrackOfUser(profile.getID());
     
+    var info = {};
+    info[PF.TRACK]        = trackList[0];
     socket.emit(constants.IO_STOP_TRACK, info);
     socket.broadcast.in(room.getName()).emit(constants.IO_STOP_TRACK, info);
+    profile.getSocket().emit(constants.IO_STOP_TRACK, info);
   
+    trackList = mPlayer.getTrackList();
     if(trackList.length > 0) {
       startTrack(socket, room, trackList[0]);
     } else {

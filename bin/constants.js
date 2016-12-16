@@ -207,6 +207,16 @@ module.exports.TIMEOUT_ROOM_CHANGE    = Number(Config.user.settings.room_change_
 
 module.exports.TIMEOUT_BLOCK_USER     = Number(Config.user.settings.user_block_timeout);
 
+module.exports.GIFT_TYPES = {
+  LOVES       : 'Любовь',
+  BREATH      : 'Отдых',
+  FLOWERS     : 'Цветы',
+  DRINKS      : 'Напитки',
+  COMMON      : 'Обычные',
+  FLIRTATION  : 'Флирт',
+  MERRY       : 'Веселье'
+};
+
 module.exports.PFIELDS = {
   DATE            : 'date',
   DATE_FROM       : 'first_date',
@@ -285,5 +295,45 @@ module.exports.PFIELDS = {
   PRISON          : 'prison',
   PICKS           : 'picks',
   GOLD            : 'gold',
-  QUESTION        : 'question'
+  QUESTION        : 'question',
+  IMAGE_1         : 'image1',
+  IMAGE_2         : 'image2',
+  IMAGE_3         : 'image3'
+};
+
+module.exports.SFIELDS = {
+  GIFTS_GIVEN         : 'gifts_given',
+  GIFTS_TAKEN         : 'gifts_taken',
+  COINS_GIVEN         : 'coins_given',
+  COINS_EARNED        : 'coins_earned',
+  COINS_SPENT         : 'coins_spent',
+  BOTTLE_KISSED       : 'bottle_kissed',
+  BEST_SELECTED       : 'best_selected',
+  RANK_GIVEN          : 'rank_given',
+  GAME_TIME           : 'game_time',
+  GIFTS_LOVES         : 'gifts_loves',
+  GIFTS_BREATH        : 'gifts_breath',
+  GIFTS_FLOWERS       : 'gifts_flowers',
+  GIFTS_DRINKS        : 'gifts_drinks',
+  GIFTS_COMMON        : 'gifts_common',
+  GIFTS_FLIRTATION    : 'gifts_flirtation',
+  GIFTS_MERRY         : 'gifts_merry',
+  MONEY_1_GIVEN       : 'money_1_given',
+  MONEY_3_GIVEN       : 'money_3_given',
+  MONEY_10_GIVEN      : 'money_10_given',
+  MONEY_20_GIVEN      : 'money_20_given',
+  MONEY_60_GIVEN      : 'money_60_given',
+  MONEY_200_GIVEN     : 'money_200_given',
+  MONEY_1_TAKEN       : 'money_1_taken',
+  MONEY_3_TAKEN       : 'money_3_taken',
+  MONEY_10_TAKEN      : 'money_10_taken',
+  MONEY_20_TAKEN      : 'money_20_taken',
+  MONEY_60_TAKEN      : 'money_60_taken',
+  MONEY_200_TAKEN     : 'money_200_taken',
+  MENU_APPEND         : 'menu_append',
+  BEST_ACTIVITY       : 'best_activity',
+  BOTTLE_ACTIVITY     : 'bottle_activity',
+  CARDS_ACTIVITY      : 'cards_activity',
+  QUESTION_ACITVITY   : 'question_activity',
+  SYMPATHY_ACITVITY   : 'sympathy_activity'
 };

@@ -10,7 +10,7 @@ var PF = dbConst.PFIELDS;
  */
 module.exports = function(callback) {
 
-  var fields = [DBF.ID_uuid_p, DBF.TEXT_varchar];
+  var fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar];
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.QUESTIONS.name);
 
   cdb.client.execute(query,[], {prepare: true }, function(err, result) {
@@ -26,10 +26,13 @@ module.exports = function(callback) {
       question = {};
       question[PF.ID]   = row[DBF.ID_uuid_p].toString();
       question[PF.TEXT] = row[DBF.TEXT_varchar];
+      question[PF.IMAGE_1] = row[DBF.IMAGE1_varchar];
+      question[PF.IMAGE_2] = row[DBF.IMAGE2_varchar];
+      question[PF.IMAGE_3] = row[DBF.IMAGE3_varchar];
       
       questions.push(question);
     }
     
-    callback(null, questions);
+    callback(null, { questions : questions });
   });
 };

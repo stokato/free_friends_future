@@ -35,7 +35,12 @@ var addUser           = require('./lib/users/users_add'),
   openGifts           = require('./lib/gifts/gifts_open'),
   addBlocked          = require('./lib/bloked/blocked_add'),
   findBlocked         = require('./lib/bloked/blocked_find'),
-  deleteBlocked       = require('./lib/bloked/blocked_delete');
+  deleteBlocked       = require('./lib/bloked/blocked_delete'),
+  usersStatUpdate     = require('./lib/users_stat/users_stat_update'),
+  usersStatFind       = require('./lib/users_stat/users_stat_find'),
+  usersStatDelete     = require('./lib/users_stat/users_stat_delete'),
+  mainStatUpdate      = require('./lib/main_stat/main_stat_update'),
+  mainStatFind        = require('./lib/main_stat/main_stat_find');
 
 var dbConstants       = require('./constants').PFIELDS;
 
@@ -94,6 +99,11 @@ DBManager.prototype.openGifts         = openGifts;
 DBManager.prototype.addBlocked        = addBlocked;
 DBManager.prototype.findBlocked       = findBlocked;
 DBManager.prototype.deleteBlocked     = deleteBlocked;
+DBManager.prototype.updateUserStat    = usersStatUpdate;
+DBManager.prototype.findUserStat      = usersStatFind;
+DBManager.prototype.deleteUserStat    = usersStatDelete;
+DBManager.prototype.updateMainStat    = mainStatUpdate;
+DBManager.prototype.findMainStat      = mainStatFind;
 
 module.exports = DBManager;
 

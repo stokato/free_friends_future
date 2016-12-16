@@ -19,5 +19,10 @@ module.exports = function (socket, room) {
     info[PF.PASSED_TIME]  = passedTime;
     
     socket.emit(constants.IO_START_TRACK, info);
+  
+    res = {};
+    res[PF.TRACKLIST] = trackList;
+    
+    socket.emit(constants.IO_GET_TRACK_LIST, res);
   }
 };

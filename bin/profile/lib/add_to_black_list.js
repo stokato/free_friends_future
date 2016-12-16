@@ -27,7 +27,7 @@ module.exports = function (blockedProfile, date, callback) {
     
     self._pBlackList[blockedID] = {
       date : date,
-      timeout : setBlockedTimeout(self, blockedProfile, constants.TIMEOUT_BLOCK_USER)
+      timeout : setBlockedTimeout(self, blockedID, constants.TIMEOUT_BLOCK_USER)
     };
     
     callback(null, blockedID);

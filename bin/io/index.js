@@ -17,6 +17,7 @@ var session   = require('./../../lib/session');
 //var checkSession = require('./checkSession');
 
 var oPool     = require('./../objects_pool');
+var stat      = require('./../stat_manager');
 
 var io = null;                                      // Сокет
 
@@ -320,7 +321,7 @@ module.exports.listen = function(server, callback) {
     ////////////
   });//();
   
-  callback(null, oPool.profiles);
+  callback(null, oPool.profiles, stat);
 };
 
 

@@ -8,11 +8,13 @@
 var Q_SELECT = "select",
     Q_INSERT = "insert",
     Q_UPDATE = "update",
+    Q_UPDATE_COUNTER = "update_counter",
     Q_DELETE = "delete";
 
 module.exports.Q_SELECT = Q_SELECT;
 module.exports.Q_INSERT = Q_INSERT;
 module.exports.Q_UPDATE = Q_UPDATE;
+module.exports.Q_UPDATE_COUNTER = Q_UPDATE_COUNTER;
 module.exports.Q_DELETE = Q_DELETE;
 
 module.exports.ALL_FIELDS = "*";
@@ -56,6 +58,16 @@ module.exports.build = function(type, fields, table,
 
       for (i = 0; i < fields.length; i++) {
         query += (i < fields.length - 1) ? fields[i] + " = ?, " : fields[i] + " = ?";
+      }
+      break;
+    case Q_UPDATE_COUNTER : //////////////////////////////////////////////////////////////
+      query = Q_UPDATE;
+      query += " " + table + " set ";
+    
+      for (i = 0; i < fields.length; i++) {
+        query += (i < fields.length - 1) ?
+                  fields[i] + " = " + fields[i] + " + ?, " :
+                  fields[i] + " = " + fields[i] + " + ?";
       }
       break;
     case Q_DELETE : /////////////////////////////////////////////////////////////////////

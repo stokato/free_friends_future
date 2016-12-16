@@ -8,7 +8,8 @@ var async = require('async');
 
 var constants  = require('./../../../constants'),
     PF         = constants.PFIELDS,
-    oPool      = require('./../../../objects_pool');
+    oPool      = require('./../../../objects_pool'),
+    stat       = require('./../../../stat_manager');
 
 module.exports = function(socket, options, callback) {
   
@@ -23,6 +24,9 @@ module.exports = function(socket, options, callback) {
       
       selfProfile.setInMenu(true, function(err) {
         if(err) { return cb(err, null); }
+        
+        //Статистика
+        stat.setMainStat(constants.SFIELDS.MENU_APPEND, 1);
         
         cb(null, null);
       });
@@ -42,6 +46,9 @@ module.exports = function(socket, options, callback) {
       var newMoney = money + constants.MENU_BONUS;
       selfProfile.setMoney(newMoney, function (err, money) {
         if (err) { return cb(err, null); }
+        
+        // Статистика
+        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.COINS_EARNED, constants.MENU_BONUS);
         
         cb(null, money);
       });

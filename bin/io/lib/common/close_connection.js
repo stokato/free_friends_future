@@ -12,7 +12,8 @@ var IOError         = require('./../common/io_error'),
     emitAllRooms    = require('../common/emit_all_rooms'),
     sendUsersInRoom = require('./send_users_in_room'),
     checkTrack      = require('./../player/check_track'),
-    oPool           = require('./../../../objects_pool');
+    oPool           = require('./../../../objects_pool'),
+    stat            = require('./../../../stat');
 
 module.exports = function(socket) {
 
@@ -46,7 +47,6 @@ module.exports = function(socket) {
       var room = oPool.roomList[socket.id];
 
       if (room) {
-        
         room.deleteProfile(selfProfile);
         
         delete oPool.roomList[socket.id];
@@ -58,6 +58,10 @@ module.exports = function(socket) {
         } else {
           checkTrack(room, selfProfile);
         }
+        
+        // Статистика
+        var msInGame = new Date() - selfProfile.getInitTime();
+        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GAME_TIME, msInGame);
       }
       cb(null, room);
     },//----------------------------------------------------------------

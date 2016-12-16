@@ -12,7 +12,8 @@ var constants     = require('../../../constants'),
     GameError     = require('./../common/game_error'),
     ProfileJS     = require('../../../profile/index'),
     handleError   = require('../common/handle_error'),
-    oPool         = require('./../../../objects_pool');
+    oPool         = require('./../../../objects_pool'),
+    stat          = require('./../../../stat_manager');
 
 module.exports = function(game) {
   return function (timer, socket, options) {
@@ -108,6 +109,9 @@ module.exports = function(game) {
           function(player, newMoney, isOnline, cb) { // Добавляем монет
             player.setMoney(newMoney, function (err, money) {
               if (err) {  cb(err, null); }
+              
+              // Статистика
+              stat.setUserStat(player.getID(), player.getVID(), constants.SFIELDS.COINS_EARNED, bonus);
 
               cb(null, player, money, isOnline);
             });

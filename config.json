@@ -21,7 +21,7 @@
   },
   "cassandra" : {
     "host": "localhost",
-    "keyspace": "free_friends",
+    "keyspace": "free_friends2",
     "table_sessions": "sessions"
   },
   "user" : {

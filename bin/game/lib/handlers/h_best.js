@@ -9,7 +9,8 @@ var constants   = require('../../../constants'),
     addPoints   = require('./../common/add_points'),
     addAction   = require('./../common/add_action'),
     oPool       = require('./../../../objects_pool'),
-    handleError = require('./../common/handle_error');
+    handleError = require('./../common/handle_error'),
+    stat        = require('./../../../stat_manager');
 
 
 module.exports = function(game) {
@@ -30,6 +31,14 @@ module.exports = function(game) {
       }
   
       addAction(game, uid, options);
+  
+      // Статистика
+      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        var profInfo  = game._activePlayers[item];
+        if(options[PF.PICK] == profInfo.id) {
+          stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BEST_SELECTED, 1);
+        }
+      }
         
       // Оповещаем о ходе всех в комнате
       var playerInfo = game._activePlayers[uid];

@@ -16,7 +16,7 @@ var oPool = require('./objects_pool');
 
 function VK () {}
 
-VK.prototype.handle = function(req, profiles, callback) {
+VK.prototype.handle = function(req, profiles, stat, callback) {
   var request = req || {};
 
   // Сначала проверка
@@ -52,10 +52,10 @@ VK.prototype.handle = function(req, profiles, callback) {
     case "get_item_test": getItem(request, callback);
       break;
 
-    case "order_status_change": changeOrderStatus(request, profiles, callback);
+    case "order_status_change": changeOrderStatus(request, profiles, stat, callback);
       break;
 
-    case "order_status_change_test": changeOrderStatus(request, profiles, callback);
+    case "order_status_change_test": changeOrderStatus(request, profiles, stat, callback);
       break;
     default : sendError(callback);
   }
@@ -102,7 +102,7 @@ function getItem(request, callback) {
   });
 }
 
-function changeOrderStatus(request, profiles, callback) {
+function changeOrderStatus(request, profiles, stat, callback) {
   // Изменение статуса заказа
   var response = {};
 
@@ -179,6 +179,8 @@ function changeOrderStatus(request, profiles, callback) {
                 if (err) { return cb(err, null); }
 
                 options[PF.MONEY] = goodInfo[PF.PRICE2];
+                
+                stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
 
                 if(profiles[options[PF.ID]]) {
                   var socket = profiles[options[PF.ID]].getSocket();

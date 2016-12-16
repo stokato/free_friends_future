@@ -151,6 +151,8 @@ module.exports = function(socket, options, callback) {
     info[IOF.CITY]     = self._pCity;
     info[IOF.COUNTRY]  = self._pCountry;
     
+    self._pInitTime    = new Date();
+    
     callback(null, info);
   }); // waterfall
   

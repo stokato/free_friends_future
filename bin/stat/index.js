@@ -20,3 +20,5 @@ StatManager.prototype.setMainStat = setMainStat;
 StatManager.prototype.getMainStat = getMainStat;
 StatManager.prototype.setUserStat = setUserStat;
 StatManager.prototype.getUserStat = getUserStat;
+
+module.exports = StatManager;

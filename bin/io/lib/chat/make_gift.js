@@ -129,6 +129,7 @@ module.exports = function (socket, options, callback) {
       case types.FLOWERS    : field = SF.FLOWERS;           break;
       case types.LOVES      : field = SF.LOVES;             break;
       case types.MERRY      : field = SF.GIFTS_MERRY;       break;
+      case types.MERRY2     : field = SF.GIFTS_MERRY;       break;
     }
     
     stat.setMainStat(field, 1);

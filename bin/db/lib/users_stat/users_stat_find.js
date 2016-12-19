@@ -8,20 +8,20 @@ var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
 var DBF = dbConst.DB.USERS_STAT.fields;
 var PF = dbConst.PFIELDS;
-var SF = dbConst.SFIELDS;
+var SF = require('./../../../constants').SFIELDS;
 
 module.exports = function(id, vid, f_list, callback) {
   if (!vid || !id) {
     return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
   }
 
-  var param = [];
+  var param = [id, vid];
   
   var contsFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   var constValues = [1, 1];
   var dbName = dbConst.DB.USERS_STAT.name;
   
-  var i, fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
+  var i, fields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   for(i = 0; i < f_list.length; i++) {
     switch (f_list[i]) {
       case SF.GIFTS_GIVEN    : fields.push(DBF.C_GIFTS_GIVEN_counter);    break;

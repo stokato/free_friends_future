@@ -27,6 +27,7 @@ module.exports = function (price, callback) {
       if(err) { return callback(err); }
       
       stat.setUserStat(self._pID, self._pVID, constants.SFIELDS.COINS_SPENT, price);
+      stat.setMainStat(constants.SFIELDS.COINS_SPENT, price);
       
       callback(null, money);
     });

@@ -219,6 +219,14 @@ module.exports = function (em, socket, options, callback) {
   
       options[PF.ID] = sanitize(options[PF.ID]);
       break;
+  
+    case constants.IO_GET_LIKES_AND_DISLAKES :
+      isValid = (PF.TRACKID in options)? isValid : false;
+  
+      err.message = "Не задан ид трека";
+  
+      options[PF.TRACKID] = sanitize(options[PF.TRACKID]);
+      break;
   }
   
   if(isValid == true) {

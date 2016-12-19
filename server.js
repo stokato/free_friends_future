@@ -4,7 +4,7 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var socketio = require('socket.io-client');
+// var socketio = require('socket.io-client');
 
 var session = require('./lib/session');
 var getCert = require('./lib/get_cert');
@@ -12,8 +12,11 @@ var vkHandle = require('./lib/vk_handle');
 var log = require('./lib/log')(module);
 
 var io = require('./bin/io');
+
+var getMainStat = require('./lib/stat/get_main_stat');
+var getUserStat = require('./lib/stat/get_user_stat');
+
 var profiles;
-var stat;
 
 var app = express();
 
@@ -33,6 +36,9 @@ app.use(getCert);
 
 app.use(vkHandle);
 
+app.use('/stat/main', getMainStat);
+app.use('/stat/user/:vid', getUserStat);
+
 app.use(function(req, res, next) {
   res.status(404);
   log.debug('Not found URL: %s', req.url);
@@ -51,11 +57,10 @@ var server = app.listen(config.server.port, function() {
   log.info('Sever running at: ' + config.server.host + ':' + config.server.port );
 });
 
-io.listen(server, function(err, profs, st){
+io.listen(server, function(err, profs){
   if(err) return log.error('Socket error: %s', err.message);
 
   profiles = profs;
-  stat = st;
 
   app.set('profiles', profs);
 

@@ -29,7 +29,7 @@ module.exports = function(game) {
       // Статистика
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         var profInfo  = game._activePlayers[item];
-        if(options[PF.PICK] == profInfo.id) {
+        if(uid != profInfo.id && options[PF.PICK] == true) {
           stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BOTTLE_KISSED, 1);
         }
       }
@@ -75,6 +75,8 @@ module.exports = function(game) {
         } // и начесляем очки
         addPoints(players[count].id, constants.KISS_POINTS, onComplete);
       }
+      
+      stat.setMainStat(constants.SFIELDS.BOTTLE_ACTIVITY, game.getActivityRating());
       
       game.restoreGame(null, true);
     }

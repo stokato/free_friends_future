@@ -15,7 +15,7 @@ module.exports = function(socket, options, callback) {
   
   var trackID     = options[PF.TRACKID];
   
-  var isTrack     = mPlayer.dislike(selfProfile.getID(), trackID);
+  var isTrack     = mPlayer.dislike(selfProfile, trackID);
   
   if(!isTrack) { return callback(constants.errors.NO_SUCH_TRACK); }
   

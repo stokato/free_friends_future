@@ -9,7 +9,9 @@ var addTrack      = require('./lib/add_track'),
     like          = require('./lib/like'),
     dislike       = require('./lib/dislike'),
     getTrackTemp  = require('./lib/get_track_temp'),
-    deleteTrackOfUser = require('./lib/delete_track_of_user');
+    deleteTrackOfUser = require('./lib/delete_track_of_user'),
+    getLikes     = require('./lib/get_likes'),
+    getDislikes  = require('./lib/get_dislikes');
 
 function MusicPlayer() {
   
@@ -47,5 +49,8 @@ MusicPlayer.prototype.deleteTrackOfUser = deleteTrackOfUser;
 MusicPlayer.prototype.like          = like;
 MusicPlayer.prototype.dislike       = dislike;
 MusicPlayer.prototype.getTrackTemp  = getTrackTemp;
+
+MusicPlayer.prototype.getLikes      = getLikes;
+MusicPlayer.prototype.getDislikes   = getDislikes;
 
 module.exports = MusicPlayer;

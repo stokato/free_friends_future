@@ -8,19 +8,20 @@
  * @return {boolean} - признак - поставлен дизлайк или нет
  */
 
-module.exports = function (uid, tid) {
+module.exports = function (profile, tid) {
   var tl = this._track_list;
+  var uid = profile.getID();
   
   for(var i = 0; i < tl.length; i++) {
     
     if(tl[i].track_id == tid) {
       if(!this._dislikers[tid][uid]) {
         tl[i].dislikes++;
-        this._dislikers[tid][uid] = true;
+        this._dislikers[tid][uid] = { id : uid, vid : profile.getVID() };
       }
       
       if(this._likers[tid][uid]) {
-        this._likers[tid][uid] = false;
+        delete this._likers[tid][uid];
         tl[i].likes--;
         if(tl[i].likes < 0) {
           tl[i].likes = 0;

@@ -8,7 +8,7 @@ var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
 var DBF = dbConst.DB.USERS_STAT.fields;
 var PF = dbConst.PFIELDS;
-var SF = dbConst.SFIELDS;
+var SF = require('./../../../constants').SFIELDS;
 
 module.exports = function(options, callback) { options = options || {};
   

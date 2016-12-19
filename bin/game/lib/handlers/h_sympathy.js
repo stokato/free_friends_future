@@ -4,7 +4,8 @@ var addAction = require('./../common/add_action');
 var oPool = require('./../../../objects_pool');
 var handleError     = require('./../common/handle_error');
 var addPoints = require('./../common/add_points');
-var GameError = require('./../common/game_error');
+var GameError = require('./../common/game_error'),
+    stat = require('./../../../stat_manager');
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
@@ -47,6 +48,8 @@ module.exports = function(game) {
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
+      
+      stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
       
       var players = [], count = 0;
       

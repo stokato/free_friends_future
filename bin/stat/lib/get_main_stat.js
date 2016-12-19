@@ -5,7 +5,9 @@
  */
 
 var db = require('./../../db_manager');
-var SF = require('./../../constants').SFIELDS;
+var constants = require('./../../constants');
+var SF = constants.SFIELDS;
+var PF = constants.PFIELDS;
 
 module.exports = function (callback) {
   
@@ -40,7 +42,9 @@ module.exports = function (callback) {
   ];
   
   db.findMainStat(id, fList, function (err, stat) {
-    if(err) { return (err); }
+    if(err) { return callback(err); }
+    
+    delete stat[PF.ID];
     
     callback(null, stat);
   })

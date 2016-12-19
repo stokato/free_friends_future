@@ -9,14 +9,14 @@ var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
 var DBF = dbConst.DB.MAIN_STAT.fields;
 var PF = dbConst.PFIELDS;
-var SF = dbConst.SFIELDS;
+var SF = require('./../../../constants').SFIELDS;
 
 module.exports = function(id, f_list, callback) {
   if (!id) {
     return callback(new Error("Ошибка при поиске статистики: Не задан ID"), null);
   }
   
-  var param = [];
+  var param = [id];
   
   var contsFields = [DBF.ID_varchar_p];
   var constValues = [1];

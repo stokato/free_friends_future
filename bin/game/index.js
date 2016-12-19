@@ -24,7 +24,8 @@ var start                 = require('./lib/main/start'),
     getPlayerInfo         = require('./lib/common/get_player_info'),
     getNextPlayer         = require('./lib/common/get_next_player'),
     checkCountPlayers     = require('./lib/common/check_count_players'),
-    addEmits              = require('./lib/emits/add_emits');
+    addEmits              = require('./lib/emits/add_emits'),
+    getActivityRating     = require('./lib/common/get_activity_rating');
 
 // Обработчики игр
 var hStart                  = require('./lib/handlers/h_start'),
@@ -50,7 +51,8 @@ function Game(room) {
 
   this._actionsQueue  = {};           // Очередь действий игроков
   this._actionsLimits = {};           // Лимиты ответов для игроков
-  this._actionsCount  = 0;            // Количество ответов до перехода к следующей игре
+  this._actionsCount  = 0;            // Текущее количество ответов до перехода к следующей игре
+  this._actionsMain   = 0;            // Общее количество ответов до перехода к следующей игре
 
   this._storedOptions  = {};          // опции, сохраненные на предидущих этапах
   this._activePlayers  = {};          // Игроки, которые на данном этапе могут ходить
@@ -106,6 +108,7 @@ Game.prototype.activateAllPlayers     = activateAllPlayers;
 Game.prototype.startTimer             = startTimer;
 Game.prototype.getNextPlayer          = getNextPlayer;
 Game.prototype.addEmits               = addEmits;
+Game.prototype.getActivityRating      = getActivityRating;
 
 // Получаем вопросы
 Game.prototype.getQuestions = function() {
@@ -118,13 +121,13 @@ getQuestionsFromDB();
 
 // --------------------
 function getQuestionsFromDB() {
-  db.findAllQuestions(function(err, questions) {
+  db.findAllQuestions(function(err, res) {
     if(err) {
       return logger.error(400, "Ошибка при получении вопросов из базы данных");
        //console.log("Ошибка при получении вопросов из базы данных");
     }
 
-    gameQuestions = questions;
+    gameQuestions = res.questions;
 
     setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT);
   });

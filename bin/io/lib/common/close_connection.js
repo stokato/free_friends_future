@@ -13,7 +13,7 @@ var IOError         = require('./../common/io_error'),
     sendUsersInRoom = require('./send_users_in_room'),
     checkTrack      = require('./../player/check_track'),
     oPool           = require('./../../../objects_pool'),
-    stat            = require('./../../../stat');
+    stat            = require('./../../../stat_manager');
 
 module.exports = function(socket) {
 

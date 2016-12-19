@@ -12,11 +12,12 @@ var constants = require('./constants');
 var PF = constants.PFIELDS;
 
 var oPool = require('./objects_pool');
+var stat = require('./stat_manager');
 
 
 function VK () {}
 
-VK.prototype.handle = function(req, profiles, stat, callback) {
+VK.prototype.handle = function(req, profiles, callback) {
   var request = req || {};
 
   // Сначала проверка
@@ -119,7 +120,7 @@ function changeOrderStatus(request, profiles, stat, callback) {
 
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
-        db.findGood(options.goodid, function (err, goodInfo) {
+        db.findGood(options[PF.GOODID], function (err, goodInfo) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
@@ -181,7 +182,10 @@ function changeOrderStatus(request, profiles, stat, callback) {
                 options[PF.MONEY] = goodInfo[PF.PRICE2];
                 
                 stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
-
+                
+                var field = getField(payInfo[0], false);
+                stat.setMainStat(field, 1);
+                
                 if(profiles[options[PF.ID]]) {
                   var socket = profiles[options[PF.ID]].getSocket();
                   socket.emit(constants.IO_GIVE_MONEY, options);
@@ -212,6 +216,9 @@ function changeOrderStatus(request, profiles, stat, callback) {
             if(profiles[options.id]) {
               profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
             }
+            
+            var field = getField(payInfo[0], true);
+            stat.setMainStat(field, 1);
 
             var result = {};
             result.orderid = orderid;
@@ -246,6 +253,23 @@ function changeOrderStatus(request, profiles, stat, callback) {
     var resJSON = JSON.stringify(response);
     callback(null, resJSON);
   }
+}
+
+function getField (goodID, isSelf) {
+  var SF = constants.SFIELDS;
+  var LOTS = constants.MONEY_LOTS;
+  var field;
+  
+  switch (goodID) {
+    case LOTS.COIN_1    : (isSelf)? field = SF.MONEY_1_TAKEN    : field = SF.MONEY_1_GIVEN;     break;
+    case LOTS.COIN_3    : (isSelf)? field = SF.MONEY_3_TAKEN    : field = SF.MONEY_3_GIVEN;     break;
+    case LOTS.COIN_10   : (isSelf)? field = SF.MONEY_10_TAKEN   : field = SF.MONEY_10_GIVEN;    break;
+    case LOTS.COIN_20   : (isSelf)? field = SF.MONEY_20_TAKEN   : field = SF.MONEY_20_GIVEN;    break;
+    case LOTS.COIN_60   : (isSelf)? field = SF.MONEY_60_TAKEN   : field = SF.MONEY_60_GIVEN;    break;
+    case LOTS.COIN_200  : (isSelf)? field = SF.MONEY_200_TAKEN  : field = SF.MONEY_200_GIVEN;   break;
+  }
+  
+  return field;
 }
 
 function sendError(callback) {

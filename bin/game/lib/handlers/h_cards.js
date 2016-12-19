@@ -69,6 +69,8 @@ module.exports = function(game) {
           }
         }
       }
+      
+      stat.setMainStat(constants.SFIELDS.CARDS_ACTIVITY, game.getActivityRating());
 
       // Если есть победители, делим награду поровну и добавляем всем монеты
       if(winners.length > 0) {
@@ -112,6 +114,7 @@ module.exports = function(game) {
               
               // Статистика
               stat.setUserStat(player.getID(), player.getVID(), constants.SFIELDS.COINS_EARNED, bonus);
+              stat.setMainStat(constants.SFIELDS.COINS_EARNED, bonus);
 
               cb(null, player, money, isOnline);
             });

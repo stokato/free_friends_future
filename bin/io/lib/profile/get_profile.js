@@ -71,6 +71,15 @@ module.exports = function (socket, options, callback) {
           selfInfo[PF.NEWGUESTS] = guestsInfo[PF.NEWGUESTS] || 0;
           cb(null, null);
         });
+      },//----------------------------------------------------------------------
+      function (res, cb) { // Получаем статистику
+        selfProfile.getStat(function (err, st) {
+          if (err) { return cb(err, null); }
+      
+          selfInfo[PF.STAT]    = st || null;
+          
+          cb(null, null);
+        });
       }//----------------------------------------------------------------------
     ], function(err) { // Отправляем сведения
       if (err) { return callback(err); }
@@ -137,6 +146,15 @@ module.exports = function (socket, options, callback) {
           if (err) { return cb(err, null); }
           
           friendInfo[PF.GUESTS] = guestsInfo[PF.GUESTS];
+          cb(null, friendProfile, friendInfo);
+        });
+      },//----------------------------------------------------------------------
+      function (friendProfile, friendInfo, cb) { // Получаем статистику
+        friendProfile.getStat(function (err, st) {
+          if (err) { return cb(err, null); }
+  
+          friendInfo[PF.STAT]    = st || null;
+      
           cb(null, friendProfile, friendInfo);
         });
       }//----------------------------------------------------------------------

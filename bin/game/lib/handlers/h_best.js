@@ -33,8 +33,8 @@ module.exports = function(game) {
       addAction(game, uid, options);
   
       // Статистика
-      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
-        var profInfo  = game._activePlayers[item];
+      for(var item in game._storedOptions) if(game._storedOptions.hasOwnProperty(item)) {
+        var profInfo  = game._storedOptions[item];
         if(options[PF.PICK] == profInfo.id) {
           stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BEST_SELECTED, 1);
         }
@@ -67,6 +67,8 @@ module.exports = function(game) {
       if(!game.checkCountPlayers()) {
         return game.stop();
       }
+      
+      stat.setMainStat(constants.SFIELDS.BEST_ACTIVITY, game.getActivityRating());
       
       // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
       if(game._actionsCount == 0) {

@@ -74,6 +74,7 @@ module.exports = function(game) {
         
         game._actionsCount = game._room.getCountInRoom(constants.GIRL)
           + game._room.getCountInRoom(constants.GUY) - countPrisoners;
+        game._actionsMain = game._actionsCount;
         
         result[PF.QUESTION] =  game.getRandomQuestion();
         break;
@@ -86,6 +87,8 @@ module.exports = function(game) {
         
         game._actionsCount = game._room.getCountInRoom(constants.GIRL)
           + game._room.getCountInRoom(constants.GUY) - countPrisoners;
+        game._actionsMain = game._actionsCount;
+        
         break;
       //---------------------------------- ЛУЧШИЙ --------------------------------------------
       case constants.G_BEST : // для игры Кто больше нравится выбираем произвольно пару к игроку того же пола
@@ -146,6 +149,7 @@ module.exports = function(game) {
         game.setActionLimit(1);
         game._actionsCount = game._room.getCountInRoom(constants.GIRL)
           + game._room.getCountInRoom(constants.GUY) - countPrisoners - 2;
+        game._actionsMain = game._actionsCount;
         
         result.best = bestPlayerInfo;
         break;
@@ -157,6 +161,8 @@ module.exports = function(game) {
         game.setActionLimit(constants.SHOW_SYMPATHY_LIMIT);
         game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
           + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 2;
+        game._actionsMain = game._actionsCount;
+        
         break;
       //------------------------------------- ТЮРЬМА ------------------------------------
       case constants.G_PRISON: // По истечении таймаута, добавляем в тюрьму
@@ -166,8 +172,7 @@ module.exports = function(game) {
     }
     // -----------------------------------------------------------------------------------
     result.players = game.getPlayersID();
-    
-    
+        
     // Добавляем данные об игроке в темнице и отправляем результаты игрокам
     if(game._prisoner !== null) {
       

@@ -117,6 +117,7 @@ module.exports.IO_LIKE_TRACK          = 'like_track';
 module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
 module.exports.IO_START_TRACK         = 'start_track';
 module.exports.IO_STOP_TRACK          = 'stop_track';
+module.exports.IO_GET_LIKES_AND_DISLAKES  = 'get_likes_and_dislikes';
 
 module.exports.IO_ADD_QUESTION        = 'add_question';
 module.exports.IO_DEL_QUESTION        = 'del_question';
@@ -161,9 +162,9 @@ module.exports.G_PRISON               = G_PRISON;
 
 // Игры с тюрьмой и без
  module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
- //module.exports.GAMES = [ G_CARDS, G_CARDS ];
+ // module.exports.GAMES = [ G_BOTTLE, G_BOTTLE ];
  module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
-//module.exports.GAMES_WITHOUT_PRISON = [G_CARDS, G_CARDS];
+// module.exports.GAMES_WITHOUT_PRISON = [G_BOTTLE, G_BOTTLE];
 
 // Количество карт в игре
 module.exports.CARD_COUNT             = Number(Config.game.card_count);
@@ -214,7 +215,24 @@ module.exports.GIFT_TYPES = {
   DRINKS      : 'Напитки',
   COMMON      : 'Обычные',
   FLIRTATION  : 'Флирт',
-  MERRY       : 'Веселье'
+  MERRY       : 'Веселье',
+  MERRY2      : 'merry'
+};
+
+module.exports.MONEY_LOTS = {
+  COIN_1      : 'payCoin1',
+  COIN_3      : 'payCOin3',
+  COIN_10     : 'payCoin10',
+  COIN_20     : 'payCoin20',
+  COIN_60     : 'payCoin60',
+  COIN_200    : 'payCoin200'
+};
+
+module.exports.ACTIVITY_RATINGS = {
+  ALL         : 3,
+  HALF_MORE   : 2,
+  HALF_LESS   : 1,
+  NONE        : 0
 };
 
 module.exports.PFIELDS = {
@@ -298,7 +316,8 @@ module.exports.PFIELDS = {
   QUESTION        : 'question',
   IMAGE_1         : 'image1',
   IMAGE_2         : 'image2',
-  IMAGE_3         : 'image3'
+  IMAGE_3         : 'image3',
+  STAT            : 'stat'
 };
 
 module.exports.SFIELDS = {

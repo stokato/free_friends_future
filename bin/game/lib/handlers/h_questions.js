@@ -1,6 +1,8 @@
-var PF = require('./../../../constants').PFIELDS;
+var constants = require('./../../../constants');
+var PF = constants.PFIELDS;
 var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
+var oPool = require('./../../../objects_pool'),
+    stat = require('./../../../stat_manager');
 
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {
@@ -43,6 +45,8 @@ module.exports = function(game) {
         }
       }
 
+      stat.setMainStat(constants.SFIELDS.QUESTION_ACITVITY, game.getActivityRating());
+      
       game.restoreGame(result, true);
     }
   }

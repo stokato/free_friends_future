@@ -49,6 +49,7 @@ module.exports = function(socket, options, callback) {
         
         // Статистика
         stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.COINS_EARNED, constants.MENU_BONUS);
+        stat.setMainStat(constants.SFIELDS.COINS_EARNED, constants.MENU_BONUS);
         
         cb(null, money);
       });

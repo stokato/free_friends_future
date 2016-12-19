@@ -67,6 +67,8 @@ module.exports = function(game) {
     game._actionsQueue = {};
     game.setActionLimit(1);
     game._actionsCount = 2;
+    game._actionsMain = game._actionsCount;
+    
 
     game._nextGame = constants.G_BOTTLE_KISSES;
 

@@ -459,6 +459,19 @@ module.exports.DB = {
       C_COINS_EARNED_counter        : 'count_coins_earned',
       C_COUNS_SPENT_counter         : 'count_coins_spent'
     }
+  },
+  
+  USER_QUESTIONS : {
+    name    : 'user_questions',
+    fields    : {
+      ID_uuid_p       : 'id',
+      TEXT_varchar    : 'text',
+      IMAGE1_varchar  : 'image1',
+      IMAGE2_varchar  : 'image2',
+      IMAGE3_varchar  : 'image3',
+      USERID_uuid     : 'userid',
+      USERVID_varchar : 'uservid'
+    }
   }
 };
 

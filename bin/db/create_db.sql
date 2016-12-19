@@ -440,3 +440,15 @@ CREATE TABLE IF NOT EXISTS main_stat (
  count_coins_spent counter,
  PRIMARY KEY (id)
 );
+
+-- Таблица для накопления поступающих от пользователей вопросов
+CREATE TABLE IF NOT EXISTS user_questions (
+id uuid,
+text VARCHAR,
+image1 VARCHAR,
+image2 VARCHAR,
+image3 VARCHAR,
+userid uuid,
+uservid VARCHAR,
+PRIMARY KEY (id)
+);

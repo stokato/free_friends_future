@@ -18,5 +18,4 @@ module.exports = function(socket, options, callback) {
   res[PF.DISLIKES] = mPlayer.getDislikes(options[PF.TRACKID]);
   
   callback(null, res);
-  
 };

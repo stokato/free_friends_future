@@ -121,13 +121,13 @@ getQuestionsFromDB();
 
 // --------------------
 function getQuestionsFromDB() {
-  db.findAllQuestions(function(err, res) {
+  db.findAllQuestions(function(err, questions) {
     if(err) {
       return logger.error(400, "Ошибка при получении вопросов из базы данных");
        //console.log("Ошибка при получении вопросов из базы данных");
     }
 
-    gameQuestions = res.questions;
+    gameQuestions = questions;
 
     setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT);
   });

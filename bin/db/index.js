@@ -27,7 +27,7 @@ var addUser           = require('./lib/users/users_add'),
   deletePoints        = require('./lib/points/points_delete'),
   findAllQuestions    = require('./lib/questions/questions_find_all'),
   addQuestion         = require('./lib/questions/questions_add'),
-  deleteQuestion      = require('./lib/questions/questions_delete'),
+  deleteQuestions      = require('./lib/questions/questions_delete'),
   deleteAllQuestions  = require('./lib/questions/questions_delete_all'),
   findGift            = require('./lib/gifts/gifts_find_one'),
   openFriends         = require('./lib/friends/friends_open'),
@@ -40,7 +40,14 @@ var addUser           = require('./lib/users/users_add'),
   usersStatFind       = require('./lib/users_stat/users_stat_find'),
   usersStatDelete     = require('./lib/users_stat/users_stat_delete'),
   mainStatUpdate      = require('./lib/main_stat/main_stat_update'),
-  mainStatFind        = require('./lib/main_stat/main_stat_find');
+  mainStatFind        = require('./lib/main_stat/main_stat_find'),
+  addUserQuestion     = require('./lib/user_questions/user_questions_add'),
+  findUserQuestions   = require('./lib/user_questions/user_questions_find'),
+  deleteUserQuestions = require('./lib/user_questions/user_questions_delete');
+
+var addAuthUser       = require('./lib/auth_users/auth_users_add'),
+   findAuthUser       = require('./lib/auth_users/auth_users_find'),
+   deleteAuthUser     = require('./lib/auth_users/auth_users_delete');
 
 var dbConstants       = require('./constants').PFIELDS;
 
@@ -91,7 +98,7 @@ DBManager.prototype.deletePoints      = deletePoints;
 DBManager.prototype.findAllQuestions  = findAllQuestions;
 DBManager.prototype.findGift          = findGift;
 DBManager.prototype.addQuestion       = addQuestion;
-DBManager.prototype.deleteQuestion    = deleteQuestion;
+DBManager.prototype.deleteQuestions    = deleteQuestions;
 DBManager.prototype.deleteAllQuestions = deleteAllQuestions;
 DBManager.prototype.openFriends       = openFriends;
 DBManager.prototype.openGuests        = openGuests;
@@ -104,6 +111,13 @@ DBManager.prototype.findUserStat      = usersStatFind;
 DBManager.prototype.deleteUserStat    = usersStatDelete;
 DBManager.prototype.updateMainStat    = mainStatUpdate;
 DBManager.prototype.findMainStat      = mainStatFind;
+DBManager.prototype.addUserQuestion   = addUserQuestion;
+DBManager.prototype.findUserQustions  = findUserQuestions;
+DBManager.prototype.deleteUserQuestions = deleteUserQuestions;
+
+DBManager.prototype.addAuthUser       = addAuthUser;
+DBManager.prototype.findAuthUser      = findAuthUser;
+DBManager.prototype.deleteAuthUser    = deleteAuthUser;
 
 module.exports = DBManager;
 

@@ -472,6 +472,15 @@ module.exports.DB = {
       USERID_uuid     : 'userid',
       USERVID_varchar : 'uservid'
     }
+  },
+  
+  AUTH_USERS : {
+    name   : 'auth_users',
+    fields : {
+      ID_uuid_p : 'id',
+      LOGIN_varchar_i : 'login',
+      PASSWORD_varchar : 'password'
+    }
   }
 };
 

@@ -1,20 +1,20 @@
-var db      = require('./../../../db_manager');
-var IOF     = require('./../../../constants').PFIELDS;
+/**
+ * Created by s.t.o.k.a.t.o on 21.11.2016.
+ *
+ * Добавляем ворос пользователя в базу
+ *
+ */
 
-// Добавить вопрос в БД
+var PF =  require('./../../../constants').PFIELDS,
+  oPool    = require('./../../../objects_pool');
+
 module.exports = function (socket, options, callback) {
   
-  var params = {};
-  params[IOF.TEXT] = options[IOF.TEXT];
-  params[IOF.IMAGE_1] = options[IOF.IMAGE_1];
-  params[IOF.IMAGE_2] = options[IOF.IMAGE_2];
-  params[IOF.IMAGE_3] = options[IOF.IMAGE_3];
-  
-  db.addQuestion(params, function (err, res) {
-    if(err){ return callback(err); }
+  oPool.userList[socket.id].addQuestion(options[PF.TEXT],
+      options[PF.IMAGE_1], options[PF.IMAGE_2], options[PF.IMAGE_3],  function (err) {
+    if (err) {  return callback(err); }
     
-    return callback(null, res);
+    callback(null, null);
   });
   
 };
-

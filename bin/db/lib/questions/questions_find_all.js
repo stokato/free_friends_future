@@ -33,6 +33,6 @@ module.exports = function(callback) {
       questions.push(question);
     }
     
-    callback(null, { questions : questions });
+    callback(null, questions );
   });
 };

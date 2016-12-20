@@ -42,6 +42,9 @@ module.exports.GT_MONEY         = "money";
 // Цена добавления трека
 module.exports.TRACK_PRICE      = Number(Config.moneys.track_price);
 
+// Порция вопросов пользователей
+module.exports.QUESTIONS_COUNT = 100;
+
 // статусы операций
 module.exports.RS_GOODSTATUS    = "success";
 module.exports.RS_BADSTATUS     = "fail";
@@ -317,7 +320,10 @@ module.exports.PFIELDS = {
   IMAGE_1         : 'image1',
   IMAGE_2         : 'image2',
   IMAGE_3         : 'image3',
-  STAT            : 'stat'
+  STAT            : 'stat',
+  QUESTIONS       : 'questions',
+  LOGIN           : 'username',
+  PASSWORD        : 'passport'
 };
 
 module.exports.SFIELDS = {

@@ -50,7 +50,8 @@ var init                            = require('./lib/init'),
     addToBlackList                  = require('./lib/add_to_black_list'),
     deleteFromBlackList             = require('./lib/delete_from_black_list'),
     isInBlackList                   = require('./lib/is_in_black_list'),
-    getStat                         = require('./lib/get_stat');
+    getStat                         = require('./lib/get_stat'),
+    addQuestion                     = require('./lib/add_question');
 
 
 function Profile() {
@@ -149,5 +150,6 @@ Profile.prototype.addToBlackList    = addToBlackList;
 Profile.prototype.delFromBlackList  = deleteFromBlackList;
 Profile.prototype.isInBlackList     = isInBlackList;
 Profile.prototype.getStat           = getStat;
+Profile.prototype.addQuestion       = addQuestion;
 
 module.exports = Profile;

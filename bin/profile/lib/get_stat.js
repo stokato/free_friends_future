@@ -7,11 +7,10 @@
 var stat = require('./../../stat_manager');
 
 module.exports = function(callback) {
-  var self = this;
   
   stat.getUserStat(this._pID, this._pVID, function (err, st) {
     if (err) { return callback(err); }
     
-    return st;
+    callback(st);
   });
 };

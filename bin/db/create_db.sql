@@ -16,6 +16,15 @@ CREATE TABLE IF NOT EXISTS sessions (
    PRIMARY KEY(sid)
 );
 
+-- Таблица аутентификации пользователей
+CREATE TABLE IF NOT EXISTS auth_users (
+   id uuid,
+   login VARCHAR,
+   password VARCHAR,
+   PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS auth_users_login ON auth_users (login);
 
 -- Таблица пользователей users:
 -- ИД: генерируется (ключевое поле),

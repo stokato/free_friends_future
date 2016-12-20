@@ -5,6 +5,8 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 // var socketio = require('socket.io-client');
+var passport = require('passport');
+var initPassport = require('./lib/passport/init');
 
 var session = require('./lib/session');
 var getCert = require('./lib/get_cert');
@@ -13,8 +15,8 @@ var log = require('./lib/log')(module);
 
 var io = require('./bin/io');
 
-var getMainStat = require('./lib/stat/get_main_stat');
-var getUserStat = require('./lib/stat/get_user_stat');
+var questions = require('./lib/questions/index');
+var stat      = require('./lib/stat/index');
 
 var profiles;
 
@@ -26,18 +28,23 @@ var app = express();
 //app.use(app.router);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended : false }));
+app.use(bodyParser.urlencoded({ extended : true }));
 app.use(cookieParser(config.sessions.secret));
 app.use(session);
+app.use(passport.initialize());
+app.use(passport.session());
+
+initPassport(passport);
 
 app.use(express.static(path.join(__dirname, config.static)));
 
 app.use(getCert);
 
-app.use(vkHandle);
-
-app.use('/stat/main', getMainStat);
-app.use('/stat/user/:vid', getUserStat);
+app.use('/', vkHandle);
+app.use('/questions', questions);
+app.use('/stat', stat);
+var auth = require('./lib/passport/index')(passport);
+app.use('/auth', auth);
 
 app.use(function(req, res, next) {
   res.status(404);
@@ -52,6 +59,8 @@ app.use(function(err, req, res, next) {
   res.send({ error : err.message });
   return;
 });
+
+
 
 var server = app.listen(config.server.port, function() {
   log.info('Sever running at: ' + config.server.host + ':' + config.server.port );

@@ -46,6 +46,15 @@ function Room(name, title)  {
   // Плеер
   this._mplayer = new MusicPlayer();
   
+  // Звания
+  this._ranks = {
+    generous  : null,
+    popular   : null,
+    dj        : null,
+    lucky     : null,
+    releaser  : null
+  };
+  
   for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
     this._girls_indexes.push(i);
     this._guys_indexes.push(i);

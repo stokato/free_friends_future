@@ -6,10 +6,13 @@
  */
 var async = require('async');
 
+var Config = require('./../../../../config.json');
 var constants  = require('./../../../constants'),
     PF         = constants.PFIELDS,
     oPool      = require('./../../../objects_pool'),
     stat       = require('./../../../stat_manager');
+
+var MENU_BONUS = Number(Config.moneys.menu_bonus);
 
 module.exports = function(socket, options, callback) {
   
@@ -43,13 +46,13 @@ module.exports = function(socket, options, callback) {
     },//---------------------------------------------------------------------------
     function(money, cb) { // Добавляем ему монет
       
-      var newMoney = money + constants.MENU_BONUS;
+      var newMoney = money + MENU_BONUS;
       selfProfile.setMoney(newMoney, function (err, money) {
         if (err) { return cb(err, null); }
         
         // Статистика
-        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.COINS_EARNED, constants.MENU_BONUS);
-        stat.setMainStat(constants.SFIELDS.COINS_EARNED, constants.MENU_BONUS);
+        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.COINS_EARNED, MENU_BONUS);
+        stat.setMainStat(constants.SFIELDS.COINS_EARNED, MENU_BONUS);
         
         cb(null, money);
       });

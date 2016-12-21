@@ -9,6 +9,11 @@ var constants = require('../../../constants'),
   addAction = require('./../common/add_action'),
   oPool     = require('./../../../objects_pool');
 
+var Config        = require('./../../../../config.json');
+
+var DEF_TIMEOUT    = Number(Config.game.timeouts.default);
+var BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
+var PRISON_TIMEOUT = Number(Config.game.timeouts.prison);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
@@ -27,7 +32,7 @@ module.exports = function(game) {
     // Сбрасываем таймер
     clearTimeout(game._timer);
     
-    var timeout = constants.TIMEOUT_GAME;
+    var timeout = DEF_TIMEOUT;
     
     // Если игроков недостаточно - останавилваем игру
     if(!game.checkCountPlayers()) {
@@ -63,7 +68,7 @@ module.exports = function(game) {
         game._actionsCount = 1;
         game.setActionLimit(1);
         
-        timeout = constants.TIMEOUT_BOTTLE;
+        timeout = BOTTLE_TIMEOUT;
         break;
       //--------------------------------- ВОПРОСЫ ------------------------------------------
       case constants.G_QUESTIONS : // для вопросов ходят все, отвечая на произовльный вопрос
@@ -158,7 +163,7 @@ module.exports = function(game) {
         game._activePlayers = {};
         game.activateAllPlayers();
         
-        game.setActionLimit(constants.SHOW_SYMPATHY_LIMIT);
+        game.setActionLimit(Config.game.show_sympathy_limit);
         game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
           + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 2;
         game._actionsMain = game._actionsCount;
@@ -167,7 +172,7 @@ module.exports = function(game) {
       //------------------------------------- ТЮРЬМА ------------------------------------
       case constants.G_PRISON: // По истечении таймаута, добавляем в тюрьму
         
-        timeout = constants.TIMEOUT_PRISON;
+        timeout = PRISON_TIMEOUT;
         break;
     }
     // -----------------------------------------------------------------------------------

@@ -4,6 +4,8 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
+var Config        = require('./../../../../config.json');
+
 var constants   = require('../../../constants'),
     PF          = constants.PFIELDS,
     addPoints   = require('./../common/add_points'),
@@ -12,6 +14,7 @@ var constants   = require('../../../constants'),
     handleError = require('./../common/handle_error'),
     stat        = require('./../../../stat_manager');
 
+var BEST_POINTS = Number(Config.points.game.best);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
@@ -37,6 +40,11 @@ module.exports = function(game) {
         var profInfo  = game._storedOptions[item];
         if(options[PF.PICK] == profInfo.id) {
           stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BEST_SELECTED, 1);
+          if(!profInfo.picks) {
+            profInfo.picks = 1;
+          } else {
+            profInfo.picks++;
+          }
         }
       }
         
@@ -73,42 +81,29 @@ module.exports = function(game) {
       // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
       if(game._actionsCount == 0) {
   
+        // Проверяем - кто выбран лучшим, начисляем ему очки
+        var bestPlayer = { id: null, picks : 0 };
+        
         for(var bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
-          
-          // Если одини из игроков выбран лучшим всеми, начисляем ему очки
-          if(checkBestOfBest(bestID) == true) {
-            addPoints(bestID, constants.BEST_POINTS, function (err) {
-              if(err) {
-                var socket = game._room.getAnySocket();
-                return handleError(socket, constants.IO_GAME, constants.G_BEST, err.message);
-              }
-            })
+          var profInfo = game._storedOptions[bestID];
+          if(profInfo.picks > bestPlayer.picks) {
+            bestPlayer.id = bestID;
           }
+        }
+        
+        if(bestPlayer.id) {
+          addPoints(bestID, BEST_POINTS, function (err) {
+            if(err) {
+              var socket = game._room.getAnySocket();
+              return handleError(socket, constants.IO_GAME, constants.G_BEST, err.message);
+            }
+          });
         }
         
         game.restoreGame(null, true);
       } else {
         game.restoreGame(null, false);
       }
-    }
-
-    //---------------
-    // Проверяем - врдуг все проголосовали за этого игрока
-    function checkBestOfBest(bestID) {
-      
-        for(var otherID in game._actionsQueue) if(game._actionsQueue.hasOwnProperty(otherID)) {
-          var otherPicks = game._actionsQueue[otherID];
-        
-          for(var otherPicksOptions = 0; otherPicksOptions < otherPicks.length; otherPicksOptions++) {
-  
-            // Если хотя бы один не проголосовал - отбой
-            if(otherPicks[otherPicksOptions][PF.PICK] != bestID) {
-              return false;
-            }
-          }
-        }
-    
-      return true;
     }
   }
 };

@@ -4,10 +4,14 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
+var Config        = require('./../../../../config.json');
+
 var constants   = require('../../../constants'),
     PF          = constants.PFIELDS,
     addAction   = require('./../common/add_action'),
     oPool       = require('./../../../objects_pool');
+
+var DEF_TIMEOUT = Number(Config.game.timeouts.default);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
@@ -91,6 +95,6 @@ module.exports = function(game) {
     game._gameState = result;
 
     // Устанавливаем таймаут
-    game.startTimer(game._handlers[game._nextGame], constants.TIMEOUT_GAME);
+    game.startTimer(game._handlers[game._nextGame], DEF_TIMEOUT);
   }
 };

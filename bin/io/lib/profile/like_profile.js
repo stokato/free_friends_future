@@ -4,11 +4,14 @@
  * @param socket, options - объект с ид пользователя, callback
  *
  */
+var Config        = require('./../../../../config.json');
+
 var constants = require('./../../../constants'),
     PF        = constants.PFIELDS,
     oPool     = require('./../../../objects_pool'),
     ProfileJS = require('./../../../profile/index');
 
+var LIKE_TIMEOUT = Config.user.settings.like_timeout;
 
 module.exports = function (socket, options, callback) {
  
@@ -52,7 +55,7 @@ module.exports = function (socket, options, callback) {
       
       oPool.likeLocks[lock] = true;
       
-      setLikeTimeout(oPool.likeLocks, selfProfile.getID(), constants.TIMEOUT_LIKE);
+      setLikeTimeout(oPool.likeLocks, selfProfile.getID(), LIKE_TIMEOUT);
       
       callback(null, null);
     }

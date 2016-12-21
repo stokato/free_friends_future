@@ -4,9 +4,11 @@
  * Добавляем пользователя в черный список
  */
 
-var constants = require('./../../constants');
+var Config        = require('./../../../config.json');
 var db  = require('./../../db_manager');
 var IOF = require('./../../constants').PFIELDS;
+
+var BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
 
 module.exports = function (blockedProfile, date, callback) {
   var self = this;
@@ -27,7 +29,7 @@ module.exports = function (blockedProfile, date, callback) {
     
     self._pBlackList[blockedID] = {
       date : date,
-      timeout : setBlockedTimeout(self, blockedID, constants.TIMEOUT_BLOCK_USER)
+      timeout : setBlockedTimeout(self, blockedID, BLOCK_TIMEOUT)
     };
     
     callback(null, blockedID);

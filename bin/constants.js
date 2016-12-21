@@ -7,40 +7,18 @@ module.exports.ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 module.exports.GUY              = Config.user.constants.sex.male;
 module.exports.GIRL             = Config.user.constants.sex.female;
 
-// Поля для защищенной подписи
-module.exports.APIID            = Config.auth.APIID;
-module.exports.APISECRET        = Config.auth.APISECRET;
-
 // Размер истории комнаты
 module.exports.LEN_ROOM_HISTORY = Config.io.len_room_history;
-
-// Таймаут отключения от сервера
-module.exports.EXIT_TIMEOUT     = Config.io.exit_timeout;
 
 // Таймаут ожидания запроса от клиента перед отключением ???
 module.exports.REQUEST_TIMEOUT  = 3600000;
 
 // Идентификатор для создания новой комнаты
 module.exports.NEW_ROOM         = "new_room";
-// Размер топа
-module.exports.TOP_USERS        = Number(Config.user.settings.top_size);
-// Бонус за добавление в меню
-module.exports.MENU_BONUS       = Number(Config.moneys.menu_bonus);
-// Цена подарка
-module.exports.GIFT_MONEY       = Number(Config.moneys.gift_price);
-
-// Старовый баланс
-module.exports.START_MONEY      = Number(Config.moneys.start_money);
-
-// Длительность отображения подарка на аве
-module.exports.GIFT_TIMEOUT     = Number(Config.user.settings.gift_timeout);
 
 // Типы товаров
 module.exports.GT_GIFT          = "gift";
 module.exports.GT_MONEY         = "money";
-
-// Цена добавления трека
-module.exports.TRACK_PRICE      = Number(Config.moneys.track_price);
 
 // Порция вопросов пользователей
 module.exports.QUESTIONS_COUNT = 100;
@@ -50,6 +28,14 @@ module.exports.RS_GOODSTATUS    = "success";
 module.exports.RS_BADSTATUS     = "fail";
 
 module.exports.LIKE_BONUS_POINTS = "1";
+
+module.exports.RANKS = {
+  GENEROUS  : 'generous',
+  popular   : 'popular',
+  dj        : 'dj',
+  lucky     : 'lucky',
+  releaser  : 'releaser'
+};
 
 // ошибки
 module.exports.errors = {
@@ -169,47 +155,7 @@ module.exports.G_PRISON               = G_PRISON;
  module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
 // module.exports.GAMES_WITHOUT_PRISON = [G_BOTTLE, G_BOTTLE];
 
-// Количество карт в игре
-module.exports.CARD_COUNT             = Number(Config.game.card_count);
-
 module.exports.QUESTIONS_COUNT        = 3;
-
-// Выигрышь за угаданную карту
-module.exports.CARD_BOUNUS            = Number(Config.moneys.card_bonus);
-
-// Минимальное количество игроков одного пола в игре
-module.exports.PLAYERS_COUNT          = Number(Config.game.players_min);
-
-// Максимальное количество игроков, которых можно указать в игре симпатии
-module.exports.SHOW_SYMPATHY_LIMIT    = (Config.game.show_sympathy_limit);
-
-// Количество очков, начисляющихся за обоюдный поцелуй
-module.exports.KISS_POINTS            = Number(Config.game.kiss_points);
-module.exports.SYMPATHY_POINTS        = Number(Config.game.sympathy_points);
-module.exports.BEST_POINTS            = Number(Config.game.best_points);
-
-// Раз в сутки получать из базы список вопросов
-module.exports.QUESTIONS_TIMEOUT      = Number(Config.game.questions_timeout); //24 * 60 * 60 * 1000;
-
-// Величина выкупа из тюрьмы
-module.exports.RANSOM_PRICE           = Number(Config.moneys.ransom_price);
-
-// Цена просмтора чужоко выбора
-module.exports.SYMPATHY_PRICE         = Number(Config.moneys.sympathy_price);
-
-// Таймауты
-module.exports.TIMEOUT_LOT            = Number(Config.game.timeouts.lot);
-module.exports.TIMEOUT_GAME           = Number(Config.game.timeouts.default);
-module.exports.TIMEOUT_BOTTLE         = Number(Config.game.timeouts.bottle);
-module.exports.TIMEOUT_RESULTS        = Number(Config.game.timeouts.results);
-module.exports.TIMEOUT_PRISON         = Number(Config.game.timeouts.prison);
-module.exports.TIMEOUT_SYMPATHY_SHOW  = Number(Config.game.timeouts.sympathy_show);
-
-// Таймаут лайка пользователю - 24 часа
-module.exports.TIMEOUT_LIKE           = Number(Config.user.settings.like_timeout);
-module.exports.TIMEOUT_ROOM_CHANGE    = Number(Config.user.settings.room_change_timeout);
-
-module.exports.TIMEOUT_BLOCK_USER     = Number(Config.user.settings.user_block_timeout);
 
 module.exports.GIFT_TYPES = {
   LOVES       : 'Любовь',

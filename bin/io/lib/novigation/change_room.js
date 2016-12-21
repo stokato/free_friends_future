@@ -6,6 +6,8 @@
  */
 
 // Свои модули
+var Config = require('./../../../../config.json');
+
 var async         = require('async'),      // Ошибки
   constants       = require('./../../../constants'),     // Константы
   PF              = constants.PFIELDS,
@@ -16,6 +18,7 @@ var async         = require('async'),      // Ошибки
   checkTrack      = require('./../player/check_track'),
   oPool           = require('./../../../objects_pool');
 
+var ROOM_CHANGE_TIMEOUT = Number(Config.user.settings.room_change_timeout);
 
 module.exports = function (socket, options, callback) {
   
@@ -96,7 +99,7 @@ module.exports = function (socket, options, callback) {
       
       var info = newRoom.getInfo();
       oPool.roomChangeLocks[selfProfile.getID()] = true;
-      setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), constants.TIMEOUT_ROOM_CHANGE);
+      setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), ROOM_CHANGE_TIMEOUT);
     
       cb(null, info);
     },//-----------------------------------------------------------------------

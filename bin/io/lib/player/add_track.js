@@ -4,12 +4,14 @@
  * @param socket, options - объект с ид трека (из вк), callback
  *
  */
-
+var Config        = require('./../../../../config.json');
 var constants  = require('./../../../constants'),
     PF         = constants.PFIELDS,
     oPool      = require('./../../../objects_pool');
 
 var startTrack = require('./start_track_timer');
+
+var TRACK_PRICE = Config.moneys.track_price;
 
 module.exports = function(socket, options, callback) {
   
@@ -27,7 +29,7 @@ module.exports = function(socket, options, callback) {
   }
   
   // Оплачиваем трек
-  selfProfile.pay(constants.TRACK_PRICE, function (err, money) {
+  selfProfile.pay(TRACK_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
     var res = {};
@@ -67,38 +69,5 @@ module.exports = function(socket, options, callback) {
   
     callback(null, null);
   });
-
   
-  //-------------------------
-  // function startTrack(socket, room, track, timerID) { timerID = timerID || null;
-  //   var mPlayer = room.getMusicPlayer();
-  //
-  //   mPlayer.setTrackTime(new Date());
-  //   var trackList = mPlayer.getTrackList();
-  //
-  //   timerID = setTimeout(function () {
-  //     mPlayer.deleteTrack(track[PF.TRACKID]);
-  //
-  //     if (trackList.length > 0) {
-  //       var newTrack = trackList[0];
-  //       startTrack(socket, room, newTrack, timerID);
-  //     }
-  //
-  //   }, track[PF.DURATION] * 1000);
-  //
-  //   mPlayer.setTimer(timerID);
-  //
-  //   var res = {};
-  //   res[PF.TRACK]       = track;
-  //   res[PF.PASSED_TIME] = 0;
-  //
-  //   socket.emit(constants.IO_START_TRACK, res);
-  //   socket.broadcast.in(room.getName()).emit(constants.IO_START_TRACK, res);
-  //
-  //   res = {};
-  //   res[PF.TRACKLIST] = trackList;
-  //
-  //   socket.emit(constants.IO_GET_TRACK_LIST, res );
-  //   socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
-  // }
 };

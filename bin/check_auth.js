@@ -8,6 +8,7 @@ var md5 = require('md5');
 var constants = require('./constants');
 var oPool = require('./objects_pool');
 var logger = require('./../lib/log')(module);
+var Config = require('./../config.json');
 
 module.exports = function (em, socket, options) {
   if(em == constants.IO_INIT) {
@@ -26,7 +27,7 @@ module.exports = function (em, socket, options) {
   
   //--------------
   function compareAuthKey(vid) {
-    if(options[constants.PFIELDS.AUTHKEY] === md5(constants.APIID + "_" + vid + "_" + constants.APISECRET)) {
+    if(options[constants.PFIELDS.AUTHKEY] === md5(Config.auth.APIID + "_" + vid + "_" + Config.auth.APISECRET)) {
       return true;
     } else {
       logger.error(em + " " + "Несовпадение вычисленной и переданной подписи запроса.");

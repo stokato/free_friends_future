@@ -12,6 +12,7 @@ var Config    = require('./../../../config.json'),
     IOF       = constants.PFIELDS,
     db        = require('./../../db_manager');
 
+var BLOCK_TIMEOUT = Number(Config.user.settings.user_block_timeout);
 
 module.exports = function(socket, options, callback) {
   var self = this;
@@ -99,7 +100,7 @@ module.exports = function(socket, options, callback) {
           
           var now = new Date();
           for(var i = 0; i < blockedUsers.length; i++) {
-            if(now - blockedUsers[i][IOF.DATE] < constants.TIMEOUT_BLOCK_USER) {
+            if(now - blockedUsers[i][IOF.DATE] < BLOCK_TIMEOUT) {
               
               var delay = now - blockedUsers[i][IOF.DATE];
               self._pBlackList[blockedUsers[i][IOF.ID]] = {

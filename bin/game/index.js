@@ -6,6 +6,9 @@
  * @param room
  * @constructor
  */
+
+var Config        = require('./../../config.json');
+
 var logger = require('./../../lib/log')(module);
 
 var constants             = require('../constants');
@@ -38,6 +41,9 @@ var hStart                  = require('./lib/handlers/h_start'),
     hSympathy               = require('./lib/handlers/h_sympathy'),
     hSympathyShow           = require('./lib/handlers/h_sympathy_show'),
     hPrison                 = require('./lib/handlers/h_prison');
+
+
+var LOAD_QUESTIONS_TIMEOUT = Number(Config.game.questions_timeout);
 
 // Вопросы
 var gameQuestions = [];
@@ -129,6 +135,6 @@ function getQuestionsFromDB() {
 
     gameQuestions = questions;
 
-    setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT);
+    setTimeout(function(){ getQuestionsFromDB()}, LOAD_QUESTIONS_TIMEOUT);
   });
 }

@@ -11,6 +11,6 @@ module.exports = function(callback) {
   stat.getUserStat(this._pID, this._pVID, function (err, st) {
     if (err) { return callback(err); }
     
-    callback(st);
+    callback(null, st);
   });
 };

@@ -6,6 +6,7 @@
 
 var async = require('async');
 
+var Config        = require('./../../../../config.json');
 var constants     = require('../../../constants'),
     PF            = constants.PFIELDS,
     addAction     = require('./../common/add_action'),
@@ -14,6 +15,9 @@ var constants     = require('../../../constants'),
     handleError   = require('../common/handle_error'),
     oPool         = require('./../../../objects_pool'),
     stat          = require('./../../../stat_manager');
+
+var CARD_COUNT = Number(Config.game.card_count);
+var CARD_BONUS = Number(Config.moneys.card_bonus);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
@@ -41,10 +45,10 @@ module.exports = function(game) {
       }
 
       // Готовим сведения о выборе игорков и отбираем победителей
-      var gold    = Math.floor(Math.random() * constants.CARD_COUNT);
+      var gold    = Math.floor(Math.random() * CARD_COUNT);
       var winners = [];
       var count   = 0;
-      var bonus   = constants.CARD_BOUNUS;
+      var bonus   = CARD_BONUS;
 
       var result = {};
       result[PF.PICKS]  = [];

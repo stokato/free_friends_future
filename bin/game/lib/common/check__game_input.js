@@ -1,10 +1,13 @@
 var validator = require('validator');
 
+var Config    = require('./../../../../config.json');
 var constants = require('./../../../constants'),
     PF        = constants.PFIELDS,
     sanitize  = require('./../../../sanitizer'),
     checkAuth = require('./../../../check_auth'),
     oPool     = require('./../../../objects_pool');
+
+var CARD_COUNT = Number(Config.game.card_count);
 
 module.exports = function (em, socket, nextGame, options, callback) {
   
@@ -29,6 +32,8 @@ module.exports = function (em, socket, nextGame, options, callback) {
     code : constants.errors.NO_PARAMS.code,
     message : ""
   };
+  
+  
   
   switch (em) {
     case constants.IO_GAME :
@@ -65,9 +70,9 @@ module.exports = function (em, socket, nextGame, options, callback) {
         case constants.G_CARDS :
           val = options[PF.PICK] + "";
           isValid = (PF.PICK in options)? isValid : false;
-          isValid = (validator.isInt(val) && val <= constants.CARD_COUNT-1 && val >= 0)? isValid : false;
+          isValid = (validator.isInt(val) && val <= CARD_COUNT-1 && val >= 0)? isValid : false;
         
-          err.message = "Некорректно задан выбор игрока, значение должно быть от 0 до " + constants.CARD_COUNT-1;
+          err.message = "Некорректно задан выбор игрока, значение должно быть от 0 до " + CARD_COUNT-1;
         
           break;
       

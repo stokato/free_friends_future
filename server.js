@@ -15,6 +15,7 @@ var log = require('./lib/log')(module);
 
 var io = require('./bin/io');
 
+var crossDomain = require('./lib/cross_dimain');
 var questions = require('./lib/questions/index');
 var stat      = require('./lib/stat/index');
 
@@ -40,6 +41,7 @@ app.use(express.static(path.join(__dirname, config.static)));
 
 app.use(getCert);
 
+app.use(crossDomain);
 app.use('/', vkHandle);
 app.use('/questions', questions);
 app.use('/stat', stat);

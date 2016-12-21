@@ -4,6 +4,9 @@ var addAction = require('./../common/add_action');
 var oPool = require('./../../../objects_pool');
 var GameError = require('./../common/game_error');
 var handleError = require('../common/handle_error');
+var Config        = require('./../../../../config.json');
+
+var SYMPATHY_PRICE = Number(Config.moneys.sympathy_price);
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
@@ -38,7 +41,7 @@ module.exports = function(game) {
       addAction(game, uid, options);
       
       // Если обработчик вызван игроком а не таймером
-      selfProfile.pay(constants.SYMPATHY_PRICE, function (err, money) {
+      selfProfile.pay(SYMPATHY_PRICE, function (err, money) {
         if(err) { return onError(err, selfProfile);  }
         
         var res = {};

@@ -4,6 +4,9 @@
  * @param socket, options, callback
  */
 
+var Config        = require('./../../../../config.json');
+var RANSOM_PRICE = Number(Config.moneys.sympathy_price);
+
 var constants = require('../../../constants'),
     PF = constants.PFIELDS;
 
@@ -27,7 +30,7 @@ module.exports = function (socket, options, callback) {
   }
   
   // Снимаем с пользователя монеты
-  selfProfile.pay(constants.RANSOM_PRICE, function (err, money) {
+  selfProfile.pay(RANSOM_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
     var res = {};

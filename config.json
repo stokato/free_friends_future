@@ -41,21 +41,37 @@
     }
   },
   "moneys" : {
-    "menu_bonus" : "5",
-    "gift_price" : "10",
-    "start_money" : "50",
-    "track_price" : "5",
-    "card_bonus" : "100",
-    "ransom_price" : "10",
-    "sympathy_price" : "1"
+    "menu_bonus"      : "5",
+    "gift_price"      : "10",
+    "start_money"     : "50",
+    "track_price"     : "5",
+    "card_bonus"      : "100",
+    "ransom_price"    : "10",
+    "sympathy_price"  : "1"
+  },
+  "ranks" : {
+    "generous"  : { "start" : 20, "step" : 5 },
+    "popular"   : { "start" : 20, "step" : 5 },
+    "dj"        : { "start" : 10, "step" : 5 },
+    "lucky"     : { "start" : 1,  "step" : 1 },
+    "releaser"  : { "start" : 3,  "step" : 1 }
+  },
+  "points" : {
+    "waste" : 10,
+    "refill" : 1,
+    "taken_gift" : 0.5,
+    "music" : 0.5,
+    "game" : {
+      "gold" : 30,
+      "mutual_kiss" : 10,
+      "mutual_sympathy" : 10,
+      "best" : 10
+    }
   },
   "game" : {
     "card_count" : "7",
     "players_min" : "2",
     "show_sympathy_limit" : "2",
-    "kiss_points" : "1",
-    "sympathy_points" : "1",
-    "best_points"  : "1",
     "questions_timeout" : "86400000",
     "timeouts" : {
       "lot" : "5000",
@@ -64,6 +80,17 @@
       "prison" : "4000",
       "sympathy_show" : "15000",
       "default" : "18000"
+    },
+    "levels" : {
+      "start" : 100,
+      "step" : 50,
+      "bonuses" : {
+        "10" : { "gifts" : 5,  "music" : 0,  "coins" : 0,   "vip" : false },
+        "20" : { "gifts" : 0,  "music" : 5,  "coins" : 0,   "vip" : false },
+        "30" : { "gifts" : 0,  "music" : 0,  "coins" : 300, "vip" : false },
+        "40" : { "gifts" : 5,  "music" : 5,  "coins" : 300, "vip" : false },
+        "50" : { "gifts" : 10, "music" : 10, "coins" : 500, "vip" : true  }
+      }
     }
   },
   "io" : {

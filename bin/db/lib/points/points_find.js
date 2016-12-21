@@ -1,3 +1,4 @@
+var Config = require('./../../../../config.json');
 var constants = require('./../../../constants');
 var cdb = require('./../common/cassandra_db');
 var dbConst = require('./../../constants');
@@ -26,8 +27,10 @@ module.exports = function(sex, callback) {
   } else if(sex == constants.GUY) {
     db = dbConst.DB.POINTS_GUYS.name;
   }
+  
+  var topSize = Number(Config.user.settings.top_size);
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, constants.TOP_USERS);
+  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, topSize);
 
   // Получаем все пользователей, отсортированных по количеству очков
   cdb.client.execute(query, [], {prepare: true }, function(err, result) {

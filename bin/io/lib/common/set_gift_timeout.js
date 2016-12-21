@@ -8,10 +8,13 @@
  * @param id - ид пользователя
  */
 
+var Config        = require('./../../../../config.json');
 var constants     = require('./../../../constants'),
   sendUsersInRoom = require('./send_users_in_room'),
   IOError         = require('./../common/io_error'),
   oPool           = require('./../../../objects_pool');
+
+var GIFT_TIMEOUT = Number(Config.user.settings.gift_timeout);
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
 module.exports = function(id) {
@@ -29,5 +32,5 @@ module.exports = function(id) {
         });
       });
     }
-  }, constants.GIFT_TIMEOUT);
+  }, GIFT_TIMEOUT);
 };

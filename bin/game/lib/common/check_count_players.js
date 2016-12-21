@@ -1,4 +1,7 @@
 var constants = require('../../../constants');
+var Config        = require('./../../../../config.json');
+
+var MIN_PLAYERS = Number(Config.game.players_min);
 
 // Проверяем, достаточно ли игроков для продолжения игры
 module.exports = function() {
@@ -19,7 +22,7 @@ module.exports = function() {
   var guysCount = this._room.getCountInRoom(constants.GUY) - guysInPrison;
   var girlsCount = this._room.getCountInRoom(constants.GIRL)- girlsInPrison;
 
-  if((guysCount) < constants.PLAYERS_COUNT || (girlsCount) < constants.PLAYERS_COUNT) {
+  if((guysCount) < MIN_PLAYERS || (girlsCount) < MIN_PLAYERS) {
     return false;
   }
 

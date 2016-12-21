@@ -323,7 +323,7 @@ module.exports.PFIELDS = {
   STAT            : 'stat',
   QUESTIONS       : 'questions',
   LOGIN           : 'username',
-  PASSWORD        : 'passport'
+  PASSWORD        : 'password'
 };
 
 module.exports.SFIELDS = {

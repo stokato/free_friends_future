@@ -11,6 +11,8 @@ var constants = require('./../../constants'),
 
 module.exports = function (profile) {
   
+  this._ranks.deleteProfile(profile.getID());
+  
   var sex = profile.getSex();
   if(sex == constants.GUY) {
     delete  this._guys[profile.getID()];

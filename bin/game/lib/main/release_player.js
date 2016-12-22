@@ -11,6 +11,7 @@ var constants = require('../../../constants'),
     PF = constants.PFIELDS;
 
 var oPool = require('./../../../objects_pool');
+var WASTE_POINTS  = Number(Config.points.waste);
 
 // Освободить игрока из темницы
 module.exports = function (socket, options, callback) {
@@ -37,28 +38,40 @@ module.exports = function (socket, options, callback) {
     res[PF.MONEY] = money;
     
     socket.emit(constants.IO_GET_MONEY, res);
-    
-    // Снимаем блокировку
-    game.clearPrison();
-    
-    // Разрешаем пользователю играть в текущем раунде
-    if(game._nextGame == constants.G_SYMPATHY ||
-      game._nextGame == constants.G_SYMPATHY_SHOW ||
-      game._nextGame == constants.G_BEST ||
-      game._nextGame == constants.G_QUESTIONS ||
-      game._nextGame == constants.G_CARDS) {
       
-      game._activePlayers[prisonerInfo.id] = prisonerInfo;
-    }
+    selfProfile.addPoints(WASTE_POINTS, function (err, points) {
+      if(err) { return onError(err, selfProfile);  }
     
-    var result = {};
-    result[PF.ID] = prisonerInfo.id;
-    result[PF.VID] = prisonerInfo.vid;
-    result[PF.FID] = selfProfile.getID();
-    result[PF.FVID] = selfProfile.getVID();
+      var res = {};
+      res[constants.PFIELDS.POINTS] = points;
+      socket.emit(constants.IO_ADD_POINTS, res);
+  
+      // Снимаем блокировку
+      game.clearPrison();
+  
+      // Разрешаем пользователю играть в текущем раунде
+      if(game._nextGame == constants.G_SYMPATHY ||
+        game._nextGame == constants.G_SYMPATHY_SHOW ||
+        game._nextGame == constants.G_BEST ||
+        game._nextGame == constants.G_QUESTIONS ||
+        game._nextGame == constants.G_CARDS) {
     
-    // Оповещаем игроков в комнате
-    socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);
-    callback(null, result);
+        game._activePlayers[prisonerInfo.id] = prisonerInfo;
+      }
+  
+      var ranks = game._room.getRanks();
+      ranks.addRankBall(constants.RANKS.RELEASER, selfProfile.getID());
+  
+      var result = {};
+      result[PF.ID] = prisonerInfo.id;
+      result[PF.VID] = prisonerInfo.vid;
+      result[PF.FID] = selfProfile.getID();
+      result[PF.FVID] = selfProfile.getVID();
+  
+      // Оповещаем игроков в комнате
+      socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);
+      callback(null, result);
+    });
+    
   });
 };

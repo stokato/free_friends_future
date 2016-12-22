@@ -26,5 +26,10 @@ module.exports = function(socket, options, callback) {
   socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
   socket.emit(constants.IO_GET_TRACK_LIST, res);
   
-  callback(null, null);
+  res = {};
+  res[PF.ID] = selfProfile.getID();
+  res[PF.VID] = selfProfile.getVID();
+  
+  socket.broadcast.in(room.getName()).emit(constants.IO_LIKE_TRACK, res);
+  callback(null, res);
 };

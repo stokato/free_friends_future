@@ -11,6 +11,7 @@ var constants      = require('./../../../constants'),
   SF               = constants.SFIELDS,
   getUserProfile   = require('./../common/get_user_profile'),
   setGiftTimeout   = require('./../common/set_gift_timeout'),
+  addRankBall      = require('./../ranks/handle_rank'),
   db               = require('./../../../db_manager'),
   oPool            = require('./../../../objects_pool'),
   stat             = require('./../../../stat_manager');
@@ -65,6 +66,9 @@ module.exports = function (socket, options, callback) {
           // Статистика
           stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
           
+          var ranks = oPool.roomList[socket.id].getRanks();
+          ranks.addRankBall(constants.errors.GENEROUS, selfProfile.getID());
+ 
           cb(null, friendProfile, gift);
         });
       },//---------------------------------------------------------------
@@ -76,7 +80,11 @@ module.exports = function (socket, options, callback) {
 
           // Статистика
           stat.setUserStat(friendProfile.getID(), friendProfile.getVID(), constants.SFIELDS.GIFTS_TAKEN, 1);
-          
+  
+          var friendSocket = friendProfile.getSocket();
+          var ranks = oPool.roomList[friendSocket.id].getRanks();
+          ranks.addRankBall(constants.errors.POPULAR, friendProfile.getID());
+                                                                        
           cb(null, friendProfile);
         });
 

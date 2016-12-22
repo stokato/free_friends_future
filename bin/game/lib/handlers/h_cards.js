@@ -129,6 +129,10 @@ module.exports = function(game) {
             
             if(isOnline) {
               handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);
+  
+              // Возможно достижение нужного количества баллов несколькими игроками
+              var ranks = game._room.getRanks();
+              ranks.addRankBall(constants.RANKS.LUCKY, player.getID());
             }
             return;
           }

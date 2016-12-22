@@ -11,6 +11,8 @@ var constants = require('./../../constants'),
 
 module.exports = function (profile) {
   
+  this._ranks.addProfile(profile.getID());
+  
   var sex = profile.getSex();
   if(sex == constants.GUY) {
     this._guys[profile.getID()]  = profile;

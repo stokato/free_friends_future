@@ -7,7 +7,8 @@
 var Config        = require('./../../../../config.json');
 var constants  = require('./../../../constants'),
     PF         = constants.PFIELDS,
-    oPool      = require('./../../../objects_pool');
+    oPool      = require('./../../../objects_pool'),
+    addRankBall = require('./../ranks/handle_rank');
 
 var startTrack = require('./start_track_timer');
 
@@ -60,6 +61,9 @@ module.exports = function(socket, options, callback) {
     }
   
     mPlayer.addTrack(track);
+    
+    var ranks = oPool.roomList[socket.id].getRanks();
+    ranks.addRankBall(constants.RANKS.DJ, selfProfile.getID());
     
     res = {};
     res[PF.TRACKLIST] = trackList;

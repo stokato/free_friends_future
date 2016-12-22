@@ -11,7 +11,8 @@
 
 var constants = require('./../constants'),
     MusicPlayer = require('./../mplayer/index'),
-    GameJS = require('./../game/index');
+    GameJS = require('./../game/index'),
+    RankManager = require('./../ranks/index');
 
 var addProfile      = require('./lib/add_profile'),
     deleteProfile   = require('./lib/delete_profile'),
@@ -47,13 +48,7 @@ function Room(name, title)  {
   this._mplayer = new MusicPlayer();
   
   // Звания
-  this._ranks = {
-    generous  : null,
-    popular   : null,
-    dj        : null,
-    lucky     : null,
-    releaser  : null
-  };
+  this._ranks = new RankManager();
   
   for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
     this._girls_indexes.push(i);
@@ -78,6 +73,7 @@ Room.prototype.getGame        = function () {  return this._game; };
 Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
+Room.prototype.getRanks       = function () {  return this._ranks; };
 
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;

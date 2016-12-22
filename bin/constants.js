@@ -31,10 +31,10 @@ module.exports.LIKE_BONUS_POINTS = "1";
 
 module.exports.RANKS = {
   GENEROUS  : 'generous',
-  popular   : 'popular',
-  dj        : 'dj',
-  lucky     : 'lucky',
-  releaser  : 'releaser'
+  POPULAR   : 'popular',
+  DJ        : 'dj',
+  LUCKY     : 'lucky',
+  RELEASER  : 'releaser'
 };
 
 // ошибки
@@ -118,6 +118,7 @@ module.exports.IO_SET_VIEWED          = 'viewed';
 module.exports.IO_BLOCK_USER          = 'block_user';
 module.exports.IO_UNBLOCK_USER        = 'unblock_user';
 module.exports.IO_BLOCK_USER_NOTIFY   = 'banned_user';
+module.exports.IO_NEW_RANK            = 'new_rank';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -269,7 +270,8 @@ module.exports.PFIELDS = {
   STAT            : 'stat',
   QUESTIONS       : 'questions',
   LOGIN           : 'username',
-  PASSWORD        : 'password'
+  PASSWORD        : 'password',
+  RANK            : 'rank'
 };
 
 module.exports.SFIELDS = {

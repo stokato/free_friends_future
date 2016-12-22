@@ -38,6 +38,7 @@ var init                            = require('./lib/init'),
     save                            = require('./lib/save'),
     setMoney                        = require('./lib/set_money'),
     pay                             = require('./lib/pay'),
+    earn                            = require('./lib/earn'),
     setStatus                       = require('./lib/set_status'),
     addPrivateChat                  = require('./lib/add_private_chat'),
     deletePrivateChat               = require('./lib/delete_private_chat'),
@@ -53,6 +54,7 @@ var init                            = require('./lib/init'),
     getStat                         = require('./lib/get_stat'),
     addQuestion                     = require('./lib/add_question');
 
+var constants = require('./../constants');
 
 function Profile() {
   
@@ -87,6 +89,7 @@ function Profile() {
   this._pBlackList    = {};    // key - id, value - { date - дата блокировки, timer - таймвут }
   
   this._pInitTime     = null;
+
 }
 
 Profile.prototype.getSocket         = function () { return this._pSocket; };
@@ -145,6 +148,7 @@ Profile.prototype.setInMenu         = setInMenu;
 Profile.prototype.delFromFriends    = delFromFriends;
 Profile.prototype.clearGiftInfo     = clearGiftInfo;
 Profile.prototype.pay               = pay;
+Profile.prototype.earn              = earn;
 Profile.prototype.view              = view;
 Profile.prototype.addToBlackList    = addToBlackList;
 Profile.prototype.delFromBlackList  = deleteFromBlackList;

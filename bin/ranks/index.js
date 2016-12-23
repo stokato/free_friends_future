@@ -12,7 +12,7 @@ var addProfile        = require('./lib/add_profile'),
     addRankBall       = require('./lib/add_rank_ball'),
     getRanksOfProfile = require('./lib/get_ranks_of_profile'),
     awardProfile      = require('./lib/award_prfile'),
-    getBonus          = require('./lib/get_bonus');
+    takeBonus          = require('./lib/take_bonus');
 
 function RanksManager() {
   
@@ -46,6 +46,6 @@ RanksManager.prototype.deleteProfile      = deleteProfile;
 RanksManager.prototype.addRankBall        = addRankBall;
 RanksManager.prototype.getRanksOfProfile  = getRanksOfProfile;
 RanksManager.prototype.awardProfile       = awardProfile;
-RanksManager.prototype.getBonus           = getBonus;
+RanksManager.prototype.takeBonus          = takeBonus;
 
 module.exports = RanksManager;

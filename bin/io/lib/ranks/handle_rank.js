@@ -9,18 +9,38 @@ var PF = constants.PFIELDS;
 var oPool = require('./../../../objects_pool');
 var logger = require('./../../../../lib/log')(module);
 
-module.exports = function (err, rank, uid) {
+module.exports = function (err, rank, ownerid, disownerid) {
   if(err) {
     logger.error('handkeRank: ' + err);
   }
   
-  var profile = oPool.profiles[uid];
-  var socket = profile.getSocket();
+  var ownerProfile = oPool.profiles[ownerid];
+  var socket = ownerProfile.getSocket();
   var room = oPool.roomList[socket.id];
+  
+  ownerProfile.setActiveRank(rank);
   
   var rankInfo = {};
   rankInfo[PF.RANK] = rank;
-  rankInfo[PF.ID] = profile.getID();
-  rankInfo[PF.VID] = profile.getVID();
+  rankInfo[PF.ID] = ownerProfile.getID();
+  rankInfo[PF.VID] = ownerProfile.getVID();
   socket.broadcast.in(room.getName()).emit(constants.IO_NEW_RANK, rankInfo);
+  
+  if(!disownerid) { return; }
+  
+  // Устанавливаем для ливишегося звания профиля активность на следещем из его званий
+  var disownerProfile = oPool.profiles[disownerid];
+  var ranks = room.getRanks().getRanksOfProfile(disownerid);
+  if(ranks) {
+    for(var item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
+      var currRank = constants.RANKS[item];
+      if(ranks[currRank] && ranks[currRank][PF.ISOWNER]) {
+        disownerProfile.setActiveRank(currRank);
+        break;
+      }
+    }
+  } else {
+    disownerProfile.setActiveRank(null);
+  }
+  
 };

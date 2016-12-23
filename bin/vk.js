@@ -13,7 +13,9 @@ var PF = constants.PFIELDS;
 
 var oPool = require('./objects_pool');
 var stat = require('./stat_manager');
+var Config = require('./../config.json');
 
+var REFILL_POINTS = Number(Config.points.refill);
 
 function VK () {}
 
@@ -197,9 +199,18 @@ function changeOrderStatus(request, profiles, stat, callback) {
                   }
                 }
 
-                var result = {};
-                result.orderid = orderid;
-                cb(null, result);
+                options = {};
+                options[PF.ID]     = selfInfo[PF.ID];
+                options[PF.VID]    = selfInfo[PF.VID];
+                options[PF.POINTS] = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
+                db.updateUser(options, function (err) {
+                  if(err) { return cb(err, null); }
+  
+                  var result = {};
+                  result.orderid = orderid;
+                  cb(null, result);
+                });
+                
               });
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
@@ -207,6 +218,7 @@ function changeOrderStatus(request, profiles, stat, callback) {
           options[PF.ID]    = selfInfo[PF.ID];
           options[PF.VID]   = selfInfo[PF.VID];
           options[PF.MONEY] = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
+          options[PF.POINTS] = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
           db.updateUser(options, function(err) {
             if (err) { return cb(err, null); }

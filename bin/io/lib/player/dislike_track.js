@@ -30,5 +30,5 @@ module.exports = function(socket, options, callback) {
   res[PF.VID] = selfProfile.getVID();
   
   socket.broadcast.in(room.getName()).emit(constants.IO_DISLIKE_TRACK, res);
-  callback(null, null);
+  callback(null, res);
 };

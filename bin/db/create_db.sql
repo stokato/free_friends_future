@@ -56,6 +56,10 @@ CREATE TABLE IF NOT EXISTS users (
 --   newfriends int,
 --   newguests int,
   gift1 uuid,
+  ulevel int,
+  free_gifts int,
+  free_music int,
+  vip boolean,
   PRIMARY KEY (id)
 );
 

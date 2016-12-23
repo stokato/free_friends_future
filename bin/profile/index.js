@@ -52,7 +52,11 @@ var init                            = require('./lib/init'),
     deleteFromBlackList             = require('./lib/delete_from_black_list'),
     isInBlackList                   = require('./lib/is_in_black_list'),
     getStat                         = require('./lib/get_stat'),
-    addQuestion                     = require('./lib/add_question');
+    addQuestion                     = require('./lib/add_question'),
+    setLevel                        = require('./lib/set_level'),
+    setFreeGifts                    = require('./lib/set_free_gifts'),
+    setFreeMusic                    = require('./lib/set_free_music'),
+    setVIP                          = require('./lib/set_vip');
 
 var constants = require('./../constants');
 
@@ -90,6 +94,14 @@ function Profile() {
   
   this._pInitTime     = null;
 
+  this._pLevel        = 0;
+  this._pActiveRank   = null;
+  
+  this._pFreeGifts    = 0;
+  this._pFreeMusic    = 0;
+  this._pVIP          = false;
+  
+  this._pOnAddPoints   = null;
 }
 
 Profile.prototype.getSocket         = function () { return this._pSocket; };
@@ -118,6 +130,14 @@ Profile.prototype.setGame           = function (game)    { this._pGame = game; }
 Profile.prototype.setSocket         = function (socket)  { this._pSocket = socket; };
 Profile.prototype.setExitTimeout    = function (tm)      { this._pIsExitTimeout = tm; };
 Profile.prototype.clearExitTimeout  = function () { clearTimeout(this._pIsExitTimeout); };
+Profile.prototype.getLevel          = function () { return this._pLevel; };
+Profile.prototype.getFreeGifts      = function () { return this._pFreeGifts; };
+Profile.prototype.getFreeMusic      = function () { return this._pFreeMusic; };
+Profile.prototype.isVIP             = function () { return this._pVIP; };
+Profile.prototype.setActiveRank     = function (rank) { this._pActiveRank = rank; };
+Profile.prototype.getActiveRank     = function () { return this._pActiveRank; };
+
+Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;
@@ -155,5 +175,9 @@ Profile.prototype.delFromBlackList  = deleteFromBlackList;
 Profile.prototype.isInBlackList     = isInBlackList;
 Profile.prototype.getStat           = getStat;
 Profile.prototype.addQuestion       = addQuestion;
+Profile.prototype.setLevel          = setLevel;
+Profile.prototype.setFreeGifts      = setFreeGifts;
+Profile.prototype.setFreeMusic      = setFreeMusic;
+Profile.prototype.setVIP            = setVIP;
 
 module.exports = Profile;

@@ -78,7 +78,11 @@ module.exports.DB = {
       SEX_int         : 'sex',
       POINTS_int      : 'points',
       GIFT1_uuid      : 'gift1',
-      ISMENU_boolean  : 'ismenu'
+      ISMENU_boolean  : 'ismenu',
+      LEVEL_int       : 'level',
+      FREE_GIFTS_int  : 'free_gifts',
+      FREE_MUSIC_int  : 'free_music',
+      VIP_boolean     : 'vip'
     }
   },
   

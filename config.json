@@ -69,6 +69,17 @@
       "best" : 10
     }
   },
+  "levels" : {
+    "start" : 100,
+    "step" : 50,
+    "bonuses" : {
+      "10" : { "gifts" : 5,  "music" : 0,  "coins" : 0,   "vip" : false },
+      "20" : { "gifts" : 0,  "music" : 5,  "coins" : 0,   "vip" : false },
+      "30" : { "gifts" : 0,  "music" : 0,  "coins" : 300, "vip" : false },
+      "40" : { "gifts" : 5,  "music" : 5,  "coins" : 300, "vip" : false },
+      "50" : { "gifts" : 10, "music" : 10, "coins" : 500, "vip" : true  }
+    }
+  },
   "game" : {
     "card_count" : "7",
     "players_min" : "2",
@@ -81,17 +92,6 @@
       "prison" : "4000",
       "sympathy_show" : "15000",
       "default" : "18000"
-    },
-    "levels" : {
-      "start" : 100,
-      "step" : 50,
-      "bonuses" : {
-        "10" : { "gifts" : 5,  "music" : 0,  "coins" : 0,   "vip" : false },
-        "20" : { "gifts" : 0,  "music" : 5,  "coins" : 0,   "vip" : false },
-        "30" : { "gifts" : 0,  "music" : 0,  "coins" : 300, "vip" : false },
-        "40" : { "gifts" : 5,  "music" : 5,  "coins" : 300, "vip" : false },
-        "50" : { "gifts" : 10, "music" : 10, "coins" : 500, "vip" : true  }
-      }
     }
   },
   "io" : {

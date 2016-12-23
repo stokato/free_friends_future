@@ -12,6 +12,7 @@ var constants         = require('../../../constants'),
     handleError       = require('../common/handle_error'),
     checkInput        = require('../common/check_input'),
     getLastMessages   = require('../common/get_last_messages'),
+    startTrack        = require('./../player/start_track'),
     emitAllRooms      = require('../common/emit_all_rooms'),
     sendPrivateChats  = require('../chat/send_private_chats');
 
@@ -41,6 +42,10 @@ module.exports = function (socket) {
           
           // Отправляем пользователю открытные приватные чаты (если он обновляет страницу)
           sendPrivateChats(socket, cb);
+          
+          // Запускаем трек
+          var room = oPool.roomList[socket.id];
+          startTrack(socket, room);
         }
       ],
       function(err) {

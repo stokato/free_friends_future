@@ -21,7 +21,7 @@ module.exports = function (rank, uid) {
     if (this._profiles[uid][rank] >= rankStart) {
       this._rankOwners[rank] = uid;
       
-      this._onRank(null, rank, uid);
+      this._onRank(null, rank, uid, null);
       this.awardProfile(rank, uid);
     }
   } else  {
@@ -32,7 +32,7 @@ module.exports = function (rank, uid) {
     if (dStep >= currOwnerBall) {
       this._rankOwners[rank] = uid;
   
-      this._onRank(null, rank, uid);
+      this._onRank(null, rank, uid, currOwnerID);
       this.awardProfile(rank, uid);
     }
   }

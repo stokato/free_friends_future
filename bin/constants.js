@@ -58,6 +58,7 @@ module.exports.errors = {
   NO_SUCH_TRACK       : { message: "В плей-листе нет трека с таким ид",                                   code : 452 },
   NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },
   NO_AUTH             : { message: "Ошибка авторизации",                                                  code : 490 },
+  NO_SUCH_RUNK        : { message: "Пользователь не обладает таким званием",                              code : 411 },
   OTHER               : { message: "Неизвестная ошибка",                                                  code : 400 }
 };
 
@@ -118,7 +119,12 @@ module.exports.IO_SET_VIEWED          = 'viewed';
 module.exports.IO_BLOCK_USER          = 'block_user';
 module.exports.IO_UNBLOCK_USER        = 'unblock_user';
 module.exports.IO_BLOCK_USER_NOTIFY   = 'banned_user';
+
 module.exports.IO_NEW_RANK            = 'new_rank';
+module.exports.IO_NEW_LEVEL           = 'new_level';
+module.exports.IO_GET_RANKS           = 'get_ranks';
+module.exports.IO_CHANGE_ACTIVE_RANK  = 'change_active_rank';
+module.exports.IO_GET_ACTIVE_RANK     = 'get_active_rank';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -271,7 +277,16 @@ module.exports.PFIELDS = {
   QUESTIONS       : 'questions',
   LOGIN           : 'username',
   PASSWORD        : 'password',
-  RANK            : 'rank'
+  RANK            : 'rank',
+  LEVEL           : 'level',
+  FREE_GIFTS      : 'free_gifts',
+  FREE_TRACKS     : 'free_tracks',
+  VIP             : 'vip',
+  
+  ISOWNER         : 'is_owner',
+  BALLS           : 'balls',
+  NEED_BALLS      : 'need_balls',
+  ACTIVE_RANK     : 'active_rank'
 };
 
 module.exports.SFIELDS = {

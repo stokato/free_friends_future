@@ -6,6 +6,7 @@
 
 var async      =  require('async');
 
+var Config         = require('./../../../../config.json');
 var constants      = require('./../../../constants'),
   PF               = constants.PFIELDS,
   SF               = constants.SFIELDS,
@@ -15,6 +16,9 @@ var constants      = require('./../../../constants'),
   db               = require('./../../../db_manager'),
   oPool            = require('./../../../objects_pool'),
   stat             = require('./../../../stat_manager');
+
+var WASTE_POINTS  = Number(Config.points.waste);
+var GIFT_POINTS   = Number(Config.points.taken_gift);
 
 module.exports = function (socket, options, callback) {
 
@@ -62,14 +66,23 @@ module.exports = function (socket, options, callback) {
           res[PF.MONEY] = money;
           
           socket.emit(constants.IO_GET_MONEY, res);
-          
-          // Статистика
-          stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
-          
-          var ranks = oPool.roomList[socket.id].getRanks();
-          ranks.addRankBall(constants.errors.GENEROUS, selfProfile.getID());
- 
-          cb(null, friendProfile, gift);
+  
+          selfProfile.addPoints(WASTE_POINTS * gift[PF.PRICE], function (err, points) {
+            if(err) { return cb(err, null);  }
+    
+            var res = {};
+            res[constants.PFIELDS.POINTS] = points;
+    
+            socket.emit(constants.IO_ADD_POINTS, res);
+  
+            // Статистика
+            stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
+  
+            var ranks = oPool.roomList[socket.id].getRanks();
+            ranks.addRankBall(constants.errors.GENEROUS, selfProfile.getID());
+  
+            cb(null, friendProfile, gift);
+          });
         });
       },//---------------------------------------------------------------
       function (friendProfile, gift, cb) { // Добавляем подарок адресату
@@ -84,8 +97,18 @@ module.exports = function (socket, options, callback) {
           var friendSocket = friendProfile.getSocket();
           var ranks = oPool.roomList[friendSocket.id].getRanks();
           ranks.addRankBall(constants.errors.POPULAR, friendProfile.getID());
+                       
+          friendProfile.addPoints(GIFT_POINTS * gift[PF.PRICE], function (err, points) {
+            if (err) { return cb(err, null); }
+  
+            var res = {};
+            res[constants.PFIELDS.POINTS] = points;
+  
+            friendSocket.emit(constants.IO_ADD_POINTS, res);
+  
+            cb(null, friendProfile);
+          });
                                                                         
-          cb(null, friendProfile);
         });
 
       } //---------------------------------------------------------------

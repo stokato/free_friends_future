@@ -227,6 +227,14 @@ module.exports = function (em, socket, options, callback) {
   
       options[PF.TRACKID] = sanitize(options[PF.TRACKID]);
       break;
+    
+    case constants.IO_CHANGE_ACTIVE_RANK :
+      isValid = (PF.RANK in options)? isValid : false;
+      
+      err.message = "Не задано звание";
+      
+      options[PF.RANK] = sanitize(options[PF.RANK]);
+      break;
   }
   
   if(isValid == true) {

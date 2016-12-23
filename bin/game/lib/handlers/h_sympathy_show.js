@@ -51,7 +51,7 @@ module.exports = function(game) {
         var socket = selfProfile.getSocket();
         socket.emit(constants.IO_GET_MONEY, res);
         
-        selfProfile.addPoints(WASTE_POINTS, function (err, points) {
+        selfProfile.addPoints(WASTE_POINTS * SYMPATHY_PRICE, function (err, points) {
           if(err) { return onError(err, selfProfile);  }
   
           var res = {};

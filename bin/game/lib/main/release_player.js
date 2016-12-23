@@ -39,8 +39,8 @@ module.exports = function (socket, options, callback) {
     
     socket.emit(constants.IO_GET_MONEY, res);
       
-    selfProfile.addPoints(WASTE_POINTS, function (err, points) {
-      if(err) { return onError(err, selfProfile);  }
+    selfProfile.addPoints(WASTE_POINTS * RANSOM_PRICE, function (err, points) {
+      if(err) { return callback(err);  }
     
       var res = {};
       res[constants.PFIELDS.POINTS] = points;

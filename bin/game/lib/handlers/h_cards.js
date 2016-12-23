@@ -14,10 +14,12 @@ var constants     = require('../../../constants'),
     ProfileJS     = require('../../../profile/index'),
     handleError   = require('../common/handle_error'),
     oPool         = require('./../../../objects_pool'),
-    stat          = require('./../../../stat_manager');
+    stat          = require('./../../../stat_manager'),
+    addPoints     = require('./../common/add_points');
 
 var CARD_COUNT = Number(Config.game.card_count);
 var CARD_BONUS = Number(Config.moneys.card_bonus);
+var CARD_POINTS = Number(Config.points.game.gold);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
@@ -123,7 +125,21 @@ module.exports = function(game) {
               cb(null, player, money, isOnline);
             });
 
-          }//-------------------------------------------------------
+          },//-------------------------------------------------------
+          function (player, money, isOnline, cb) {
+            addPoints(player.getID(), CARD_POINTS, function (err, points) {
+              if (err) {  cb(err, null); }
+              
+              if(isOnline) {
+                var res = {};
+                res[constants.PFIELDS.POINTS] = points;
+  
+                player.getSocket().emit(constants.IO_ADD_POINTS, res);
+              }
+  
+              cb(null, player, money, isOnline);
+            })
+          } //----------------------------------------------------------
         ], function(err, player, money, isOnline) { // Оповещаем об изменениях
           if(err) { return new GameError(constants.G_CARDS, err.message);
             

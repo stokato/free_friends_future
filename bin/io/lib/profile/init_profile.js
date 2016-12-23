@@ -10,10 +10,12 @@ var oPool                 = require('./../../../objects_pool'),
     ProfileJS             = require('./../../../profile/index'),
     addProfileToPool      = require('./../common/add_profile_to_pool'),
     autoPlace             = require('./../common/auto_place_in_room'),
-    startTrack            = require('./../player/start_track'),
+    // startTrack            = require('./../player/start_track'),
     sendUsersInRoom       = require('./../common/send_users_in_room'),
     addEmits              = require('../emits/add_emits'),
     PF                    = require('./../../../constants').PFIELDS;
+
+var addProfileHandlers    = require('./../profile/add_pofile_hanlers');
 
 module.exports = function (socket, options, callback) {
   async.waterfall([ //---------------------------------------------------------------
@@ -29,6 +31,7 @@ module.exports = function (socket, options, callback) {
     function (res, cb) { // Инициализируем профиль пользователя
       
       var selfProfile = new ProfileJS();
+      addProfileHandlers(selfProfile);
         
       selfProfile.init(socket, options, function (err, info) {
         if (err) { return cb(err, null); }
@@ -56,7 +59,7 @@ module.exports = function (socket, options, callback) {
         
         socket.join(room.getName());
   
-        startTrack(socket, room);
+        // startTrack(socket, room);
         
         cb(null, info, room, selfProfile);
       }

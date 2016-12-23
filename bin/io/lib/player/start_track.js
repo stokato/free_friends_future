@@ -12,6 +12,11 @@ module.exports = function (socket, room) {
   var trackList = mPlayer.getTrackList();
   
   if(trackList.length > 0) {
+  
+    res = {};
+    res[PF.TRACKLIST] = trackList;
+  
+    socket.emit(constants.IO_GET_TRACK_LIST, res);
     
     var passedTime = Math.round((new Date() - mPlayer.getTrackTime()) * 0.001);
     var info = {};
@@ -19,10 +24,5 @@ module.exports = function (socket, room) {
     info[PF.PASSED_TIME]  = passedTime;
     
     socket.emit(constants.IO_START_TRACK, info);
-  
-    res = {};
-    res[PF.TRACKLIST] = trackList;
-    
-    socket.emit(constants.IO_GET_TRACK_LIST, res);
   }
 };

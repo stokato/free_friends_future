@@ -79,7 +79,7 @@ module.exports.DB = {
       POINTS_int      : 'points',
       GIFT1_uuid      : 'gift1',
       ISMENU_boolean  : 'ismenu',
-      LEVEL_int       : 'level',
+      LEVEL_int       : 'ulevel',
       FREE_GIFTS_int  : 'free_gifts',
       FREE_MUSIC_int  : 'free_music',
       VIP_boolean     : 'vip'

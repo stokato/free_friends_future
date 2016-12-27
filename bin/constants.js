@@ -56,6 +56,7 @@ module.exports.errors = {
   FORBIDDEN_CHOICE    : { message: "В игре Симпатии нельзя выбрать того, кого нет среди игроков",         code : 443 },
   ALREADY_IS_TRACK    : { message: "Трек с таким ид уже есть в плей-листе",                               code : 451 },
   NO_SUCH_TRACK       : { message: "В плей-листе нет трека с таким ид",                                   code : 452 },
+  BLOCK_FREE_TRACK    : { message: "Сейчас нельзя добавить бесплатный трек",                              code : 453 },
   NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },
   NO_AUTH             : { message: "Ошибка авторизации",                                                  code : 490 },
   NO_SUCH_RUNK        : { message: "Пользователь не обладает таким званием",                              code : 411 },
@@ -108,6 +109,8 @@ module.exports.IO_DISLIKE_TRACK       = 'dislike_track';
 module.exports.IO_START_TRACK         = 'start_track';
 module.exports.IO_STOP_TRACK          = 'stop_track';
 module.exports.IO_GET_LIKES_AND_DISLAKES  = 'get_likes_and_dislikes';
+module.exports.IO_ADD_TRECK_FREE      = 'add_track_free';
+module.exports.IO_GET_FREE_TRACK_STATE = 'free_track_state';
 
 module.exports.IO_ADD_QUESTION        = 'add_question';
 module.exports.IO_DEL_QUESTION        = 'del_question';
@@ -286,7 +289,8 @@ module.exports.PFIELDS = {
   ISOWNER         : 'is_owner',
   BALLS           : 'balls',
   NEED_BALLS      : 'need_balls',
-  ACTIVE_RANK     : 'active_rank'
+  ACTIVE_RANK     : 'active_rank',
+  IS_ACTIVE       : 'is_active'
 };
 
 module.exports.SFIELDS = {

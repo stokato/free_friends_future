@@ -144,12 +144,7 @@ module.exports = function(game) {
           if(err) { return new GameError(constants.G_CARDS, err.message);
             
             if(isOnline) {
-              handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);
-  
-              // Возможно достижение нужного количества баллов несколькими игроками
-              var ranks = game._room.getRanks();
-              ranks.addRankBall(constants.RANKS.LUCKY, player.getID());
-            }
+              handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);}
             return;
           }
 
@@ -157,8 +152,12 @@ module.exports = function(game) {
           if(isOnline) {
             var res = {};
             res[PF.MONEY] = money;
-            
             player.getSocket().emit(constants.IO_GET_MONEY, res);
+  
+            // Возможно достижение нужного количества баллов несколькими игроками
+            var ranks = game._room.getRanks();
+            ranks.addRankBall(constants.RANKS.LUCKY, player.getID());
+  
           }
 
           // Повторяем для всех пользователей

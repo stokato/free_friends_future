@@ -10,7 +10,16 @@ var logger = require('./../../../../lib/log')(module);
 var constants = require('./../../../constants');
 var PF = constants.PFIELDS;
 
-module.exports = function (profile) {
+module.exports = function (profile, points) {
+  
+  var socket = profile.getSocket();
+  
+  if(socket) {
+    var res = {};
+    res[PF.POINTS] = points;
+    
+    socket.emit(constants.IO_ADD_POINTS, res);
+  }
   
   var levelStart = Number(Config.levels.start);
   var levelStep  = Number(Config.levels.step);
@@ -19,7 +28,7 @@ module.exports = function (profile) {
   var currLevel = profile.getLevel();
   var currPoints = profile.getPoints();
   
-  var levelPoints = (currLevel - 1) * levelStep + levelStart;
+  var levelPoints = (currLevel > 0)? (currLevel - 1) * levelStep + levelStart : levelStart;
   var dPoints = currPoints - levelPoints;
   
   var needLevel = 0;
@@ -30,7 +39,7 @@ module.exports = function (profile) {
     needLevel++;
   }
   
-  if(currLevel <= needLevel) { return; }
+  if(currLevel >= needLevel) { return; }
   
   async.waterfall([
     function (cb) { //---------------------------------------
@@ -82,16 +91,16 @@ module.exports = function (profile) {
         })
       } else cb(null, bonuses, false);
     } //---------------------------------------
-  ], function (err, bonuses, newVIP) {
-    if(err) { logger.error('handleAddPoints: ' + err); }
+  ], function (err, bonuses, newVIP) { bonuses = bonuses || {};
+    if(err) { return logger.error('handleAddPoints: ' + err); }
     
     var socket = profile.getSocket();
     if(socket) {
       var res = {};
       res[PF.LEVEL]       = profile.getLevel();
-      res[PF.FREE_GIFTS]  = bonuses.gifts;
-      res[PF.FREE_TRACKS] = bonuses.music;
-      res[PF.MONEY]       = bonuses.coins;
+      res[PF.FREE_GIFTS]  = bonuses.gifts || 0;
+      res[PF.FREE_TRACKS] = bonuses.music || 0;
+      res[PF.MONEY]       = bonuses.coins || 0;
       res[PF.VIP]         = newVIP;
       
       socket.emit(constants.IO_NEW_LEVEL, res);

@@ -102,6 +102,7 @@ function Profile() {
   this._pVIP          = false;
   
   this._pOnAddPoints   = null;
+  this._pOnPay        = null;
 }
 
 Profile.prototype.getSocket         = function () { return this._pSocket; };
@@ -138,6 +139,7 @@ Profile.prototype.setActiveRank     = function (rank) { this._pActiveRank = rank
 Profile.prototype.getActiveRank     = function () { return this._pActiveRank; };
 
 Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
+Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;

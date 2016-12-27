@@ -24,35 +24,31 @@ module.exports = function(socket, options, callback) {
   var mPlayer = room.getMusicPlayer();
   var trackList = mPlayer.getTrackList();
   
-  // Проверяем - есть ли такой трек в очереди
-  for (var i = 0; i < trackList.length; i++) {
-    if (trackList[i][PF.TRACKID] == options[PF.TRACKID]) {
-      return callback(constants.errors.ALREADY_IS_TRACK);
-    }
-  }
-  
   // Оплачиваем трек
   selfProfile.pay(TRACK_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
-    var res = {};
-    res[PF.MONEY] = money;
-    socket.emit(constants.IO_GET_MONEY, res);
+    // var res = {};
+    // res[PF.MONEY] = money;
+    // socket.emit(constants.IO_GET_MONEY, res);
   
-    selfProfile.addPoints(WASTE_POINTS * TRACK_PRICE, function (err, points) {
+    var wpoints = Math.floor(WASTE_POINTS * TRACK_PRICE);
+    
+    selfProfile.addPoints(wpoints, function (err, points) {
       if(err) { return callback(err);  }
     
-      var res = {};
-      res[constants.PFIELDS.POINTS] = points;
-      socket.emit(constants.IO_ADD_POINTS, res);
+      // var res = {};
+      // res[constants.PFIELDS.POINTS] = points;
+      // socket.emit(constants.IO_ADD_POINTS, res);
   
-  
-      selfProfile.addPoints(TRACK_POINTS * TRACK_PRICE, function (err, points) {
+      var tpoints = Math.floor(TRACK_POINTS * TRACK_PRICE);
+      
+      selfProfile.addPoints(tpoints, function (err, points) {
         if(err) { return callback(err);  }
   
-        var res = {};
-        res[constants.PFIELDS.POINTS] = points;
-        socket.emit(constants.IO_ADD_POINTS, res);
+        // var res = {};
+        // res[constants.PFIELDS.POINTS] = points;
+        // socket.emit(constants.IO_ADD_POINTS, res);
   
         var track = {
           track_id    : options.track_id,
@@ -71,13 +67,17 @@ module.exports = function(socket, options, callback) {
         track[PF.DURATION] = options[PF.DURATION];
   
         // Если очередь пустая, запускаем сразу
-        if (trackList.length == 0) {
-          mPlayer.setTrackTime(new Date());
-          startTrack(socket, room, track);
+        // if (trackList.length == 0) {
+        // mPlayer.setTrackTime(new Date());
+        
+        startTrack(socket, room, track);
+        
+        // }
+        if(trackList.length > 0){
+          mPlayer.deleteTrack(trackList[0][PF.TRACKID]);
         }
-  
-        mPlayer.addTrack(track);
-  
+        mPlayer.addTrack(track, true);
+        
         var ranks = oPool.roomList[socket.id].getRanks();
         ranks.addRankBall(constants.RANKS.DJ, selfProfile.getID());
   

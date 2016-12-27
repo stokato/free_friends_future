@@ -28,6 +28,10 @@ module.exports = function (price, callback) {
       
       stat.setUserStat(self._pID, self._pVID, constants.SFIELDS.COINS_SPENT, price);
       stat.setMainStat(constants.SFIELDS.COINS_SPENT, price);
+  
+      if(self._pOnPay) {
+        self._pOnPay(self, money);
+      }
       
       callback(null, money);
     });

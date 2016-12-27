@@ -71,7 +71,7 @@
   },
   "levels" : {
     "start" : 100,
-    "step" : 50,
+    "step" : 100,
     "bonuses" : {
       "10" : { "gifts" : 5,  "music" : 0,  "coins" : 0,   "vip" : false },
       "20" : { "gifts" : 0,  "music" : 5,  "coins" : 0,   "vip" : false },

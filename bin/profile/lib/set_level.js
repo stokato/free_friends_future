@@ -18,7 +18,7 @@ module.exports = function(num, callback) {
   options[IOF.SEX]     = self._pSex;
   options[IOF.LEVEL]   = num;
   
-  db.addPoints(options, function(err) {
+  db.updateUser(options, function(err) {
     if(err) { return callback(err, null); }
   
     self._pLevel = num;

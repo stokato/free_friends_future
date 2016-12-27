@@ -154,6 +154,7 @@ module.exports = function (em, socket, options, callback) {
     
     
     case constants.IO_ADD_TRECK :
+    case constants.IO_ADD_TRECK_FREE :
       isValid = (PF.TRACKID in options)? isValid : false;
       
       err.message = "Не задан ид трека";

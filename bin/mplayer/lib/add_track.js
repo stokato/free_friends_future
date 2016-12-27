@@ -6,9 +6,13 @@
  * @param track
  */
 
-module.exports = function (track) {
+module.exports = function (track, atfirst) {
   
-  this._track_list.push(track);
+  if(!atfirst) {
+    this._track_list.push(track);
+  } else {
+    this._track_list.unshift(track);
+  }
   
   this._likers[track.track_id]    = {};
   this._dislikers[track.track_id] = {};

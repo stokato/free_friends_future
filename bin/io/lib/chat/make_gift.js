@@ -12,7 +12,6 @@ var constants      = require('./../../../constants'),
   SF               = constants.SFIELDS,
   getUserProfile   = require('./../common/get_user_profile'),
   setGiftTimeout   = require('./../common/set_gift_timeout'),
-  addRankBall      = require('./../ranks/handle_rank'),
   db               = require('./../../../db_manager'),
   oPool            = require('./../../../objects_pool'),
   stat             = require('./../../../stat_manager');
@@ -61,28 +60,21 @@ module.exports = function (socket, options, callback) {
       function (friendProfile, gift, cb) { // Снимаем деньги с пользователя и уведомляем его об этом
         selfProfile.pay(gift[PF.PRICE], function (err, money) {
           if(err) { return cb(err, null); }
+
+          // Статистика
+          stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
           
-          var res = {};
-          res[PF.MONEY] = money;
+          cb(null, friendProfile, gift);
+        });
+      },//---------------------------------------------------------------
+      function (friendProfile, gift, cb) {
+        selfProfile.addPoints(WASTE_POINTS * gift[PF.PRICE], function (err, points) {
+          if(err) { return cb(err, null);  }
+        
+          var ranks = oPool.roomList[socket.id].getRanks();
+          ranks.addRankBall(constants.RANKS.GENEROUS, selfProfile.getID());
           
-          socket.emit(constants.IO_GET_MONEY, res);
-  
-          selfProfile.addPoints(WASTE_POINTS * gift[PF.PRICE], function (err, points) {
-            if(err) { return cb(err, null);  }
-    
-            var res = {};
-            res[constants.PFIELDS.POINTS] = points;
-    
-            socket.emit(constants.IO_ADD_POINTS, res);
-  
-            // Статистика
-            stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GIFTS_GIVEN, 1);
-  
-            var ranks = oPool.roomList[socket.id].getRanks();
-            ranks.addRankBall(constants.errors.GENEROUS, selfProfile.getID());
-  
-            cb(null, friendProfile, gift);
-          });
+          cb(null, friendProfile, gift);
         });
       },//---------------------------------------------------------------
       function (friendProfile, gift, cb) { // Добавляем подарок адресату
@@ -94,21 +86,18 @@ module.exports = function (socket, options, callback) {
           // Статистика
           stat.setUserStat(friendProfile.getID(), friendProfile.getVID(), constants.SFIELDS.GIFTS_TAKEN, 1);
   
+          cb(null, friendProfile, gift);
+        });
+      }, //---------------------------------------------------------------
+      function (friendProfile, gift, cb) {
+        friendProfile.addPoints(GIFT_POINTS * gift[PF.PRICE], function (err, points) {
+          if (err) { return cb(err, null); }
+          
           var friendSocket = friendProfile.getSocket();
           var ranks = oPool.roomList[friendSocket.id].getRanks();
-          ranks.addRankBall(constants.errors.POPULAR, friendProfile.getID());
-                       
-          friendProfile.addPoints(GIFT_POINTS * gift[PF.PRICE], function (err, points) {
-            if (err) { return cb(err, null); }
-  
-            var res = {};
-            res[constants.PFIELDS.POINTS] = points;
-  
-            friendSocket.emit(constants.IO_ADD_POINTS, res);
-  
-            cb(null, friendProfile);
-          });
-                                                                        
+          ranks.addRankBall(constants.RANKS.POPULAR, friendProfile.getID());
+          
+          cb(null, friendProfile);
         });
 
       } //---------------------------------------------------------------

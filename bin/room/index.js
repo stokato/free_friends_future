@@ -55,6 +55,8 @@ function Room(name, title)  {
     this._guys_indexes.push(i);
   }
   
+  this._giftTimer = null;
+  
 }
 
 // Есть ли прфофиль с таким ИД
@@ -74,6 +76,8 @@ Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
 Room.prototype.getRanks       = function () {  return this._ranks; };
+Room.prototype.clearGiftTimer = function () {  clearTimeout(this._giftTimer); };
+Room.prototype.setGiftTimer   = function (timer) { this._giftTimer = timer; };
 
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;

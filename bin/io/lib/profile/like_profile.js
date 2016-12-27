@@ -47,11 +47,11 @@ module.exports = function (socket, options, callback) {
     return function(err, points) {
       if(err) { return callback(err); }
       
-      var res = {};
-      res[PF.POINTS] = points;
-      
-      var socket = player.getSocket();
-      socket.emit(constants.IO_ADD_POINTS, res);
+      // var res = {};
+      // res[PF.POINTS] = points;
+      //
+      // var socket = player.getSocket();
+      // socket.emit(constants.IO_ADD_POINTS, res);
       
       oPool.likeLocks[lock] = true;
       

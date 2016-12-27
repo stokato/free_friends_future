@@ -14,5 +14,5 @@ module.exports = function (socket, options, callback) {
   var res = {};
   res[constants.PFIELDS.RANK] = activeRank || null;
   
-  callback(null, activeRank);
+  callback(null, res);
 };

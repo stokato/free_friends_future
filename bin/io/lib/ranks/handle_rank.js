@@ -11,7 +11,7 @@ var logger = require('./../../../../lib/log')(module);
 
 module.exports = function (err, rank, ownerid, disownerid) {
   if(err) {
-    logger.error('handkeRank: ' + err);
+    logger.error('handleRank: ' + err);
   }
   
   var ownerProfile = oPool.profiles[ownerid];
@@ -24,6 +24,7 @@ module.exports = function (err, rank, ownerid, disownerid) {
   rankInfo[PF.RANK] = rank;
   rankInfo[PF.ID] = ownerProfile.getID();
   rankInfo[PF.VID] = ownerProfile.getVID();
+  socket.emit(constants.IO_NEW_RANK, rankInfo);
   socket.broadcast.in(room.getName()).emit(constants.IO_NEW_RANK, rankInfo);
   
   if(!disownerid) { return; }
@@ -31,6 +32,7 @@ module.exports = function (err, rank, ownerid, disownerid) {
   // Устанавливаем для ливишегося звания профиля активность на следещем из его званий
   var disownerProfile = oPool.profiles[disownerid];
   var ranks = room.getRanks().getRanksOfProfile(disownerid);
+  disownerProfile.setActiveRank(null);
   if(ranks) {
     for(var item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
       var currRank = constants.RANKS[item];

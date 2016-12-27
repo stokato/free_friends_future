@@ -24,13 +24,13 @@ module.exports = function (uid) {
     
     var rankInfo = {};
     
-    rankInfo[PF.ISOWNER] = ranks[item] = (this._rankOwners[rank] == uid);
+    rankInfo[PF.ISOWNER] = (this._rankOwners[rank] == uid);
     
     if(!rankInfo[PF.ISOWNER]) {
       rankInfo[PF.BALLS] = this._profiles[uid][rank];
   
       if(this._rankOwners[rank]) {
-        rankInfo[PF.NEED_BALLS] = this._profiles[this._rankOwners[rank]] + rankStep;
+        rankInfo[PF.NEED_BALLS] = this._profiles[this._rankOwners[rank]][rank] + rankStep;
       } else {
         
         var needBalls = rankStart;

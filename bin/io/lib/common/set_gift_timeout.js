@@ -17,6 +17,7 @@ var constants     = require('./../../../constants'),
 var GIFT_TIMEOUT = Number(Config.user.settings.gift_timeout);
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
+//TODO: Переделать - чтобы при подраке тому же игроку, снимался таймер, если он для него
 module.exports = function(id) {
   setTimeout(function () {
     var profile = oPool.profiles[id];

@@ -10,6 +10,9 @@ var constants  = require('./../../../constants'),
 module.exports = function startTrack(socket, room, track, timerID) { timerID = timerID || null;
   var mPlayer = room.getMusicPlayer();
   
+  var oldTimer = mPlayer.getTimer();
+  clearTimeout(oldTimer);
+  
   mPlayer.setTrackTime(new Date());
   var trackList = mPlayer.getTrackList();
   

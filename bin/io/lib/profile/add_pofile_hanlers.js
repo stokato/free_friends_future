@@ -5,9 +5,11 @@
  */
 
 var handleAddPoints = require('./handle_add_points');
+var handlePay       = require('./handle_pay');
 
 module.exports = function (profile) {
   
   profile.setOnAddPoints(handleAddPoints);
+  profile.setOnPay(handlePay);
   
 };

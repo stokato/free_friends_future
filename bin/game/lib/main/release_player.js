@@ -34,17 +34,17 @@ module.exports = function (socket, options, callback) {
   selfProfile.pay(RANSOM_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
-    var res = {};
-    res[PF.MONEY] = money;
-    
-    socket.emit(constants.IO_GET_MONEY, res);
+    // var res = {};
+    // res[PF.MONEY] = money;
+    //
+    // socket.emit(constants.IO_GET_MONEY, res);
       
     selfProfile.addPoints(WASTE_POINTS * RANSOM_PRICE, function (err, points) {
       if(err) { return callback(err);  }
     
-      var res = {};
-      res[constants.PFIELDS.POINTS] = points;
-      socket.emit(constants.IO_ADD_POINTS, res);
+      // var res = {};
+      // res[constants.PFIELDS.POINTS] = points;
+      // socket.emit(constants.IO_ADD_POINTS, res);
   
       // Снимаем блокировку
       game.clearPrison();

@@ -6,7 +6,6 @@
 
 var constants = require('./../../../constants');
 var Room = require('./../../../room/index');
-var addRankHandlers = require('./../ranks/add_rank_handlers');
 
 /*
  Создать новую комнату
@@ -17,10 +16,5 @@ module.exports = function () {
   var name = "Room" + (++countRoom);
   var title = "Комната № " + countRoom;
   
-  var newRoom = new Room(name, title);
-  
-  var ranks = newRoom.getRanks();
-  addRankHandlers(ranks);
-  
-  return newRoom;
+  return new Room(name, title);
 };

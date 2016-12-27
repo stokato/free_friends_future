@@ -4,10 +4,10 @@
  * Добавляем балл к званию
  */
 
-var constants = require('./../../../constants');
+var constants = require('./../../constants');
 var PF = constants.PFIELDS;
-var oPool = require('./../../../objects_pool');
-var logger = require('./../../../../lib/log')(module);
+var oPool = require('./../../objects_pool');
+var logger = require('./../../../lib/log')(module);
 
 module.exports = function (err, rank, ownerid, disownerid) {
   if(err) {

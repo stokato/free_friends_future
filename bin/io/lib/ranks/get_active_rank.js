@@ -7,12 +7,8 @@
 var constants =  require('./../../../constants'),
   oPool    = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
   
-  var activeRank = oPool.userList[socket.id].getActiveRank();
-  
-  var res = {};
-  res[constants.PFIELDS.RANK] = activeRank || null;
-  
-  callback(null, res);
+  oPool.roomList[socket.id].getRanks().getActiveRank(socket, options);
+
 };

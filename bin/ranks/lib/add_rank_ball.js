@@ -5,7 +5,7 @@
  * проверяем - достигнуто ли звание
  */
 
-var Config = require('./../../../config.json');
+const Config = require('./../../../config.json');
 
 module.exports = function (rank, uid) {
   if(!this._profiles[uid]) {
@@ -14,25 +14,25 @@ module.exports = function (rank, uid) {
   
   this._profiles[uid][rank]++;
   
-  var rankStart = Number(Config.ranks[rank].start);
-  var rankStep  = Number(Config.ranks[rank].step);;
+  let rankStart = Number(Config.ranks[rank].start);
+  let rankStep  = Number(Config.ranks[rank].step);;
   
   if(!this._rankOwners[rank]) {
     if (this._profiles[uid][rank] >= rankStart) {
       this._rankOwners[rank] = uid;
       
-      this._onRank(null, rank, uid, null);
+      this.onNewRank(null, rank, uid, null);
       this.awardProfile(rank, uid);
     }
   } else  {
-    var currOwnerID   = this._rankOwners[rank];
-    var currOwnerBall = this._profiles[currOwnerID][rank];
+    let currOwnerID   = this._rankOwners[rank];
+    let currOwnerBall = this._profiles[currOwnerID][rank];
     
-    var dStep = this._profiles[uid][rank] - rankStep;
+    let dStep = this._profiles[uid][rank] - rankStep;
     if (dStep >= currOwnerBall) {
       this._rankOwners[rank] = uid;
   
-      this._onRank(null, rank, uid, currOwnerID);
+      this.onNewRank(null, rank, uid, currOwnerID);
       this.awardProfile(rank, uid);
     }
   }

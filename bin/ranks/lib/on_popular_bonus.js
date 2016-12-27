@@ -4,10 +4,10 @@
  * Обработчик получения бонуса для звания Популярный
  */
 
-var constants = require('./../../../constants');
-var oPool     = require('./../../../objects_pool');
-var logger    = require('./../../../../lib/log')(module);
-var Config    = require('./../../../../config.json');
+var constants = require('./../../constants');
+var oPool     = require('./../../objects_pool');
+var logger    = require('./../../../lib/log')(module);
+var Config    = require('./../../../config.json');
 
 module.exports = function (err, uid) {
   if(err) { return logger.error('handlePopularBonus:' + err) }

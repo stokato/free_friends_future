@@ -4,11 +4,11 @@
  * Добавляем профиль к списку
  */
 
-var constants = require('./../../constants');
+const constants = require('./../../constants');
 
 module.exports = function (uid) {
   this._profiles[uid] = {};
-  for(var item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
+  for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
     this._profiles[uid][constants.RANKS[item]] = 0;
   }
 };

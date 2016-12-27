@@ -8,12 +8,12 @@
  *
  */
 
-var Config    = require('./../../../config.json');
+const Config    = require('./../../../config.json');
 
 module.exports = function (rank, uid) {
   
-  var bonusLimit    = Number(Config.ranks[rank].bonus_limit);
-  var bonusTimeout  = Number(Config.ranks[rank].bonus_timeout);
+  let bonusLimit    = Number(Config.ranks[rank].bonus_limit);
+  let bonusTimeout  = Number(Config.ranks[rank].bonus_timeout);
   
   this._bonuses[rank] ++;
   

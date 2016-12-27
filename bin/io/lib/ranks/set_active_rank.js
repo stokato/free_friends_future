@@ -3,21 +3,10 @@
  *
  * Устанавливаем активность звания
  */
-var constants =  require('./../../../constants'),
-    oPool     = require('./../../../objects_pool');
+const oPool    = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
   
-  var ranksM = oPool.roomList[socket.id].getRanks();
-  var selfProfile = oPool.userList[socket.id];
+  oPool.roomList[socket.id].getRanks().setActiveRank(socket, options);
   
-  var rankOwnerID = ranksM.getRankOwner(options[constants.PFIELDS.RANK]);
-  
-  if(rankOwnerID != selfProfile.getID()) {
-    return callback(constants.errors.NO_SUCH_RUNK, null);
-  }
-  
-  oPool.userList[socket.id].setActiveRank(options[constants.PFIELDS.RANK]);
-  
-  callback(null, null);
 };

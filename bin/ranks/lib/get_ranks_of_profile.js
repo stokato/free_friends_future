@@ -6,9 +6,15 @@
 
 var Config = require('./../../../config.json');
 var constants = require('./../../constants');
+var oPool = require('./../../objects_pool');
+var emitRes = require('./emit_result');
+
 var PF = constants.PFIELDS;
 
-module.exports = function (uid) {
+module.exports = function (socket, options) {
+  
+  var selfProfile = oPool.userList[socket.id];
+  var uid = selfProfile.getID();
   
   if(!this._profiles[uid]) {
     return null;
@@ -47,5 +53,10 @@ module.exports = function (uid) {
         
   }
   
-  return ranks;
+  ranks[constants.PFIELDS.ACTIVE_RANK] = selfProfile.getActiveRank() || null;
+  
+  emitRes(null, socket, constants.IO_GET_RANKS, ranks);
 };
+
+
+

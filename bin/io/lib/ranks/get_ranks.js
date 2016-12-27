@@ -8,14 +8,8 @@
 var constants =  require('./../../../constants'),
   oPool     = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
   
-  var ranksM = oPool.roomList[socket.id].getRanks();
-  var selfProfile = oPool.userList[socket.id];
+  oPool.roomList[socket.id].getRanks().getRanksOfProfile(socket, options);
   
-  var ranks = ranksM.getRanksOfProfile(selfProfile.getID()) || {};
-  
-  ranks[constants.PFIELDS.ACTIVE_RANK] = selfProfile.getActiveRank() || null;
-  
-  callback(null, ranks);
 };

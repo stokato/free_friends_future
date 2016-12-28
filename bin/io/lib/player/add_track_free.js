@@ -10,6 +10,7 @@ var constants  = require('./../../../constants'),
   oPool      = require('./../../../objects_pool');
 
 var startTrack = require('./start_track_timer');
+const emitRes = require('./../../../emit_result');
 
 module.exports = function(socket, options, callback) {
   

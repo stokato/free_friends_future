@@ -7,19 +7,18 @@
 
 const constants = require('./../constants');
 
-const addProfile      = require('./lib/add_profile'),
-    deleteProfile     = require('./lib/delete_profile'),
-    addRankBall       = require('./lib/add_rank_ball'),
-    getRanksOfProfile = require('./lib/get_ranks_of_profile'),
-    awardProfile      = require('./lib/award_profile'),
-    takeBonus         = require('./lib/take_bonus'),
-    onPopularBonus    = require('./lib/on_popular_bonus'),
-    onNewRank         = require('./lib/on_new_rank'),
-    getActiveRank     = require('./lib/get_active_rank'),
-    setActiveRank     = require('./lib/set_active_rank');
+const addProfile        = require('./lib/add_profile'),
+    deleteProfile       = require('./lib/delete_profile'),
+    addRankBall         = require('./lib/add_rank_ball'),
+    onGetRanksOfProfile = require('./lib/on_get_ranks_of_profile'),
+    awardProfile        = require('./lib/award_profile'),
+    takeBonus           = require('./lib/take_bonus'),
+    onPopularBonus      = require('./lib/on_popular_bonus'),
+    onNewRank           = require('./lib/on_new_rank'),
+    onGetActiveRank     = require('./lib/on_get_active_rank'),
+    onSetActiveRank     = require('./lib/on_set_active_rank');
 
 function RanksManager() {
-  
   // Обладатели званий
   this._rankOwners = {};
   
@@ -38,20 +37,21 @@ function RanksManager() {
   this._onRank = null;
   
   // Обработчики для начисления бонусов по каждому званию
-  this._onRankBonus = {};
-  this._onRankBonus[constants.RANKS.POPULAR] = onPopularBonus;
+  this._onRankBonus = {
+    [constants.RANKS.POPULAR] : onPopularBonus
+  };
 }
 
 RanksManager.prototype.getRankOwner   = function (rank) { return this._rankOwners[rank]; };
 
-RanksManager.prototype.addProfile         = addProfile;
-RanksManager.prototype.deleteProfile      = deleteProfile;
-RanksManager.prototype.addRankBall        = addRankBall;
-RanksManager.prototype.getRanksOfProfile  = getRanksOfProfile;
-RanksManager.prototype.awardProfile       = awardProfile;
-RanksManager.prototype.takeBonus          = takeBonus;
-RanksManager.prototype.onNewRank          = onNewRank;
-RanksManager.prototype.getActiveRank      = getActiveRank;
-RanksManager.prototype.setActiveRank      = setActiveRank;
+RanksManager.prototype.addProfile           = addProfile;
+RanksManager.prototype.deleteProfile        = deleteProfile;
+RanksManager.prototype.addRankBall          = addRankBall;
+RanksManager.prototype.awardProfile         = awardProfile;
+RanksManager.prototype.takeBonus            = takeBonus;
+RanksManager.prototype.onNewRank            = onNewRank;
+RanksManager.prototype.onGetRanksOfProfile  = onGetRanksOfProfile;
+RanksManager.prototype.onGetActiveRank      = onGetActiveRank;
+RanksManager.prototype.onSetActiveRank      = onSetActiveRank;
 
 module.exports = RanksManager;

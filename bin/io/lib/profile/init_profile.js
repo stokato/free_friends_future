@@ -13,9 +13,13 @@ var oPool                 = require('./../../../objects_pool'),
     // startTrack            = require('./../player/start_track'),
     sendUsersInRoom       = require('./../common/send_users_in_room'),
     addEmits              = require('../emits/add_emits'),
+ Config = require('./../../../../config.json'),
+  constants = require('./../../../constants'),
     PF                    = require('./../../../constants').PFIELDS;
 
 var addProfileHandlers    = require('./../profile/add_pofile_hanlers');
+
+
 
 module.exports = function (socket, options, callback) {
   async.waterfall([ //---------------------------------------------------------------
@@ -83,16 +87,74 @@ module.exports = function (socket, options, callback) {
           cb(null, info, room, roomInfo);
         }
       } else {
-        cb(null, info, room, roomInfo);
+        cb(null, info, room, roomInfo, selfProfile);
       }
     },//------------------------------------------------------------
+    function(info, room, roomInfo, selfProfile, cb) { // Временно - устанавливаем уровень
+      var levelStart = Number(Config.levels.start);
+      var levelStep  = Number(Config.levels.step);
+      
+      var currLevel = selfProfile.getLevel();
+      var levelPoints = calcNeedPoints(currLevel, levelStart, levelStep);
+      
+      var currPoints = selfProfile.getPoints();
+      
+      if(currPoints > levelPoints) {
+        var needLevel = currLevel;
+        var p = levelPoints;
+        
+        while (currPoints > p) {
+          p += calcNeedPoints(needLevel, levelStart, levelStep);
+          needLevel++;
+        }
+        
+        selfProfile.setLevel(needLevel-1, function (err, level) {
+          if(err) { return cb(err); }
+          
+          cb(null, info, room, roomInfo, selfProfile);
+        })
+      } else {
+        cb(null, info, room, roomInfo, selfProfile);
+      }
+    },//------------------------------------------------------------
+    function(info, room, roomInfo, selfProfile, cb) { // Получаем данные по уровню игрока
+            
+      var levelStart = Number(Config.levels.start);
+      var levelStep  = Number(Config.levels.step);
+      var levelBonuses = Config.levels.bonuses;
+      
+      var currLevel = selfProfile.getLevel();
+      var needPoints = calcNeedPoints(currLevel+1, levelStart, levelStep);
+      var isPoints = calcNeedPoints(currLevel, levelStart, levelStep);
+      var progress = Math.floor((selfProfile.getPoints() - isPoints ) / (needPoints - isPoints) * 100) ;
+  
+      var key = (currLevel + 1).toString();
+      var bonuses = levelBonuses[key] || {};
+  
+      var newVIP = (bonuses.vip && !selfProfile.isVIP());
+  
+      var res = {};
+      res[PF.LEVEL]             = currLevel;
+      res[PF.ALL_POINTS]        = selfProfile.getPoints();
+      res[PF.NEW_LEVEL_POINTS]  = needPoints;
+      res[PF.CURR_LEVEL_POINTS] = isPoints;
+      res[PF.PROGRESS]          = progress;
+      res[PF.FREE_GIFTS]        = bonuses.gifts || 0;
+      res[PF.FREE_TRACKS]       = bonuses.music || 0;
+      res[PF.MONEY]             = bonuses.coins || 0;
+      res[PF.VIP]               = newVIP || false;
+  
+      info[PF.LEVEL] = res;
+      
+      cb(null, info, room, roomInfo);
+    },//------------------------------------------------------------
     function(info, room, roomInfo, cb) { // Отравляем в комнату сведения о пользователях в ней
-
+    
       sendUsersInRoom(roomInfo, info[PF.ID], function(err, roomInfo) {
         if(err) { return cb(err); }
-        
+      
         info[PF.ROOM] = roomInfo;
-        
+      
         cb(null, info, room);
       });
     },//------------------------------------------------------------
@@ -110,4 +172,21 @@ module.exports = function (socket, options, callback) {
   ], function (err, info) { // Обрабатываем ошибки, либо передаем данные клиенту
     callback(err, info);
   });
+  
+  
+  function calcNeedPoints(nl, start, step) {
+    var np = 0;
+    var prev = 0;
+    for (var i = 0; i < nl; i++) {
+      if(i == 0) {
+        np = start;
+        prev += start;
+      } else {
+        np = np + prev + step;
+        prev += step;
+      }
+    }
+    
+    return np;
+  }
 };

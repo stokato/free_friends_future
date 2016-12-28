@@ -58,7 +58,7 @@
     "releaser"  : { "start" : 3,  "step" : 1, "bonus_limit" : 30, "bouns_timeout" : 600000 }
   },
   "points" : {
-    "waste" : 10,
+    "waste" : 1,
     "refill" : 1,
     "taken_gift" : 0.5,
     "music" : 0.5,

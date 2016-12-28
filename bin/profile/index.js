@@ -135,8 +135,8 @@ Profile.prototype.getLevel          = function () { return this._pLevel; };
 Profile.prototype.getFreeGifts      = function () { return this._pFreeGifts; };
 Profile.prototype.getFreeMusic      = function () { return this._pFreeMusic; };
 Profile.prototype.isVIP             = function () { return this._pVIP; };
-Profile.prototype.setActiveRank     = function (rank) { this._pActiveRank = rank; };
-Profile.prototype.getActiveRank     = function () { return this._pActiveRank; };
+Profile.prototype.onSetActiveRank     = function (rank) { this._pActiveRank = rank; };
+Profile.prototype.onGetActiveRank     = function () { return this._pActiveRank; };
 
 Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
 Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };

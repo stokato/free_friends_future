@@ -37,10 +37,7 @@ var addTorFriend        = require('../profile/add_to_friends'),
     likeProfile         = require('../profile/like_profile'),
     setViewed           = require('../profile/set_viewed'),
     blockUser           = require('../profile/block_user'),
-    unblockUser         = require('../profile/unblock_user'),
-    changeActiveRank    = require('../ranks/set_active_rank'),
-    getActiveRank       = require('../ranks/get_active_rank'),
-    getRanks            = require('../ranks/get_ranks');
+    unblockUser         = require('../profile/unblock_user');
 
 // Назначаем эмиты
 module.exports = function(socket) {
@@ -74,10 +71,7 @@ module.exports = function(socket) {
     { emit : constants.IO_LIKE_PROFILE,           handler : likeProfile },
     { emit : constants.IO_SET_VIEWED,             handler : setViewed },
     { emit : constants.IO_BLOCK_USER,             handler : blockUser },
-    { emit : constants.IO_UNBLOCK_USER,           handler : unblockUser },
-    { emit : constants.IO_CHANGE_ACTIVE_RANK,     handler : changeActiveRank },
-    { emit : constants.IO_GET_ACTIVE_RANK,        handler : getActiveRank },
-    { emit : constants.IO_GET_RANKS,              handler : getRanks }
+    { emit : constants.IO_UNBLOCK_USER,           handler : unblockUser }
   ];
   
   for(var i = 0; i < emitList.length; i++) {

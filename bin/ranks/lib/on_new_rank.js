@@ -18,7 +18,7 @@ module.exports = function (err, rank, ownerid, disownerid) {
   var socket = ownerProfile.getSocket();
   var room = oPool.roomList[socket.id];
   
-  ownerProfile.setActiveRank(rank);
+  ownerProfile.onSetActiveRank(rank);
   
   var rankInfo = {};
   rankInfo[PF.RANK] = rank;
@@ -31,18 +31,18 @@ module.exports = function (err, rank, ownerid, disownerid) {
   
   // Устанавливаем для ливишегося звания профиля активность на следещем из его званий
   var disownerProfile = oPool.profiles[disownerid];
-  var ranks = room.getRanks().getRanksOfProfile(disownerid);
-  disownerProfile.setActiveRank(null);
+  var ranks = room.getRanks().onGetRanksOfProfile(disownerid);
+  disownerProfile.onSetActiveRank(null);
   if(ranks) {
     for(var item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
       var currRank = constants.RANKS[item];
       if(ranks[currRank] && ranks[currRank][PF.ISOWNER]) {
-        disownerProfile.setActiveRank(currRank);
+        disownerProfile.onSetActiveRank(currRank);
         break;
       }
     }
   } else {
-    disownerProfile.setActiveRank(null);
+    disownerProfile.onSetActiveRank(null);
   }
   
 };

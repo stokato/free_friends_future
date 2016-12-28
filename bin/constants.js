@@ -64,6 +64,7 @@ module.exports.errors = {
 };
 
 // емиты
+
 module.exports.IO_INIT                = 'init';
 module.exports.IO_MESSAGE             = 'message';
 module.exports.IO_PRIVATE_MESSAGE     = 'private_message';
@@ -290,7 +291,11 @@ module.exports.PFIELDS = {
   BALLS           : 'balls',
   NEED_BALLS      : 'need_balls',
   ACTIVE_RANK     : 'active_rank',
-  IS_ACTIVE       : 'is_active'
+  IS_ACTIVE       : 'is_active',
+  ALL_POINTS      : 'all_points',
+  NEW_LEVEL_POINTS    : 'new_level_points',
+  CURR_LEVEL_POINTS : 'curr_level_points',
+  PROGRESS        : 'progress'
 };
 
 module.exports.SFIELDS = {

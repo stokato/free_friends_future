@@ -11,9 +11,9 @@ module.exports = function (profile) {
   
   let uid = profile.getID();
   
-  this._profiles[uid] = {};
+  this._rProfiles[uid] = {};
   for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    this._profiles[uid][constants.RANKS[item]] = 0;
+    this._rProfiles[uid][constants.RANKS[item]] = 0;
   }
   
   let socket = profile.getSocket();

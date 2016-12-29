@@ -4,24 +4,33 @@
  * Удаляем пользователя из черного списка
  */
 
-var async = require('async');
 
-var constants  = require('./../../../constants'),
-  PF         = constants.PFIELDS,
-  oPool      = require('./../../../objects_pool');
+const constants  = require('./../../../constants');
+const oPool      = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+const checkID    = require('./../../../check_id');
+const emitRes    = require('./../../../emit_result');
+const sanitize   = require('./../../../sanitizer');
+
+const PF         = constants.PFIELDS;
+
+module.exports = function (socket, options) {
+  if(!checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_UNBLOCK_USER);
+  }
   
-  var selfProfile = oPool.userList[socket.id];
+  options[PF.ID] = sanitize(options[PF.ID]);
+  
+  let selfProfile = oPool.userList[socket.id];
   
   if (selfProfile.getID() == options[PF.ID]) {
-    callback(constants.errors.SELF_ILLEGAL);
+    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_UNBLOCK_USER);
   }
   
   selfProfile.delFromBlackList(options[PF.ID], function (err) {
-    if (err) { return callback(err); }
+    if (err) { return emitRes(err, socket, constants.IO_UNBLOCK_USER); }
   
-    callback(null, null);
+    emitRes(null, socket, constants.IO_UNBLOCK_USER);
   });
   
 };

@@ -5,44 +5,45 @@
  * @return rooms - список комнат
  */
 
-// Свои модули
-var Config = require('./../../../../config.json');
+const  async          = require('async');
 
-var async         = require('async'),      // Ошибки
-  constants       = require('./../../../constants'),     // Константы
-  PF              = constants.PFIELDS,
-  createRoom      = require('./../common/create_room'),
-  getLastMessages = require('./../common/get_last_messages'),
-  sendUsersInRoom = require('./../common/send_users_in_room'),
-  startTrack      = require('./../player/start_track'),
-  checkTrack      = require('./../player/check_track'),
-  oPool           = require('./../../../objects_pool');
+const Config          = require('./../../../../config.json');
+const constants       = require('./../../../constants');
+const oPool           = require('./../../../objects_pool');
 
-var ROOM_CHANGE_TIMEOUT = Number(Config.user.settings.room_change_timeout);
+const emitRes         = require('./../../../emit_result');
+const sanitize        = require('./../../../sanitizer');
+const createRoom      = require('./../common/create_room');
+const getLastMessages = require('./../common/get_last_messages');
+const sendUsersInRoom = require('./../common/send_users_in_room');
 
-module.exports = function (socket, options, callback) {
+const  PF                   = constants.PFIELDS;
+const  ROOM_CHANGE_TIMEOUT  = Number(Config.user.settings.room_change_timeout);
+
+module.exports = function (socket, options) {
+  
+  options[PF.ROOM] = sanitize(options[PF.ROOM]);
   
   // Ошибка, если нет комнаты с таким идентификатором
   if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != constants.NEW_ROOM) {
-    return callback(constants.errors.NO_SUCH_ROOM);
+    return emitRes(constants.errors.NO_SUCH_ROOM, socket ,constants.IO_CHANGE_ROOM);
   }
   
   // Если уже в этой комнате - ничего не делаем
   if(oPool.roomList[socket.id].getName() == options[PF.ROOM]){
-    // return callback(constants.errors.ALREADY_IN_ROOM);
-    return callback(null, null);
+    return emitRes(null, socket, constants.IO_CHANGE_ROOM);
   }
   
-  var selfProfile = oPool.userList[socket.id];
+  let  selfProfile = oPool.userList[socket.id];
   
   // Ошибка - если таймаут на смену комнаты еще не истек
   if(oPool.roomChangeLocks[selfProfile.getID()]) {
-    return callback(constants.errors.ACTON_TIMEOUT);
+    return emitRes(constants.errors.ACTON_TIMEOUT, socket, constants.IO_CHANGE_ROOM);
   }
   
-  var newRoom = null;
-  var currRoom = oPool.roomList[socket.id];
-  var userSex = selfProfile.getSex();
+  let  newRoom = null;
+  let  currRoom = oPool.roomList[socket.id];
+  let  userSex = selfProfile.getSex();
   
   //TODO: Эту возможность следует потом убрать
   if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
@@ -50,11 +51,11 @@ module.exports = function (socket, options, callback) {
     oPool.rooms[newRoom.getName()] = newRoom;
     
   } else {                                  // Либо ищем указанную
-    var item;
+    let  item;
     for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
       if (oPool.rooms[item].getName() == options[PF.ROOM]) {
         if (oPool.rooms[item].getCountInRoom(userSex) >= constants.ONE_SEX_IN_ROOM) {
-          return callback(constants.errors.ROOM_IS_FULL);
+          return emitRes(constants.errors.ROOM_IS_FULL, socket, constants.IO_CHANGE_ROOM);
         }
         newRoom = oPool.rooms[item];
       }
@@ -62,18 +63,18 @@ module.exports = function (socket, options, callback) {
   }
   
   if (!newRoom) {
-    return callback(constants.errors.NO_SUCH_ROOM);
+    return emitRes(constants.errors.NO_SUCH_ROOM, socket, constants.IO_CHANGE_ROOM);
   }
   
   currRoom.deleteProfile(selfProfile);
   
   // Удаляем комнату, если она опустела
-  var isCurrRoom = true;
+  let  isCurrRoom = true;
   if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
     delete oPool.rooms[currRoom.getName()];
     isCurrRoom = false;
   } else {
-    checkTrack(currRoom, selfProfile);
+    currRoom.getMusicPlayer().checkTrack(currRoom, selfProfile);
   }
   
   newRoom.addProfile(selfProfile);
@@ -83,7 +84,7 @@ module.exports = function (socket, options, callback) {
   async.waterfall([//-----------------------------------------------------------------------
     function (cb) { // Если пользователь перешел из другой комнаты, обновляем в ней список участников
       if(isCurrRoom) {
-        var currRoomInfo = currRoom.getInfo();
+        let  currRoomInfo = currRoom.getInfo();
   
         sendUsersInRoom(currRoomInfo, null, function(err) {
           if(err) { return cb(err); }
@@ -97,7 +98,7 @@ module.exports = function (socket, options, callback) {
     },//-----------------------------------------------------------------------
     function (res, cb) { // Устанавливаем таймаут на смену комнаты для этого пользователя
       
-      var info = newRoom.getInfo();
+      let  info = newRoom.getInfo();
       oPool.roomChangeLocks[selfProfile.getID()] = true;
       setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), ROOM_CHANGE_TIMEOUT);
     
@@ -112,14 +113,15 @@ module.exports = function (socket, options, callback) {
     }//-----------------------------------------------------------------------
   ], function (err) {
     if(err) {
-      return callback(err);
+      return emitRes(err, socket, constants.IO_CHANGE_ROOM);
     }
     
-    callback(null, null);
+    emitRes(null, socket, constants.IO_CHANGE_ROOM);
   
     newRoom.getGame().start(socket);
   
-    startTrack(socket, newRoom);
+    // startTrack(socket, newRoom);
+    newRoom.getMusicPlayer().startTrack(socket, newRoom);
     getLastMessages(socket, newRoom);
   });//-----------------------------------------------------------------------
   
@@ -127,7 +129,7 @@ module.exports = function (socket, options, callback) {
   //---------------------
   function setChangeTimeout(locks, selfid, delay) {
     setTimeout(function () {
-      var lock = String(selfid);
+      let  lock = String(selfid);
       delete locks[lock];
     }, delay);
   }

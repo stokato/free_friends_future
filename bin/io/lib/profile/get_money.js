@@ -5,18 +5,18 @@
  * @return {Object} - объект с количеством монет
  */
 
-var constants = require('./../../../constants');
-var oPool     = require('./../../../objects_pool');
+const constants = require('./../../../constants');
+const oPool     = require('./../../../objects_pool');
+const emitRes   = require('./../../../emit_result');
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
   
   oPool.userList[socket.id].getMoney(function (err, money) {
-    if (err) {  return callback(err); }
+    if (err) {  return emitRes(err, socket, constants.IO_GET_MONEY); }
     
-    var res = {};
-    res[constants.PFIELDS.MONEY] = money;
-    
-    callback(null, res);
+    let res = { [constants.PFIELDS.MONEY] : money };
+  
+    emitRes(null, socket, constants.IO_GET_MONEY, res);
   });
   
 };

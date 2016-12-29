@@ -4,8 +4,8 @@
  * Добавляем обработчики для событий профиля
  */
 
-var handleAddPoints = require('./handle_add_points');
-var handlePay       = require('./handle_pay');
+const handleAddPoints = require('./handle_add_points');
+const handlePay       = require('./handle_pay');
 
 module.exports = function (profile) {
   

@@ -1,4 +1,4 @@
-var Config = require('./../config.json');
+const Config = require('./../config.json');
 
 // Макс. количество игроков одного пола в комнате
 module.exports.ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
@@ -138,16 +138,16 @@ module.exports.VIEWED_TYPE            = {
 };
 
 // Игры
-var G_START         = 'results',
-    G_LOT           = 'lot',
-    G_BOTTLE        = 'bottle',
-    G_BOTTLE_KISSES = 'bottle_kisses',
-    G_QUESTIONS     = 'questions',
-    G_CARDS         = 'cards',
-    G_BEST          = 'best',
-    G_SYMPATHY      = 'sympathy',
-    G_SYMPATHY_SHOW = 'sympathy_show',
-    G_PRISON        = 'prison';
+const G_START         = 'results',
+      G_LOT           = 'lot',
+      G_BOTTLE        = 'bottle',
+      G_BOTTLE_KISSES = 'bottle_kisses',
+      G_QUESTIONS     = 'questions',
+      G_CARDS         = 'cards',
+      G_BEST          = 'best',
+      G_SYMPATHY      = 'sympathy',
+      G_SYMPATHY_SHOW = 'sympathy_show',
+      G_PRISON        = 'prison';
 
 module.exports.G_START                = G_START;
 module.exports.G_LOT                  = G_LOT;

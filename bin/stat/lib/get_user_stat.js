@@ -3,12 +3,12 @@
  *
  *  Получение статистики пользователя
  */
-var db = require('./../../db_manager');
-var SF = require('./../../constants').SFIELDS;
+const db = require('./../../db_manager');
+const SF = require('./../../constants').SFIELDS;
 
 module.exports = function (id, vid, callback) {
   
-  var fList = [
+  let  fList = [
     SF.GIFTS_GIVEN,
     SF.GIFTS_TAKEN,
     SF.COINS_GIVEN,

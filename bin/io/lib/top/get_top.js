@@ -4,26 +4,28 @@
  * @param socket, options, callback
  * @return {Object} - объект с общим топом, топом парней и девушек
  */
-var constants  = require('./../../../constants'),
-  db         = require('./../../../db_manager');
 
-module.exports = function (socket, options, callback) {
+const constants  = require('./../../../constants');
+const db         = require('./../../../db_manager');
+const emitRes    = require('./../../../emit_result');
+
+module.exports = function (socket, options) {
   
-  var res = {};
+  let res = {};
   db.findPoints(null, function (err, users) {
-    if (err) { return callback(options, err.message); }
+    if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
     res[constants.PFIELDS.ALL] = users;
     
     db.findPoints(constants.GIRL, function (err, users) {
-      if (err) { return callback(options, err.message); }
+      if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
       res[constants.PFIELDS.GIRLS] = users;
       
       db.findPoints(constants.GUY, function (err, users) {
-        if (err) { return callback(options, err.message); }
+        if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
         
         res[constants.PFIELDS.GUYS] = users;
         
-        callback(null, res);
+        emitRes(null, socket, constants.IO_GET_TOP, res);
       });
     });
   });

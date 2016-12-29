@@ -5,8 +5,8 @@
  * @return socket, options - проверенные и санитаризированные опции
  */
 
-const constants = require('./constants'),
-      oPool     = require('./objects_pool');
+const constants = require('./constants');
+const oPool     = require('./objects_pool');
 
 module.exports = function (em, socket, options, callback) {
   
@@ -26,14 +26,16 @@ module.exports = function (em, socket, options, callback) {
   }
   
   // Проверка подписи
-  // if(!checkAuth(em, socket, options)) {
-  //   return callback(constants.errors.NO_AUTH);
-  // }
+  /*
+  if(!checkAuth(em, socket, options)) {
+        return callback(constants.errors.NO_AUTH);
+   }
+  */
   
   callback(null, socket, options);
-
 };
 
+//--------------------------------------
 function checkOptionsType(options) {
   if (!options) { return false; } else
   if (typeof options != "object") { return false }

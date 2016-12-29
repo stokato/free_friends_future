@@ -4,38 +4,38 @@
  * Добавляем балл к званию
  */
 
-var constants = require('./../../constants');
-var PF = constants.PFIELDS;
-var oPool = require('./../../objects_pool');
-var logger = require('./../../../lib/log')(module);
+const logger    = require('./../../../lib/log')(module);
+const constants = require('./../../constants');
+const oPool     = require('./../../objects_pool');
+const PF        = constants.PFIELDS;
 
 module.exports = function (err, rank, ownerid, disownerid) {
-  if(err) {
-    logger.error('handleRank: ' + err);
-  }
+  if(err) { logger.error('handleRank: ' + err); }
   
-  var ownerProfile = oPool.profiles[ownerid];
-  var socket = ownerProfile.getSocket();
-  var room = oPool.roomList[socket.id];
+  let  ownerProfile = oPool.profiles[ownerid];
+  let  socket = ownerProfile.getSocket();
+  let  room = oPool.roomList[socket.id];
   
   ownerProfile.onSetActiveRank(rank);
   
-  var rankInfo = {};
-  rankInfo[PF.RANK] = rank;
-  rankInfo[PF.ID] = ownerProfile.getID();
-  rankInfo[PF.VID] = ownerProfile.getVID();
+  let  rankInfo = {
+    [PF.RANK] : rank,
+    [PF.ID]   : ownerProfile.getID(),
+    [PF.VID]  : ownerProfile.getVID()
+  };
+  
   socket.emit(constants.IO_NEW_RANK, rankInfo);
   socket.broadcast.in(room.getName()).emit(constants.IO_NEW_RANK, rankInfo);
   
   if(!disownerid) { return; }
   
   // Устанавливаем для ливишегося звания профиля активность на следещем из его званий
-  var disownerProfile = oPool.profiles[disownerid];
-  var ranks = room.getRanks().onGetRanksOfProfile(disownerid);
+  let  disownerProfile = oPool.profiles[disownerid];
+  let  ranks = room.getRanks().onGetRanksOfProfile(disownerid);
   disownerProfile.onSetActiveRank(null);
   if(ranks) {
-    for(var item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-      var currRank = constants.RANKS[item];
+    for(let  item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
+      let  currRank = constants.RANKS[item];
       if(ranks[currRank] && ranks[currRank][PF.ISOWNER]) {
         disownerProfile.onSetActiveRank(currRank);
         break;

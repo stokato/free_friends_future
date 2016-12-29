@@ -11,26 +11,38 @@
  *  - количество чатов с новыми сообщениями, новых друзей, гостей, подарков
  */
 
-var async     =  require('async');
+const async  =  require('async');
 
-var constants       = require('./../../../constants'),
-    PF              = constants.PFIELDS,
-    getUserProfile  = require('./../common/get_user_profile'),
-    oPool           = require('./../../../objects_pool');
+const constants       = require('./../../../constants');
+const oPool           = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+const getUserProfile  = require('./../common/get_user_profile');
+const checkID         = require('./../../../check_id');
+const emitRes         = require('./../../../emit_result');
+const sanitize        = require('./../../../sanitizer');
+
+const PF              = constants.PFIELDS;
+
+module.exports = function (socket, options) {
+  if(!checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_PROFILE);
+  }
   
-  var selfProfile = oPool.userList[socket.id];
+  options[PF.ID] = sanitize(options[PF.ID]);
   
-  var selfInfo = {};
-  selfInfo[PF.ID]       = selfProfile.getID();
-  selfInfo[PF.VID]      = selfProfile.getVID();
-  selfInfo[PF.AGE]      = selfProfile.getAge();
-  selfInfo[PF.SEX]      = selfProfile.getSex();
-  selfInfo[PF.CITY]     = selfProfile.getCity();
-  selfInfo[PF.COUNTRY]  = selfProfile.getCountry();
-  selfInfo[PF.STATUS]   = selfProfile.getStatus();
-  selfInfo[PF.POINTS]   = selfProfile.getPoints();
+  let selfProfile = oPool.userList[socket.id];
+
+  let selfInfo = {
+    [PF.ID]       : selfProfile.getID(),
+    [PF.VID]      : selfProfile.getVID(),
+    [PF.AGE]      : selfProfile.getAge(),
+    [PF.SEX]      : selfProfile.getSex(),
+    [PF.CITY]     : selfProfile.getCity(),
+    [PF.COUNTRY]  : selfProfile.getCountry(),
+    [PF.STATUS]   : selfProfile.getStatus(),
+    [PF.POINTS]   : selfProfile.getPoints()
+  };
+
   
   // Если открываем свой профиль
   if (selfProfile.getID() == options[PF.ID]) {
@@ -82,9 +94,9 @@ module.exports = function (socket, options, callback) {
         });
       }//----------------------------------------------------------------------
     ], function(err) { // Отправляем сведения
-      if (err) { return callback(err); }
+      if (err) { return emitRes(err, socket, constants.IO_GET_PROFILE); }
       
-      callback(null, selfInfo);
+      emitRes(null, socket, constants.IO_GET_PROFILE, selfInfo);
     });
     
   } else {
@@ -93,16 +105,17 @@ module.exports = function (socket, options, callback) {
         
         getUserProfile(options[PF.ID], function (err, friendProfile) {
           if(err) { return cb(err); }
-          
-          var friendInfo = {};
-          friendInfo[PF.ID]       = friendProfile.getID();
-          friendInfo[PF.VID]      = friendProfile.getVID();
-          friendInfo[PF.AGE]      = friendProfile.getAge();
-          friendInfo[PF.SEX]      = friendProfile.getSex();
-          friendInfo[PF.CITY]     = friendProfile.getCity();
-          friendInfo[PF.COUNTRY]  = friendProfile.getCountry();
-          friendInfo[PF.STATUS]   = friendProfile.getStatus();
-          friendInfo[PF.POINTS]   = friendProfile.getPoints();
+  
+          let friendInfo = {
+            [PF.ID]       : friendProfile.getID(),
+            [PF.VID]      : friendProfile.getVID(),
+            [PF.AGE]      : friendProfile.getAge(),
+            [PF.SEX]      : friendProfile.getSex(),
+            [PF.CITY]     : friendProfile.getCity(),
+            [PF.COUNTRY]  : friendProfile.getCountry(),
+            [PF.STATUS]   : friendProfile.getStatus(),
+            [PF.POINTS]   : friendProfile.getPoints()
+          };
           
           cb(null, friendProfile, friendInfo);
         });
@@ -134,7 +147,7 @@ module.exports = function (socket, options, callback) {
         });
       },//----------------------------------------------------------------------
       function (friendProfile, friendInfo, cb) { // Добавляем себя в гости
-        var date = new Date();
+        let date = new Date();
         friendProfile.addToGuests(selfProfile, date, function (err) {
           if (err) { return cb(err, null); }
           
@@ -149,7 +162,7 @@ module.exports = function (socket, options, callback) {
           cb(null, friendProfile, friendInfo);
         });
       },//----------------------------------------------------------------------
-      function (friendProfile, friendInfo, cb) { // Получаем статистику
+      function (friendProfile, friendInfo, cb) { // Получаем статистику TODO: Возможно понадобиться ограничить
         friendProfile.getStat(function (err, st) {
           if (err) { return cb(err, null); }
   
@@ -159,16 +172,16 @@ module.exports = function (socket, options, callback) {
         });
       }//----------------------------------------------------------------------
     ], function (err, friendProfile, friendInfo) { // Отправляем сведения
-      if (err) { return callback(err); }
+      if (err) { return emitRes(err, socket, constants.IO_GET_PROFILE); }
       
       if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о госте
         
-        var friendSocket = friendProfile.getSocket();
+        let friendSocket = friendProfile.getSocket();
         
         friendSocket.emit(constants.IO_ADD_GUEST, selfInfo);
       }
-      
-      callback(null, friendInfo);
+  
+      emitRes(null, socket, constants.IO_GET_PROFILE, friendInfo);
     }); // waterfall
   }
   

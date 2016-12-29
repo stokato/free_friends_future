@@ -15,12 +15,12 @@ module.exports = function (profile) {
   ioc.removeEmit(socket, constants.IO_GET_RANKS);
   ioc.removeEmit(socket, constants.IO_CHANGE_ACTIVE_RANK);
   
-  delete this._profiles[uid];
+  delete this._rProfiles[uid];
   
   for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    if(this._rankOwners[constants.RANKS[item]] == uid) {
-      this._rankOwners[constants.RANKS[item]] = null;
-      this._bonuses[constants.RANKS[item]] = 0;
+    if(this._rRankOwners[constants.RANKS[item]] == uid) {
+      this._rRankOwners[constants.RANKS[item]] = null;
+      this._rBonuses[constants.RANKS[item]] = 0;
     }
   }
 };

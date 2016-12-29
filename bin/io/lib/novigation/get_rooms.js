@@ -4,28 +4,29 @@
  * @param socket, options, callback
  * @return {Object} - объект со списком комнат
  */
-var constants  = require('./../../../constants');
-var oPool = require('./../../../objects_pool');
+const constants  = require('./../../../constants');
+const oPool = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+const emitRes = require('./../../../emit_result');
+
+module.exports = function (socket, options) {
   
-  var sex = oPool.userList[socket.id].getSex();
+  let sex = oPool.userList[socket.id].getSex();
   
-  var resRooms = [];
+  let resRooms = [];
   
-  var selfRoom = oPool.roomList[socket.id];
+  let selfRoom = oPool.roomList[socket.id];
   
-  for(var item in oPool.rooms) if(oPool.rooms.hasOwnProperty(item)) {
+  for(let item in oPool.rooms) if(oPool.rooms.hasOwnProperty(item)) {
     if (oPool.rooms[item].getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM
                       && oPool.rooms[item].getName() != selfRoom.getName()) {
       
-      var info = oPool.rooms[item].getInfo();
+      let  info = oPool.rooms[item].getInfo();
       resRooms.push(info);
     }
   }
   
-  var res = {};
-  res[constants.PFIELDS.ROOMS] = resRooms;
+  let res = { [constants.PFIELDS.ROOMS] : resRooms };
   
-  callback(null, res);
+  emitRes(null, socket, constants.IO_GET_ROOMS, res);
 };

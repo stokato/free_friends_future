@@ -7,10 +7,10 @@
 
 module.exports = function (tid) {
   
-  var likers = [];
-  var trackLikes = this._likers[tid] || {};
+  let  likers = [];
+  let  trackLikes = this._mLikers[tid] || {};
   
-  for(var item in trackLikes) if(trackLikes.hasOwnProperty(item)){
+  for(let  item in trackLikes) if(trackLikes.hasOwnProperty(item)){
     likers.push(trackLikes[item]);
   }
   

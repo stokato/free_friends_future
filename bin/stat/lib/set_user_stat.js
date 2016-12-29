@@ -5,9 +5,9 @@
  *
  */
 
-var db        = require('./../../db_manager');
-var PF = require('./../../constants').PFIELDS;
-var logError = require('./stat_error');
+const logError  = require('./stat_error');
+const db        = require('./../../db_manager');
+const PF        = require('./../../constants').PFIELDS;
 
 module.exports = function (id, vid, field, val) {
   
@@ -15,14 +15,14 @@ module.exports = function (id, vid, field, val) {
     return logError(field, 'value is not a number') ;
   }
   
-  var params = {};
-  params[PF.ID] = id;
-  params[PF.VID] = vid;
-  params[field] = val;
+  let params = {
+    [PF.ID]   : id,
+    [PF.VID]  : vid,
+    [field]   : val
+  };
+
   
   db.updateUserStat(params, function (err) {
-    if(err) {
-      logError(field, err.message) ;
-    }
+    if(err) { logError(field, err.message) ; }
   })
 };

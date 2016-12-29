@@ -7,10 +7,10 @@
 
 module.exports = function (rank, uid) {
   
-  if(!this._rankOwners[uid]) { return false; }
+  if(!this._rRankOwners[uid]) { return false; }
   
-  if(this._bonuses[rank] > 0) {
-    this._bonuses --;
+  if(this._rBonuses[rank] > 0) {
+    this._rBonuses --;
     
     return true;
   }

@@ -20,21 +20,18 @@ const addProfile        = require('./lib/add_profile'),
 
 function RanksManager() {
   // Обладатели званий
-  this._rankOwners = {};
+  this._rRankOwners = {};
   
   // Накопленные бонусы по каждому званию
-  this._bonuses = {};
+  this._rBonuses = {};
   
   for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    this._rankOwners[constants.RANKS[item]] = null;
-    this._bonuses[constants.RANKS[item]] = 0;
+    this._rRankOwners[constants.RANKS[item]] = null;
+    this._rBonuses[constants.RANKS[item]] = 0;
   }
   
   // Список пользователей со счетчиками званий
-  this._profiles = {};
-  
-  // Обработчик события писвоения звания
-  this._onRank = null;
+  this._rProfiles = {};
   
   // Обработчики для начисления бонусов по каждому званию
   this._onRankBonus = {
@@ -42,7 +39,7 @@ function RanksManager() {
   };
 }
 
-RanksManager.prototype.getRankOwner   = function (rank) { return this._rankOwners[rank]; };
+RanksManager.prototype.getRankOwner   = function (rank) { return this._rRankOwners[rank]; };
 
 RanksManager.prototype.addProfile           = addProfile;
 RanksManager.prototype.deleteProfile        = deleteProfile;

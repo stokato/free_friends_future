@@ -4,23 +4,33 @@
  * @param socket, options - объект с ид бывешго друга, callback
  *
  */
-var async     =  require('async');
+const async     =  require('async');
 
-// Свои модули
-var constants       = require('./../../../constants'),
-    PF              = constants.PFIELDS,
-    getUserProfile  = require('./../common/get_user_profile'),
-    oPool           = require('./../../../objects_pool');
 
-module.exports = function (socket, options, callback) {
+const constants       = require('./../../../constants');
+const oPool           = require('./../../../objects_pool');
 
-    var selfProfile = oPool.userList[socket.id];
+const checkID         = require('./../../../check_id');
+const emitRes         = require('./../../../emit_result');
+const sanitize        = require('./../../../sanitizer');
+const getUserProfile  = require('./../common/get_user_profile');
+
+const PF              = constants.PFIELDS;
+
+module.exports = function (socket, options) {
+  if(!checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_DEL_FROM_FRIENDS);
+  }
+  
+  options[PF.ID] = sanitize(options[PF.ID]);
+
+    let selfProfile = oPool.userList[socket.id];
 
     if (selfProfile.getID() == options[PF.ID]) {
-      return callback(constants.errors.SELF_ILLEGAL);
+      return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_DEL_FROM_FRIENDS);
     }
 
-    var date = new Date();
+    let date = new Date();
 
     async.waterfall([//--------------------------------------------------------
       function (cb) { // Получаем профиль друга
@@ -30,7 +40,7 @@ module.exports = function (socket, options, callback) {
       },//--------------------------------------------------------
       function (friendProfile, cb) { // Удаляем первого из друзей
 
-        friendProfile.delFromFriends(selfProfile.getID(), function (err, res) {
+        friendProfile.delFromFriends(selfProfile.getID(), function (err) {
           if (err) { return cb(err, null); }
 
           cb(null, friendProfile);
@@ -39,7 +49,7 @@ module.exports = function (socket, options, callback) {
       },//--------------------------------------------------------
       function (friendProfile, cb) { // Удаляем второго
 
-        selfProfile.delFromFriends(friendProfile.getID(), function (err, res) {
+        selfProfile.delFromFriends(friendProfile.getID(), function (err) {
           if (err) { return cb(err, null); }
 
           cb(null, friendProfile);
@@ -47,35 +57,35 @@ module.exports = function (socket, options, callback) {
 
       }], //--------------------------------------------------------
       function (err, friendProfile) { // Отправляем сведения о бывшем друге
-        if (err) { return callback(err); }
+        if (err) { return emitRes(err, socket, constants.IO_DEL_FROM_FRIENDS);}
 
-        var friendInfo = fillInfo(friendProfile, date);
+        let friendInfo = fillInfo(friendProfile, date);
 
         if (oPool.profiles[friendProfile.getID()]) { // Если друг онлайн, то и ему
-          var selfInfo = fillInfo(selfProfile, date);
-          var friendSocket = friendProfile.getSocket();
+          let selfInfo = fillInfo(selfProfile, date);
+          let friendSocket = friendProfile.getSocket();
 
           friendSocket.emit(constants.IO_NO_FRIEND, selfInfo);
         }
-        
-        callback(null, friendInfo);
+  
+        emitRes(null, socket, constants.IO_DEL_FROM_FRIENDS, friendInfo);
     }); // waterfall
 
 
   //-------------------------
   function fillInfo(profile, date) {
+  
+    return {
+      [PF.ID]      : profile.getID(),
+      [PF.VID]     : profile.getVID(),
+      [PF.DATE]    : date,
+      [PF.POINTS]  : profile.getPoints(),
+      [PF.AGE]     : profile.getAge(),
+      [PF.CITY]    : profile.getCity(),
+      [PF.COUNTRY] : profile.getCountry(),
+      [PF.SEX]     : profile.getSex()
+    };
     
-    var res = {};
-    res[PF.ID]      = profile.getID();
-    res[PF.VID]     = profile.getVID();
-    res[PF.DATE]    = date;
-    res[PF.POINTS]  = profile.getPoints();
-    res[PF.AGE]     = profile.getAge();
-    res[PF.CITY]    = profile.getCity();
-    res[PF.COUNTRY] = profile.getCountry();
-    res[PF.SEX]     = profile.getSex();
-    
-    return res;
   }
 
 };

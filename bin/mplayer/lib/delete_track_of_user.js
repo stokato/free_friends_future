@@ -5,20 +5,19 @@
  */
 
 module.exports = function (id) {
-  var newTrackList = [];
+  let  newTrackList = [];
   
-  for (var i = 0; i < this._track_list.length; i++) {
-    if (this._track_list[i].id == id) {
+  for (let  i = 0; i < this._mTrackList.length; i++) {
+    if (this._mTrackList[i].id == id) {
   
-      var tid = this._track_list[i].track_id;
-      delete this._likers[tid];
-      delete this._dislikers[tid];
+      let  tid = this._mTrackList[i].track_id;
+      delete this._mLikers[tid];
+      delete this._mDislikers[tid];
       
-      // this._track_list.splice(i, 1);
     } else {
-      newTrackList.push(this._track_list[i]);
+      newTrackList.push(this._mTrackList[i]);
     }
   }
   
-  this._track_list = newTrackList;
+  this._mTrackList = newTrackList;
 };

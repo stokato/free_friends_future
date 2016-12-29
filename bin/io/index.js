@@ -12,12 +12,14 @@
 var socketio  = require('socket.io');
 var ios       = require('socket.io-express-session');
 var ioClient  = require('socket.io-client');
-var emitInit  = require('./lib/emits/emit_init');
+var initProfile = require('./lib/profile/init_profile');
 var session   = require('./../../lib/session');
 //var checkSession = require('./checkSession');
 
 var oPool     = require('./../objects_pool');
 var stat      = require('./../stat_manager');
+var constants = require('./../constants');
+var ioc = require('./../io_controller');
 
 var io = null;                                      // Сокет
 
@@ -34,8 +36,8 @@ module.exports.listen = function(server, callback) {
   //io.use(checkSession);
 
   io.sockets.on('connection', function (socket) {
-
-    emitInit(socket);
+    
+    ioc.setEmit(socket, constants.IO_INIT, initProfile);
     
   });
   

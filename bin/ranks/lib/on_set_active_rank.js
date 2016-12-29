@@ -4,12 +4,12 @@
  * Устанавливаем активность звания
  */
 
-const constants = require('./../../constants'),
-      oPool     = require('./../../objects_pool'),
-      sanitize = require('./../../sanitizer'),
-      emitRes   = require('./emit_result');
+const constants = require('./../../constants');
+const oPool     = require('./../../objects_pool');
+const sanitize  = require('./../../sanitizer');
+const emitRes   = require('./emit_result');
 
-const PF = constants.PFIELDS;
+const PF   = constants.PFIELDS;
 const EMIT = constants.IO_CHANGE_ACTIVE_RANK;
 
 module.exports = function () {

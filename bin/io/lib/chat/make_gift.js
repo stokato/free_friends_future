@@ -4,30 +4,41 @@
  *  @param socket, options - объект и ид пользователя, которому дарим и ид подарка, callback
  */
 
-var async      =  require('async');
+const async      =  require('async');
 
-var Config         = require('./../../../../config.json');
-var constants      = require('./../../../constants'),
-  PF               = constants.PFIELDS,
-  SF               = constants.SFIELDS,
-  getUserProfile   = require('./../common/get_user_profile'),
-  setGiftTimeout   = require('./../common/set_gift_timeout'),
-  db               = require('./../../../db_manager'),
-  oPool            = require('./../../../objects_pool'),
-  stat             = require('./../../../stat_manager');
+const Config          = require('./../../../../config.json');
+const constants       = require('./../../../constants');
+const db              = require('./../../../db_manager');
+const oPool           = require('./../../../objects_pool');
+const stat            = require('./../../../stat_manager');
 
-var WASTE_POINTS  = Number(Config.points.waste);
-var GIFT_POINTS   = Number(Config.points.taken_gift);
+const checkID         = require('./../../../check_id');
+const emitRes         = require('./../../../emit_result');
+const sanitize        = require('./../../../sanitizer');
+const getUserProfile  = require('./../common/get_user_profile');
+const setGiftTimeout  = require('./../common/set_gift_timeout');
 
-module.exports = function (socket, options, callback) {
+const PF            = constants.PFIELDS;
+const SF            = constants.SFIELDS;
+const WASTE_POINTS  = Number(Config.points.waste);
+const GIFT_POINTS   = Number(Config.points.taken_gift);
 
-    var selfProfile = oPool.userList[socket.id];
+
+
+module.exports = function (socket, options) {
+  if(!checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_MAKE_GIFT);
+  }
+  
+  options[PF.ID] = sanitize(options[PF.ID]);
+
+    let selfProfile = oPool.userList[socket.id];
 
     if (selfProfile.getID() == options[PF.ID]) {
-      return callback(constants.errors.SELF_ILLEGAL);
+      return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_MAKE_GIFT);
     }
 
-    var date = new Date();
+    let date = new Date();
 
     async.waterfall([//---------------------------------------------------------------
       function (cb) { // Ищем подарок в магазине
@@ -93,8 +104,8 @@ module.exports = function (socket, options, callback) {
         friendProfile.addPoints(GIFT_POINTS * gift[PF.PRICE], function (err, points) {
           if (err) { return cb(err, null); }
           
-          var friendSocket = friendProfile.getSocket();
-          var ranks = oPool.roomList[friendSocket.id].getRanks();
+          let friendSocket = friendProfile.getSocket();
+          let ranks = oPool.roomList[friendSocket.id].getRanks();
           ranks.addRankBall(constants.RANKS.POPULAR, friendProfile.getID());
           
           cb(null, friendProfile);
@@ -102,44 +113,46 @@ module.exports = function (socket, options, callback) {
 
       } //---------------------------------------------------------------
     ], function (err, friendProfile) { // Вызывается последней. Рассылаем уведомления о подарке
-      if (err) { return callback(err); }
+      if (err) { return emitRes(err, socket, constants.IO_MAKE_GIFT); }
   
-      var gift = friendProfile.getGift1();
+      let gift = friendProfile.getGift1();
   
-      var res = {};
-      res[PF.FID]       = selfProfile.getID();
-      res[PF.FVID]      = selfProfile.getVID();
-      res[PF.ID]        = friendProfile.getID();
-      res[PF.VID]       = friendProfile.getVID();
-      res[PF.GIFTID]    = gift[PF.GIFTID];
-      res[PF.SRC]       = gift[PF.SRC];
-      res[PF.TYPE]      = gift[PF.TYPE];
-      res[PF.TITLE]     = gift[PF.TITLE];
-      res[PF.DATE]      = gift[PF.DATE];
-      res[PF.UGIFTID]   = gift[PF.UGIFTID];
-      res[PF.ISPRIVATE] = options[PF.ISPRIVATE];
+      let res = {
+        [PF.FID]       : selfProfile.getID(),
+        [PF.FVID]      : selfProfile.getVID(),
+        [PF.ID]        : friendProfile.getID(),
+        [PF.VID]       : friendProfile.getVID(),
+        [PF.GIFTID]    : gift[PF.GIFTID],
+        [PF.SRC]       : gift[PF.SRC],
+        [PF.TYPE]      : gift[PF.TYPE],
+        [PF.TITLE]     : gift[PF.TITLE],
+        [PF.DATE]      : gift[PF.DATE],
+        [PF.UGIFTID]   : gift[PF.UGIFTID],
+        [PF.ISPRIVATE] : options[PF.ISPRIVATE]
+      };
+
   
-      var room = oPool.roomList[socket.id];
+      let room = oPool.roomList[socket.id];
   
       socket.emit(constants.IO_NEW_GIFT, res);
   
       if(!options[PF.ISPRIVATE]) {
         socket.broadcast.in(room.getName()).emit(constants.IO_NEW_GIFT, res);
       } else if(oPool.isProfile(friendProfile.getID())) {
-        var friendSocket = friendProfile.getSocket();
+        let friendSocket = friendProfile.getSocket();
         friendSocket.emit(constants.IO_NEW_GIFT, res);
       }
   
       if(oPool.isProfile(friendProfile.getID())) {
         setGiftTimeout(friendProfile.getID());
       }
-  
-      callback(null, null);
+      
+      emitRes(null, socket, constants.IO_MAKE_GIFT);
       
     }); // waterfall
   
   function addToStat(gift) {
-    var field, types = constants.GIFT_TYPES;
+    let field, types = constants.GIFT_TYPES;
     
     switch (gift[PF.TYPE]) {
       case types.BREATH     : field = SF.GIFTS_BREATH;      break;

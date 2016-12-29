@@ -5,49 +5,62 @@
  *
  */
 
-var async         = require('async');
+const async           = require('async');
 
-// Свои модули
-var constants     = require('./../../../constants'),
-  PF              = constants.PFIELDS,
-  openPrivateChat = require('./open_private_chat'),
-  getUserProfile  = require('./../common/get_user_profile'),
-  sendInRoom      = require('./../common/send_in_room'),
-  sendOne         = require('./../common/send_one'),
-  cdb             = require('./../../../db/lib/common/cassandra_db'),
-  oPool           = require('./../../../objects_pool');
+const constants       = require('./../../../constants');
+const oPool           = require('./../../../objects_pool');
 
+const checkID         = require('./../../../check_id');
+const emitRes         = require('./../../../emit_result');
+const sanitize        = require('./../../../sanitizer');
+const openPrivateChat = require('./open_private_chat');
+const getUserProfile  = require('./../common/get_user_profile');
+const sendInRoom      = require('./../common/send_in_room');
+const sendOne         = require('./../common/send_one');
+const cdb             = require('./../../../db/lib/common/cassandra_db');
 
-module.exports = function (socket, options, callback) {
-  
-  var selfProfile = oPool.userList[socket.id];
-  
-  if (selfProfile.getID() == options[PF.ID]) {
-    return callback(constants.errors.SELF_ILLEGAL);
+const PF              = constants.PFIELDS;
+
+module.exports = function (socket, options) {
+  if((PF.ID in options) && !checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_MESSAGE, null, true);
+  }
+  if(PF.ID in options) {
+    options[PF.ID] = sanitize(options[PF.ID]);
   }
   
-  var isPrivate = options[PF.ID] || false;
-  var date = new Date();
+  options[PF.TEXT] = sanitize(options[PF.TEXT]);
   
-  var info = {};
-  info[PF.ID]       = selfProfile.getID();
-  info[PF.VID]      = selfProfile.getVID();
-  info[PF.AGE]      = selfProfile.getAge();
-  info[PF.SEX]      = selfProfile.getSex();
-  info[PF.CITY]     = selfProfile.getCity();
-  info[PF.COUNTRY]  = selfProfile.getCountry();
-  info[PF.TEXT]     = options[PF.TEXT];
-  info[PF.DATE]     = date;
+  let selfProfile = oPool.userList[socket.id];
+  
+  if (selfProfile.getID() == options[PF.ID]) {
+    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_MESSAGE, null, true);
+  }
+  
+  let isPrivate = options[PF.ID] || false;
+  let date = new Date();
+  
+  let info = {
+    [PF.ID]       : selfProfile.getID(),
+    [PF.VID]      : selfProfile.getVID(),
+    [PF.AGE]      : selfProfile.getAge(),
+    [PF.SEX]      : selfProfile.getSex(),
+    [PF.CITY]     : selfProfile.getCity(),
+    [PF.COUNTRY]  : selfProfile.getCountry(),
+    [PF.TEXT]     : options[PF.TEXT],
+    [PF.DATE]     : date
+  };
+
   
   // Если сообщение не приватное, шлем в комнату и все
   if(!isPrivate) {
-    var currRoom = oPool.roomList[socket.id];
+    let currRoom = oPool.roomList[socket.id];
     
     info[PF.MESSAGEID] = cdb.timeUuid.fromDate(date);
     
     sendInRoom(socket, currRoom, info);
     
-    return callback(null, null);
+    return emitRes(null, socket, constants.IO_MESSAGE, null, true);
   }
     
   async.waterfall([//--------------------------------------------------------------------------
@@ -59,7 +72,7 @@ module.exports = function (socket, options, callback) {
     function (friendProfile, cb) { // Если пользователь в черном списке, сообщаяем ему
       if(friendProfile.isInBlackList(selfProfile.getID())) {
         
-        var params = {};
+        let params = {};
         params[PF.ID] = friendProfile.getID();
         params[PF.VID] = friendProfile.getVID();
         
@@ -69,11 +82,11 @@ module.exports = function (socket, options, callback) {
       } else cb(null, false, friendProfile);
     },//--------------------------------------------------------------------------
     function(isBanned, friendProfile, cb) { // Открываем чат отправителю, если еще не открыт
-      if(isBanned) { return cb(null, isBanned, friendProfile); };
+      if(isBanned) { return cb(null, isBanned, friendProfile); }
       
       if(!selfProfile.isPrivateChat(friendProfile.getID())) {
         
-        var params = {};
+        let params = {};
         params[PF.ID] = friendProfile.getID();
         
         openPrivateChat(socket, params, function (err) {
@@ -91,7 +104,7 @@ module.exports = function (socket, options, callback) {
       
       if (oPool.profiles[options[PF.ID]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
         
-        var params = {};
+        let params = {};
         params[PF.ID] = selfProfile.getID();
         
         openPrivateChat(friendProfile.getSocket(), params, function (err) {
@@ -111,7 +124,7 @@ module.exports = function (socket, options, callback) {
         if (err) { return cb(err, null); }
         
         if (oPool.profiles[options[PF.ID]]) {
-          var friendSocket = friendProfile.getSocket();
+          let friendSocket = friendProfile.getSocket();
           
           if(friendProfile.isPrivateChat(selfProfile.getID())) {
             
@@ -141,9 +154,9 @@ module.exports = function (socket, options, callback) {
       });
     }//--------------------------------------------------------------------------
   ], function (err) { // Вызывается последней или в случае ошибки
-    if (err) { return callback(err); }
+    if (err) { return emitRes(err, socket, constants.IO_MESSAGE, null, true); }
     
-    callback(null, null);
+    // emitRes(null, socket, constants.IO_MESSAGE);
   });
 };
 

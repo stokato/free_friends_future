@@ -4,30 +4,39 @@
  * @param socket, options - объект с ид пользователя, callback
  *
  */
-var Config        = require('./../../../../config.json');
 
-var constants = require('./../../../constants'),
-    PF        = constants.PFIELDS,
-    oPool     = require('./../../../objects_pool'),
-    ProfileJS = require('./../../../profile/index');
+const Config    = require('./../../../../config.json');
+const constants = require('./../../../constants');
+const oPool     = require('./../../../objects_pool');
+const ProfileJS = require('./../../../profile/index');
 
-var LIKE_TIMEOUT = Config.user.settings.like_timeout;
+const checkID   = require('./../../../check_id');
+const emitRes   = require('./../../../emit_result');
+const sanitize  = require('./../../../sanitizer');
 
-module.exports = function (socket, options, callback) {
+const PF           = constants.PFIELDS;
+const LIKE_TIMEOUT = Config.user.settings.like_timeout;
+
+module.exports = function (socket, options) {
+  if(!checkID(options[PF.ID])) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_LIKE_PROFILE);
+  }
+  
+  options[PF.ID] = sanitize(options[PF.ID]);
  
-  var selfProfile = oPool.userList[socket.id];
-  var friendProfile = oPool.profiles[options[PF.ID]];
+  let selfProfile = oPool.userList[socket.id];
+  let friendProfile = oPool.profiles[options[PF.ID]];
   
   if(selfProfile.getID() == options[PF.ID]) {
-    return callback(constants.errors.SELF_ILLEGAL);
+    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_LIKE_PROFILE);
   }
   
   // Получаем замок и проверяем, не заблокирована ли возможнасть ставить лайк
-  var lock = String(selfProfile.getID() + "_" + options[PF.ID]);
+  let lock = String(selfProfile.getID() + "_" + options[PF.ID]);
   
   // Если таймаут еще не истек, ничего не начисляем
   if(oPool.likeLocks[lock]) {
-    return callback(null, null);
+    return emitRes(null, socket, constants.IO_LIKE_PROFILE);
   }
   
   // Добавляе мочки
@@ -36,35 +45,30 @@ module.exports = function (socket, options, callback) {
   } else {
     friendProfile = new ProfileJS();
     friendProfile.build(options[PF.ID], function (err) {
-      if(err) { return callback(err);  }
+      if(err) { return emitRes(err, socket, constants.IO_LIKE_PROFILE); }
       
       friendProfile.addPoints(constants.LIKE_BONUS_POINTS, onPoints(friendProfile));
     });
   }
   
+  //-----------------------------------------------
   // Функция обрабатывает результы начисления очков, оповещает игрока
   function onPoints(player) {
     return function(err, points) {
-      if(err) { return callback(err); }
-      
-      // var res = {};
-      // res[PF.POINTS] = points;
-      //
-      // var socket = player.getSocket();
-      // socket.emit(constants.IO_ADD_POINTS, res);
+      if(err) { return emitRes(err, socket, constants.IO_LIKE_PROFILE); }
       
       oPool.likeLocks[lock] = true;
       
       setLikeTimeout(oPool.likeLocks, selfProfile.getID(), LIKE_TIMEOUT);
-      
-      callback(null, null);
+  
+      emitRes(null, socket, constants.IO_LIKE_PROFILE);
     }
   }
   
   // Функция блокирует добавление лайков от этого пользователя на заданный период времени
   function setLikeTimeout(locks, selfid, friendid, delay) {
     setTimeout(function () {
-      var lock = String(selfid + "_" + friendid);
+      let lock = String(selfid + "_" + friendid);
       delete locks[lock];
     }, delay);
   }

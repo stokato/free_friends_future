@@ -5,15 +5,16 @@
  * @return {Object} - объект с подарками
  */
 
-var constants = require('./../../../constants'),
-  PF        = constants.PFIELDS,
-  db      = require('./../../../db_manager');
+const constants   = require('./../../../constants');
+const db          = require('./../../../db_manager');
+const emitRes     = require('./../../../emit_result');
+const PF          = constants.PFIELDS;
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
   
   // Получаем все подраки
   db.findAllGoods(constants.GT_GIFT, function (err, goods) {
-    if (err) { return callback(err); }
+    if (err) { return emitRes(err, socket, constants.IO_GET_GIFT_SHOP); }
     
     var i, type, gift;
     
@@ -37,27 +38,26 @@ module.exports = function (socket, options, callback) {
     
     // Группируем подарки по типам
     for(i = 0; i < goods.length; i++) {
-      gift = {};
       type            = goods[i][PF.TYPE];
-      gift[PF.ID]     = goods[i][PF.ID];
-      gift[PF.SRC]    = goods[i][PF.SRC];
-      gift[PF.TYPE]   = type;
-      gift[PF.PRICE]  = goods[i][PF.PRICE];
-      gift[PF.TITLE]  = goods[i][PF.TITLE];
+  
+      gift = {
+        [PF.ID]     : goods[i][PF.ID],
+        [PF.SRC]    : goods[i][PF.SRC],
+        [PF.TYPE]   : type,
+        [PF.PRICE]  : goods[i][PF.PRICE],
+        [PF.TITLE]  : goods[i][PF.TITLE]
+      };
       
       types[type].gifts.push(gift);
     }
     
     // Формируем массив
-    var gifts = [];
+    let gifts = [];
     for(i in types) if(types.hasOwnProperty(i)) {
       gifts.push(types[i]);
     }
     
-    var res = {};
-    res[PF.GIFTS] = gifts;
-    
-    callback(null, res);
+    emitRes(null, socket, constants.IO_GET_GIFT_SHOP, { [PF.GIFTS] : gifts });
   });
   
 };

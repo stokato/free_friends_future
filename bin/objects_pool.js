@@ -22,6 +22,6 @@ function ObjectsPool () {
   }
 }
 
-var oPool = new ObjectsPool();
+let oPool = new ObjectsPool();
 
 module.exports = oPool;

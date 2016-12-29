@@ -2,8 +2,8 @@
  * Парсинг строк
  */
 
-var xssFilter = require('xss-filters');
-var validator = require('validator');
+const xssFilter = require('xss-filters');
+const validator = require('validator');
 
 function sanitize(str) {
   str = xssFilter.inHTMLData(str);

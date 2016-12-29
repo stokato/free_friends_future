@@ -5,18 +5,18 @@
  * @return info
  */
 
-var async = require('async');
+const async = require('async');
 
-var constants = require('./../../../constants'),
-  PF          = constants.PFIELDS,
-  oPool       = require('./../../../objects_pool');
+const constants = require('./../../../constants');
+const oPool       = require('./../../../objects_pool');
 
+const PF          = constants.PFIELDS;
 
 module.exports = function(info, selfId, callback) {
 
   // Сосовтавляем список ид всех пользователей в комнате
   // TODO: следуте изменить
-  var usersID = [], i;
+  let  usersID = [], i;
 
   for(i = 0; i < info.guys.length; i++) {
     usersID.push(info.guys[i][PF.ID]);
@@ -29,19 +29,19 @@ module.exports = function(info, selfId, callback) {
   // Для каждого  пользователя проверяем - кто из остальных является его другом,
   // отправляем измененные сведения этому пользователю
   async.map(usersID, function(id, cb) {
-    var profile   = oPool.profiles[id];
-    var roomUsers = usersID.slice();
-    var pos       = usersID.indexOf(id);
+    let  profile   = oPool.profiles[id];
+    let  roomUsers = usersID.slice();
+    let  pos       = usersID.indexOf(id);
     roomUsers.splice(pos, 1);
 
     if(roomUsers.length > 0) {
       profile.isFriend(roomUsers, function(err, friends) {
         if(err) { return cb(err); }
 
-        var newInfo = JSON.parse(JSON.stringify(info));
+        let  newInfo = JSON.parse(JSON.stringify(info));
 
-        for(var i = 0; i < friends.length; i++) {
-          var j;
+        for(let  i = 0; i < friends.length; i++) {
+          let  j;
           for(j = 0; j < newInfo.guys.length; j++) {
             if(friends[i][PF.ID] == newInfo.guys[j][PF.ID]) {
               newInfo.guys[j][PF.ISFRIEND] = friends[i][PF.ISFRIEND];
@@ -55,19 +55,19 @@ module.exports = function(info, selfId, callback) {
           }
         }
 
-        var res = emitRoomInfo(profile, newInfo);
+        let  res = emitRoomInfo(profile, newInfo);
 
         cb(null, res);
       })
     } else {
-      var res = emitRoomInfo(profile, info);
+      let  res = emitRoomInfo(profile, info);
       cb(null, res);
     }
   }, function(err, results) { // Возвращаем измененные сведения укзаанному пользователю
     if(err) { callback(err); }
 
-    var res = null;
-    for(var i = 0; i < results.length; i++) {
+    let  res = null;
+    for(let  i = 0; i < results.length; i++) {
       if(results[i]) {
         res = results[i];
       }
@@ -78,7 +78,7 @@ module.exports = function(info, selfId, callback) {
 
   //-------------------------------------
   function emitRoomInfo(profile, info) {
-    var res = null;
+    let  res = null;
     if(selfId && profile.getID() == selfId) {
       res = info;
     }

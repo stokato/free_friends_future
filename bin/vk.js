@@ -2,47 +2,46 @@
  * Модуль обработки запросов от Вконтакте
  */
 
-var async = require('async');
-var db = require('./db_manager');
+const async = require('async');
+const md5   = require('md5');
 
-var sanitize        = require('./sanitizer');
-var md5 = require('md5');
+const Config        = require('./../config.json');
+const constants     = require('./constants');
+const db            = require('./db_manager');
+const oPool         = require('./objects_pool');
+const stat          = require('./stat_manager');
 
-var constants = require('./constants');
-var PF = constants.PFIELDS;
+const sanitize      = require('./sanitizer');
 
-var oPool = require('./objects_pool');
-var stat = require('./stat_manager');
-var Config = require('./../config.json');
-
-var REFILL_POINTS = Number(Config.points.refill);
+const PF            = constants.PFIELDS;
+const REFILL_POINTS = Number(Config.points.refill);
 
 function VK () {}
 
-VK.prototype.handle = function(req, profiles, callback) {
-  var request = req || {};
+VK.prototype.handle = function(req, callback) {
+  let request = req || {};
 
   // Сначала проверка
-  var sig = request["sig"];
+  let sig = request["sig"];
 
-  var fields= [];
-  for(var key in request) /* if(request.hasOwnProperty(key)) */{
+  let fields= [];
+  for(let key in request) /* if(request.hasOwnProperty(key)) */{
     if(key === "sig") {  continue; }
 
     fields.push(key + "=" + request[key]);
   }
   fields.sort();
-  var authStr = fields.join("") + constants.APISECRET;
+  let authStr = fields.join("") + Config.auth.APISECRET;
 
   if (sig !== md5(authStr)) {
-    var response = {};
+    let response = {};
     response['error'] = {
       "error_code" : 10,
       "error_msg"  : 'Несовпадение вычисленной и переданной подписи запроса.',
       "critical"   : true
     };
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     return callback(null, resJSON);
   }
 
@@ -55,10 +54,10 @@ VK.prototype.handle = function(req, profiles, callback) {
     case "get_item_test": getItem(request, callback);
       break;
 
-    case "order_status_change": changeOrderStatus(request, profiles, stat, callback);
+    case "order_status_change": changeOrderStatus(request, callback);
       break;
 
-    case "order_status_change_test": changeOrderStatus(request, profiles, stat, callback);
+    case "order_status_change_test": changeOrderStatus(request, callback);
       break;
     default : sendError(callback);
   }
@@ -71,13 +70,12 @@ module.exports = VK;
 
 function getItem(request, callback) {
   // Получение информации о товаре
-  //var f = constants.FIELDS;
 
-  var payInfo = request["item"].split("_");
+  let payInfo = request["item"].split("_");
 
-  var goodId = sanitize(payInfo[0]); // наименование товара
+  let goodId = sanitize(payInfo[0]); // наименование товара
 
-  var response = {};
+  let response = {};
   db.findGood(goodId, function (err, goodInfo) {
     if(err) {
       response["error"] = {
@@ -100,26 +98,27 @@ function getItem(request, callback) {
       };
     }
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     callback(null, resJSON);
   });
 }
 
-function changeOrderStatus(request, profiles, stat, callback) {
+function changeOrderStatus(request, callback) {
   // Изменение статуса заказа
-  var response = {};
+  let response = {};
 
   if (request["status"] == "chargeable") {
-    var orderId = request["order_id"];
+    let orderId = request["order_id"];
 
-    var payInfo = request["item"].split("_");
+    let payInfo = request["item"].split("_");
 
-    var options = {};
-    options[PF.VID]      = sanitize(request["user_id"]);
-    options[PF.ORDERVID] = orderId;
-    options[PF.GOODID]   = payInfo[0];
-    options[PF.PRICE]    = sanitize(request["item_price"]);
-
+    let options = {
+      [PF.VID]      : sanitize(request["user_id"]),
+      [PF.ORDERVID] : orderId,
+      [PF.GOODID]   : payInfo[0],
+      [PF.PRICE]    : sanitize(request["item_price"])
+    };
+    
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
         db.findGood(options[PF.GOODID], function (err, goodInfo) {
@@ -134,7 +133,7 @@ function changeOrderStatus(request, profiles, stat, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        db.findUser(null, options[PF.VID], [PF.MONEY], function(err, info) {
+        db.findUser(null, options[PF.VID], [PF.MONEY, PF.POINTS], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
@@ -144,18 +143,19 @@ function changeOrderStatus(request, profiles, stat, callback) {
       },/////////////////////////////////////////////////////////////////////
       function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        var newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
+        let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
         if(newMoney < 0 && goodInfo[PF.GOODTYPE] != constants.GT_MONEY) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
-        var ordOptions = {};
-        ordOptions[PF.ORDERVID]   = options[PF.ORDERVID];
-        ordOptions[PF.GOODID]     = goodInfo[PF.ID];
-        ordOptions[PF.ID]         = info[PF.ID];
-        ordOptions[PF.VID]        = info[PF.VID];
-        ordOptions[PF.SUM]        = goodInfo[PF.PRICE];
-        ordOptions[PF.DATE]       = new Date();
+        let ordOptions = {
+          [PF.ORDERVID] : options[PF.ORDERVID],
+          [PF.GOODID]   : goodInfo[PF.ID],
+          [PF.ID]       : info[PF.ID],
+          [PF.VID]      : info[PF.VID],
+          [PF.SUM]      : goodInfo[PF.PRICE],
+          [PF.DATE]     : new Date()
+        };
 
         db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
@@ -164,7 +164,7 @@ function changeOrderStatus(request, profiles, stat, callback) {
         });
       }, ///////////////////////////////////////////////////////////////////////////////
       function(goodInfo, selfInfo, orderid, cb) { // пополняем баланс, себе или другому пользователю
-        var options = {};
+        let options = {};
         options.from_id = selfInfo[PF.ID];
         options.from_vid = selfInfo[PF.VID];
 
@@ -185,54 +185,55 @@ function changeOrderStatus(request, profiles, stat, callback) {
                 
                 stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
                 
-                var field = getField(payInfo[0], false);
+                let field = getField(payInfo[0], false);
                 stat.setMainStat(field, 1);
                 
-                if(profiles[options[PF.ID]]) {
-                  var socket = profiles[options[PF.ID]].getSocket();
+                if(oPool.profiles[options[PF.ID]]) {
+                  let socket = oPool.profiles[options[PF.ID]].getSocket();
                   socket.emit(constants.IO_GIVE_MONEY, options);
 
-                  var roomList = oPool.roomList;
-                  var room = roomList[socket.id];
+                  let roomList = oPool.roomList;
+                  let room = roomList[socket.id];
                   if(room) {
                     socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
                   }
                 }
 
-                options = {};
-                options[PF.ID]     = selfInfo[PF.ID];
-                options[PF.VID]    = selfInfo[PF.VID];
-                options[PF.POINTS] = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
+                options = {
+                  [PF.ID]     : selfInfo[PF.ID],
+                  [PF.VID]    : selfInfo[PF.VID],
+                  [PF.POINTS] : selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS
+                };
+
+                
                 db.updateUser(options, function (err) {
                   if(err) { return cb(err, null); }
-  
-                  var result = {};
-                  result.orderid = orderid;
-                  cb(null, result);
+
+                  cb(null, { orderid : orderid });
                 });
                 
               });
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options[PF.ID]    = selfInfo[PF.ID];
-          options[PF.VID]   = selfInfo[PF.VID];
-          options[PF.MONEY] = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
-          options[PF.POINTS] = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
+          options[PF.ID]      = selfInfo[PF.ID];
+          options[PF.VID]     = selfInfo[PF.VID];
+          options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
+          options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
           db.updateUser(options, function(err) {
             if (err) { return cb(err, null); }
 
-            options.money = goodInfo[PF.PRICE2];
+            options[PF.MONEY] = goodInfo[PF.PRICE2];
 
-            if(profiles[options.id]) {
-              profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+            if(oPool.profiles[options.id]) {
+              oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
             }
             
-            var field = getField(payInfo[0], true);
+            let field = getField(payInfo[0], true);
             stat.setMainStat(field, 1);
 
-            var result = {};
+            let result = {};
             result.orderid = orderid;
             cb(null, result);
           });
@@ -252,7 +253,7 @@ function changeOrderStatus(request, profiles, stat, callback) {
         };
       }
 
-      var resJSON = JSON.stringify(response);
+      let resJSON = JSON.stringify(response);
       callback(null, resJSON);
     });
   } else {
@@ -262,15 +263,16 @@ function changeOrderStatus(request, profiles, stat, callback) {
       "critical": true
     };
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     callback(null, resJSON);
   }
 }
 
+//-------------------------------------
 function getField (goodID, isSelf) {
-  var SF = constants.SFIELDS;
-  var LOTS = constants.MONEY_LOTS;
-  var field;
+  let SF = constants.SFIELDS;
+  let LOTS = constants.MONEY_LOTS;
+  let field;
   
   switch (goodID) {
     case LOTS.COIN_1    : (isSelf)? field = SF.MONEY_1_TAKEN    : field = SF.MONEY_1_GIVEN;     break;
@@ -285,13 +287,13 @@ function getField (goodID, isSelf) {
 }
 
 function sendError(callback) {
-  var response = {};
+  let response = {};
   response["error"] = {
     "error_code": 100,
     "error_msg": "Не удалось распознать запрос",
     "critical": true
   };
 
-  var resJSON = JSON.stringify(response);
+  let resJSON = JSON.stringify(response);
   callback(null, resJSON);
 }

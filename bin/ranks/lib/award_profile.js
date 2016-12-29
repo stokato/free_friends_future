@@ -15,7 +15,7 @@ module.exports = function (rank, uid) {
   let bonusLimit    = Number(Config.ranks[rank].bonus_limit);
   let bonusTimeout  = Number(Config.ranks[rank].bonus_timeout);
   
-  this._bonuses[rank] ++;
+  this._rBonuses[rank] ++;
   
   // Выполняем обработчик - если есть
   if(this._onRankBonus[rank]) {
@@ -28,11 +28,11 @@ module.exports = function (rank, uid) {
   function startTimer(rm, rank, uid, limit, delay) {
     setTimeout(function () {
       // Если владелец сменился - ничего не делаем
-      if(rm._rankOwners[rank] != uid) { return; }
+      if(rm._rRankOwners[rank] != uid) { return; }
       
       // Начисляем бонус, если не превышен лимит
-      if(rm._bonuses[rank] < limit) {
-        rm._bonuses[rank] ++;
+      if(rm._rBonuses[rank] < limit) {
+        rm._rBonuses[rank] ++;
       }
       
       // Выполняем обработчик - если есть

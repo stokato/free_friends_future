@@ -4,18 +4,14 @@
  * Обрабатываем событие начисления монет
  */
 
-var constants = require('./../../../constants');
-
-var PF = constants.PFIELDS;
+const constants = require('./../../../constants');
+const PF = constants.PFIELDS;
 
 module.exports = function (profile, money) {
   
-  var socket = profile.getSocket();
+  let socket = profile.getSocket();
   
   if(socket) {
-    var res = {};
-    res[PF.MONEY] = money;
-    
-    socket.emit(constants.IO_GET_MONEY, res);
+    socket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
   }
 };

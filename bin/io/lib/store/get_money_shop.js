@@ -5,19 +5,17 @@
  *  @return {Object} - объект со списом лотов
  */
 
-var db        = require('./../../../db_manager'),
-    constants = require('./../../../constants');
+const constants = require('./../../../constants');
+const db        = require('./../../../db_manager');
+const emitRes   = require('./../../../emit_result');
 
-module.exports = function (socket, options, callback) {
+module.exports = function (socket, options) {
 
-    db.findAllGoods(constants.GT_MONEY, function (err, goods) {
-      if (err) {  return callback(err);  }
-      
-      var res = {};
-      res[constants.PFIELDS.LOTS] = goods;
-      
-      callback(null, res);
-    });
+  db.findAllGoods(constants.GT_MONEY, function (err, goods) {
+    if (err) {  return emitRes(err, socket, constants.IO_GET_MONEY_SHOP); }
+    
+    emitRes(null, socket, constants.IO_GET_MONEY_SHOP, { [constants.PFIELDS.LOTS] : goods });
+  });
 
 };
 

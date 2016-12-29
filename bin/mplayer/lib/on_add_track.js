@@ -4,16 +4,16 @@
  * @param socket, options - объект с ид трека (из вк), callback
  *
  */
-const Config        = require('./../../../../config.json');
-const constants  = require('./../../../constants'),
-    PF         = constants.PFIELDS,
-    oPool      = require('./../../../objects_pool');
 
-const startTrack = require('./start_track_timer');
-const emitRes = require('./../../../emit_result');
+const Config     = require('./../../../config.json');
+const constants  = require('./../../constants');
+const oPool      = require('./../../objects_pool');
 
-const TRACK_PRICE = Config.moneys.track_price;
+const emitRes = require('./../../emit_result');
+const sanitize = require('./../../sanitizer');
 
+const PF            = constants.PFIELDS;
+const TRACK_PRICE   = Number(Config.moneys.track_price);
 const WASTE_POINTS  = Number(Config.points.waste);
 const TRACK_POINTS  = Number(Config.points.music);
 const EMIT = constants.IO_ADD_TRECK;
@@ -22,22 +22,28 @@ module.exports = function () {
   let self = this;
   
   return function(socket, options) {
+    if(!PF.TRACKID in options || !PF.DURATION in options) {
+      return emitRes(constants.errors.NO_PARAMS, socket, EMIT);
+    }
+  
+    options[PF.TRACKID]  = sanitize(options[PF.TRACKID]);
+    options[PF.DURATION] = sanitize(options[PF.DURATION]);
   
     let selfProfile = oPool.userList[socket.id];
     let room = oPool.roomList[socket.id];
   
     // Оплачиваем трек
-    selfProfile.pay(TRACK_PRICE, function (err, money) {
+    selfProfile.pay(TRACK_PRICE, function (err) {
       if(err) { return emitRes(err, socket, EMIT); }
     
       let wpoints = Math.floor(WASTE_POINTS * TRACK_PRICE);
     
-      selfProfile.addPoints(wpoints, function (err, points) {
+      selfProfile.addPoints(wpoints, function (err) {
         if(err) { return emitRes(err, socket, EMIT); }
       
         let tpoints = Math.floor(TRACK_POINTS * TRACK_PRICE);
       
-        selfProfile.addPoints(tpoints, function (err, points) {
+        selfProfile.addPoints(tpoints, function (err) {
           if(err) { return emitRes(err, socket, EMIT); }
         
           let track = {
@@ -48,23 +54,19 @@ module.exports = function () {
             [PF.DISLIKES] : 0,
             [PF.DURATION] : options[PF.DURATION]
           };
-        
-          startTrack(socket, room, track);
           
-          if(self._track_list.length > 0){
-            self.deleteTrack(self._track_list[0][PF.TRACKID]);
+          self.startTrackTimer(socket, room, track);
+          
+          if(self._mTrackList.length > 0){
+            self.deleteTrack(self._mTrackList[0][PF.TRACKID]);
           }
-         
-          self._track_list.unshift(track);
-          self._likers[track.track_id]    = {};
-          self._dislikers[track.track_id] = {};
+          
+          self.addTrack(track, true);
         
           let ranks = oPool.roomList[socket.id].getRanks();
           ranks.addRankBall(constants.RANKS.DJ, selfProfile.getID());
         
-          res = {
-            [PF.TRACKLIST] : self._track_list
-          };
+          let res = { [PF.TRACKLIST] : self._mTrackList };
         
           socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
           socket.emit(constants.IO_GET_TRACK_LIST, res);

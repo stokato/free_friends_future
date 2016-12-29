@@ -9,12 +9,12 @@
  * Пердоставляет инструменты для доступа к ним и получения сведений
  */
 
-var constants = require('./../constants'),
+const constants = require('./../constants'),
     MusicPlayer = require('./../mplayer/index'),
     GameJS = require('./../game/index'),
     RankManager = require('./../ranks/index');
 
-var addProfile      = require('./lib/add_profile'),
+const addProfile      = require('./lib/add_profile'),
     deleteProfile   = require('./lib/delete_profile'),
     getUsersInfo    = require('./lib/common/get_users_info'),
     getInfo         = require('./lib/get_info'),
@@ -50,7 +50,7 @@ function Room(name, title)  {
   // Звания
   this._ranks = new RankManager();
   
-  for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
+  for(let i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
     this._girls_indexes.push(i);
     this._guys_indexes.push(i);
   }

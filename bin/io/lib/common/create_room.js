@@ -4,17 +4,14 @@
  * @return room
  */
 
-var constants = require('./../../../constants');
-var Room = require('./../../../room/index');
+const constants = require('./../../../constants');
 
-/*
- Создать новую комнату
- */
-var countRoom = 0;    // Счетчики комнат (сейчас нужен для генерации идентификатора окна)
+let  Room       = require('./../../../room/index');
+let  countRoom  = 0;    // Счетчики комнат (сейчас нужен для генерации идентификатора окна)
 
 module.exports = function () {
-  var name = "Room" + (++countRoom);
-  var title = "Комната № " + countRoom;
+  let  name   = "Room" + (++countRoom);
+  let  title  = "Комната № " + countRoom;
   
   return new Room(name, title);
 };

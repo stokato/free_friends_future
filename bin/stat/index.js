@@ -5,10 +5,10 @@
  *
  */
 
-var setMainStat = require('./lib/set_main_stat'),
-    getMainStat = require('./lib/get_main_stat'),
-    setUserStat = require('./lib/set_user_stat'),
-    getUserStat = require('./lib/get_user_stat');
+const setMainStat = require('./lib/set_main_stat'),
+      getMainStat = require('./lib/get_main_stat'),
+      setUserStat = require('./lib/set_user_stat'),
+      getUserStat = require('./lib/get_user_stat');
 
 function StatManager() {}
 

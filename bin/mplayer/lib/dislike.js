@@ -4,24 +4,25 @@
  * Добавляем дизлайк к треку, если ранее пользователь ставил лайк, снимаем его.
  * Запрещаем ставить еще один дизлайк
  *
- * @param uid - ид пользователя, ставящего дизлайк, tid - ид трека
+ * @param profile - профиль пользователя
+ * @param tid - ид пользователя, ставящего дизлайк, tid - ид трека
  * @return {boolean} - признак - поставлен дизлайк или нет
  */
 
 module.exports = function (profile, tid) {
-  var tl = this._track_list;
-  var uid = profile.getID();
+  let  tl = this._mTrackList;
+  let  uid = profile.getID();
   
-  for(var i = 0; i < tl.length; i++) {
+  for(let  i = 0; i < tl.length; i++) {
     
     if(tl[i].track_id == tid) {
-      if(!this._dislikers[tid][uid]) {
+      if(!this._mDislikers[tid][uid]) {
         tl[i].dislikes++;
-        this._dislikers[tid][uid] = { id : uid, vid : profile.getVID() };
+        this._mDislikers[tid][uid] = { id : uid, vid : profile.getVID() };
       }
       
-      if(this._likers[tid][uid]) {
-        delete this._likers[tid][uid];
+      if(this._mLikers[tid][uid]) {
+        delete this._mLikers[tid][uid];
         tl[i].likes--;
         if(tl[i].likes < 0) {
           tl[i].likes = 0;

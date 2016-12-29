@@ -14,10 +14,8 @@ module.exports = function () {
   return function (socket, options) {
   
     let activeRank = oPool.userList[socket.id].onGetActiveRank();
-  
-    let res = {
-      [constants.PFIELDS.RANK] : activeRank || null
-    };
+    
+    let res = { [constants.PFIELDS.RANK] : activeRank || null };
   
     emitRes(null, socket, constants.IO_GET_ACTIVE_RANK, res);
   }

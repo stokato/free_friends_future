@@ -3,12 +3,13 @@
  *
  * Проверяем аутентификацию
  */
-var md5 = require('md5');
+const  md5        = require('md5');
 
-var constants = require('./constants');
-var oPool = require('./objects_pool');
-var logger = require('./../lib/log')(module);
-var Config = require('./../config.json');
+const  logger     = require('./../lib/log')(module);
+const  Config     = require('./../config.json');
+const  constants  = require('./constants');
+const  oPool      = require('./objects_pool');
+
 
 module.exports = function (em, socket, options) {
   if(em == constants.IO_INIT) {
@@ -18,14 +19,14 @@ module.exports = function (em, socket, options) {
     } else if (em == constants.IO_INIT) {
       return compareAuthKey(options[constants.PFIELDS.VID]);
     } else {
-      var vid = oPool.userList[socket.id].getVID();
+      let  vid = oPool.userList[socket.id].getVID();
       return compareAuthKey(vid);
     }
   } else {
     return (socket.handshake.session.authorized == true);
   }
   
-  //--------------
+  //-------------------------------
   function compareAuthKey(vid) {
     if(options[constants.PFIELDS.AUTHKEY] === md5(Config.auth.APIID + "_" + vid + "_" + Config.auth.APISECRET)) {
       return true;

@@ -19,7 +19,7 @@ module.exports = function () {
     let selfProfile = oPool.userList[socket.id];
     let uid = selfProfile.getID();
   
-    if(!self._profiles[uid]) {
+    if(!self._rProfiles[uid]) {
       return null;
     }
   
@@ -33,13 +33,13 @@ module.exports = function () {
     
       let rankInfo = {};
     
-      rankInfo[PF.ISOWNER] = (self._rankOwners[rank] == uid);
+      rankInfo[PF.ISOWNER] = (self._rRankOwners[rank] == uid);
     
       if(!rankInfo[PF.ISOWNER]) {
-        rankInfo[PF.BALLS] = self._profiles[uid][rank];
+        rankInfo[PF.BALLS] = self._rProfiles[uid][rank];
       
-        if(self._rankOwners[rank]) {
-          rankInfo[PF.NEED_BALLS] = self._profiles[self._rankOwners[rank]][rank] + rankStep;
+        if(self._rRankOwners[rank]) {
+          rankInfo[PF.NEED_BALLS] = self._rProfiles[self._rRankOwners[rank]][rank] + rankStep;
         } else {
         
           let needBalls = rankStart;
@@ -53,7 +53,6 @@ module.exports = function () {
       }
     
       ranks[rank] = rankInfo;
-    
     }
   
     ranks[constants.PFIELDS.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;

@@ -4,15 +4,16 @@
  * Получаем общую статистику
  */
 
-var db = require('./../../db_manager');
-var constants = require('./../../constants');
-var SF = constants.SFIELDS;
-var PF = constants.PFIELDS;
+const db        = require('./../../db_manager');
+const constants = require('./../../constants');
+
+const SF        = constants.SFIELDS;
+const PF        = constants.PFIELDS;
 
 module.exports = function (callback) {
   
-  var id = 'main';
-  var fList = [
+  let  id = 'main';
+  let  fList = [
     SF.GIFTS_LOVES,
     SF.GIFTS_BREATH,
     SF.GIFTS_DRINKS,

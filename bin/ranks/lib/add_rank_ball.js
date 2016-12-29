@@ -8,29 +8,29 @@
 const Config = require('./../../../config.json');
 
 module.exports = function (rank, uid) {
-  if(!this._profiles[uid]) {
-    return this._onRank(new Error("No profile with such id"), null);
+  if(!this._rProfiles[uid]) {
+    return this.onNewRank(new Error("No profile with such id"), null);
   }
   
-  this._profiles[uid][rank]++;
+  this._rProfiles[uid][rank]++;
   
   let rankStart = Number(Config.ranks[rank].start);
-  let rankStep  = Number(Config.ranks[rank].step);;
+  let rankStep  = Number(Config.ranks[rank].step);
   
-  if(!this._rankOwners[rank]) {
-    if (this._profiles[uid][rank] >= rankStart) {
-      this._rankOwners[rank] = uid;
+  if(!this._rRankOwners[rank]) {
+    if (this._rProfiles[uid][rank] >= rankStart) {
+      this._rRankOwners[rank] = uid;
       
       this.onNewRank(null, rank, uid, null);
       this.awardProfile(rank, uid);
     }
   } else  {
-    let currOwnerID   = this._rankOwners[rank];
-    let currOwnerBall = this._profiles[currOwnerID][rank];
+    let currOwnerID   = this._rRankOwners[rank];
+    let currOwnerBall = this._rProfiles[currOwnerID][rank];
     
-    let dStep = this._profiles[uid][rank] - rankStep;
+    let dStep = this._rProfiles[uid][rank] - rankStep;
     if (dStep >= currOwnerBall) {
-      this._rankOwners[rank] = uid;
+      this._rRankOwners[rank] = uid;
   
       this.onNewRank(null, rank, uid, currOwnerID);
       this.awardProfile(rank, uid);

@@ -4,22 +4,24 @@
  * @param socket, options, callback
  *
  */
-var async = require('async');
+const async       = require('async');
 
-var Config = require('./../../../../config.json');
-var constants  = require('./../../../constants'),
-    PF         = constants.PFIELDS,
-    oPool      = require('./../../../objects_pool'),
-    stat       = require('./../../../stat_manager');
+const Config      = require('./../../../../config.json');
+const constants   = require('./../../../constants');
+const oPool       = require('./../../../objects_pool');
+const stat        = require('./../../../stat_manager');
 
-var MENU_BONUS = Number(Config.moneys.menu_bonus);
+const emitRes     = require('./../../../emit_result');
 
-module.exports = function(socket, options, callback) {
+const MENU_BONUS  = Number(Config.moneys.menu_bonus);
+const PF          = constants.PFIELDS;
+
+module.exports = function(socket, options) {
   
-  var selfProfile = oPool.userList[socket.id];
+  let selfProfile = oPool.userList[socket.id];
   
   if(selfProfile.isInMenu()) {
-    return callback(constants.errors.ALREADY_IS_MENU);
+    return emitRes(constants.errors.ALREADY_IS_MENU, socket, constants.IO_ADD_TO_MENU);
   }
   
   async.waterfall([ //-------------------------------------------------------------
@@ -46,7 +48,7 @@ module.exports = function(socket, options, callback) {
     },//---------------------------------------------------------------------------
     function(money, cb) { // Добавляем ему монет
       
-      var newMoney = money + MENU_BONUS;
+      let newMoney = money + MENU_BONUS;
       selfProfile.setMoney(newMoney, function (err, money) {
         if (err) { return cb(err, null); }
         
@@ -59,14 +61,13 @@ module.exports = function(socket, options, callback) {
       
     }//---------------------------------------------------------------------------
   ], function(err, money) { // Оповещаем об изменениях
-    if(err) {  return callback(err);  }
+    if(err) {  return emitRes(err, socket, constants.IO_ADD_TO_MENU);  }
     
-    var res = {};
-    res[PF.MONEY] = money;
-    
+    let res = { [PF.MONEY] : money };
+ 
     socket.emit(constants.IO_GET_MONEY, res);
     
-    callback(null, null);
+    emitRes(null, socket, constants.IO_ADD_TO_MENU);
   });
 };
 

@@ -39,7 +39,6 @@ module.exports = function(game) {
       for(var item in game._storedOptions) if(game._storedOptions.hasOwnProperty(item)) {
         var profInfo  = game._storedOptions[item];
         if(options[PF.PICK] == profInfo.id) {
-          stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BEST_SELECTED, 1);
           if(!profInfo.picks) {
             profInfo.picks = 1;
           } else {
@@ -79,7 +78,7 @@ module.exports = function(game) {
       stat.setMainStat(constants.SFIELDS.BEST_ACTIVITY, game.getActivityRating());
       
       // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
-      if(game._actionsCount == 0) {
+      if(game._actionsCount != game._actionsMain) {
   
         // Проверяем - кто выбран лучшим, начисляем ему очки
         var bestPlayer = { id: null, picks : 0 };
@@ -88,11 +87,17 @@ module.exports = function(game) {
           var profInfo = game._storedOptions[bestID];
           if(profInfo.picks > bestPlayer.picks) {
             bestPlayer.id = bestID;
+            bestPlayer.vid = profInfo.vid;
+            bestPlayer.picks = profInfo.picks;
+          } else if(profInfo.picks == bestPlayer.picks) {
+            bestPlayer.id = null;
+            bestPlayer.vid = null;
           }
         }
         
         if(bestPlayer.id) {
-          addPoints(bestID, BEST_POINTS, function (err) {
+          stat.setUserStat(bestPlayer.id, bestPlayer.vid, constants.SFIELDS.BEST_SELECTED, 1);
+          addPoints(bestPlayer.id, BEST_POINTS, function (err) {
             if(err) {
               var socket = game._room.getAnySocket();
               return handleError(socket, constants.IO_GAME, constants.G_BEST, err.message);

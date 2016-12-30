@@ -130,12 +130,12 @@ module.exports = function(game) {
             addPoints(player.getID(), CARD_POINTS, function (err, points) {
               if (err) {  cb(err, null); }
               
-              if(isOnline) {
-                var res = {};
-                res[constants.PFIELDS.POINTS] = points;
-  
-                player.getSocket().emit(constants.IO_ADD_POINTS, res);
-              }
+              // if(isOnline) {
+              //   var res = {};
+              //   res[constants.PFIELDS.POINTS] = points;
+              //
+              //   player.getSocket().emit(constants.IO_ADD_POINTS, res);
+              // }
   
               cb(null, player, money, isOnline);
             })

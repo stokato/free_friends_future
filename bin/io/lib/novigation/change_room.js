@@ -123,6 +123,8 @@ module.exports = function (socket, options) {
     // startTrack(socket, newRoom);
     newRoom.getMusicPlayer().startTrack(socket, newRoom);
     getLastMessages(socket, newRoom);
+    
+    newRoom.getRanks().emitAddBall(selfProfile.getID());
   });//-----------------------------------------------------------------------
   
   

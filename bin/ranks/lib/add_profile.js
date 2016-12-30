@@ -5,7 +5,7 @@
  */
 
 const constants = require('./../../constants');
-const ioc = require('./../../io_controller');
+// const ioc = require('./../../io_controller');
 
 module.exports = function (profile) {
   
@@ -16,9 +16,9 @@ module.exports = function (profile) {
     this._rProfiles[uid][constants.RANKS[item]] = 0;
   }
   
-  let socket = profile.getSocket();
-  ioc.setEmit(socket, constants.IO_GET_ACTIVE_RANK, this.onGetActiveRank());
-  ioc.setEmit(socket, constants.IO_GET_RANKS, this.onGetRanksOfProfile());
-  ioc.setEmit(socket, constants.IO_CHANGE_ACTIVE_RANK, this.onSetActiveRank());
+  // let socket = profile.getSocket();
+  // ioc.setEmit(socket, constants.IO_GET_ACTIVE_RANK, this.onGetActiveRank());
+  // ioc.setEmit(socket, constants.IO_GET_RANKS, this.onGetRanksOfProfile());
+  // ioc.setEmit(socket, constants.IO_CHANGE_ACTIVE_RANK, this.onSetActiveRank());
   
 };

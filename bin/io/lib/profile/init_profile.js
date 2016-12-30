@@ -19,7 +19,7 @@ const sendUsersInRoom     = require('./../common/send_users_in_room');
 const addEmits            = require('../common/add_emits');
 const emitAllRooms        = require('../common/emit_all_rooms');
 const sendPrivateChats    = require('../common/send_private_chats');
-const addProfileHandlers  = require('./../profile/add_pofile_hanlers');
+const addProfileHandlers  = require('./../handlers/add_pofile_hanlers');
 const emitRes             = require('./../../../emit_result');
 const calcNeedPoints      = require('./../common/calc_need_points');
 
@@ -73,8 +73,9 @@ module.exports = function (socket, options) {
         }
         
         socket.join(room.getName());
-  
-        // startTrack(socket, room);
+        
+        room.getMusicPlayer().addProfile(selfProfile);
+        room.getRanks().addEmits(selfProfile);
         
         cb(null, info, room, selfProfile);
       }
@@ -202,6 +203,7 @@ module.exports = function (socket, options) {
     // Запускаем трек
     let room = oPool.roomList[socket.id];
     room.getMusicPlayer().startTrack(socket, room);
+    room.getRanks().emitAddBall(info[PF.ID]);
   });
   
 };

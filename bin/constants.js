@@ -129,6 +129,7 @@ module.exports.IO_NEW_LEVEL           = 'new_level';
 module.exports.IO_GET_RANKS           = 'get_ranks';
 module.exports.IO_CHANGE_ACTIVE_RANK  = 'change_active_rank';
 module.exports.IO_GET_ACTIVE_RANK     = 'get_active_rank';
+module.exports.IO_ADD_BALLS           = 'add_balls';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -235,7 +236,7 @@ module.exports.PFIELDS = {
   NUMBER          : 'number',
   PRICE2          : 'price2',
   FSEX            : 'usex',
-  FBDATE           : 'ubdate',
+  FBDATE          : 'ubdate',
   INDEX           : 'index',
   ISFRIEND        : 'is_friend',
   
@@ -247,7 +248,7 @@ module.exports.PFIELDS = {
   AUTHKEY         : 'auth_key',
   TRACKID         : 'track_id',
   DURATION        : 'duration',
-  LIKES           : 'lickes',
+  LIKES           : 'likes',
   DISLIKES        : 'dislikes',
   TRACKLIST       : 'track_list',
   TRACK           : 'track',

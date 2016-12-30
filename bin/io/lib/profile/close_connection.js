@@ -23,88 +23,91 @@ module.exports = function (socket) {
     let selfProfile = oPool.userList[socket.id];
     if(!selfProfile) { return socket.disconnect(); }
     
-    selfProfile.setExitTimeout( setTimeout(function(socket) {
-      
-      let selfProfile = oPool.userList[socket.id];
-      
-      async.waterfall([//----------------------------------------------------------------
-        function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
-          
-          let info = {
-            [PF.ID]   : selfProfile.getID(),
-            [PF.VID]  : selfProfile.getVID()
-          };
-
-          
-          for(let r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
-            socket.broadcast.in(oPool.rooms[r].getName()).emit(constants.IO_OFFLINE, info);
-          }
-          
-          cb(null, null);
-        }, //----------------------------------------------------------------
-        function (res, cb) { // сохраняем профиль в базу
-          
-          selfProfile.save(function (err) {
-            if (err) {  return cb(err, null);  }
-            
-            cb(null, null);
-          });
-          
-        }, //----------------------------------------------------------------
-        function (res, cb) { // удалеяем профиль и сокет из памяти
-          delete oPool.userList[socket.id];
-          
-          let room = oPool.roomList[socket.id];
-          
-          if (room) {
-            room.deleteProfile(selfProfile);
-            
-            delete oPool.roomList[socket.id];
-            delete oPool.profiles[selfProfile.getID()];
-            
-            if (room.getCountInRoom(constants.GUY) == 0 && room.getCountInRoom(constants.GIRL) == 0) {
-              delete oPool.rooms[room.getName()];
-              room = null;
-            } else {
-              // checkTrack(room, selfProfile);
-              room.getMusicPlayer().checkTrack(room, selfProfile);
-            }
-            
-            // Статистика
-            let msInGame = new Date() - selfProfile.getInitTime();
-            stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GAME_TIME, msInGame);
-          }
-          cb(null, room);
-        },//----------------------------------------------------------------
-        function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
-          if(room) {
-            
-            let roomInfo = room.getInfo();
-            
-            sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
-              if(err) { return cb(err); }
-              
-              let params = {
+    selfProfile.setExitTimeout( setTimeout(
+      (function(socket) {
+        return function() {
+    
+          let selfProfile = oPool.userList[socket.id];
+    
+          async.waterfall([//----------------------------------------------------------------
+            function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
+        
+              let info = {
                 [PF.ID]   : selfProfile.getID(),
                 [PF.VID]  : selfProfile.getVID()
               };
-              
-              emitAllRooms(socket, constants.IO_OFFLINE, params);
-              
-              cb(null, null);
-            });
-            
-          } else {
-            cb(null, null);
-          }
-        }//----------------------------------------------------------------
-      ], function (err) {
-        if (err) { logger.error(constants.IO_DISCONNECT + err);  }
         
-        socket.disconnect(); // отключаемся
-      });
+        
+              for(let r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
+                socket.broadcast.in(oPool.rooms[r].getName()).emit(constants.IO_OFFLINE, info);
+              }
+        
+              cb(null, null);
+            }, //----------------------------------------------------------------
+            function (res, cb) { // сохраняем профиль в базу
+        
+              selfProfile.save(function (err) {
+                if (err) {  return cb(err, null);  }
+          
+                cb(null, null);
+              });
+        
+            }, //----------------------------------------------------------------
+            function (res, cb) { // удалеяем профиль и сокет из памяти
+              delete oPool.userList[socket.id];
+        
+              let room = oPool.roomList[socket.id];
+        
+              if (room) {
+                room.deleteProfile(selfProfile);
+          
+                delete oPool.roomList[socket.id];
+                delete oPool.profiles[selfProfile.getID()];
+          
+                if (room.getCountInRoom(constants.GUY) == 0 && room.getCountInRoom(constants.GIRL) == 0) {
+                  delete oPool.rooms[room.getName()];
+                  room = null;
+                } else {
+                  // checkTrack(room, selfProfile);
+                  room.getMusicPlayer().checkTrack(room, selfProfile);
+                }
+          
+                // Статистика
+                let msInGame = new Date() - selfProfile.getInitTime();
+                stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GAME_TIME, msInGame);
+              }
+              cb(null, room);
+            },//----------------------------------------------------------------
+            function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
+              if(room) {
+          
+                let roomInfo = room.getInfo();
+          
+                sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
+                  if(err) { return cb(err); }
+            
+                  let params = {
+                    [PF.ID]   : selfProfile.getID(),
+                    [PF.VID]  : selfProfile.getVID()
+                  };
+            
+                  emitAllRooms(socket, constants.IO_OFFLINE, params);
+            
+                  cb(null, null);
+                });
+          
+              } else {
+                cb(null, null);
+              }
+            }//----------------------------------------------------------------
+          ], function (err) {
+            if (err) { logger.error(constants.IO_DISCONNECT + err);  }
       
-    }, EXIT_TIMEOUT));
+            socket.disconnect(); // отключаемся
+          });
+    
+        }
+      })(socket), EXIT_TIMEOUT));
     
   });
 };

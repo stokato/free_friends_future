@@ -12,6 +12,7 @@ const oPool         = require('./objects_pool');
 const stat          = require('./stat_manager');
 
 const sanitize      = require('./sanitizer');
+const getUserProfile = require('./io/lib/common/get_user_profile');
 
 const PF            = constants.PFIELDS;
 const REFILL_POINTS = Number(Config.points.refill);
@@ -137,11 +138,15 @@ function changeOrderStatus(request, callback) {
           if(err) { return cb(err, null); }
 
           if (info) {
-            cb(null, goodInfo, info);
+            getUserProfile(info[PF.ID], function (err, profile) {
+              if(err) { return cb(err, null); }
+  
+              cb(null, goodInfo, info, profile);
+            });
           } else cb(new Error("Нет такого пользователя"), null);
         });
       },/////////////////////////////////////////////////////////////////////
-      function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
+      function(goodInfo, info, profile, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
         let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
         if(newMoney < 0 && goodInfo[PF.GOODTYPE] != constants.GT_MONEY) {
@@ -160,10 +165,10 @@ function changeOrderStatus(request, callback) {
         db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
 
-          cb(null, goodInfo, info, orderid);
+          cb(null, goodInfo, info, orderid, profile);
         });
       }, ///////////////////////////////////////////////////////////////////////////////
-      function(goodInfo, selfInfo, orderid, cb) { // пополняем баланс, себе или другому пользователю
+      function(goodInfo, selfInfo, orderid, profile, cb) { // пополняем баланс, себе или другому пользователю
         let options = {};
         options.from_id = selfInfo[PF.ID];
         options.from_vid = selfInfo[PF.VID];
@@ -173,70 +178,84 @@ function changeOrderStatus(request, callback) {
             if(err) { return cb(err, null); }
 
             if (info) {
-
-              options[PF.ID]    = info[PF.ID];
-              options[PF.VID]   = info[PF.VID];
-              options[PF.MONEY] = info[PF.MONEY] + goodInfo[PF.PRICE2];
-
-              db.updateUser(options, function(err, id) {
-                if (err) { return cb(err, null); }
-
-                options[PF.MONEY] = goodInfo[PF.PRICE2];
+              getUserProfile(info[PF.ID], function (err, friendProfile) {
+                if(err) { return cb(err, null); }
                 
-                stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
-                
-                let field = getField(payInfo[0], false);
-                stat.setMainStat(field, 1);
-                
-                if(oPool.profiles[options[PF.ID]]) {
-                  let socket = oPool.profiles[options[PF.ID]].getSocket();
-                  socket.emit(constants.IO_GIVE_MONEY, options);
-
-                  let roomList = oPool.roomList;
-                  let room = roomList[socket.id];
-                  if(room) {
-                    socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
-                  }
-                }
-
-                options = {
-                  [PF.ID]     : selfInfo[PF.ID],
-                  [PF.VID]    : selfInfo[PF.VID],
-                  [PF.POINTS] : selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS
-                };
-
-                
-                db.updateUser(options, function (err) {
+                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
                   if(err) { return cb(err, null); }
-
-                  cb(null, { orderid : orderid });
-                });
-                
+                  
+                  let friendSocket = friendProfile.getSocket();
+                  if(friendSocket) {
+                    friendSocket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money })
+                  }
+  
+                  options[PF.ID] = friendProfile.getID();
+                  options[PF.VID] = friendProfile.getVID();
+                  options[PF.MONEY] = goodInfo[PF.PRICE2];
+  
+                  stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
+  
+                  let field = getField(payInfo[0], false);
+                  stat.setMainStat(field, 1);
+  
+                  let socket = profile.getSocket();
+                  if(socket) {
+                    socket.emit(constants.IO_GIVE_MONEY, options);
+  
+                    let roomList = oPool.roomList;
+                    let room = roomList[socket.id];
+                    if(room) {
+                      socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
+                    }
+                  }
+                  
+                  let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+                  profile.addPoints(newPoints, function (err) {
+                    if(err) { return cb(err, null); }
+  
+                    cb(null, { orderid : orderid });
+                  });
+                })
               });
+              
+              
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
           options[PF.ID]      = selfInfo[PF.ID];
           options[PF.VID]     = selfInfo[PF.VID];
-          options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
-          options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
+          // options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
+          // options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
-          db.updateUser(options, function(err) {
+          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
             if (err) { return cb(err, null); }
-
-            options[PF.MONEY] = goodInfo[PF.PRICE2];
-
-            if(oPool.profiles[options.id]) {
-              oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+            
+            let socket = profile.getSocket();
+            if(socket) {
+              socket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
             }
             
-            let field = getField(payInfo[0], true);
-            stat.setMainStat(field, 1);
-
-            let result = {};
-            result.orderid = orderid;
-            cb(null, result);
+            let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+            
+            profile.addPoints(newPoints, function (err, points) {
+              if (err) { return cb(err, null); }
+  
+              options[PF.MONEY] = goodInfo[PF.PRICE2];
+  
+              if(oPool.profiles[options.id]) {
+                oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+              }
+  
+              let field = getField(payInfo[0], true);
+              stat.setMainStat(field, 1);
+  
+              let result = {};
+              result.orderid = orderid;
+              cb(null, result);
+            });
+            
           });
+          
         }
       } //////////////////////////////////////////////////////////////////////////////////
     ], function(err, res) { // Обрабатываем ошибки и возвращаем результат

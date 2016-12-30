@@ -50,6 +50,7 @@ module.exports = function () {
           }
         
         }
+        rankInfo[PF.PROGRESS] = Math.floor(rankInfo[PF.BALLS] / rankInfo[PF.NEED_BALLS] * 100);
       }
     
       ranks[rank] = rankInfo;

@@ -37,4 +37,6 @@ module.exports = function (rank, uid) {
     }
   }
   
+  this.emitAddBall(uid);
+  
 };

@@ -5,15 +5,15 @@
  */
 
 const constants = require('./../../constants');
-const ioc = require('./../../io_controller');
+// const ioc = require('./../../io_controller');
 
 module.exports = function (profile) {
   let uid = profile.getID();
   let socket = profile.getSocket();
   
-  ioc.removeEmit(socket, constants.IO_GET_ACTIVE_RANK);
-  ioc.removeEmit(socket, constants.IO_GET_RANKS);
-  ioc.removeEmit(socket, constants.IO_CHANGE_ACTIVE_RANK);
+  // ioc.removeEmit(socket, constants.IO_GET_ACTIVE_RANK);
+  // ioc.removeEmit(socket, constants.IO_GET_RANKS);
+  // ioc.removeEmit(socket, constants.IO_CHANGE_ACTIVE_RANK);
   
   delete this._rProfiles[uid];
   

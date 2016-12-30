@@ -113,7 +113,7 @@ Game.prototype.setActionLimit         = setActionLimit;
 Game.prototype.activateAllPlayers     = activateAllPlayers;
 Game.prototype.startTimer             = startTimer;
 Game.prototype.getNextPlayer          = getNextPlayer;
-Game.prototype.addEmits               = addEmits;
+Game.prototype.addProfile               = addEmits;
 Game.prototype.getActivityRating      = getActivityRating;
 
 // Получаем вопросы

@@ -13,12 +13,13 @@ const addProfile        = require('./lib/add_profile'),
     onGetRanksOfProfile = require('./lib/on_get_ranks_of_profile'),
     awardProfile        = require('./lib/award_profile'),
     takeBonus           = require('./lib/take_bonus'),
-    emitAddBall           = require('./lib/emit_add_ball'),
+    emitAddBall         = require('./lib/emit_add_ball'),
     onPopularBonus      = require('./lib/on_popular_bonus'),
     onNewRank           = require('./lib/on_new_rank'),
     onGetActiveRank     = require('./lib/on_get_active_rank'),
     onSetActiveRank     = require('./lib/on_set_active_rank'),
-    addEmits            = require('./lib/add_emits');
+    addEmits            = require('./lib/add_emits'),
+    deleteEmits         = require('./lib/delete_emits');
 
 function RanksManager() {
   // Обладатели званий
@@ -54,5 +55,6 @@ RanksManager.prototype.onGetActiveRank      = onGetActiveRank;
 RanksManager.prototype.onSetActiveRank      = onSetActiveRank;
 RanksManager.prototype.emitAddBall          = emitAddBall;
 RanksManager.prototype.addEmits             = addEmits;
+RanksManager.prototype.deleteEmits          = deleteEmits;
 
 module.exports = RanksManager;

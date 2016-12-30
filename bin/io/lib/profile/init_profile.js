@@ -74,8 +74,8 @@ module.exports = function (socket, options) {
         
         socket.join(room.getName());
         
-        room.getMusicPlayer().addProfile(selfProfile);
-        room.getRanks().addEmits(selfProfile);
+        room.getMusicPlayer().addEmits(socket);
+        room.getRanks().addEmits(socket);
         
         cb(null, info, room, selfProfile);
       }
@@ -173,7 +173,7 @@ module.exports = function (socket, options) {
   
       // Запускаем игру
       let game = room.getGame();
-      game.addEmits(socket);
+      game.addProfile(socket);
       game.start(socket);
       
       addEmits(socket);

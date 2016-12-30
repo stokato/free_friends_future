@@ -66,7 +66,10 @@ module.exports = function (socket, options) {
     return emitRes(constants.errors.NO_SUCH_ROOM, socket, constants.IO_CHANGE_ROOM);
   }
   
+  currRoom.getRanks().deleteEmits(socket);
+  currRoom.getMusicPlayer().deleteEmits(socket);
   currRoom.deleteProfile(selfProfile);
+  
   
   // Удаляем комнату, если она опустела
   let  isCurrRoom = true;
@@ -78,6 +81,8 @@ module.exports = function (socket, options) {
   }
   
   newRoom.addProfile(selfProfile);
+  newRoom.getMusicPlayer().addEmits(socket);
+  newRoom.getRanks().addEmits(socket);
   
   oPool.roomList[socket.id] = newRoom;
   

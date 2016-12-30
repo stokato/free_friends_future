@@ -12,7 +12,8 @@ const constants = require('./../../constants'),
 module.exports = function (profile) {
   
   this._ranks.addProfile(profile);
-  this._mplayer.addProfile(profile);
+  // this._ranks.addEmits(profile.getSocket());
+  // this._mplayer.addEmits(profile.getSocket());
   
   let sex = profile.getSex();
   if(sex == constants.GUY) {

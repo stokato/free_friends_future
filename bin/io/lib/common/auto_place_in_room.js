@@ -52,6 +52,8 @@ module.exports = function (socket,  callback) {
   }
   
   newRoom.addProfile(selfProfile);
+  newRoom.getRanks().addEmits(socket);
+  newRoom.getMusicPlayer().addEmits(socket);
   
   selfProfile.setGame(newRoom.getGame());
   oPool.roomList[socket.id] = newRoom;

@@ -22,8 +22,8 @@ const addTrack              = require('./lib/add_track'),
       onGetLikersDislikers  = require('./lib/on_get_likers_dislikers'),
       onGetTrackList        = require('./lib/on_get_track_list'),
       onLikeTrack           = require('./lib/on_like_track'),
-      addProfile            = require('./lib/add_profile'),
-      deleteProfile         = require('./lib/delete_profile');
+      addEmits            = require('./lib/add_emits'),
+      deleteEmits         = require('./lib/delete_emits');
 
 function MusicPlayer() {
   
@@ -55,8 +55,8 @@ MusicPlayer.prototype.getDislikes       = getDislikes;
 MusicPlayer.prototype.checkTrack        = checkTrack;
 MusicPlayer.prototype.startTrack        = startTrack;
 MusicPlayer.prototype.startTrackTimer   = startTrackTimer;
-MusicPlayer.prototype.addProfile        = addProfile;
-MusicPlayer.prototype.deleteProfile     = deleteProfile;
+MusicPlayer.prototype.addEmits          = addEmits;
+MusicPlayer.prototype.deleteEmits       = deleteEmits;
 
 MusicPlayer.prototype.onAddTrack            = onAddTrack;
 MusicPlayer.prototype.onAddTrackFree        = onAddTrackFree;

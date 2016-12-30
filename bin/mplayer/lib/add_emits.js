@@ -7,9 +7,8 @@
 const constants = require('./../../constants');
 const ioc = require('./../../io_controller');
 
-module.exports = function (profile) {
+module.exports = function (socket) {
   
-  let socket = profile.getSocket();
   ioc.setEmit(socket, constants.IO_ADD_TRECK, this.onAddTrack());
   ioc.setEmit(socket, constants.IO_ADD_TRECK_FREE, this.onAddTrackFree());
   ioc.setEmit(socket, constants.IO_GET_FREE_TRACK_STATE, this.onGetFreeTrackState());

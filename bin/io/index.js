@@ -12,11 +12,14 @@
 var socketio  = require('socket.io');
 var ios       = require('socket.io-express-session');
 var ioClient  = require('socket.io-client');
-var emitInit  = require('./lib/emits/emit_init');
+var initProfile = require('./lib/profile/init_profile');
 var session   = require('./../../lib/session');
 //var checkSession = require('./checkSession');
 
 var oPool     = require('./../objects_pool');
+var stat      = require('./../stat_manager');
+var constants = require('./../constants');
+var ioc = require('./../io_controller');
 
 var io = null;                                      // Сокет
 
@@ -33,8 +36,8 @@ module.exports.listen = function(server, callback) {
   //io.use(checkSession);
 
   io.sockets.on('connection', function (socket) {
-
-    emitInit(socket);
+    
+    ioc.setEmit(socket, constants.IO_INIT, initProfile);
     
   });
   
@@ -43,8 +46,8 @@ module.exports.listen = function(server, callback) {
     //////////// Боты  60575188, 38068582, 10265088        // 8006539, 2537182
     var bots1 = [];
     var bots2 = [];
-    var room1 = [28922, 46733, 3134205, 178755875,  19581362];
-    var room2 = [60575188, 38068582, 10265088, 8006539, 2537182];
+    var room1 = [14179168, 202855663, 138702971, 138288707,  369865764];
+    var room2 = [8729179, 2067815, 20393197, 269720831, 26052562];
     var males1 = [1, 1, 2, 2, 1];
     var males2 = [1, 1, 1, 2, 2];
     var countries = [1, 2, 3, 4, 9];
@@ -320,7 +323,7 @@ module.exports.listen = function(server, callback) {
     ////////////
   });//();
   
-  callback(null, oPool.profiles);
+  callback(null, oPool.profiles, stat);
 };
 
 

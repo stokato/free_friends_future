@@ -4,12 +4,17 @@
  * Добавляем трек в трек-лист
  *
  * @param track
+ * @param first
  */
 
-module.exports = function (track) {
+module.exports = function (track, first = false) {
   
-  this._track_list.push(track);
+  if(!first) {
+    this._mTrackList.push(track);
+  } else {
+    this._mTrackList.unshift(track);
+  }
   
-  this._likers[track.track_id]    = {};
-  this._dislikers[track.track_id] = {};
+  this._mLikers[track.track_id]    = {};
+  this._mDislikers[track.track_id] = {};
 };

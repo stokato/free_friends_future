@@ -6,13 +6,20 @@
 
 var async = require('async');
 
+var Config        = require('./../../../../config.json');
 var constants     = require('../../../constants'),
     PF            = constants.PFIELDS,
     addAction     = require('./../common/add_action'),
     GameError     = require('./../common/game_error'),
     ProfileJS     = require('../../../profile/index'),
     handleError   = require('../common/handle_error'),
-    oPool         = require('./../../../objects_pool');
+    oPool         = require('./../../../objects_pool'),
+    stat          = require('./../../../stat_manager'),
+    addPoints     = require('./../common/add_points');
+
+var CARD_COUNT = Number(Config.game.card_count);
+var CARD_BONUS = Number(Config.moneys.card_bonus);
+var CARD_POINTS = Number(Config.points.game.gold);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
@@ -40,10 +47,10 @@ module.exports = function(game) {
       }
 
       // Готовим сведения о выборе игорков и отбираем победителей
-      var gold    = Math.floor(Math.random() * constants.CARD_COUNT);
+      var gold    = Math.floor(Math.random() * CARD_COUNT);
       var winners = [];
       var count   = 0;
-      var bonus   = constants.CARD_BOUNUS;
+      var bonus   = CARD_BONUS;
 
       var result = {};
       result[PF.PICKS]  = [];
@@ -68,6 +75,8 @@ module.exports = function(game) {
           }
         }
       }
+      
+      stat.setMainStat(constants.SFIELDS.CARDS_ACTIVITY, game.getActivityRating());
 
       // Если есть победители, делим награду поровну и добавляем всем монеты
       if(winners.length > 0) {
@@ -108,17 +117,34 @@ module.exports = function(game) {
           function(player, newMoney, isOnline, cb) { // Добавляем монет
             player.setMoney(newMoney, function (err, money) {
               if (err) {  cb(err, null); }
+              
+              // Статистика
+              stat.setUserStat(player.getID(), player.getVID(), constants.SFIELDS.COINS_EARNED, bonus);
+              stat.setMainStat(constants.SFIELDS.COINS_EARNED, bonus);
 
               cb(null, player, money, isOnline);
             });
 
-          }//-------------------------------------------------------
+          },//-------------------------------------------------------
+          function (player, money, isOnline, cb) {
+            addPoints(player.getID(), CARD_POINTS, function (err, points) {
+              if (err) {  cb(err, null); }
+              
+              // if(isOnline) {
+              //   var res = {};
+              //   res[constants.PFIELDS.POINTS] = points;
+              //
+              //   player.getSocket().emit(constants.IO_ADD_POINTS, res);
+              // }
+  
+              cb(null, player, money, isOnline);
+            })
+          } //----------------------------------------------------------
         ], function(err, player, money, isOnline) { // Оповещаем об изменениях
           if(err) { return new GameError(constants.G_CARDS, err.message);
             
             if(isOnline) {
-              handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);
-            }
+              handleError(player.getSocket(), constants.IO_GAME_ERROR, constants.G_CARDS, err);}
             return;
           }
 
@@ -126,8 +152,12 @@ module.exports = function(game) {
           if(isOnline) {
             var res = {};
             res[PF.MONEY] = money;
-            
             player.getSocket().emit(constants.IO_GET_MONEY, res);
+  
+            // Возможно достижение нужного количества баллов несколькими игроками
+            var ranks = game._room.getRanks();
+            ranks.addRankBall(constants.RANKS.LUCKY, player.getID());
+  
           }
 
           // Повторяем для всех пользователей

@@ -2,12 +2,21 @@
  * Отправляем пользователю последние сообщения общего чата
  */
 
-var sendOne = require('./send_one');
+
+const  oPool    = require('./../../../objects_pool');
+const  sendOne  = require('./send_one');
+const  PF       = require('./../../../constants').PFIELDS;
 
 module.exports = function (socket, room) {
-  var messages = room.getMessages();
-
-  for(var i = 0; i < messages.length; i++) {
-    sendOne(socket, messages[i]);
+  let  messages = room.getMessages();
+  
+  let  selfProfile = oPool.userList[socket.id];
+  
+  // Проверяем, если отправитель сообщения не в черном списке этого пользователя
+  // Отправляем ему сообщение
+  for(let  i = 0; i < messages.length; i++) {
+    if(!selfProfile.isInBlackList(messages[i][PF.ID])) {
+      sendOne(socket, messages[i]);
+    }
   }
 };

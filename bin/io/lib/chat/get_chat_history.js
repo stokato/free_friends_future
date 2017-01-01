@@ -4,14 +4,30 @@
  * @param socket, options - обект с ид пользователя, чат с которым нужно поулучить и временной период
  */
 
-var async           = require('async');
+const async             = require('async');
+const validator         = require('validator');
 
-var constants       = require('./../../../constants'),
-  getUserProfile    = require('./../common/get_user_profile'),
-  sendOne           = require('./../common/send_one'),
-  oPool             = require('./../../../objects_pool');
+const constants         = require('./../../../constants');
+const oPool             = require('./../../../objects_pool');
 
-module.exports = function(socket, options, callback) {
+const  getUserProfile   = require('./../common/get_user_profile');
+const  sendOne          = require('./../common/send_one');
+const emitRes           = require('./../../../emit_result');
+const checkID           = require('./../../../check_id');
+const sanitize          = require('./../../../sanitizer');
+
+const PF = constants.PFIELDS;
+
+
+module.exports = function(socket, options) {
+  if(!checkID(options[PF.ID]) ||
+      !validator.isDate(options[PF.DATE_FROM] + "") ||
+      !validator.isDate(options[PF.DATE_TO] + "")) {
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_CHAT_HISTORY);
+  }
+  
+  options[constants.PFIELDS.ID] = sanitize(options[constants.PFIELDS.ID]);
+  
   
   async.waterfall([ //-----------------------------------------------------
     function(cb) { // Получаем профиль
@@ -20,7 +36,7 @@ module.exports = function(socket, options, callback) {
       
     }, //------------------------------------------------------------------
     function(friendProfile, cb) { // Получаем историю и отправляем отдельными сообщениями
-      var selfProfile = oPool.userList[socket.id];
+      let selfProfile = oPool.userList[socket.id];
       
       if(selfProfile.getID() == options[constants.PFIELDS.ID]) {
         return cb(constants.errors.SELF_ILLEGAL);
@@ -28,7 +44,7 @@ module.exports = function(socket, options, callback) {
       
       if(selfProfile.isPrivateChat(friendProfile.getID())) {
         
-        var id        = options[constants.PFIELDS.ID],
+        let id        = options[constants.PFIELDS.ID],
             dateFrom  = options[constants.PFIELDS.DATE_FROM],
             dateTo    = options[constants.PFIELDS.DATE_TO];
         
@@ -37,7 +53,7 @@ module.exports = function(socket, options, callback) {
           
           history = history || [];
           
-          for(var i = 0; i < history.length; i++) {
+          for(let i = 0; i < history.length; i++) {
             sendOne(socket, history[i]);
           }
         });
@@ -47,9 +63,9 @@ module.exports = function(socket, options, callback) {
       }
     } //------------------------------------------------------------------------
   ], function(err, res) {
-    if (err) { return callback(err); }
+    if (err) { return  emitRes(err, socket, constants.IO_GET_CHAT_HISTORY); }
     
-    callback(null, null);
+    emitRes(null, socket, constants.IO_GET_CHAT_HISTORY, null);
   });
   
 };

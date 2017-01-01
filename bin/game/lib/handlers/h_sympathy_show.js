@@ -4,6 +4,10 @@ var addAction = require('./../common/add_action');
 var oPool = require('./../../../objects_pool');
 var GameError = require('./../common/game_error');
 var handleError = require('../common/handle_error');
+var Config        = require('./../../../../config.json');
+
+var SYMPATHY_PRICE = Number(Config.moneys.sympathy_price);
+var WASTE_POINTS  = Number(Config.points.waste);
 
 // Показываем желающим выбор указанного ими игрока
 module.exports = function(game) {
@@ -38,16 +42,25 @@ module.exports = function(game) {
       addAction(game, uid, options);
       
       // Если обработчик вызван игроком а не таймером
-      selfProfile.pay(constants.SYMPATHY_PRICE, function (err, money) {
+      selfProfile.pay(SYMPATHY_PRICE, function (err, money) {
         if(err) { return onError(err, selfProfile);  }
         
-        var res = {};
-        res[PF.MONEY] = money;
+        // var res = {};
+        // res[PF.MONEY] = money;
+        //
+        // var socket = selfProfile.getSocket();
+        // socket.emit(constants.IO_GET_MONEY, res);
         
-        var socket = selfProfile.getSocket();
-        socket.emit(constants.IO_GET_MONEY, res);
-        
-        onPick();
+        selfProfile.addPoints(WASTE_POINTS * SYMPATHY_PRICE, function (err, points) {
+          if(err) { return onError(err, selfProfile);  }
+  
+          // var res = {};
+          // res[constants.PFIELDS.POINTS] = points;
+          //
+          // socket.emit(constants.IO_ADD_POINTS, res);
+          
+          onPick();
+        });
       });
     }
     

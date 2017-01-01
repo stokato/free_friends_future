@@ -7,10 +7,10 @@
  *  @return players - список пользователей
  */
 
-var constants = require('./../../constants');
+const constants = require('./../../constants');
 
 module.exports = function (sex) { sex = sex || null;
-  var players = [], index;
+  let players = [], index;
   
   if(!sex || sex == constants.GUY) {
     for(index in this._guys) if(this._guys.hasOwnProperty(index)){

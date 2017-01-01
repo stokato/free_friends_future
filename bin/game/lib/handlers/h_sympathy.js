@@ -4,7 +4,12 @@ var addAction = require('./../common/add_action');
 var oPool = require('./../../../objects_pool');
 var handleError     = require('./../common/handle_error');
 var addPoints = require('./../common/add_points');
-var GameError = require('./../common/game_error');
+var GameError = require('./../common/game_error'),
+    stat = require('./../../../stat_manager');
+
+var Config        = require('./../../../../config.json');
+var MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
+var SYMPATHY_TIMEOUT = Number(Config.game.timeouts.sympathy_show);
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
@@ -48,6 +53,8 @@ module.exports = function(game) {
         return game.stop();
       }
       
+      stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
+      
       var players = [], count = 0;
       
       for(var selfID in game._actionsQueue) if (game._actionsQueue.hasOwnProperty(selfID)) {
@@ -69,7 +76,7 @@ module.exports = function(game) {
       }
       
       if(players.length > 0) {
-        addPoints(players[count], constants.SYMPATHY_POINTS, onComplete);
+        addPoints(players[count], MUTUAL_SYMPATHY_BONUS, onComplete);
       }
 
       game._nextGame = constants.G_SYMPATHY_SHOW;
@@ -110,7 +117,7 @@ module.exports = function(game) {
       game._gameState = result;
 
       // Устанавливаем таймер
-      game.startTimer(game._handlers[game._nextGame], constants.TIMEOUT_SYMPATHY_SHOW);
+      game.startTimer(game._handlers[game._nextGame], SYMPATHY_TIMEOUT);
     }
     
     //---------------------
@@ -119,7 +126,7 @@ module.exports = function(game) {
     
       count++;
       if(count < players.length) {
-        addPoints(players[count], constants.SYMPATHY_POINTS, onComplete);
+        addPoints(players[count], MUTUAL_SYMPATHY_BONUS, onComplete);
       }
     }
   }

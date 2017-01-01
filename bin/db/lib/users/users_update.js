@@ -22,7 +22,7 @@ module.exports = function(options, callback) { options = options || {};
 
   var params = [];
   params.push(options[PF.VID]);
-  if (PF.BDATE in options)          { fields.push(DBF.BDATE_timestamp);    params.push(options[PF.AGE]); }
+  if (PF.BDATE in options)         { fields.push(DBF.BDATE_timestamp);   params.push(options[PF.AGE]); }
   if (PF.COUNTRY in options)       { fields.push(DBF.COUNTRY_int);       params.push(options[PF.COUNTRY]); }
   if (PF.CITY in options)          { fields.push(DBF.CITY_int);          params.push(options[PF.CITY]); }
   if (PF.STATUS in options)        { fields.push(DBF.STATUS_varchar);    params.push(options[PF.STATUS]); }
@@ -31,6 +31,10 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.POINTS in options)        { fields.push(DBF.POINTS_int);        params.push(options[PF.POINTS]); }
   if (PF.ISMENU in options)        { fields.push(DBF.ISMENU_boolean);    params.push(options[PF.ISMENU]); }
   if (PF.GIFT1 in options)         { fields.push(DBF.GIFT1_uuid);        params.push(options[PF.GIFT1]); }
+  if (PF.LEVEL in options)         { fields.push(DBF.LEVEL_int);         params.push(options[PF.LEVEL]); }
+  if (PF.FREE_GIFTS in options)    { fields.push(DBF.FREE_GIFTS_int);    params.push(options[PF.FREE_GIFTS]); }
+  if (PF.FREE_TRACKS in options)   { fields.push(DBF.FREE_TRACKS);       params.push(options[PF.FREE_TRACKS]); }
+  if (PF.VIP in options)           { fields.push(DBF.VIP_boolean);       params.push(options[PF.VIP]); }
 
   var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
 

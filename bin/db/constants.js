@@ -78,7 +78,11 @@ module.exports.DB = {
       SEX_int         : 'sex',
       POINTS_int      : 'points',
       GIFT1_uuid      : 'gift1',
-      ISMENU_boolean  : 'ismenu'
+      ISMENU_boolean  : 'ismenu',
+      LEVEL_int       : 'ulevel',
+      FREE_GIFTS_int  : 'free_gifts',
+      FREE_MUSIC_int  : 'free_music',
+      VIP_boolean     : 'vip'
     }
   },
   
@@ -330,7 +334,10 @@ module.exports.DB = {
     name      : 'questions',
     fields    : {
       ID_uuid_p     : 'id',
-      TEXT_varchar  : 'text'
+      TEXT_varchar  : 'text',
+      IMAGE1_varchar : 'image1',
+      IMAGE2_varchar : 'image2',
+      IMAGE3_varchar : 'image3'
     }
   },
   
@@ -405,5 +412,79 @@ module.exports.DB = {
       BLOCKEDVID_varchar    : 'blockedvid',
       DATE_timestamp        : 'date'
     }
+  },
+  
+  USERS_STAT : {
+    name   : 'users_stat',
+    fields : {
+      ID_uuid_pc1i                 : 'id',
+      VID_varchar_pc2i             : 'vid',
+      C_GIFTS_GIVEN_counter        : 'count_gifts_given',
+      C_GIFTS_TAKEN_counter        : 'count_gifts_taken',
+      C_COINS_GIVEN_counter        : 'count_coins_given',
+      C_COINS_EARNED_counter       : 'count_coins_earned',
+      C_COINS_SPENT_counter        : 'count_coins_spent',
+      C_BOTTLE_KISSED_counter      : 'count_bottle_kissed',
+      C_BEST_SELECTED_counter      : 'count_best_selected',
+      C_RANK_GIVEN_counter         : 'count_rank_given',
+      C_GAME_TIME_MS_counter       : 'count_game_time_ms'
+    }
+  },
+  
+  MAIN_STAT : {
+    name   : 'main_stat',
+    fields : {
+      ID_varchar_p                  : 'id',
+      C_GIFTS_LOVES_counter         : 'count_gifts_loves',
+      C_GIFTS_BREATH_counter        : 'count_gifts_breath',
+      C_GIFTS_FLOWERS_counter       : 'count_gifts_flowers',
+      C_GIFTS_DRINKS_counter        : 'count_gifts_drinks',
+      C_GIFTS_COMMON_counter        : 'count_gifts_common',
+      C_GIFTS_FLIRTATION_counter    : 'count_gifts_flirtation',
+      C_GIFTS_MERRY_counter         : 'count_gifts_merry',
+      C_MONEY_1_GIVEN_counter       : 'count_money_1_given',
+      C_MONEY_3_GIVEN_counter       : 'count_money_3_given',
+      C_MONEY_10_GIVEN_counter      : 'count_money_10_given',
+      C_MONEY_20_GIVEN_counter      : 'count_money_20_given',
+      C_MONEY_60_GIVEN_counter      : 'count_money_60_given',
+      C_MONEY_200_GIVEN_counter     : 'count_money_200_given',
+      C_MONEY_1_TAKEN_counter       : 'count_money_1_taken',
+      C_MONEY_3_TAKEN_counter       : 'count_money_3_taken',
+      C_MONEY_10_TAKEN_counter      : 'count_money_10_taken',
+      C_MONEY_20_TAKEN_counter      : 'count_money_20_taken',
+      C_MONEY_60_TAKEN_counter      : 'count_money_60_taken',
+      C_MONEY_200_TAKEN_counter     : 'count_money_200_taken',
+      C_MENU_APPEND_counter         : 'count_menu_append',
+      C_BEST_ACTIVITY_counter       : 'count_best_activity',
+      C_BOTTLE_ACTIVITY_counter     : 'count_bottle_activity',
+      C_CARDS_ACTIVITY_counter      : 'count_cards_activity',
+      C_QUESTION_ACITVITY_counter   : 'count_question_activity',
+      C_SYMPATHY_ACITVITY_counter   : 'count_sympathy_activity',
+      C_COINS_EARNED_counter        : 'count_coins_earned',
+      C_COUNS_SPENT_counter         : 'count_coins_spent'
+    }
+  },
+  
+  USER_QUESTIONS : {
+    name    : 'user_questions',
+    fields    : {
+      ID_uuid_p       : 'id',
+      TEXT_varchar    : 'text',
+      IMAGE1_varchar  : 'image1',
+      IMAGE2_varchar  : 'image2',
+      IMAGE3_varchar  : 'image3',
+      USERID_uuid     : 'userid',
+      USERVID_varchar : 'uservid'
+    }
+  },
+  
+  AUTH_USERS : {
+    name   : 'auth_users',
+    fields : {
+      ID_uuid_p : 'id',
+      LOGIN_varchar_i : 'login',
+      PASSWORD_varchar : 'password'
+    }
   }
 };
+

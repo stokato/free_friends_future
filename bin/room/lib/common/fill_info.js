@@ -4,11 +4,11 @@
  * Заополнить сведения о пользователе 
  */
 
-var IOF = require('./../../../constants').PFIELDS;
+const IOF = require('./../../../constants').PFIELDS;
 
 module.exports = function (profile) {
 
-  var info = {};
+  let info = {};
   info[IOF.ID]        = profile.getID();
   info[IOF.VID]       = profile.getVID();
   info[IOF.AGE]       = profile.getAge();
@@ -19,10 +19,10 @@ module.exports = function (profile) {
   info[IOF.ISFRIEND]  = false;
   info[IOF.INDEX]     = profile.getGameIndex();
   
-  var gift = profile.getGift1();
+  let gift = profile.getGift1();
   
   if(gift) {
-    var result = {};
+    let result = {};
     result[IOF.FID]       = profile.getID();
     result[IOF.FVID]      = profile.getVID();
     result[IOF.ID]        = profile.getID();

@@ -8,7 +8,7 @@
 
 module.exports = function () {
 
-    var profile = null, index;
+    let profile = null, index;
     
     for(index in this._guys) if(this._guys.hasOwnProperty(index)) {
       profile = this._guys[index];

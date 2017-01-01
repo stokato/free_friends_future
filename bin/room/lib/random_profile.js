@@ -8,13 +8,13 @@
  */
 
 module.exports = function (sex, excessIds) { excessIds = excessIds || [];
-  var players = this.getAllPlayers(sex);
-  var targetPlayers = [], isPlayer;
+  let players = this.getAllPlayers(sex);
+  let targetPlayers = [], isPlayer;
   
-  for(var i = 0; i < players.length; i++)  {
+  for(let i = 0; i < players.length; i++)  {
     isPlayer = false;
     
-    for(var ei = 0; ei < excessIds.length; ei++) if(players[i].getID() == excessIds[ei]) {
+    for(let ei = 0; ei < excessIds.length; ei++) if(players[i].getID() == excessIds[ei]) {
       isPlayer = true;
     }
   
@@ -23,7 +23,7 @@ module.exports = function (sex, excessIds) { excessIds = excessIds || [];
     }
   }
   
-  var rand = Math.floor(Math.random() * targetPlayers.length);
+  let rand = Math.floor(Math.random() * targetPlayers.length);
   
   return targetPlayers[rand];
 };

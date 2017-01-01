@@ -9,10 +9,16 @@ var GameError = require('./../common/game_error'),
   PF        = constants.PFIELDS,
   addPoints = require('./../common/add_points'),
   addAction = require('./../common/add_action'),
-  oPool = require('./../../../objects_pool');
+  oPool = require('./../../../objects_pool'),
+  stat  = require('./../../../stat_manager');
+
+var Config        = require('./../../../../config.json');
+var KISS_POINTS = Number(Config.points.game.mutual_kiss);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
+    
+    var item;
     
     // Если вызов произведен игроком - сохраняем его выбор и всех оповещаем
     if(!timer) {
@@ -22,6 +28,14 @@ module.exports = function(game) {
         game._actionsQueue[uid] = [];
       }
       addAction(game, uid, options);
+  
+      // Статистика
+      for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+        var profInfo  = game._activePlayers[item];
+        if(uid != profInfo.id && options[PF.PICK] == true) {
+          stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BOTTLE_KISSED, 1);
+        }
+      }
       
       // Отправляем всем выбор игрока
       var playerInfo = game._activePlayers[uid];
@@ -49,7 +63,7 @@ module.exports = function(game) {
       
       var count = 0, players = [];
       
-      var item, allKissed = true;
+      var allKissed = true;
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         var pInf  = game._activePlayers[item];
         if(!game._actionsQueue[pInf.id] || !game._actionsQueue[pInf.id][0][PF.PICK] === true) {
@@ -62,8 +76,10 @@ module.exports = function(game) {
         for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
           players.push(game._activePlayers[item]);
         } // и начесляем очки
-        addPoints(players[count].id, constants.KISS_POINTS, onComplete);
+        addPoints(players[count].id, KISS_POINTS, onComplete);
       }
+      
+      stat.setMainStat(constants.SFIELDS.BOTTLE_ACTIVITY, game.getActivityRating());
       
       game.restoreGame(null, true);
     }
@@ -74,7 +90,7 @@ module.exports = function(game) {
       
       count++;
       if(count < players.length) {
-        addPoints(players[count].id, constants.KISS_POINTS, onComplete);
+        addPoints(players[count].id, KISS_POINTS, onComplete);
       }
     }
     

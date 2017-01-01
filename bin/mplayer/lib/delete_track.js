@@ -7,13 +7,13 @@
  */
 
 module.exports = function (tid) {
-  for (var i = 0; i < this._track_list.length; i++) {
-    if (this._track_list[i].track_id == tid) {
-      this._track_list.splice(i, 1);
+  for (let i = 0; i < this._mTrackList.length; i++) {
+    if (this._mTrackList[i].track_id == tid) {
+      this._mTrackList.splice(i, 1);
       break;
     }
   }
   
-  delete this._likers[tid];
-  delete this._dislikers[tid];
+  delete this._mLikers[tid];
+  delete this._mDislikers[tid];
 };

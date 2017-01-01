@@ -6,22 +6,24 @@
  * @return {Object}
  */
 
-var async     =  require('async');
+const async     =  require('async');
 
-var constants = require('./../../../constants'),
-    PF        = constants.PFIELDS,
-    oPool = require('../../../objects_pool');
+const constants = require('./../../../constants');
+const oPool     = require('../../../objects_pool');
+const emitRes   = require('./../../../emit_result');
 
-module.exports = function (socket, options, callback) {
+const PF        = constants.PFIELDS;
+
+module.exports = function (socket, options) {
   
-  var selfProfile = oPool.userList[socket.id];
-  var sex         = selfProfile.getSex();
+  let  selfProfile = oPool.userList[socket.id];
+  let  sex         = selfProfile.getSex();
   
   async.waterfall([//--------------------------------------------------
     function (cb) { // Отбираем комнаты, в которых не хватает игроков нашего пола
       
-      var freeRooms = [];
-      var item;
+      let  freeRooms = [];
+      let  item;
       
       for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)
         && oPool.rooms[item].getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM &&
@@ -32,9 +34,9 @@ module.exports = function (socket, options, callback) {
       
       // Выбираем произовольно одну из комнат
       if(freeRooms.length > 0) {
-        var index = Math.floor(Math.random() * freeRooms.length);
+        let  index = Math.floor(Math.random() * freeRooms.length);
         
-        var info = freeRooms[index].getInfo();
+        let  info = freeRooms[index].getInfo();
         cb(null, info);
         
       } else {
@@ -51,23 +53,24 @@ module.exports = function (socket, options, callback) {
       
     },//--------------------------------------------------
     function (roomInfo, allFriends, cb) { allFriends = allFriends || []; //Составляем список друзей с неполными коматами
-      var friendList = [];
+      let  friendList = [];
             
-      for (var i = 0; i < allFriends.length; i++) {
-        var currFriend = oPool.profiles[allFriends[i].id];
+      for (let  i = 0; i < allFriends.length; i++) {
+        let  currFriend = oPool.profiles[allFriends[i].id];
         if (currFriend) {
-          var friendSocket = currFriend.getSocket();
-          var friendsRoom = oPool.roomList[friendSocket.id];
+          let  friendSocket = currFriend.getSocket();
+          let  friendsRoom = oPool.roomList[friendSocket.id];
           if (friendsRoom.getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM) {
-            
-            var currInfo = {};
-            currInfo[PF.ID]       = currFriend.getID();
-            currInfo[PF.VID]      = currFriend.getVID();
-            currInfo[PF.AGE]      = currFriend.getAge();
-            currInfo[PF.SEX]      = currFriend.getSex();
-            currInfo[PF.CITY]     = currFriend.getCity();
-            currInfo[PF.COUNTRY]  = currFriend.getCountry();
-            currInfo[PF.ROOM]     = friendsRoom.getName();
+  
+            let  currInfo = {
+              [PF.ID]       : currFriend.getID(),
+              [PF.VID]      : currFriend.getVID(),
+              [PF.AGE]      : currFriend.getAge(),
+              [PF.SEX]      : currFriend.getSex(),
+              [PF.CITY]     : currFriend.getCity(),
+              [PF.COUNTRY]  : currFriend.getCountry(),
+              [PF.ROOM]     : friendsRoom.getName()
+            };
             
             friendList.push(currInfo);
           }
@@ -77,13 +80,14 @@ module.exports = function (socket, options, callback) {
       cb(null, roomInfo, friendList);
     }//--------------------------------------------------
   ], function (err, roomInfo, friendList) { // Обрабатываем ошибки или отравляем результат
-    if (err) { return callback(err); }
+    if (err) { return emitRes(err, socket, constants.IO_CHOOSE_ROOM); }
     
-      var res = {};
-      res[PF.RANDOM] = roomInfo;
-      res[PF.FRIENDS] = friendList;
+      let  res = {
+        [PF.RANDOM] : roomInfo,
+        [PF.FRIENDS] : friendList
+      };
     
-      callback(null, res);
+      emitRes(null, socket, constants.IO_CHOOSE_ROOM, res);
   });
   
 };

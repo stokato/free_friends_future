@@ -2,44 +2,47 @@
  * Модуль обработки запросов от Вконтакте
  */
 
-var async = require('async');
-var db = require('./db_manager');
+const async = require('async');
+const md5   = require('md5');
 
-var sanitize        = require('./sanitizer');
-var md5 = require('md5');
+const Config        = require('./../config.json');
+const constants     = require('./constants');
+const db            = require('./db_manager');
+const oPool         = require('./objects_pool');
+const stat          = require('./stat_manager');
 
-var constants = require('./constants');
-var PF = constants.PFIELDS;
+const sanitize      = require('./sanitizer');
+const getUserProfile = require('./io/lib/common/get_user_profile');
 
-var oPool = require('./objects_pool');
-
+const PF            = constants.PFIELDS;
+const REFILL_POINTS = Number(Config.points.refill);
 
 function VK () {}
 
-VK.prototype.handle = function(req, profiles, callback) {
-  var request = req || {};
+VK.prototype.handle = function(req, callback) {
+  let request = req || {};
 
   // Сначала проверка
-  var sig = request["sig"];
+  let sig = request["sig"];
 
-  var fields= [];
-  for(var key in request) /* if(request.hasOwnProperty(key)) */{
+  let fields= [];
+  for(let key in request) /* if(request.hasOwnProperty(key)) */{
     if(key === "sig") {  continue; }
 
     fields.push(key + "=" + request[key]);
   }
   fields.sort();
-  var authStr = fields.join("") + constants.APISECRET;
+  let authStr = fields.join("") + Config.auth.APISECRET;
 
   if (sig !== md5(authStr)) {
-    var response = {};
+    let response = {};
     response['error'] = {
       "error_code" : 10,
       "error_msg"  : 'Несовпадение вычисленной и переданной подписи запроса.',
       "critical"   : true
     };
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     return callback(null, resJSON);
   }
 
@@ -52,10 +55,10 @@ VK.prototype.handle = function(req, profiles, callback) {
     case "get_item_test": getItem(request, callback);
       break;
 
-    case "order_status_change": changeOrderStatus(request, profiles, callback);
+    case "order_status_change": changeOrderStatus(request, callback);
       break;
 
-    case "order_status_change_test": changeOrderStatus(request, profiles, callback);
+    case "order_status_change_test": changeOrderStatus(request, callback);
       break;
     default : sendError(callback);
   }
@@ -68,13 +71,12 @@ module.exports = VK;
 
 function getItem(request, callback) {
   // Получение информации о товаре
-  //var f = constants.FIELDS;
 
-  var payInfo = request["item"].split("_");
+  let payInfo = request["item"].split("_");
 
-  var goodId = sanitize(payInfo[0]); // наименование товара
+  let goodId = sanitize(payInfo[0]); // наименование товара
 
-  var response = {};
+  let response = {};
   db.findGood(goodId, function (err, goodInfo) {
     if(err) {
       response["error"] = {
@@ -97,29 +99,30 @@ function getItem(request, callback) {
       };
     }
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     callback(null, resJSON);
   });
 }
 
-function changeOrderStatus(request, profiles, callback) {
+function changeOrderStatus(request, callback) {
   // Изменение статуса заказа
-  var response = {};
+  let response = {};
 
   if (request["status"] == "chargeable") {
-    var orderId = request["order_id"];
+    let orderId = request["order_id"];
 
-    var payInfo = request["item"].split("_");
+    let payInfo = request["item"].split("_");
 
-    var options = {};
-    options[PF.VID]      = sanitize(request["user_id"]);
-    options[PF.ORDERVID] = orderId;
-    options[PF.GOODID]   = payInfo[0];
-    options[PF.PRICE]    = sanitize(request["item_price"]);
-
+    let options = {
+      [PF.VID]      : sanitize(request["user_id"]),
+      [PF.ORDERVID] : orderId,
+      [PF.GOODID]   : payInfo[0],
+      [PF.PRICE]    : sanitize(request["item_price"])
+    };
+    
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
-        db.findGood(options.goodid, function (err, goodInfo) {
+        db.findGood(options[PF.GOODID], function (err, goodInfo) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
@@ -131,37 +134,42 @@ function changeOrderStatus(request, profiles, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        db.findUser(null, options[PF.VID], [PF.MONEY], function(err, info) {
+        db.findUser(null, options[PF.VID], [PF.MONEY, PF.POINTS], function(err, info) {
           if(err) { return cb(err, null); }
 
           if (info) {
-            cb(null, goodInfo, info);
+            getUserProfile(info[PF.ID], function (err, profile) {
+              if(err) { return cb(err, null); }
+  
+              cb(null, goodInfo, info, profile);
+            });
           } else cb(new Error("Нет такого пользователя"), null);
         });
       },/////////////////////////////////////////////////////////////////////
-      function(goodInfo, info, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
+      function(goodInfo, info, profile, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        var newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
+        let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
         if(newMoney < 0 && goodInfo[PF.GOODTYPE] != constants.GT_MONEY) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
-        var ordOptions = {};
-        ordOptions[PF.ORDERVID]   = options[PF.ORDERVID];
-        ordOptions[PF.GOODID]     = goodInfo[PF.ID];
-        ordOptions[PF.ID]         = info[PF.ID];
-        ordOptions[PF.VID]        = info[PF.VID];
-        ordOptions[PF.SUM]        = goodInfo[PF.PRICE];
-        ordOptions[PF.DATE]       = new Date();
+        let ordOptions = {
+          [PF.ORDERVID] : options[PF.ORDERVID],
+          [PF.GOODID]   : goodInfo[PF.ID],
+          [PF.ID]       : info[PF.ID],
+          [PF.VID]      : info[PF.VID],
+          [PF.SUM]      : goodInfo[PF.PRICE],
+          [PF.DATE]     : new Date()
+        };
 
         db.addOrder(ordOptions, function(err, orderid) {
           if (err) { return cb(err, null); }
 
-          cb(null, goodInfo, info, orderid);
+          cb(null, goodInfo, info, orderid, profile);
         });
       }, ///////////////////////////////////////////////////////////////////////////////
-      function(goodInfo, selfInfo, orderid, cb) { // пополняем баланс, себе или другому пользователю
-        var options = {};
+      function(goodInfo, selfInfo, orderid, profile, cb) { // пополняем баланс, себе или другому пользователю
+        let options = {};
         options.from_id = selfInfo[PF.ID];
         options.from_vid = selfInfo[PF.VID];
 
@@ -170,51 +178,84 @@ function changeOrderStatus(request, profiles, callback) {
             if(err) { return cb(err, null); }
 
             if (info) {
-
-              options[PF.ID]    = info[PF.ID];
-              options[PF.VID]   = info[PF.VID];
-              options[PF.MONEY] = info[PF.MONEY] + goodInfo[PF.PRICE2];
-
-              db.updateUser(options, function(err, id) {
-                if (err) { return cb(err, null); }
-
-                options[PF.MONEY] = goodInfo[PF.PRICE2];
-
-                if(profiles[options[PF.ID]]) {
-                  var socket = profiles[options[PF.ID]].getSocket();
-                  socket.emit(constants.IO_GIVE_MONEY, options);
-
-                  var roomList = oPool.roomList;
-                  var room = roomList[socket.id];
-                  if(room) {
-                    socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
+              getUserProfile(info[PF.ID], function (err, friendProfile) {
+                if(err) { return cb(err, null); }
+                
+                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
+                  if(err) { return cb(err, null); }
+                  
+                  let friendSocket = friendProfile.getSocket();
+                  if(friendSocket) {
+                    friendSocket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money })
                   }
-                }
-
-                var result = {};
-                result.orderid = orderid;
-                cb(null, result);
+  
+                  options[PF.ID] = friendProfile.getID();
+                  options[PF.VID] = friendProfile.getVID();
+                  options[PF.MONEY] = goodInfo[PF.PRICE2];
+  
+                  stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
+  
+                  let field = getField(payInfo[0], false);
+                  stat.setMainStat(field, 1);
+  
+                  let socket = profile.getSocket();
+                  if(socket) {
+                    socket.emit(constants.IO_GIVE_MONEY, options);
+  
+                    let roomList = oPool.roomList;
+                    let room = roomList[socket.id];
+                    if(room) {
+                      socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
+                    }
+                  }
+                  
+                  let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+                  profile.addPoints(newPoints, function (err) {
+                    if(err) { return cb(err, null); }
+  
+                    cb(null, { orderid : orderid });
+                  });
+                })
               });
+              
+              
             } else cb(new Error("Неверно указан vid пользователя - получателя товара"), null);
           });
         } else {
-          options[PF.ID]    = selfInfo[PF.ID];
-          options[PF.VID]   = selfInfo[PF.VID];
-          options[PF.MONEY] = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
+          options[PF.ID]      = selfInfo[PF.ID];
+          options[PF.VID]     = selfInfo[PF.VID];
+          // options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
+          // options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
-          db.updateUser(options, function(err) {
+          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
             if (err) { return cb(err, null); }
-
-            options.money = goodInfo[PF.PRICE2];
-
-            if(profiles[options.id]) {
-              profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+            
+            let socket = profile.getSocket();
+            if(socket) {
+              socket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
             }
-
-            var result = {};
-            result.orderid = orderid;
-            cb(null, result);
+            
+            let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+            
+            profile.addPoints(newPoints, function (err, points) {
+              if (err) { return cb(err, null); }
+  
+              options[PF.MONEY] = goodInfo[PF.PRICE2];
+  
+              if(oPool.profiles[options.id]) {
+                oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+              }
+  
+              let field = getField(payInfo[0], true);
+              stat.setMainStat(field, 1);
+  
+              let result = {};
+              result.orderid = orderid;
+              cb(null, result);
+            });
+            
           });
+          
         }
       } //////////////////////////////////////////////////////////////////////////////////
     ], function(err, res) { // Обрабатываем ошибки и возвращаем результат
@@ -231,7 +272,7 @@ function changeOrderStatus(request, profiles, callback) {
         };
       }
 
-      var resJSON = JSON.stringify(response);
+      let resJSON = JSON.stringify(response);
       callback(null, resJSON);
     });
   } else {
@@ -241,19 +282,37 @@ function changeOrderStatus(request, profiles, callback) {
       "critical": true
     };
 
-    var resJSON = JSON.stringify(response);
+    let resJSON = JSON.stringify(response);
     callback(null, resJSON);
   }
 }
 
+//-------------------------------------
+function getField (goodID, isSelf) {
+  let SF = constants.SFIELDS;
+  let LOTS = constants.MONEY_LOTS;
+  let field;
+  
+  switch (goodID) {
+    case LOTS.COIN_1    : (isSelf)? field = SF.MONEY_1_TAKEN    : field = SF.MONEY_1_GIVEN;     break;
+    case LOTS.COIN_3    : (isSelf)? field = SF.MONEY_3_TAKEN    : field = SF.MONEY_3_GIVEN;     break;
+    case LOTS.COIN_10   : (isSelf)? field = SF.MONEY_10_TAKEN   : field = SF.MONEY_10_GIVEN;    break;
+    case LOTS.COIN_20   : (isSelf)? field = SF.MONEY_20_TAKEN   : field = SF.MONEY_20_GIVEN;    break;
+    case LOTS.COIN_60   : (isSelf)? field = SF.MONEY_60_TAKEN   : field = SF.MONEY_60_GIVEN;    break;
+    case LOTS.COIN_200  : (isSelf)? field = SF.MONEY_200_TAKEN  : field = SF.MONEY_200_GIVEN;   break;
+  }
+  
+  return field;
+}
+
 function sendError(callback) {
-  var response = {};
+  let response = {};
   response["error"] = {
     "error_code": 100,
     "error_msg": "Не удалось распознать запрос",
     "critical": true
   };
 
-  var resJSON = JSON.stringify(response);
+  let resJSON = JSON.stringify(response);
   callback(null, resJSON);
 }

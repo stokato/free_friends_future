@@ -5,17 +5,29 @@
  *
  */
 
-var async           = require('async');
+const async             = require('async');
 
-var constants       = require('./../../../constants'),
-  PF                = constants.PFIELDS,
-  getUserProfile    = require('./../common/get_user_profile'),
-  genDateHistory    = require('./../common/gen_date_history'),
-  sendOne           = require('./../common/send_one');
+const constants         = require('./../../../constants');
+const oPool             = require('./../../../objects_pool');
 
-var oPool = require('./../../../objects_pool');
+const getUserProfile    = require('./../common/get_user_profile');
+const genDateHistory    = require('./../common/gen_date_history');
+const sendOne           = require('./../common/send_one');
+const emitRes           = require('./../../../emit_result');
+const checkID           = require('./../../../check_id');
+const sanitize          = require('./../../../sanitizer');
+
+const   PF                = constants.PFIELDS;
 
 module.exports = function(socket, options, callback) {
+  if(!checkID(options[PF.ID])) {
+    if(callback) {
+      return callback(constants.errors.NO_PARAMS);
+    }
+    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_OPEN_PRIVATE_CHAT);
+  }
+  
+  options[PF.ID] = sanitize(options[PF.ID]);
   
   async.waterfall([ //--------------------------------------------------
     function(cb) { // Получаем профиль пользователя, с которым открывается чат
@@ -24,14 +36,14 @@ module.exports = function(socket, options, callback) {
       
     }, //---------------------------------------------------------------
     function(friendProfile, cb) { // Отрываем чат и отправляем историю
-      var selfProfile = oPool.userList[socket.id];
+      let selfProfile = oPool.userList[socket.id];
       
       if(selfProfile.getID() == options[PF.ID]) {
         return cb(constants.errors.SELF_ILLEGAL);
       }
       
-      var secondDate = new Date();
-      var firstDate = genDateHistory(secondDate);
+      let secondDate = new Date();
+      let firstDate = genDateHistory(secondDate);
       
       selfProfile.addPrivateChat(friendProfile);
       
@@ -40,7 +52,7 @@ module.exports = function(socket, options, callback) {
         
         if(err) { return cb(err, null); }
         
-        for(var i = 0; i < history.length; i++) {
+        for(let i = 0; i < history.length; i++) {
           sendOne(socket, history[i]);
         }
         
@@ -48,9 +60,17 @@ module.exports = function(socket, options, callback) {
       });
     } //---------------------------------------------------------------
   ], function(err) { // Обрабатываем ошибки, если есть
-    if (err) { return callback(err); }
+    if (err) {
+      if(callback) {
+        return callback(err);
+      }
+      return emitRes(err, socket, constants.IO_OPEN_PRIVATE_CHAT);
+    }
     
-    callback(null, null);
+    if(callback) {
+      return callback(null, null);
+    }
+    emitRes(null, socket, constants.IO_OPEN_PRIVATE_CHAT);
   });
   
 };

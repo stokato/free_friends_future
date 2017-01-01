@@ -4,12 +4,12 @@
  * @param id, callback
  */
 
-var oPool = require('./../../../objects_pool'),
-    ProfileJS =  require('../../../profile/index');
+const oPool     = require('./../../../objects_pool');
+const ProfileJS = require('../../../profile/index');
 
 module.exports = function (id, callback) {
   
-  var profile = null;
+  let profile = null;
   
   if (oPool.profiles[id]) {        // Если онлайн
     

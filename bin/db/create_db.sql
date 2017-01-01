@@ -16,6 +16,15 @@ CREATE TABLE IF NOT EXISTS sessions (
    PRIMARY KEY(sid)
 );
 
+-- Таблица аутентификации пользователей
+CREATE TABLE IF NOT EXISTS auth_users (
+   id uuid,
+   login VARCHAR,
+   password VARCHAR,
+   PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS auth_users_login ON auth_users (login);
 
 -- Таблица пользователей users:
 -- ИД: генерируется (ключевое поле),
@@ -47,6 +56,10 @@ CREATE TABLE IF NOT EXISTS users (
 --   newfriends int,
 --   newguests int,
   gift1 uuid,
+  ulevel int,
+  free_gifts int,
+  free_music int,
+  vip boolean,
   PRIMARY KEY (id)
 );
 
@@ -295,6 +308,9 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
   CREATE TABLE IF NOT EXISTS questions (
     id uuid,
     text varchar,
+    image1 VARCHAR,
+    image2 VARCHAR,
+    image3 VARCHAR,
     PRIMARY KEY (id)
   );
 
@@ -371,4 +387,81 @@ CREATE TABLE IF NOT EXISTS user_blocked (
   blockedvid varchar,
   date timestamp,
   PRIMARY KEY (userid, blockedid)
+);
+
+--  сколько юзер получил подарков
+--  сколько юзер подарил подарков
+--  сколько юзер подарил монет
+--  сколько юзер заработал монет
+--  сколько юзер потратил монет
+--  сколько юзера поцеловали в бутыле
+--  сколько юзера выбрали в паре
+--  сколько юзер получил званий за столом ( звания пока не реализованы)
+--  сколько человек провел времени в игре
+
+CREATE TABLE IF NOT EXISTS users_stat (
+  id uuid,
+  vid VARCHAR,
+  count_gifts_given counter,
+  count_gifts_taken counter,
+  count_coins_given counter,
+  count_coins_earned counter,
+  count_coins_spent counter,
+  count_bottle_kissed counter,
+  count_best_selected counter,
+  count_rank_given counter,
+  count_game_time_ms counter,
+  PRIMARY KEY ((id, vid))
+);
+
+-- количество подарков по каждому типу ( видимо отдельной вкладкой) для анализа какие подарки норм какие нет
+-- кол-во подаренных паков монет ( глянуть какие популярнее)
+-- кол-во купленных паков монет ( для себя)
+-- кол-во людей которые добавили в меню
+-- активность по играм
+-- заработано монет
+-- потрачено монет
+
+CREATE TABLE IF NOT EXISTS main_stat (
+ id VARCHAR,
+ count_gifts_loves counter,
+ count_gifts_breath counter,
+ count_gifts_flowers counter,
+ count_gifts_drinks counter,
+ count_gifts_common counter,
+ count_gifts_flirtation counter,
+ count_gifts_merry counter,
+ count_money_1_given counter,
+ count_money_3_given counter,
+ count_money_10_given counter,
+ count_money_20_given counter,
+ count_money_60_given counter,
+ count_money_200_given counter,
+ count_money_1_taken counter,
+ count_money_3_taken counter,
+ count_money_10_taken counter,
+ count_money_20_taken counter,
+ count_money_60_taken counter,
+ count_money_200_taken counter,
+ count_menu_append counter,
+ count_best_activity counter,
+ count_bottle_activity counter,
+ count_cards_activity counter,
+ count_question_activity counter,
+ count_sympathy_activity counter,
+ count_coins_earned counter,
+ count_coins_spent counter,
+ PRIMARY KEY (id)
+);
+
+-- Таблица для накопления поступающих от пользователей вопросов
+CREATE TABLE IF NOT EXISTS user_questions (
+id uuid,
+text VARCHAR,
+image1 VARCHAR,
+image2 VARCHAR,
+image3 VARCHAR,
+userid uuid,
+uservid VARCHAR,
+PRIMARY KEY (id)
 );

@@ -7,7 +7,8 @@
  * @return money - новый баланс
  */
 
-var constants = require('../../constants');
+var constants = require('../../constants'),
+    stat      = require('./../../stat_manager');
 
 module.exports = function (price, callback) {
   
@@ -24,6 +25,13 @@ module.exports = function (price, callback) {
     
     self.setMoney(newMoney, function(err, money) {
       if(err) { return callback(err); }
+      
+      stat.setUserStat(self._pID, self._pVID, constants.SFIELDS.COINS_SPENT, price);
+      stat.setMainStat(constants.SFIELDS.COINS_SPENT, price);
+  
+      if(self._pOnPay) {
+        self._pOnPay(self, money);
+      }
       
       callback(null, money);
     });

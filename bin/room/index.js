@@ -9,11 +9,12 @@
  * Пердоставляет инструменты для доступа к ним и получения сведений
  */
 
-var constants = require('./../constants'),
+const constants = require('./../constants'),
     MusicPlayer = require('./../mplayer/index'),
-    GameJS = require('./../game/index');
+    GameJS = require('./../game/index'),
+    RankManager = require('./../ranks/index');
 
-var addProfile      = require('./lib/add_profile'),
+const addProfile      = require('./lib/add_profile'),
     deleteProfile   = require('./lib/delete_profile'),
     getUsersInfo    = require('./lib/common/get_users_info'),
     getInfo         = require('./lib/get_info'),
@@ -46,10 +47,15 @@ function Room(name, title)  {
   // Плеер
   this._mplayer = new MusicPlayer();
   
-  for(var i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
-    this._girls_indexes.push(constants.ONE_SEX_IN_ROOM+i);
+  // Звания
+  this._ranks = new RankManager();
+  
+  for(let i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
+    this._girls_indexes.push(i);
     this._guys_indexes.push(i);
   }
+  
+  this._giftTimer = null;
   
 }
 
@@ -69,6 +75,9 @@ Room.prototype.getGame        = function () {  return this._game; };
 Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
+Room.prototype.getRanks       = function () {  return this._ranks; };
+Room.prototype.clearGiftTimer = function () {  clearTimeout(this._giftTimer); };
+Room.prototype.setGiftTimer   = function (timer) { this._giftTimer = timer; };
 
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;

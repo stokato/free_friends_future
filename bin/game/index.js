@@ -6,6 +6,9 @@
  * @param room
  * @constructor
  */
+
+var Config        = require('./../../config.json');
+
 var logger = require('./../../lib/log')(module);
 
 var constants             = require('../constants');
@@ -24,7 +27,8 @@ var start                 = require('./lib/main/start'),
     getPlayerInfo         = require('./lib/common/get_player_info'),
     getNextPlayer         = require('./lib/common/get_next_player'),
     checkCountPlayers     = require('./lib/common/check_count_players'),
-    addEmits              = require('./lib/emits/add_emits');
+    addEmits              = require('./lib/emits/add_emits'),
+    getActivityRating     = require('./lib/common/get_activity_rating');
 
 // Обработчики игр
 var hStart                  = require('./lib/handlers/h_start'),
@@ -38,6 +42,9 @@ var hStart                  = require('./lib/handlers/h_start'),
     hSympathyShow           = require('./lib/handlers/h_sympathy_show'),
     hPrison                 = require('./lib/handlers/h_prison');
 
+
+var LOAD_QUESTIONS_TIMEOUT = Number(Config.game.questions_timeout);
+
 // Вопросы
 var gameQuestions = [];
 
@@ -50,7 +57,8 @@ function Game(room) {
 
   this._actionsQueue  = {};           // Очередь действий игроков
   this._actionsLimits = {};           // Лимиты ответов для игроков
-  this._actionsCount  = 0;            // Количество ответов до перехода к следующей игре
+  this._actionsCount  = 0;            // Текущее количество ответов до перехода к следующей игре
+  this._actionsMain   = 0;            // Общее количество ответов до перехода к следующей игре
 
   this._storedOptions  = {};          // опции, сохраненные на предидущих этапах
   this._activePlayers  = {};          // Игроки, которые на данном этапе могут ходить
@@ -105,7 +113,8 @@ Game.prototype.setActionLimit         = setActionLimit;
 Game.prototype.activateAllPlayers     = activateAllPlayers;
 Game.prototype.startTimer             = startTimer;
 Game.prototype.getNextPlayer          = getNextPlayer;
-Game.prototype.addEmits               = addEmits;
+Game.prototype.addProfile               = addEmits;
+Game.prototype.getActivityRating      = getActivityRating;
 
 // Получаем вопросы
 Game.prototype.getQuestions = function() {
@@ -126,6 +135,6 @@ function getQuestionsFromDB() {
 
     gameQuestions = questions;
 
-    setTimeout(function(){ getQuestionsFromDB()}, constants.QUESTIONS_TIMEOUT);
+    setTimeout(function(){ getQuestionsFromDB()}, LOAD_QUESTIONS_TIMEOUT);
   });
 }

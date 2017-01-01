@@ -8,26 +8,31 @@
  * @param id - ид пользователя
  */
 
-var constants     = require('./../../../constants'),
-  sendUsersInRoom = require('./send_users_in_room'),
-  IOError         = require('./../common/io_error'),
-  oPool           = require('./../../../objects_pool');
+const logger = require('./../../../../lib/log')(module);
+
+const Config = require('./../../../../config.json');
+const oPool  = require('./../../../objects_pool');
+
+const sendUsersInRoom = require('./send_users_in_room');
+
+const GIFT_TIMEOUT = Number(Config.user.settings.gift_timeout);
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
+//TODO: Переделать - чтобы при подраке тому же игроку, снимался таймер, если он для него
 module.exports = function(id) {
   setTimeout(function () {
-    var profile = oPool.profiles[id];
+    let  profile = oPool.profiles[id];
     if(profile) {
       profile.clearGiftInfo(function() {
         
-        var roomInfo = oPool.roomList[profile.getSocket().id].getInfo();
+        let  roomInfo = oPool.roomList[profile.getSocket().id].getInfo();
         
         sendUsersInRoom(roomInfo, null, function(err, roomInfo) {
           if(err) {
-            return new IOError(constants.IO_MAKE_GIFT, err.message || constants.errors.OTHER.message);
+            return logger('setGiftTimeout' + err);
           }
         });
       });
     }
-  }, constants.GIFT_TIMEOUT);
+  }, GIFT_TIMEOUT);
 };

@@ -13,7 +13,7 @@ module.exports = function (uid, count, callback) {
   var player = oPool.profiles[uid];
   
   if(player) {
-    player.addPoints(count, onPoints(player));
+    player.addPoints(count, callback);
     
     // Либо создаем
   } else {
@@ -21,31 +21,31 @@ module.exports = function (uid, count, callback) {
     player.build(uid, function (err) {
       if(err) { return callback(err);  }
       
-      player.addPoints(count, onPoints(player));
+      player.addPoints(count, callback);
     });
   }
   
-  // Функция обрабатывает результы начисления очков, оповещает игрока
-  function onPoints(player) {
-    return function(err, points) {
-      var socket = player.getSocket();
-      
-      if(err) {
-        if(socket) {
-          handleError(socket, constants.IO_GAME_ERROR, err);
-        } else {
-          new GameError(constants.IO_GAME_ERROR, err.message);
-        }
-        
-        return callback(err);
-      }
-      
-      var res = {};
-      res[constants.PFIELDS.POINTS] = points;
-      
-      socket.emit(constants.IO_ADD_POINTS, res);
-      
-      callback(null, null);
-    }
-  }
+  // // Функция обрабатывает результы начисления очков, оповещает игрока
+  // function onPoints(player) {
+  //   return function(err, points) {
+  //     var socket = player.getSocket();
+  //
+  //     if(err) {
+  //       if(socket) {
+  //         handleError(socket, constants.IO_GAME_ERROR, err);
+  //       } else {
+  //         new GameError(constants.IO_GAME_ERROR, err.message);
+  //       }
+  //
+  //       return callback(err);
+  //     }
+  //
+  //     var res = {};
+  //     res[constants.PFIELDS.POINTS] = points;
+  //
+  //     socket.emit(constants.IO_ADD_POINTS, res);
+  //
+  //     callback(null, null);
+  //   }
+  // }
 };

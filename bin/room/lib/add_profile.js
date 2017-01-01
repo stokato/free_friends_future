@@ -6,12 +6,16 @@
  * @param profile - профиль
  */
 
-var constants = require('./../../constants'),
+const constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
 
 module.exports = function (profile) {
   
-  var sex = profile.getSex();
+  this._ranks.addProfile(profile);
+  // this._ranks.addEmits(profile.getSocket());
+  // this._mplayer.addEmits(profile.getSocket());
+  
+  let sex = profile.getSex();
   if(sex == constants.GUY) {
     this._guys[profile.getID()]  = profile;
     this._guys_count++;
@@ -20,17 +24,17 @@ module.exports = function (profile) {
     this._girls_count++;
   }
   
-  var socket = profile.getSocket();
+  let socket = profile.getSocket();
   if(socket) {
     socket.join(this._nameOfRoom);
   } else {
     logger.error("Room_add_profile : Не удалось получить сокет профиля");
   }
   
-  var arr = (sex == constants.GUY)? this._guys_indexes : this._girls_indexes;
+  let arr = (sex == constants.GUY)? this._guys_indexes : this._girls_indexes;
   arr.sort(function (i1, i2) { return i1 - i2; });
   
-  var index = arr[0];
+  let index = arr[0];
   
   arr.splice(0, 1);
   

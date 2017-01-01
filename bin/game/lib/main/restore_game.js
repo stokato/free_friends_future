@@ -3,8 +3,11 @@
  *
  * @param result - объект с результатами предидущей игры, istimeout - устанавливать таймаут на старт следующей игры
  */
+var Config        = require('./../../../../config.json');
 var constants = require('../../../constants'),
     PF        = constants.PFIELDS;
+
+var RESULTS_TIMEOUT = Number(Config.game.timeouts.results);
 
 module.exports = function(result, istimeout) { result = result || {}; istimeout = istimeout || false;
 
@@ -31,6 +34,6 @@ module.exports = function(result, istimeout) { result = result || {}; istimeout 
   this._gameState = result;
 
   // Устанавливаем таймаут
-  var timeout = (istimeout)? constants.TIMEOUT_RESULTS : 0;
+  var timeout = (istimeout)? RESULTS_TIMEOUT : 0;
   this.startTimer(this._handlers[this._nextGame], timeout);
 };

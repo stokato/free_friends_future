@@ -5,23 +5,23 @@
  * @return {boolean} - если уже есть старый - false, если не было - true
  */
 
-var oPool = require('./../../../objects_pool');
+const oPool = require('./../../../objects_pool');
 
 module.exports = function (profile, socket) {
   
   // Если присутствует старый профиль этого пользователя, меняем его на новый
-  var oldProfile = oPool.profiles[profile.getID()];
+  let  oldProfile = oPool.profiles[profile.getID()];
   
   if (oldProfile)  {
     oldProfile.clearExitTimeout();
     
-    var oldSocket = oldProfile.getSocket();
+    let  oldSocket = oldProfile.getSocket();
     oldProfile.setSocket(socket);
     
     delete oPool.userList[oldSocket.id];
     oPool.userList[socket.id] =  oldProfile;
     
-    var room = oPool.roomList[oldSocket.id];
+    let  room = oPool.roomList[oldSocket.id];
     delete  oPool.roomList[oldSocket.id];
     oPool.roomList[socket.id] = room;
     

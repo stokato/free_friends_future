@@ -1,7 +1,8 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.SHOP.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF = dbConst.DB.SHOP.fields;
+const PF  = dbConst.PFIELDS;
 
 /*
  Добавить товар в БД: ИД, объект с данными
@@ -16,9 +17,9 @@ module.exports = function(options, callback) { options    = options || {};
     return callback(new Error("Не указаны необходимые поля товара"), null);
   }
 
-  var id = cdb.uuid.random();
+  let id = cdb.uuid.random();
 
-  var fields = [
+  let fields = [
     DBF.ID_varchar_p,
     DBF.TITLE_varchar,
     DBF.PRICE_int,
@@ -27,7 +28,7 @@ module.exports = function(options, callback) { options    = options || {};
     DBF.GOODTYPE_varchar_i
   ];
   
-  var params = [
+  let params = [
     id,
     options[PF.TITLE],
     options[PF.PRICE],
@@ -36,7 +37,7 @@ module.exports = function(options, callback) { options    = options || {};
     options[PF.GOODTYPE]
   ];
   
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.SHOP.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.SHOP.name);
   
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

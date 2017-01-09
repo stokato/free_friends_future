@@ -7,17 +7,17 @@
  * @return money - новый баланс
  */
 
-var constants = require('../../constants'),
+const constants = require('../../constants'),
     stat      = require('./../../stat_manager');
 
 module.exports = function (price, callback) {
   
-  var self = this;
+  let self = this;
   
   self.getMoney(function(err, money) {
     if(err) { return callback(err); }
     
-    var newMoney = money - price;
+    let newMoney = money - price;
     
     if(newMoney < 0) {
       return callback(constants.errors.TOO_LITTLE_MONEY);

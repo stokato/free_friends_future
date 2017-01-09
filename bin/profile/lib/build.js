@@ -7,18 +7,18 @@
  * @return id
  */
 
-var constants = require('../../constants'),
+const  constants = require('../../constants'),
     IOF       = constants.PFIELDS,
     db        = require('./../../db_manager');
 
 module.exports = function(id, callback) {
- var self = this;
+ let  self = this;
 
  self._pID = id;
 
  if (!self._pID) { return callback(new Error("Не задан ИД"), null); }
 
- var fList = [
+ let  fList = [
    IOF.VID,
    IOF.SEX,
    IOF.POINTS,
@@ -45,16 +45,18 @@ module.exports = function(id, callback) {
   
    self._pMoney     = foundUser[IOF.MONEY]      || 0;
    
-   var info = {};
-   info[IOF.ID]       = self._pID;
-   info[IOF.VID]      = self._pVID;
-   info[IOF.AGE]      = self.getAge();
-   info[IOF.SEX]      = self._pSex;
-   info[IOF.MONEY]    = self._pMoney;
-   info[IOF.POINTS]   = self._pPoints;
-   info[IOF.STATUS]   = self._pStatus;
-   info[IOF.CITY]     = self._pCity;
-   info[IOF.COUNTRY]  = self._pCountry;
+   let  info = {
+    [IOF.ID]       : self._pID,
+    [IOF.VID]      : self._pVID,
+    [IOF.AGE]      : self.getAge(),
+    [IOF.SEX]      : self._pSex,
+    [IOF.MONEY]    : self._pMoney,
+    [IOF.POINTS]   : self._pPoints,
+    [IOF.STATUS]   : self._pStatus,
+    [IOF.CITY]     : self._pCity,
+    [IOF.COUNTRY]  : self._pCountry
+   };
+
 
    if(foundUser[IOF.GIFT1]) {
      db.findGift(foundUser[IOF.GIFT1], function(err, gift) {

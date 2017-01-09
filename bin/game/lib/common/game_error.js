@@ -1,11 +1,12 @@
-var constants = require('./../../../constants');
-var logger = require('./../../../../lib/log')(module);
+const constants = require('./../../../constants');
+const logger = require('./../../../../lib/log')(module);
 
 // Свой объект ошибок
 function GameError(func, message) {
- var err = {};
- err.message = message;
- err.stack = (new Error()).stack;
+ let err = {
+   message : message,
+   stack   : (new Error()).stack
+ };
 
  switch(func) {
    case constants.G_BOTTLE                   : err.name = "Ошибка в игре бутылочка";                      break;

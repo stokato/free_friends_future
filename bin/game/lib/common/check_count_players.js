@@ -1,16 +1,16 @@
-var constants = require('../../../constants');
-var Config        = require('./../../../../config.json');
+const constants = require('../../../constants');
+const Config        = require('./../../../../config.json');
 
-var MIN_PLAYERS = Number(Config.game.players_min);
+const MIN_PLAYERS = Number(Config.game.players_min);
 
 // Проверяем, достаточно ли игроков для продолжения игры
 module.exports = function() {
 
-  var guysInPrison  = 0;
-  var girlsInPrison = 0;
+  let guysInPrison  = 0;
+  let girlsInPrison = 0;
 
   if(this._prisoner !== null) {
-    var sex = this._prisoner.sex;
+    let sex = this._prisoner.sex;
 
     if(sex == constants.GUY) {
       guysInPrison = 1;
@@ -19,8 +19,8 @@ module.exports = function() {
     }
   }
 
-  var guysCount = this._room.getCountInRoom(constants.GUY) - guysInPrison;
-  var girlsCount = this._room.getCountInRoom(constants.GIRL)- girlsInPrison;
+  let guysCount = this._room.getCountInRoom(constants.GUY) - guysInPrison;
+  let girlsCount = this._room.getCountInRoom(constants.GIRL)- girlsInPrison;
 
   if((guysCount) < MIN_PLAYERS || (girlsCount) < MIN_PLAYERS) {
     return false;

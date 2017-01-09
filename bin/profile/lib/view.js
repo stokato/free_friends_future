@@ -6,8 +6,8 @@
  * @param target - флаг, кого отментить просмотренным
  * @return target
  */
-var constants = require('./../../constants');
-var db = require('./../../db_manager');
+const  constants = require('./../../constants');
+const  db = require('./../../db_manager');
 
 module.exports = function (target, callback) {
   

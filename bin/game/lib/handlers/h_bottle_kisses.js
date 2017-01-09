@@ -4,7 +4,7 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var GameError = require('./../common/game_error'),
+const GameError = require('./../common/game_error'),
   constants = require('../../../constants'),
   PF        = constants.PFIELDS,
   addPoints = require('./../common/add_points'),
@@ -12,17 +12,17 @@ var GameError = require('./../common/game_error'),
   oPool = require('./../../../objects_pool'),
   stat  = require('./../../../stat_manager');
 
-var Config        = require('./../../../../config.json');
-var KISS_POINTS = Number(Config.points.game.mutual_kiss);
+const Config        = require('./../../../../config.json');
+const KISS_POINTS = Number(Config.points.game.mutual_kiss);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
     
-    var item;
+    let item;
     
     // Если вызов произведен игроком - сохраняем его выбор и всех оповещаем
     if(!timer) {
-      var uid = oPool.userList[socket.id].getID();
+      let uid = oPool.userList[socket.id].getID();
       
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -31,16 +31,16 @@ module.exports = function(game) {
   
       // Статистика
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
-        var profInfo  = game._activePlayers[item];
+        let profInfo  = game._activePlayers[item];
         if(uid != profInfo.id && options[PF.PICK] == true) {
           stat.setUserStat(profInfo.id, profInfo.vid, constants.SFIELDS.BOTTLE_KISSED, 1);
         }
       }
       
       // Отправляем всем выбор игрока
-      var playerInfo = game._activePlayers[uid];
+      let playerInfo = game._activePlayers[uid];
       
-      var result = {};
+      let result = {};
       result[PF.ID] = uid;
       result[PF.VID] = playerInfo.vid;
       result[PF.PICK] = options[PF.PICK];
@@ -61,11 +61,11 @@ module.exports = function(game) {
         return game.stop();
       }
       
-      var count = 0, players = [];
+      let count = 0, players = [];
       
-      var allKissed = true;
+      let allKissed = true;
       for(item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
-        var pInf  = game._activePlayers[item];
+        let pInf  = game._activePlayers[item];
         if(!game._actionsQueue[pInf.id] || !game._actionsQueue[pInf.id][0][PF.PICK] === true) {
           allKissed = false;
         }

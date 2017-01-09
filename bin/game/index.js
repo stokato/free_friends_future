@@ -7,15 +7,15 @@
  * @constructor
  */
 
-var Config        = require('./../../config.json');
+const  Config        = require('./../../config.json');
 
-var logger = require('./../../lib/log')(module);
+const  logger = require('./../../lib/log')(module);
 
-var constants             = require('../constants');
-var db                    = require ('./../db_manager');
+const  constants             = require('../constants');
+const  db                    = require ('./../db_manager');
 
 // Методы
-var start                 = require('./lib/main/start'),
+const  start                 = require('./lib/main/start'),
     stop                  = require('./lib/main/stop'),
     emit                  = require('./lib/emits/emit'),
     restoreGame           = require('./lib/main/restore_game'),
@@ -31,7 +31,7 @@ var start                 = require('./lib/main/start'),
     getActivityRating     = require('./lib/common/get_activity_rating');
 
 // Обработчики игр
-var hStart                  = require('./lib/handlers/h_start'),
+const  hStart                  = require('./lib/handlers/h_start'),
     hLot                    = require('./lib/handlers/h_lot'),
     hBottle                 = require('./lib/handlers/h_bottle'),
     hBottleKisses           = require('./lib/handlers/h_bottle_kisses'),
@@ -43,15 +43,15 @@ var hStart                  = require('./lib/handlers/h_start'),
     hPrison                 = require('./lib/handlers/h_prison');
 
 
-var LOAD_QUESTIONS_TIMEOUT = Number(Config.game.questions_timeout);
+const  LOAD_QUESTIONS_TIMEOUT = Number(Config.game.questions_timeout);
 
 // Вопросы
-var gameQuestions = [];
+let  gameQuestions = [];
 
 module.exports = Game;
 
 function Game(room) {
-  var self = this;
+  let  self = this;
 
   this._room = room;                  // Комната, которй принадлежить эта игра
 

@@ -5,22 +5,24 @@
  * @return messages - осписок сообщений пользователя
  */
 
-var db = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const db  = require('./../../db_manager');
+const IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(fdate, sdate, callback) {
- var self = this;
+ let self = this;
 
  if(self._pIsPrivateChats[0]) { // Если есть открытые чаты
-   var arr = [];
-   for(var i = 0; i < self._pIsPrivateChats.length; i++) { // Готовим массив их ид
+   let arr = [];
+   for(let i = 0; i < self._pIsPrivateChats.length; i++) { // Готовим массив их ид
      arr.push(self._pIsPrivateChats[i]);
    }
 
-   var params = {};
-   params[IOF.ID_LIST]     = arr;
-   params[IOF.DATE_FROM]   = fdate;
-   params[IOF.DATE_TO]     = sdate;
+   let params = {
+     [IOF.ID_LIST]     : arr,
+     [IOF.DATE_FROM]   : fdate,
+     [IOF.DATE_TO]     : sdate
+   };
+
   
    // Получаем историю
    db.findMessages(self._pID, params, function(err, messages) { messages = messages || [];

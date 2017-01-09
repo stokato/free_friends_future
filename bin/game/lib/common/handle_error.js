@@ -1,5 +1,5 @@
-var constants  = require('./../../../constants');
-var GameError = require('./game_error');
+const constants  = require('./../../../constants');
+const GameError = require('./game_error');
 
 module.exports = function (socket, emit, nextGame, err, res) { res = res || {};
   res.operation_status = constants.RS_BADSTATUS;

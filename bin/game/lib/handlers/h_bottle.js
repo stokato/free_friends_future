@@ -4,19 +4,19 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var Config        = require('./../../../../config.json');
+const Config        = require('./../../../../config.json');
 
-var constants   = require('../../../constants'),
+const constants   = require('../../../constants'),
     PF          = constants.PFIELDS,
     addAction   = require('./../common/add_action'),
     oPool       = require('./../../../objects_pool');
 
-var DEF_TIMEOUT = Number(Config.game.timeouts.default);
+const DEF_TIMEOUT = Number(Config.game.timeouts.default);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
     
-    var uid;
+    let uid;
     
     // Если вызов произведен игроком - сохраняем его выбор и останавливаем таймер
     if(!timer) {
@@ -37,28 +37,28 @@ module.exports = function(game) {
     }
 
     // Получаем данные по первому игроку
-    var firstPlayerInfo = null;
+    let firstPlayerInfo = null;
     if(uid) {
       firstPlayerInfo = game._activePlayers[uid];
     } else { // В случае, если игрок так и не покрутил волчек, берем его uid из настроек
-      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+      for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         firstPlayerInfo = game._activePlayers[item];
       }
     }
 
     // Выбираем второго игрока
-    var firstGender = firstPlayerInfo.sex;
-    var male = constants.GUY;
-    var female = constants.GIRL;
+    let firstGender = firstPlayerInfo.sex;
+    let male = constants.GUY;
+    let female = constants.GIRL;
 
-    var secondGender = (firstGender == male)? female : male;
+    let secondGender = (firstGender == male)? female : male;
 
-    var excludeIDs = [];
+    let excludeIDs = [];
     if(game.getPrisonerInfo()) {
       excludeIDs.push(game.getPrisonerInfo().id);
     }
 
-    var secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
+    let secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
 
     if(!secondPlayer) {
       return game.stop();
@@ -77,17 +77,20 @@ module.exports = function(game) {
     game._nextGame = constants.G_BOTTLE_KISSES;
 
     // Отправляем результаты
-    var result = {};
-    result[PF.PLAYERS]  = game.getPlayersID();
-    result[PF.NEXTGAME] = constants.G_BOTTLE_KISSES;
-    result[PF.PRISON] = null;
+    let result = {
+      [PF.PLAYERS]  : game.getPlayersID(),
+      [PF.NEXTGAME] : constants.G_BOTTLE_KISSES,
+      [PF.PRISON]   : null
+    };
+
     
     if(game._prisoner !== null) {
   
-      result[PF.PRISON] = {};
-      result[PF.PRISON][PF.ID]  = game._prisoner.id;
-      result[PF.PRISON][PF.VID] = game._prisoner.vid;
-      result[PF.PRISON][PF.SEX] = game._prisoner.sex;
+      result[PF.PRISON] = {
+        [PF.ID]  : game._prisoner.id,
+        [PF.VID] : game._prisoner.vid,
+        [PF.SEX] : game._prisoner.sex
+      };
       
     }
 

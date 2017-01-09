@@ -6,13 +6,14 @@
  * @return Object options
  */
 
-var async = require('async');
+const async = require('async');
 
-var cdb     = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF     = dbConst.DB.USER_FRIENDS.fields;
-var DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
-var PF      = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF     = dbConst.DB.USER_FRIENDS.fields;
+const DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
+const PF      = dbConst.PFIELDS;
 
 /*
  Добавить друга в БД: ИД, объект с данными друга
@@ -29,7 +30,7 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   async.waterfall([ //-------------------------------------------------------------
     function (cb) {
-      var fields = [
+      let fields = [
         DBF.USERID_uuid_pi,
         DBF.FRIENDID_uuid_c,
         DBF.FRIENDVID_varhcar,
@@ -38,7 +39,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FRIENDBDATE_timestamp
       ];
       
-      var params = [
+      let params = [
         uid,
         options[PF.ID],
         options[PF.VID],
@@ -47,7 +48,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.BDATE]
       ];
   
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_FRIENDS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_FRIENDS.name);
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -57,17 +58,17 @@ module.exports = function(uid, options, callback) { options = options || {};
     }, //------------------------------------------------------------------------------
     function (res, cb) {
       
-      var fields = [
+      let fields = [
         DBFN.USERID_uuid_pc1i,
         DBFN.FRIENDID_uuid_pc2
       ];
       
-      var params = [
+      let params = [
         uid,
         options[PF.ID]
       ];
   
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_FRIENDS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_FRIENDS.name);
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }

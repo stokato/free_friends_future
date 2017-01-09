@@ -5,11 +5,13 @@
  *
  */
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.MAIN_STAT.fields;
-var PF = dbConst.PFIELDS;
-var SF = require('./../../../constants').SFIELDS;
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const constants = require('./../../../constants');
+
+const DBF = dbConst.DB.MAIN_STAT.fields;
+const PF  = dbConst.PFIELDS;
+const SF  = constants.SFIELDS;
 
 module.exports = function(options, callback) { options = options || {};
   
@@ -17,12 +19,12 @@ module.exports = function(options, callback) { options = options || {};
     return callback(new Error("Задан пустой Id"), null);
   }
   
-  var fields = [];
-  var constFields = [DBF.ID_varchar_p];
-  var constValues = [1];
-  var dbName = dbConst.DB.MAIN_STAT.name;
+  let fields = [];
+  let constFields = [DBF.ID_varchar_p];
+  let constValues = [1];
+  let dbName = dbConst.DB.MAIN_STAT.name;
   
-  var params = [];
+  let params = [];
   if (SF.GIFTS_LOVES in options)        { fields.push(DBF.C_GIFTS_LOVES_counter);       params.push(options[SF.GIFTS_LOVES]); }
   if (SF.GIFTS_BREATH in options)       { fields.push(DBF.C_GIFTS_BREATH_counter);      params.push(options[SF.GIFTS_BREATH]); }
   if (SF.GIFTS_FLOWERS in options)      { fields.push(DBF.C_GIFTS_FLOWERS_counter);     params.push(options[SF.GIFTS_FLOWERS]); }
@@ -51,7 +53,7 @@ module.exports = function(options, callback) { options = options || {};
   if (SF.COINS_EARNED in options)       { fields.push(DBF.C_COINS_EARNED_counter);      params.push(options[SF.COINS_EARNED]); }
   if (SF.COINS_SPENT in options)        { fields.push(DBF.C_COUNS_SPENT_counter);       params.push(options[SF.COINS_SPENT]); }
     
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
   
   params.push(options[PF.ID]);
   

@@ -1,7 +1,7 @@
 // Получить слуайный вопрос
 module.exports = function() {
-  var questions = this.getQuestions();
-  var rand = Math.floor(Math.random() * questions.length);
+  let questions = this.getQuestions();
+  let rand = Math.floor(Math.random() * questions.length);
 
   return questions[rand].text;
 };

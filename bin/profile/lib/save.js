@@ -2,22 +2,23 @@
  * Сохраняем профиль в БД
  */
 
-var db  = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const db  = require('./../../db_manager');
+const IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(callback) {
-  var self = this;
+  let self = this;
   
-  var options = {};
-  options[IOF.ID]       = self._pID;
-  options[IOF.VID]      = self._pVID;
-  options[IOF.BDATE]    = self._pBDate;
-  options[IOF.COUNTRY]  = self._pCountry;
-  options[IOF.CITY]     = self._pCity;
-  options[IOF.SEX]      = self._pSex;
-  options[IOF.STATUS]   = self._pStatus;
-  options[IOF.POINTS]   = self._pPoints;
-  options[IOF.MONEY]    = self._pMoney;
+  let options = {
+    [IOF.ID]       : self._pID,
+    [IOF.VID]      : self._pVID,
+    [IOF.BDATE]    : self._pBDate,
+    [IOF.COUNTRY]  : self._pCountry,
+    [IOF.CITY]     : self._pCity,
+    [IOF.SEX]      : self._pSex,
+    [IOF.STATUS]   : self._pStatus,
+    [IOF.POINTS]   : self._pPoints,
+    [IOF.MONEY]    : self._pMoney
+  };
   
   if(self._pGift1) {
     options[IOF.GIFT1]    = self._pGift1.gid;

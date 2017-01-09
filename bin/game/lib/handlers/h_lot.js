@@ -4,23 +4,23 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var constants = require('../../../constants'),
+const constants = require('../../../constants'),
   PF        = constants.PFIELDS,
   addAction = require('./../common/add_action'),
   oPool     = require('./../../../objects_pool');
 
-var Config        = require('./../../../../config.json');
+const Config        = require('./../../../../config.json');
 
-var DEF_TIMEOUT    = Number(Config.game.timeouts.default);
-var BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
-var PRISON_TIMEOUT = Number(Config.game.timeouts.prison);
+const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
+const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
+const PRISON_TIMEOUT = Number(Config.game.timeouts.prison);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
     
     // Если вызов произведени игроком - сохраняем его выбор
     if(!timer) {
-      var uid = oPool.userList[socket.id].getID();
+      let uid = oPool.userList[socket.id].getID();
       
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -32,7 +32,7 @@ module.exports = function(game) {
     // Сбрасываем таймер
     clearTimeout(game._timer);
     
-    var timeout = DEF_TIMEOUT;
+    let timeout = DEF_TIMEOUT;
     
     // Если игроков недостаточно - останавилваем игру
     if(!game.checkCountPlayers()) {
@@ -40,8 +40,8 @@ module.exports = function(game) {
     }
     
     // Определяем следующую игру, если игроков слишком мало - то без тюрьмы
-    var rand;
-    var games = (game._prisoner !== null ||
+    let rand;
+    let games = (game._prisoner !== null ||
     game._room.getCountInRoom(constants.GIRL) <= 2 ||
     game._room.getCountInRoom(constants.GUY) <= 2)?
       constants.GAMES_WITHOUT_PRISON : constants.GAMES;
@@ -56,11 +56,11 @@ module.exports = function(game) {
     // Очищаем настройки
     game._actionsQueue = {};
     
-    var result = {};
+    let result = {};
     result[PF.NEXTGAME] = game._nextGame;
     result[PF.PLAYERS] = [];
     
-    var countPrisoners = (game._prisoner === null)? 0 : 1;
+    let countPrisoners = (game._prisoner === null)? 0 : 1;
     
     switch (game._nextGame) {
       //-------------------------------- БУТЫЛОЧКА -----------------------------------------
@@ -98,19 +98,19 @@ module.exports = function(game) {
       //---------------------------------- ЛУЧШИЙ --------------------------------------------
       case constants.G_BEST : // для игры Кто больше нравится выбираем произвольно пару к игроку того же пола
                               // ходят остальные
-        var firstPlayer = null;
+        let firstPlayer = null;
         if(uid) {
           firstPlayer = game._activePlayers[uid];
         } else {
-          for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+          for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
             firstPlayer = game._activePlayers[item];
           }
         }
         
         // Получаем второго игрока
-        var firstGender = firstPlayer.sex;
+        let firstGender = firstPlayer.sex;
         
-        var excludeIds = [firstPlayer.id];
+        let excludeIds = [firstPlayer.id];
         
         if(game.getPrisonerInfo()){
           excludeIds.push(game.getPrisonerInfo().id);
@@ -120,27 +120,30 @@ module.exports = function(game) {
           excludeIds.push(game.getPrisonerInfo().id);
         }
         
-        var randPlayer = game._room.randomProfile(firstGender, excludeIds);
+        let randPlayer = game._room.randomProfile(firstGender, excludeIds);
         
         if(!randPlayer) {
           return game.stop();
         }
         
         // Получаем сведения
-        var secondPlayer = game.getPlayerInfo(randPlayer);
+        let secondPlayer = game.getPlayerInfo(randPlayer);
         
-        var bestPlayers = [firstPlayer.id, secondPlayer.id];
-        var best1 = {};
-        best1[PF.ID]  = firstPlayer.id;
-        best1[PF.VID] = firstPlayer.vid;
-        best1[PF.SEX] = firstPlayer.sex;
+        let bestPlayers = [firstPlayer.id, secondPlayer.id];
+        let best1 = {
+          [PF.ID]  : firstPlayer.id,
+          [PF.VID] : firstPlayer.vid,
+          [PF.SEX] : firstPlayer.sex
+        };
         
-        var best2 = {};
-        best2[PF.ID]  = secondPlayer.id;
-        best2[PF.VID] = secondPlayer.vid;
-        best2[PF.SEX] = secondPlayer.sex;
+        let best2 = {
+          [PF.ID]  : secondPlayer.id,
+          [PF.VID] : secondPlayer.vid,
+          [PF.SEX] : secondPlayer.sex
+        };
+
         
-        var bestPlayerInfo = [best1, best2];
+        let bestPlayerInfo = [best1, best2];
         
         // Сохраняем опции
         game._storedOptions = {};
@@ -181,10 +184,12 @@ module.exports = function(game) {
     // Добавляем данные об игроке в темнице и отправляем результаты игрокам
     if(game._prisoner !== null) {
       
-      result[PF.PRISON] = {};
-      result[PF.PRISON][PF.ID] = game._prisoner.id;
-      result[PF.PRISON][PF.VID] = game._prisoner.vid;
-      result[PF.PRISON][PF.SEX] = game._prisoner.sex;
+      result[PF.PRISON] = {
+        [PF.ID]  : game._prisoner.id,
+        [PF.VID] : game._prisoner.vid,
+        [PF.SEX] : game._prisoner.sex
+      };
+
     } else {
       result[PF.PRISON] = null;
     }

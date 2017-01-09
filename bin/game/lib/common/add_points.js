@@ -1,8 +1,5 @@
-var constants     = require('./../../../constants'),
-    oPool         = require('./../../../objects_pool'),
-    ProfileJS     = require('./../../../profile/index'),
-    GameError     = require('./game_error'),
-    handleError   = require('./handle_error');
+const oPool         = require('./../../../objects_pool'),
+      ProfileJS     = require('./../../../profile/index');
 
 /*
     Добавляем пользователю очки
@@ -10,7 +7,7 @@ var constants     = require('./../../../constants'),
 module.exports = function (uid, count, callback) {
   
   // Если пользователь оналайн, берем из пула
-  var player = oPool.profiles[uid];
+  let player = oPool.profiles[uid];
   
   if(player) {
     player.addPoints(count, callback);
@@ -28,7 +25,7 @@ module.exports = function (uid, count, callback) {
   // // Функция обрабатывает результы начисления очков, оповещает игрока
   // function onPoints(player) {
   //   return function(err, points) {
-  //     var socket = player.getSocket();
+  //     let socket = player.getSocket();
   //
   //     if(err) {
   //       if(socket) {
@@ -40,7 +37,7 @@ module.exports = function (uid, count, callback) {
   //       return callback(err);
   //     }
   //
-  //     var res = {};
+  //     let res = {};
   //     res[constants.PFIELDS.POINTS] = points;
   //
   //     socket.emit(constants.IO_ADD_POINTS, res);

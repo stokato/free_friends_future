@@ -1,12 +1,13 @@
-var async = require('async');
+const async = require('async');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USER_MESSAGES.fields;
-var DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
-var DBFCN = dbConst.DB.USER_NEW_CHATS.fields;
-var PF = dbConst.PFIELDS;
-var bdayToAge = require('./../common/bdayToAge');
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const bdayToAge = require('./../common/bdayToAge');
+
+const DBF     = dbConst.DB.USER_MESSAGES.fields;
+const DBFN    = dbConst.DB.USER_NEW_MESSAGES.fields;
+const DBFCN   = dbConst.DB.USER_NEW_CHATS.fields;
+const PF      = dbConst.PFIELDS;
 
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
@@ -15,17 +16,17 @@ var bdayToAge = require('./../common/bdayToAge');
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var companions = options[PF.ID_LIST] || [];
-  var firstDate =  options[PF.DATE_FROM];
-  var secondDate = options[PF.DATE_TO];
+  let companions = options[PF.ID_LIST] || [];
+  let firstDate =  options[PF.DATE_FROM];
+  let secondDate = options[PF.DATE_TO];
   
   if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
   if (!companions[0]) { return callback(new Error("Задан пустой Id собеседника"), null); }
   
-  var fields = "";
-  var params = [uid];
+  let fields = "";
+  let params = [uid];
   
-  for(var i = 0; i < companions.length; i++) {
+  for(let i = 0; i < companions.length; i++) {
     if (fields == "") { fields = fields + "?"; }
     else { fields = fields + ", " + "?"; }
     
@@ -33,19 +34,19 @@ module.exports = function(uid, options, callback) { options = options || {};
   }
   async.waterfall([//-----------------------------------------------------------
       function (cb) {
-        var fields = [DBFN.COMPANIONID_uuid_pc2i];
-        var dbName = dbConst.DB.USER_NEW_MESSAGES.name;
-        var constFields = [DBFN.USERID_uuid_pci];
-        var constValues = [1];
+        let fields = [DBFN.COMPANIONID_uuid_pc2i];
+        let dbName = dbConst.DB.USER_NEW_MESSAGES.name;
+        let constFields = [DBFN.USERID_uuid_pci];
+        let constValues = [1];
         
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
         
         cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
           
-          var newIds = [];
+          let newIds = [];
           
-          for(var i = 0; i < result.rows.length; i++) {
+          for(let i = 0; i < result.rows.length; i++) {
             newIds.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2i].toString());
           }
           
@@ -53,27 +54,27 @@ module.exports = function(uid, options, callback) { options = options || {};
         });
       },//-----------------------------------------------------------
       function(newIDs, cb) { // Получаем историю сообщений за указанный период (прочитанных)
-        //var query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
-        var const_more, const_less;
-        var params2 = params.slice(0);
+        //let query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
+        let const_more, const_less;
+        let params2 = params.slice(0);
         if (firstDate) {
           const_more = const_less = "id";
           params2.push(cdb.timeUuid.fromDate(firstDate));
           params2.push(cdb.timeUuid.fromDate(secondDate));
         }
         
-        var constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i];
-        var constValues = [1, companions.length];
-        var dbName = dbConst.DB.USER_MESSAGES.name;
+        let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i];
+        let constValues = [1, companions.length];
+        let dbName = dbConst.DB.USER_MESSAGES.name;
         
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS],
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS],
           dbName, constFields, constValues, const_more, const_less);
         
         cdb.client.execute(query, params2, {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
-          var messages = [], message, row;
+          let messages = [], message, row;
           
-          for(var i = 0; i < result.rows.length; i++) {
+          for(let i = 0; i < result.rows.length; i++) {
             row = result.rows[i];
             
             message = {};
@@ -97,7 +98,7 @@ module.exports = function(uid, options, callback) { options = options || {};
             
             message[PF.ISNEW] = false;
             
-            for(var nid = 0; nid < newIDs.length; nid++) {
+            for(let nid = 0; nid < newIDs.length; nid++) {
               if(message[PF.ID] == newIDs[nid]) {
                 message[PF.ISNEW] = true;
               }
@@ -109,12 +110,12 @@ module.exports = function(uid, options, callback) { options = options || {};
         });
       },//-----------------------------------------------------------
       function(messages, cb) { // Удаляем сообщения из таблицы новых
-        var constFields = [DBFN.USERID_uuid_pci, DBFN.COMPANIONID_uuid_pc2i];
-        var constValues = [1, companions.length];
-        var dbName = dbConst.DB.USER_NEW_MESSAGES.name;
+        let constFields = [DBFN.USERID_uuid_pci, DBFN.COMPANIONID_uuid_pc2i];
+        let constValues = [1, companions.length];
+        let dbName = dbConst.DB.USER_NEW_MESSAGES.name;
         
-        //var query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+        //let query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
         
         cdb.client.execute(query, params, {prepare: true }, function(err) {
           if (err) {  return cb(err, null); }
@@ -124,16 +125,16 @@ module.exports = function(uid, options, callback) { options = options || {};
       },//-----------------------------------------------------------
       function(messages, cb) {
         
-        var params = [uid];
-        var constFields = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
-        var constValues = [ 1, companions.length ];
-        var dbName = dbConst.DB.USER_NEW_CHATS.name;
+        let params = [uid];
+        let constFields = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
+        let constValues = [ 1, companions.length ];
+        let dbName = dbConst.DB.USER_NEW_CHATS.name;
         
-        for (var i = 0; i < companions.length; i ++) {
+        for (let i = 0; i < companions.length; i ++) {
           params.push(companions[i]);
         }
         
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
         cdb.client.execute(query, params, { prepare: true }, function(err) {
           if (err) { return cb(err); }
           

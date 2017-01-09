@@ -1,7 +1,8 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USERS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF = dbConst.DB.USERS.fields;
+const PF  = dbConst.PFIELDS;
 
 /*
  Добавляем пользователя в БД: объект с данными пользователя из соц. сетей
@@ -14,10 +15,10 @@ var PF = dbConst.PFIELDS;
 module.exports = function(options, callback) { options = options || {};
   if (!options[PF.VID]) { return callback(new Error("Не задан ИД пользователя ВКонтакте"), null); }
 
-  var id = cdb.uuid.random();
+  let id = cdb.uuid.random();
 
-  var fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
-  var params = [id, options[PF.VID]];
+  let fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
+  let params = [id, options[PF.VID]];
   if (options[PF.BDATE])        { fields.push(DBF.BDATE_timestamp);  params.push(options[PF.BDATE]); }
   if (options[PF.COUNTRY])      { fields.push(DBF.COUNTRY_int);      params.push(options[PF.COUNTRY]); }
   if (options[PF.CITY])         { fields.push(DBF.CITY_int);         params.push(options[PF.CITY]); }
@@ -32,7 +33,7 @@ module.exports = function(options, callback) { options = options || {};
   if (options[PF.FREE_TRACKS])  { fields.push(DBF.FREE_MUSIC_int);   params.push(options[PF.FREE_TRACKS]); }
   if (options[PF.VID])          { fields.push(DBF.VIP_boolean);      params.push(options[PF.VIP]); }
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USERS.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USERS.name);
 
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

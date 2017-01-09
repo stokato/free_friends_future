@@ -1,13 +1,15 @@
-var async = require('async');
+const async = require('async');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USER_MESSAGES.fields;
-var DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
-var DBFC = dbConst.DB.USER_CHATS.fields;
-var DBFCN = dbConst.DB.USER_NEW_CHATS.fields;
-var PF = dbConst.PFIELDS;
-var bdayToAge = require('./../common/bdayToAge');
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const bdayToAge = require('./../common/bdayToAge');
+
+const DBF = dbConst.DB.USER_MESSAGES.fields;
+const DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
+const DBFC = dbConst.DB.USER_CHATS.fields;
+const DBFCN = dbConst.DB.USER_NEW_CHATS.fields;
+const PF = dbConst.PFIELDS;
+
 
 /*
  Добавить сообщение в БД: ИД, объект сообщения
@@ -17,19 +19,19 @@ var bdayToAge = require('./../common/bdayToAge');
  - Возвращаем объект сообщения
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  var date         = options[PF.DATE] || new Date();
-  var opened       = options[PF.OPENED];
+  let date         = options[PF.DATE] || new Date();
+  let opened       = options[PF.OPENED];
 
   if (!date || !uid || !options[PF.FID] || !options[PF.TEXT] || !options[PF.VID] || !options[PF.FVID]) {
     return callback(new Error("Не указан один из параметров сообщения"), null);
   }
 
-  var id = cdb.timeUuid.fromDate(date);
+  let id = cdb.timeUuid.fromDate(date);
 
   async.waterfall([/////////////////////////////////////////////////////////////////////
     function(cb) { // Записываем сообщение либо в основную таблицу
 
-      var fields = [
+      let fields = [
         DBF.ID_timeuuid_c,
         DBF.USERID_uuid_pci,
         DBF.DATE_timestamp,
@@ -44,7 +46,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.USERVID_varchar
       ];
   
-      var params = [
+      let params = [
         id,
         uid,
         date,
@@ -59,8 +61,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.VID]
       ];
 
-      //var query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_MESSAGES.name);
+      //let query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_MESSAGES.name);
 
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
@@ -70,20 +72,20 @@ module.exports = function(uid, options, callback) { options = options || {};
     },//-------------------------------------------------------------------
     function(res, cb) { // Либо в таблицу новых сообщений (если оно еще не прочитано)
       if(!opened) {
-        var fields = [
+        let fields = [
           DBFN.ID_timeuuid_c,
           DBFN.USERID_uuid_pci,
           DBFN.COMPANIONID_uuid_pc2i
         ];
         
-        var params = [
+        let params = [
           id,
           uid,
           options[PF.FID]
         ];
         
-        //var query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_MESSAGES.name);
+        //let query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_MESSAGES.name);
 
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) {  return cb(err); }
@@ -96,18 +98,18 @@ module.exports = function(uid, options, callback) { options = options || {};
     }, //-------------------------------------------------------------------
     function(res, cb) { // Добавляем в новые чаты
       if(!opened) {
-        var fields = [
+        let fields = [
           DBFCN.USERID_uuid_pc1i,
           DBFCN.COMPANIONID_uuid_pc2
         ];
   
-        var params = [
+        let params = [
           uid,
           options[PF.FID]
         ];
   
-        //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_CHATS.name);
+        //let query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_CHATS.name);
   
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) { return cb(err); }
@@ -118,7 +120,7 @@ module.exports = function(uid, options, callback) { options = options || {};
     }, //-------------------------------------------------------------------
     function(res, cb) { // Добавляем чат
       
-      var fields = [
+      let fields = [
         DBFC.USERID_uuid_p,
         DBFC.COMPANIONID_uuid_c,
         DBFC.ISNEW_boolean,
@@ -127,7 +129,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBFC.COMPANIONVID_varchar
       ];
   
-      var params = [
+      let params = [
         uid,
         options[PF.FID],
         opened,
@@ -136,8 +138,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.FVID]
       ];
 
-      //var query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_CHATS.name);
+      //let query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_CHATS.name);
 
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }

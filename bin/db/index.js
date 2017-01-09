@@ -1,4 +1,4 @@
-var addUser           = require('./lib/users/users_add'),
+const addUser           = require('./lib/users/users_add'),
   findUser            = require('./lib/users/users_find'),
   updateUser          = require('./lib/users/users_update'),
   deleteUser          = require('./lib/users/users_delete'),
@@ -45,11 +45,11 @@ var addUser           = require('./lib/users/users_add'),
   findUserQuestions   = require('./lib/user_questions/user_questions_find'),
   deleteUserQuestions = require('./lib/user_questions/user_questions_delete');
 
-var addAuthUser       = require('./lib/auth_users/auth_users_add'),
+const addAuthUser       = require('./lib/auth_users/auth_users_add'),
    findAuthUser       = require('./lib/auth_users/auth_users_find'),
    deleteAuthUser     = require('./lib/auth_users/auth_users_delete');
 
-var dbConstants       = require('./constants').PFIELDS;
+const dbConstants       = require('./constants').PFIELDS;
 
 
 /**
@@ -64,7 +64,7 @@ var dbConstants       = require('./constants').PFIELDS;
  *                 - добавить, найти, удалить гостей
  *                 - добавить, найти, удалить товар (магазин)
  */
-var DBManager = function() {
+let DBManager = function() {
   this.CONST = dbConstants;
 };
 

@@ -2,7 +2,7 @@
  * Created by s.t.o.k.a.t.o on 21.11.2016.
  */
 
-var constants = require('./../constants');
+const constants = require('./../constants');
 
 module.exports.PFIELDS = constants.PFIELDS;
 

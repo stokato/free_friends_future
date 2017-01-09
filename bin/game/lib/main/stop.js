@@ -1,7 +1,7 @@
 /**
  * Останавливаем игру
  */
-var constants = require('../../../constants');
+const constants = require('../../../constants');
 
 module.exports = function() {
   clearTimeout(this._timer);

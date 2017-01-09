@@ -1,7 +1,8 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.QUESTIONS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF = dbConst.DB.QUESTIONS.fields;
+const PF  = dbConst.PFIELDS;
 
 /*
  Найти все вопосы для игры questions
@@ -10,25 +11,26 @@ var PF = dbConst.PFIELDS;
  */
 module.exports = function(callback) {
 
-  var fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar];
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.QUESTIONS.name);
+  let fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar];
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.QUESTIONS.name);
 
   cdb.client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, null);
 
-    var questions = [], question, row;
+    let questions = [], question, row;
 
-    for (var i = 0; i < result.rows.length; i++) {
+    for (let i = 0; i < result.rows.length; i++) {
       row = result.rows[i];
       
-      question = {};
-      question[PF.ID]   = row[DBF.ID_uuid_p].toString();
-      question[PF.TEXT] = row[DBF.TEXT_varchar];
-      question[PF.IMAGE_1] = row[DBF.IMAGE1_varchar];
-      question[PF.IMAGE_2] = row[DBF.IMAGE2_varchar];
-      question[PF.IMAGE_3] = row[DBF.IMAGE3_varchar];
+      question = {
+        [PF.ID]      : row[DBF.ID_uuid_p].toString(),
+        [PF.TEXT]    : row[DBF.TEXT_varchar],
+        [PF.IMAGE_1] : row[DBF.IMAGE1_varchar],
+        [PF.IMAGE_2] : row[DBF.IMAGE2_varchar],
+        [PF.IMAGE_3] : row[DBF.IMAGE3_varchar]
+      };
       
       questions.push(question);
     }

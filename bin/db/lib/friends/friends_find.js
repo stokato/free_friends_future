@@ -9,14 +9,15 @@
  *  @return Object - объект с массивом друзей и количеством новых
  */
 
-var async = require('async');
+const async = require('async');
 
-var cdb       = require('./../common/cassandra_db');
-var dbConst   = require('./../../constants');
-var DBFN      = dbConst.DB.USER_NEW_FRIENDS.fields;
-var DBF       = dbConst.DB.USER_FRIENDS.fields;
-var PF        = dbConst.PFIELDS;
-var bdayToAge = require('./../common/bdayToAge');
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const bdayToAge = require('./../common/bdayToAge');
+
+const DBFN      = dbConst.DB.USER_NEW_FRIENDS.fields;
+const DBF       = dbConst.DB.USER_FRIENDS.fields;
+const PF        = dbConst.PFIELDS;
 
 module.exports = function(uid, friendsID, withnew, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
@@ -24,19 +25,19 @@ module.exports = function(uid, friendsID, withnew, callback) {
   async.waterfall([ //--------------------------------------------------------
       function (cb) {
         if(withnew) {
-          var fields      = [DBFN.FRIENDID_uuid_pc2];
-          var dbName      = dbConst.DB.USER_NEW_FRIENDS.name;
-          var constFields = [DBFN.USERID_uuid_pc1i];
-          var constValues = [1];
+          let fields      = [DBFN.FRIENDID_uuid_pc2];
+          let dbName      = dbConst.DB.USER_NEW_FRIENDS.name;
+          let constFields = [DBFN.USERID_uuid_pc1i];
+          let constValues = [1];
           
-          var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+          let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
           cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
             if (err) { return cb(err, null); }
     
-            var newIds = [];
+            let newIds = [];
     
-            for(var i = 0; i < result.rows.length; i++) {
+            for(let i = 0; i < result.rows.length; i++) {
               newIds.push(result.rows[i][DBFN.FRIENDID_uuid_c]);
             }
     
@@ -46,7 +47,7 @@ module.exports = function(uid, friendsID, withnew, callback) {
       }, //-----------------------------------------------------------------
       function (newIds, cb) {
         
-        var fields = [
+        let fields = [
           DBF.FRIENDID_uuid_c,
           DBF.FRIENDVID_varhcar,
           DBF.DATE_timestamp,
@@ -54,41 +55,42 @@ module.exports = function(uid, friendsID, withnew, callback) {
           DBF.FRIENDBDATE_timestamp
         ];
         
-        var constFields = [DBF.USERID_uuid_pi];
-        var constCount  = [1];
-        var dbName      = dbConst.DB.USER_FRIENDS.name;
-        var params      = [uid];
+        let constFields = [DBF.USERID_uuid_pi];
+        let constCount  = [1];
+        let dbName      = dbConst.DB.USER_FRIENDS.name;
+        let params      = [uid];
   
         if(friendsID) {
           constFields.push(DBF.FRIENDID_uuid_c);
           constCount.push(friendsID.length);
     
-          for(var i = 0; i < friendsID.length; i++) {
+          for(let i = 0; i < friendsID.length; i++) {
             params.push(friendsID[i]);
           }
         }
           
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constCount);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constCount);
   
         // Отбираем всех друзей или по списку friendsID
         cdb.client.execute(query, params, {prepare: true }, function(err, result) {
           if (err) { return cb(err, null); }
           
-          var user, users = [];
+          let user, users = [];
           
-            for(var i = 0; i < result.rows.length; i++) {
-              var row = result.rows[i];
+            for(let i = 0; i < result.rows.length; i++) {
+              let row = result.rows[i];
         
-              user = {};
-              user[PF.ID]   = row[DBF.FRIENDID_uuid_c].toString();
-              user[PF.VID]  = row[DBF.FRIENDVID_varhcar];
-              user[PF.AGE]  = bdayToAge(row[DBF.FRIENDBDATE_timestamp]);
-              user[PF.SEX]  = row[DBF.FRIENDSEX_int];
+              user = {
+                [PF.ID]   : row[DBF.FRIENDID_uuid_c].toString(),
+                [PF.VID]  : row[DBF.FRIENDVID_varhcar],
+                [PF.AGE]  : bdayToAge(row[DBF.FRIENDBDATE_timestamp]),
+                [PF.SEX]  : row[DBF.FRIENDSEX_int]
+              };
               
               if(withnew) {
                 user[PF.ISNEW] = false;
   
-                for(var nid = 0; nid < newIds.length; nid++) {
+                for(let nid = 0; nid < newIds.length; nid++) {
                   if(user[PF.ID] == newIds[nid]) {
                     user[PF.ISNEW] = true;
                   }

@@ -1,19 +1,19 @@
 /**
  * Created by s.t.o.k.a.t.o on 25.11.2016.
  */
-var async     =  require('async');
+const async     =  require('async');
 
-var constants     = require('../../../constants');
-var oPool = require('./../../../objects_pool'),
-  handleError     = require('./../common/handle_error'),
-  checkInput      = require('./../common/check__game_input');
+const constants  = require('../../../constants');
+const oPool      = require('./../../../objects_pool'),
+  handleError    = require('./../common/handle_error'),
+  checkInput     = require('./../common/check__game_input');
 
-var
-  addAction           = require('./../main/game_action'),
-  releasePlayer       = require('./../main/release_player');
+const 
+  addAction      = require('./../main/game_action'),
+  releasePlayer  = require('./../main/release_player');
 
-var emit = constants.IO_RELEASE_PLAYER;
-var handler = releasePlayer;
+const emit = constants.IO_RELEASE_PLAYER;
+const handler = releasePlayer;
 
 // Назначаем эмиты
 module.exports = function(socket) {
@@ -22,8 +22,8 @@ module.exports = function(socket) {
   
   socket.on(emit, function(options) {
     
-    var selfProfile = oPool.userList[socket.id];
-    var game = selfProfile.getGame();
+    let selfProfile = oPool.userList[socket.id];
+    let game = selfProfile.getGame();
     
     async.waterfall([
       function (cb) { cb(null, emit, socket, game.getNextGame(), options); },

@@ -4,19 +4,20 @@
  * Увеличиваем уровень игрока
  */
 
-var db        = require('./../../db_manager');
-var IOF       = require('./../../constants').PFIELDS;
+const  db        = require('./../../db_manager');
+const  IOF       = require('./../../constants').PFIELDS;
 
 module.exports = function(num, callback) {
-  var self = this;
+  let  self = this;
   
   self._pLevel = self._pLevel || 0;
   
-  var options = {};
-  options[IOF.ID]      = self._pID;
-  options[IOF.VID]     = self._pVID;
-  options[IOF.SEX]     = self._pSex;
-  options[IOF.LEVEL]   = num;
+  let  options = {
+    [IOF.ID]      : self._pID,
+    [IOF.VID]     : self._pVID,
+    [IOF.SEX]     : self._pSex,
+    [IOF.LEVEL]   : num
+  };
   
   db.updateUser(options, function(err) {
     if(err) { return callback(err, null); }

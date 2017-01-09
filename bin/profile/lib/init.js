@@ -5,17 +5,17 @@
  * @return info - сведения о пользователе
  */
 
-var async     = require('async');
+const async     = require('async');
 
-var Config    = require('./../../../config.json'),
+const Config    = require('./../../../config.json'),
     constants = require('../../constants'),
     IOF       = constants.PFIELDS,
     db        = require('./../../db_manager');
 
-var BLOCK_TIMEOUT = Number(Config.user.settings.user_block_timeout);
+const BLOCK_TIMEOUT = Number(Config.user.settings.user_block_timeout);
 
 module.exports = function(socket, options, callback) {
-  var self = this;
+  let self = this;
 
   async.waterfall([//---------------------------------------------------
     function (cb) {  // Устанавливаем свойства
@@ -35,7 +35,7 @@ module.exports = function(socket, options, callback) {
       cb(null, null);
     },//---------------------------------------------------
     function (res, cb) {  // Ищем пользователя в базе
-      var fList = [
+      let fList = [
         IOF.SEX,
         IOF.POINTS,
         IOF.MONEY,
@@ -98,11 +98,11 @@ module.exports = function(socket, options, callback) {
         db.findBlocked(self._pID, function(err, blockedUsers) {
           if(err) { return cb(err, null); }
           
-          var now = new Date();
-          for(var i = 0; i < blockedUsers.length; i++) {
+          let now = new Date();
+          for(let i = 0; i < blockedUsers.length; i++) {
             if(now - blockedUsers[i][IOF.DATE] < BLOCK_TIMEOUT) {
               
-              var delay = now - blockedUsers[i][IOF.DATE];
+              let delay = now - blockedUsers[i][IOF.DATE];
               self._pBlackList[blockedUsers[i][IOF.ID]] = {
                 date : blockedUsers[i][IOF.DATE],
                 timeout : setBlockedTimeout(self, blockedUsers[i][IOF.ID], delay)
@@ -118,15 +118,18 @@ module.exports = function(socket, options, callback) {
     function (foundUser, cb) { // Если в базе такого нет, добавляем
       if (!foundUser) {
         // Добавляем пользователя
+  
+        self._pMoney = Config.moneys.start_money;
 
-        var newUser = {};
-        newUser[IOF.VID]      = self._pVID;
-        newUser[IOF.BDATE]    = self._pBDate;
-        newUser[IOF.COUNTRY]  = self._pCountry;
-        newUser[IOF.CITY]     = self._pCity;
-        newUser[IOF.SEX]      = self._pSex;
-        newUser[IOF.MONEY]    = self._pMoney = Config.moneys.start_money;
-        newUser[IOF.ISMENU]   = self._pIsInMenu;
+        let newUser = {
+          [IOF.VID]      : self._pVID,
+          [IOF.BDATE]    : self._pBDate,
+          [IOF.COUNTRY]  : self._pCountry,
+          [IOF.CITY]     : self._pCity,
+          [IOF.SEX]      : self._pSex,
+          [IOF.MONEY]    : self._pMoney,
+          [IOF.ISMENU]   : self._pIsInMenu
+        };
 
         db.addUser(newUser, function(err, user) {
           if (err) { return cb(err); }
@@ -141,16 +144,17 @@ module.exports = function(socket, options, callback) {
   ], function (err) { // Вызвается последней или в случае ошибки
     if (err) { return  callback(err); }
 
-    var info = {};
-    info[IOF.ID]       = self._pID;
-    info[IOF.VID]      = self._pVID;
-    info[IOF.AGE]      = self.getAge();
-    info[IOF.SEX]      = self._pSex;
-    info[IOF.MONEY]    = self._pMoney;
-    info[IOF.POINTS]   = self._pPoints;
-    info[IOF.STATUS]   = self._pStatus;
-    info[IOF.CITY]     = self._pCity;
-    info[IOF.COUNTRY]  = self._pCountry;
+    let info = {
+      [IOF.ID]       : self._pID,
+      [IOF.VID]      : self._pVID,
+      [IOF.AGE]      : self.getAge(),
+      [IOF.SEX]      : self._pSex,
+      [IOF.MONEY]    : self._pMoney,
+      [IOF.POINTS]   : self._pPoints,
+      [IOF.STATUS]   : self._pStatus,
+      [IOF.CITY]     : self._pCity,
+      [IOF.COUNTRY]  : self._pCountry,
+    };
     
     self._pInitTime    = new Date();
     
@@ -160,7 +164,7 @@ module.exports = function(socket, options, callback) {
   
   function setBlockedTimeout(profile, blockedID, delay) {
     
-    var timeout = setTimeout(function () {
+    let timeout = setTimeout(function () {
       profile.delFromBlackList(blockedID, function (err) {
         if(err){ console.log("Ошибка при удалении пользователя из черного списка");}
       })

@@ -4,21 +4,20 @@
  * @param socket, options, callback
  */
 
-var Config        = require('./../../../../config.json');
-var RANSOM_PRICE = Number(Config.moneys.sympathy_price);
+const Config      = require('./../../../../config.json');
+const constants   = require('../../../constants');
+const oPool       = require('./../../../objects_pool');
 
-var constants = require('../../../constants'),
-    PF = constants.PFIELDS;
-
-var oPool = require('./../../../objects_pool');
-var WASTE_POINTS  = Number(Config.points.waste);
+const PF            = constants.PFIELDS;
+const WASTE_POINTS  = Number(Config.points.waste);
+const RANSOM_PRICE  = Number(Config.moneys.sympathy_price);
 
 // Освободить игрока из темницы
 module.exports = function (socket, options, callback) {
   
-  var selfProfile = oPool.userList[socket.id];
-  var game = selfProfile.getGame();
-  var prisonerInfo = game.getPrisonerInfo();
+  let selfProfile = oPool.userList[socket.id];
+  let game = selfProfile.getGame();
+  let prisonerInfo = game.getPrisonerInfo();
   
   // Если среди заблокированных игроков такого нет, выдаем ошибку
   if(!prisonerInfo) {
@@ -34,7 +33,7 @@ module.exports = function (socket, options, callback) {
   selfProfile.pay(RANSOM_PRICE, function (err, money) {
     if(err) { return callback(err); }
     
-    // var res = {};
+    // let res = {};
     // res[PF.MONEY] = money;
     //
     // socket.emit(constants.IO_GET_MONEY, res);
@@ -42,7 +41,7 @@ module.exports = function (socket, options, callback) {
     selfProfile.addPoints(WASTE_POINTS * RANSOM_PRICE, function (err, points) {
       if(err) { return callback(err);  }
     
-      // var res = {};
+      // let res = {};
       // res[constants.PFIELDS.POINTS] = points;
       // socket.emit(constants.IO_ADD_POINTS, res);
   
@@ -59,14 +58,15 @@ module.exports = function (socket, options, callback) {
         game._activePlayers[prisonerInfo.id] = prisonerInfo;
       }
   
-      var ranks = game._room.getRanks();
+      let ranks = game._room.getRanks();
       ranks.addRankBall(constants.RANKS.RELEASER, selfProfile.getID());
   
-      var result = {};
-      result[PF.ID] = prisonerInfo.id;
-      result[PF.VID] = prisonerInfo.vid;
-      result[PF.FID] = selfProfile.getID();
-      result[PF.FVID] = selfProfile.getVID();
+      let result = {
+        [PF.ID]   : prisonerInfo.id,
+        [PF.VID]  : prisonerInfo.vid,
+        [PF.FID]  : selfProfile.getID(),
+        [PF.FVID] : selfProfile.getVID()
+      };
   
       // Оповещаем игроков в комнате
       socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);

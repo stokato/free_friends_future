@@ -1,12 +1,13 @@
-var async = require('async');
-var constants = require('./../../../constants');
+const async     = require('async');
+const logger    = require('./../../../../lib/log')(module);
+const constants = require('./../../../constants');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.POINTS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+const DBF     = dbConst.DB.POINTS.fields;
+const PF      = dbConst.PFIELDS;
 
-var logger = require('./../../../../lib/log')(module);
+
 
 /*
  Добавить очки игрока в БД: объект с ид, вид и количеством очков
@@ -22,15 +23,17 @@ module.exports = function(options, callback) { options    = options || {};
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
   
-  var self = this;
+  let self = this;
 
   async.waterfall([//------------------------------------------------------------------
     function (cb) { // Обновляем таблицу пользователя
       
-      var params = {};
-      params[PF.ID]     = options[PF.ID];
-      params[PF.VID]    = options[PF.VID];
-      params[PF.POINTS] = options[PF.POINTS];
+      let params = {
+        [PF.ID]     : options[PF.ID],
+        [PF.VID]    : options[PF.VID],
+        [PF.POINTS] : options[PF.POINTS]
+      };
+
   
       self.updateUser(params, function(err) {
         if (err) {return cb(err, null); }
@@ -39,7 +42,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //------------------------------------------------------------------------
     function(res, cb) { // Добавляем новую запись в таблицу
-      var fields = [
+      let fields = [
         DBF.ID_varchar_p,
         DBF.POINTS_c_desc,
         DBF.USERID_uuid,
@@ -48,7 +51,7 @@ module.exports = function(options, callback) { options    = options || {};
         DBF.UID_uuid_i
       ];
   
-      var params = [
+      let params = [
         "max",
         options[PF.POINTS],
         options[PF.ID],
@@ -57,7 +60,7 @@ module.exports = function(options, callback) { options    = options || {};
         options[PF.ID]
       ];
         
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.POINTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.POINTS.name);
       
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -72,9 +75,9 @@ module.exports = function(options, callback) { options    = options || {};
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
-      var db = (options[PF.SEX] == constants.GIRL)?
+      let db = (options[PF.SEX] == constants.GIRL)?
                         dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
 
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -83,7 +86,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Удаляем старые записи
-      var db = (options[PF.SEX] == constants.GIRL)?
+      let db = (options[PF.SEX] == constants.GIRL)?
                         dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
 
       delOldPoints(fields, db, function () {
@@ -98,9 +101,9 @@ module.exports = function(options, callback) { options    = options || {};
   
   function delOldPoints(fields, db, cb) { // Удаляем старые записи
     
-    var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, [DBF.UID_uuid_i], [1]);
+    let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, [DBF.UID_uuid_i], [1]);
     
-    var paramsF = [options[PF.ID]];
+    let paramsF = [options[PF.ID]];
     
     cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
       if (err) {  return cb(err); }
@@ -109,16 +112,16 @@ module.exports = function(options, callback) { options    = options || {};
         return user2[DBF.POINTS_c_desc] - user1[DBF.POINTS_c_desc];
       });
       
-      for(var i = 1; i < result.rows.length; i++) {
-        var points = result.rows[i][DBF.POINTS_c_desc];
-        var userid = result.rows[i][DBF.USERID_uuid];
+      for(let i = 1; i < result.rows.length; i++) {
+        let points = result.rows[i][DBF.POINTS_c_desc];
+        let userid = result.rows[i][DBF.USERID_uuid];
         
-        var constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc, DBF.USERID_uuid];
-        var constValues = [1, 1, 1];
+        let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc, DBF.USERID_uuid];
+        let constValues = [1, 1, 1];
         
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
         
-        var paramsF = ["max", points, userid];
+        let paramsF = ["max", points, userid];
         
         cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
           if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }

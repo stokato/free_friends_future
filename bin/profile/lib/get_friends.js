@@ -5,7 +5,7 @@
  * @return friends - объект с коллекцией друзей и количеством новых
  */
 
-var db = require('./../../db_manager');
+const db = require('./../../db_manager');
 
 module.exports = function(withnew, callback) {
  db.findFriends(this._pID, null, withnew, function(err, friends) {

@@ -5,7 +5,7 @@
  *
  */
 
-var RATINGS = require('./../../../constants').ACTIVITY_RATINGS;
+const RATINGS = require('./../../../constants').ACTIVITY_RATINGS;
 
 module.exports = function () {
   if(this._actionsCount == 0) {
@@ -15,7 +15,7 @@ module.exports = function () {
     return RATINGS.NONE;
   }
   
-  var val = this._actionsMain / 2;
+  let val = this._actionsMain / 2;
   
   if(this._actionsCount < val) {
     return RATINGS.HALF_MORE;

@@ -4,19 +4,20 @@
  * Устанавливаем количество бесплатных подарков
  */
 
-var db = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const db = require('./../../db_manager');
+const IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(num, callback) {
   if (!isNumeric(num)) {
     return callback(new Error("Количество подарков задано некорректно"));
   }
-  var self = this;
+  let self = this;
   
-  var options = {};
-  options[IOF.ID]    = self._pID;
-  options[IOF.VID]   = self._pVID;
-  options[IOF.FREE_GIFTS] = num;
+  let options = {
+    [IOF.ID]          : self._pID,
+    [IOF.VID]         : self._pVID,
+    [IOF.FREE_GIFTS]  : num
+  };
   
   db.updateUser(options, function(err) {
     if (err) {return callback(err, null); }

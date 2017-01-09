@@ -4,11 +4,13 @@
  * Добавляем / редактируем  данные статистики по пользователю
  */
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USERS_STAT.fields;
-var PF = dbConst.PFIELDS;
-var SF = require('./../../../constants').SFIELDS;
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const constants = require('./../../../constants');
+
+const DBF = dbConst.DB.USERS_STAT.fields;
+const PF  = dbConst.PFIELDS;
+const SF  = constants.SFIELDS;
 
 module.exports = function(options, callback) { options = options || {};
   
@@ -16,12 +18,12 @@ module.exports = function(options, callback) { options = options || {};
     return callback(new Error("Задан пустой Id пользователя"), null);
   }
   
-  var fields = [];
-  var constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
-  var constValues = [1, 1];
-  var dbName = dbConst.DB.USERS_STAT.name;
+  let fields = [];
+  let constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
+  let constValues = [1, 1];
+  let dbName = dbConst.DB.USERS_STAT.name;
   
-  var params = [];
+  let params = [];
   if (SF.GIFTS_GIVEN in options)   { fields.push(DBF.C_GIFTS_GIVEN_counter);   params.push(options[SF.GIFTS_GIVEN]); }
   if (SF.GIFTS_TAKEN in options)   { fields.push(DBF.C_GIFTS_TAKEN_counter);   params.push(options[SF.GIFTS_TAKEN]); }
   if (SF.COINS_GIVEN in options)   { fields.push(DBF.C_COINS_GIVEN_counter);   params.push(options[SF.COINS_GIVEN]); }
@@ -32,7 +34,7 @@ module.exports = function(options, callback) { options = options || {};
   if (SF.RANK_GIVEN in options)    { fields.push(DBF.C_RANK_GIVEN_counter);    params.push(options[SF.RANK_GIVEN]); }
   if (SF.GAME_TIME in options)     { fields.push(DBF.C_GAME_TIME_MS_counter);  params.push(options[SF.GAME_TIME]); }
     
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
   
   params.push(options[PF.ID]);
   params.push(options[PF.VID]);

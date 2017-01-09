@@ -2,9 +2,9 @@
  * Набор инструментов для работы с БД
  */
 
-var configCassandra = require('./../../../../config.json').cassandra; // Настойки доступа к БД
-var cassandra = require('cassandra-driver');
-var buildQuery = require('./build_query');
+const configCassandra = require('./../../../../config.json').cassandra; // Настойки доступа к БД
+const cassandra       = require('cassandra-driver');
+const buildQuery      = require('./build_query');
 
 // Интерфейс с БД Кассандра
 function CassandraDB () {
@@ -17,7 +17,7 @@ function CassandraDB () {
   this.timeUuid = cassandra.types.TimeUuid;
 }
 
-var cassandraDB = new CassandraDB();
+let cassandraDB = new CassandraDB();
 
 // Клиент БД
 module.exports.client = cassandraDB.client;

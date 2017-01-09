@@ -3,17 +3,17 @@
  *
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
-var constants = require('../../../constants'),
-    addAction = require('./../common/add_action'),
-    oPool     = require('./../../../objects_pool');
+const constants = require('../../../constants'),
+      addAction = require('./../common/add_action'),
+      oPool     = require('./../../../objects_pool');
 
 module.exports = function(game) {
   return function(timer, socket, options) {
   
     // Если вызов произведен игроком, сохраняем его выбор
     if(!timer) {
-      var selfProfile = oPool.userList[socket.id];
-      var uid = selfProfile.getID();
+      let selfProfile = oPool.userList[socket.id];
+      let uid = selfProfile.getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -33,7 +33,7 @@ module.exports = function(game) {
       }
 
       // Помещаем тукущего игрока в темницу
-      for(var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+      for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         game._prisoner = game._activePlayers[item];
       }
 

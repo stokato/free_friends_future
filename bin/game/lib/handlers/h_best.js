@@ -4,9 +4,9 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var Config        = require('./../../../../config.json');
+const Config        = require('./../../../../config.json');
 
-var constants   = require('../../../constants'),
+const constants   = require('../../../constants'),
     PF          = constants.PFIELDS,
     addPoints   = require('./../common/add_points'),
     addAction   = require('./../common/add_action'),
@@ -14,7 +14,7 @@ var constants   = require('../../../constants'),
     handleError = require('./../common/handle_error'),
     stat        = require('./../../../stat_manager');
 
-var BEST_POINTS = Number(Config.points.game.best);
+const BEST_POINTS = Number(Config.points.game.best);
 
 module.exports = function(game) {
   return function(timer, socket, options) {
@@ -27,7 +27,7 @@ module.exports = function(game) {
       }
       
       // Сохраняем ход игрока
-      var uid = oPool.userList[socket.id].getID();
+      let uid = oPool.userList[socket.id].getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -36,8 +36,8 @@ module.exports = function(game) {
       addAction(game, uid, options);
   
       // Статистика
-      for(var item in game._storedOptions) if(game._storedOptions.hasOwnProperty(item)) {
-        var profInfo  = game._storedOptions[item];
+      for(let item in game._storedOptions) if(game._storedOptions.hasOwnProperty(item)) {
+        let profInfo  = game._storedOptions[item];
         if(options[PF.PICK] == profInfo.id) {
           if(!profInfo.picks) {
             profInfo.picks = 1;
@@ -48,9 +48,9 @@ module.exports = function(game) {
       }
         
       // Оповещаем о ходе всех в комнате
-      var playerInfo = game._activePlayers[uid];
+      let playerInfo = game._activePlayers[uid];
   
-      var result = {};
+      let result = {};
       result[PF.PICK] = {};
       result[PF.PICK][PF.ID] = uid;
       result[PF.PICK][PF.VID] = playerInfo.vid;
@@ -81,10 +81,10 @@ module.exports = function(game) {
       if(game._actionsCount != game._actionsMain) {
   
         // Проверяем - кто выбран лучшим, начисляем ему очки
-        var bestPlayer = { id: null, picks : 0 };
+        let bestPlayer = { id: null, picks : 0 };
         
-        for(var bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
-          var profInfo = game._storedOptions[bestID];
+        for(let bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
+          let profInfo = game._storedOptions[bestID];
           if(profInfo.picks > bestPlayer.picks) {
             bestPlayer.id = bestID;
             bestPlayer.vid = profInfo.vid;
@@ -99,7 +99,7 @@ module.exports = function(game) {
           stat.setUserStat(bestPlayer.id, bestPlayer.vid, constants.SFIELDS.BEST_SELECTED, 1);
           addPoints(bestPlayer.id, BEST_POINTS, function (err) {
             if(err) {
-              var socket = game._room.getAnySocket();
+              let socket = game._room.getAnySocket();
               return handleError(socket, constants.IO_GAME, constants.G_BEST, err.message);
             }
           });

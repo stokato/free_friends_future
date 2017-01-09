@@ -4,17 +4,17 @@
  * Начисляем деньги
  */
 
-var constants = require('../../constants'),
-  stat      = require('./../../stat_manager');
+const constants = require('../../constants'),
+  stat          = require('./../../stat_manager');
 
 module.exports = function (profit, callback) {
   
-  var self = this;
+  let self = this;
   
   self.getMoney(function(err, money) {
     if(err) { return callback(err); }
     
-    var newMoney = money + profit;
+    let newMoney = money + profit;
     
     self.setMoney(newMoney, function(err, money) {
       if(err) { return callback(err); }

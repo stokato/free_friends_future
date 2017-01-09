@@ -5,16 +5,17 @@
  * @return status
  */
 
-var db = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const  db = require('./../../db_manager');
+const  IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(status, callback) {
-  var self = this;
+  let  self = this;
 
-  var options = {};
-  options[IOF.ID]     = self._pID;
-  options[IOF.VID]    = self._pVID;
-  options[IOF.STATUS] = status;
+  let  options = {
+    [IOF.ID]     : self._pID,
+    [IOF.VID]    : self._pVID,
+    [IOF.STATUS] : status
+  };
 
   self._pStatus = status;
 

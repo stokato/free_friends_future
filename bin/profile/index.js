@@ -20,7 +20,7 @@
  *         установить признак - посмторено, для новых друзей, гостей или подарков
  */
 
-var init                            = require('./lib/init'),
+const  init                            = require('./lib/init'),
     addGift                         = require('./lib/add_gift'),
     addMessage                      = require('./lib/add_message'),
     addPoints                       = require('./lib/add_points'),
@@ -57,8 +57,6 @@ var init                            = require('./lib/init'),
     setFreeGifts                    = require('./lib/set_free_gifts'),
     setFreeMusic                    = require('./lib/set_free_music'),
     setVIP                          = require('./lib/set_vip');
-
-var constants = require('./../constants');
 
 function Profile() {
   

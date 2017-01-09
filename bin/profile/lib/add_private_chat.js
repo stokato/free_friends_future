@@ -5,9 +5,9 @@
  */
 module.exports = function(companion) {
   
-  var cid = companion.getID();
+  let  cid = companion.getID();
   
-  for(var i = 0; i < this._pIsPrivateChats.length; i++) {
+  for(let  i = 0; i < this._pIsPrivateChats.length; i++) {
     if(this._pIsPrivateChats[i] == cid) {
       return;
     }

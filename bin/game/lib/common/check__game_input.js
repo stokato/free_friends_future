@@ -1,13 +1,13 @@
-var validator = require('validator');
+const validator = require('validator');
 
-var Config    = require('./../../../../config.json');
-var constants = require('./../../../constants'),
-    PF        = constants.PFIELDS,
-    sanitize  = require('./../../../sanitizer'),
-    checkAuth = require('./../../../check_auth'),
-    oPool     = require('./../../../objects_pool');
+const Config    = require('./../../../../config.json');
+const constants = require('./../../../constants'),
+    sanitize    = require('./../../../sanitizer'),
+    oPool       = require('./../../../objects_pool');
 
-var CARD_COUNT = Number(Config.game.card_count);
+const PF  = constants.PFIELDS;
+
+const CARD_COUNT = Number(Config.game.card_count);
 
 module.exports = function (em, socket, nextGame, options, callback) {
   
@@ -26,9 +26,9 @@ module.exports = function (em, socket, nextGame, options, callback) {
   //   return callback(constants.errors.NO_AUTH);
   // }
   
-  var isValid = true, val;
+  let isValid = true, val;
   
-  var err = {
+  let err = {
     code : constants.errors.NO_PARAMS.code,
     message : ""
   };
@@ -107,10 +107,10 @@ module.exports = function (em, socket, nextGame, options, callback) {
 
 
 function checkID(id) {
-  var idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
-  var ID_LEN = 36;
+  let idRegExp = /[A-Za-z0-9]{8}-(?:[A-Za-z0-9]{4}-){3}[A-Za-z0-9]{12}/i;
+  let ID_LEN = 36;
   
-  var res = (id + "").search(idRegExp);
+  let res = (id + "").search(idRegExp);
   return !!(res == 0 && id.length == ID_LEN);
 }
 

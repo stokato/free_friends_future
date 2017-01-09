@@ -4,24 +4,26 @@
  * Получаем статистику по пользователю
  */
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USERS_STAT.fields;
-var PF = dbConst.PFIELDS;
-var SF = require('./../../../constants').SFIELDS;
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const constants = require('./../../../constants');
+
+const DBF = dbConst.DB.USERS_STAT.fields;
+const PF  = dbConst.PFIELDS;
+const SF  = constants.SFIELDS;
 
 module.exports = function(id, vid, f_list, callback) {
   if (!vid || !id) {
     return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
   }
 
-  var param = [id, vid];
+  let param = [id, vid];
   
-  var contsFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
-  var constValues = [1, 1];
-  var dbName = dbConst.DB.USERS_STAT.name;
+  let contsFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
+  let constValues = [1, 1];
+  let dbName = dbConst.DB.USERS_STAT.name;
   
-  var i, fields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
+  let i, fields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   for(i = 0; i < f_list.length; i++) {
     switch (f_list[i]) {
       case SF.GIFTS_GIVEN    : fields.push(DBF.C_GIFTS_GIVEN_counter);    break;
@@ -36,27 +38,28 @@ module.exports = function(id, vid, f_list, callback) {
     }
   }
   
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, contsFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, contsFields, constValues);
   
   cdb.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     if(result.rows.length > 0) {
       
-      var row = result.rows[0];
+      let row = result.rows[0];
       
-      var user = {};
-      user[PF.ID]             = row[DBF.ID_uuid_pc1i].toString();
-      user[PF.VID]            = row[DBF.VID_varchar_pc2i];
-      user[SF.GIFTS_GIVEN]    = row[DBF.C_GIFTS_GIVEN_counter];
-      user[SF.GIFTS_TAKEN]    = row[DBF.C_GIFTS_TAKEN_counter];
-      user[SF.COINS_GIVEN]    = row[DBF.C_COINS_GIVEN_counter];
-      user[SF.COINS_EARNED]   = row[DBF.C_COINS_EARNED_counter];
-      user[SF.COINS_SPENT]    = row[DBF.C_COINS_SPENT_counter];
-      user[SF.BOTTLE_KISSED]  = row[DBF.C_BOTTLE_KISSED_counter];
-      user[SF.BEST_SELECTED]  = row[DBF.C_BEST_SELECTED_counter];
-      user[SF.RANK_GIVEN]     = row[DBF.C_RANK_GIVEN_counter];
-      user[SF.GAME_TIME]      = row[DBF.C_GAME_TIME_MS_counter];
+      let user = {
+        [PF.ID]             : row[DBF.ID_uuid_pc1i].toString(),
+        [PF.VID]            : row[DBF.VID_varchar_pc2i],
+        [SF.GIFTS_GIVEN]    : row[DBF.C_GIFTS_GIVEN_counter],
+        [SF.GIFTS_TAKEN]    : row[DBF.C_GIFTS_TAKEN_counter],
+        [SF.COINS_GIVEN]    : row[DBF.C_COINS_GIVEN_counter],
+        [SF.COINS_EARNED]   : row[DBF.C_COINS_EARNED_counter],
+        [SF.COINS_SPENT]    : row[DBF.C_COINS_SPENT_counter],
+        [SF.BOTTLE_KISSED]  : row[DBF.C_BOTTLE_KISSED_counter],
+        [SF.BEST_SELECTED]  : row[DBF.C_BEST_SELECTED_counter],
+        [SF.RANK_GIVEN]     : row[DBF.C_RANK_GIVEN_counter],
+        [SF.GAME_TIME]      : row[DBF.C_GAME_TIME_MS_counter]
+      };
       
       callback(null, user);
     } else {

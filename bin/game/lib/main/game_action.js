@@ -6,9 +6,9 @@
  *
  *  @param socket
  */
-var async  =  require('async');
+const async  =  require('async');
 
-var constants       = require('../../../constants'),
+const constants       = require('../../../constants'),
     checkInput      = require('./../common/check__game_input'),
     oPool           = require('./../../../objects_pool'),
     handleError     = require('./../common/handle_error');
@@ -17,9 +17,9 @@ var constants       = require('../../../constants'),
 module.exports = function (socket) {
   socket.on(constants.IO_GAME, function(options) {
     
-    var selfProfile = oPool.userList[socket.id];
-    var uid = selfProfile.getID();
-    var game = selfProfile.getGame();
+    let selfProfile = oPool.userList[socket.id];
+    let uid = selfProfile.getID();
+    let game = selfProfile.getGame();
   
     async.waterfall([ //---------------------------------------------------------
       function (cb) {  cb(null, constants.IO_GAME, socket, game.getNextGame(), options); },

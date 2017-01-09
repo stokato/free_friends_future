@@ -4,10 +4,10 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var async = require('async');
+const async = require('async');
 
-var Config        = require('./../../../../config.json');
-var constants     = require('../../../constants'),
+const Config        = require('./../../../../config.json');
+const constants     = require('../../../constants'),
     PF            = constants.PFIELDS,
     addAction     = require('./../common/add_action'),
     GameError     = require('./../common/game_error'),
@@ -17,17 +17,17 @@ var constants     = require('../../../constants'),
     stat          = require('./../../../stat_manager'),
     addPoints     = require('./../common/add_points');
 
-var CARD_COUNT = Number(Config.game.card_count);
-var CARD_BONUS = Number(Config.moneys.card_bonus);
-var CARD_POINTS = Number(Config.points.game.gold);
+const CARD_COUNT = Number(Config.game.card_count);
+const CARD_BONUS = Number(Config.moneys.card_bonus);
+const CARD_POINTS = Number(Config.points.game.gold);
 
 module.exports = function(game) {
   return function (timer, socket, options) {
   
     // Если вызов произведен игроком, сохраняем его выбор
     if(!timer) {
-      var selfProfile = oPool.userList[socket.id];
-      var uid         = selfProfile.getID();
+      let selfProfile = oPool.userList[socket.id];
+      let uid         = selfProfile.getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -47,23 +47,23 @@ module.exports = function(game) {
       }
 
       // Готовим сведения о выборе игорков и отбираем победителей
-      var gold    = Math.floor(Math.random() * CARD_COUNT);
-      var winners = [];
-      var count   = 0;
-      var bonus   = CARD_BONUS;
+      let gold    = Math.floor(Math.random() * CARD_COUNT);
+      let winners = [];
+      let count   = 0;
+      let bonus   = CARD_BONUS;
 
-      var result = {};
+      let result = {};
       result[PF.PICKS]  = [];
       result[PF.GOLD]   = gold;
 
-      var item, playerInfo, picks;
+      let item, playerInfo, picks;
       for (item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
 
         playerInfo = game._activePlayers[item];
         picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
-          var pick = {};
+          let pick = {};
           pick[PF.ID]   = playerInfo.id;
           pick[PF.VID]  = playerInfo.vid;
           pick[PF.PICK] = picks[0][PF.PICK];
@@ -91,7 +91,7 @@ module.exports = function(game) {
       function addMoney() {
         async.waterfall([ //-------------------------------------------------------
           function(cb) { // Получаем профиль пользователя
-            var player = oPool.userList[winners[count].socketId];
+            let player = oPool.userList[winners[count].socketId];
 
             if(player) {
               cb(null, player, true);
@@ -110,7 +110,7 @@ module.exports = function(game) {
             player.getMoney(function (err, money) {
               if (err) {  cb(err, null); }
 
-              var newMoney = money + bonus;
+              let newMoney = money + bonus;
               cb(null, player, newMoney, isOnline);
             });
           },//-------------------------------------------------------
@@ -131,7 +131,7 @@ module.exports = function(game) {
               if (err) {  cb(err, null); }
               
               // if(isOnline) {
-              //   var res = {};
+              //   let res = {};
               //   res[constants.PFIELDS.POINTS] = points;
               //
               //   player.getSocket().emit(constants.IO_ADD_POINTS, res);
@@ -150,12 +150,12 @@ module.exports = function(game) {
 
           // Сообщяем о начислении моент
           if(isOnline) {
-            var res = {};
+            let res = {};
             res[PF.MONEY] = money;
             player.getSocket().emit(constants.IO_GET_MONEY, res);
   
             // Возможно достижение нужного количества баллов несколькими игроками
-            var ranks = game._room.getRanks();
+            let ranks = game._room.getRanks();
             ranks.addRankBall(constants.RANKS.LUCKY, player.getID());
   
           }

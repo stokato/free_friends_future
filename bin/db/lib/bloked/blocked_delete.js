@@ -4,19 +4,19 @@
  * Удаляем пользователя из списка заблокированных
  */
 
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.BLOCKED.fields;
+const DBF = dbConst.DB.BLOCKED.fields;
 
 module.exports = function(uid, fid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
 
-  var constFields   = [DBF.USERID_uuid_p];
-  var constValues   = [1];
-  var params        = [uid];
+  let constFields   = [DBF.USERID_uuid_p];
+  let constValues   = [1];
+  let params        = [uid];
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.BLOCKED.name, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.BLOCKED.name, constFields, constValues);
 
   cdb.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }

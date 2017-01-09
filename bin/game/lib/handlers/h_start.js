@@ -5,21 +5,22 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-var Config        = require('./../../../../config.json');
-var constants   = require('../../../constants'),
-    PF          = constants.PFIELDS,
-    addAction   = require('./../common/add_action'),
-    oPool       = require('./../../../objects_pool');
+const Config    = require('./../../../../config.json');
+const constants = require('../../../constants'),
+      addAction = require('./../common/add_action'),
+      oPool     = require('./../../../objects_pool');
 
-var LOT_TIMEOUT = Config.game.timeouts.lot;
+const PF = constants.PFIELDS;
+
+const LOT_TIMEOUT = Config.game.timeouts.lot;
 
 module.exports = function(game) {
   return function(timer, socket, options) {
   
     // Если вызов не произведен таймером, сохраняем дейсвие
     if(!timer && socket) {
-      var selfProfile = oPool.userList[socket.id];
-      var uid = selfProfile.getID();
+      let selfProfile = oPool.userList[socket.id];
+      let uid = selfProfile.getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -40,7 +41,7 @@ module.exports = function(game) {
     
       // Если игрока в темнице нет в комнате - очищаем темницу
       // Получаем следующего игрока
-      var nextPlayerInfo;
+      let nextPlayerInfo;
       if(game._nextGame != constants.G_PRISON) {
         if(game._prisoner) {
           if(!game._room.isProfile(game._prisoner.id)) {
@@ -66,16 +67,18 @@ module.exports = function(game) {
       game._nextGame = constants.G_LOT;
 
       // Отправляем результат
-      var result = {};
-      result[PF.NEXTGAME] = game._nextGame;
-      result[PF.PLAYERS]  = game.getPlayersID();
-      result[PF.PRISON]   = null;
+      let result = {
+        [PF.NEXTGAME] : game._nextGame,
+        [PF.PLAYERS]  : game.getPlayersID(),
+        [PF.PRISON]   : null
+      };
       
       if(game._prisoner !== null) {
-        result[PF.PRISON] = {};
-        result[PF.PRISON][PF.ID] = game._prisoner.id;
-        result[PF.PRISON][PF.VID] = game._prisoner.vid;
-        result[PF.PRISON][PF.SEX] = game._prisoner.sex;
+        result[PF.PRISON] = {
+          [PF.ID]  : game._prisoner.id,
+          [PF.VID] : game._prisoner.vid,
+          [PF.SEX] : game._prisoner.sex
+        };
       }
 
       game.emit(result);

@@ -4,7 +4,7 @@
  * Получаем статистику
  */
 
-var stat = require('./../../stat_manager');
+const stat = require('./../../stat_manager');
 
 module.exports = function(callback) {
   

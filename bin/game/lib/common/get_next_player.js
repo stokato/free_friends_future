@@ -1,11 +1,11 @@
-var constants     = require('../../../constants');
+const constants     = require('../../../constants');
 
 // Выбибираем следующего игрока определенного пола
 module.exports = function (prisonerResuming) {
-  var self = this;
+  let self = this;
 
   // Определяем - из кого выбирать - из мальчиков или из девочек
-  var players, currIndex;
+  let players, currIndex;
   if(this._currentSex == constants.GIRL) {
     players = this._room.getAllPlayers(constants.GUY);
     currIndex = this._guysIndex;
@@ -20,16 +20,16 @@ module.exports = function (prisonerResuming) {
   });
 
   // Если в темнице кто-то есть, получаем его ид
-  var prisonerId = null;
+  let prisonerId = null;
   if(this._prisoner) {
     prisonerId = this._prisoner.id;
   }
 
   // Получаем игрока с индексом больше текущего
-  for(var i = 0; i < players.length; i++) {
+  for(let i = 0; i < players.length; i++) {
 
     if(players[i].getGameIndex() > currIndex) {
-      var nextPlayer = players[i];
+      let nextPlayer = players[i];
 
       // Если он в темнице и его можно освободить, очищаем ее и возвращаем следующего игрока
       if(nextPlayer.getID() == prisonerId) {

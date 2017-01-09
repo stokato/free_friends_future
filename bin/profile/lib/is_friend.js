@@ -7,27 +7,27 @@
  * @result results - список пользователей с признаком is_friend
  */
 
-var db = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const db = require('./../../db_manager');
+const IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(usersID, callback) {
-  var self = this;
+  let self = this;
   
   db.findFriends(self._pID, usersID, false, function(err, friendsInfo) { friendsInfo = friendsInfo || {};
     if (err) { return callback(err, null); }
 
-    var results = [];
-    for(var i = 0; i < usersID.length; i++) {
-      
-      var info = {};
-      info[IOF.ID]        = usersID[i];
-      info[IOF.ISFRIEND]  = false;
-      results.push(info);
+    let results = [];
+    for(let i = 0; i < usersID.length; i++) {
+
+      results.push({
+        [IOF.ID]        : usersID[i],
+        [IOF.ISFRIEND]  : false
+      });
       
       if(friendsInfo.friends) {
-        var friends = friendsInfo.friends;
+        let friends = friendsInfo.friends;
         
-        for(var j = 0; j < friends.length; j++) {
+        for(let j = 0; j < friends.length; j++) {
           if(friends[j][IOF.ID] == results[i][IOF.ID]) {
             results[i][IOF.ISFRIEND] = true;
           }

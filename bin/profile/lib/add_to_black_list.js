@@ -4,21 +4,22 @@
  * Добавляем пользователя в черный список
  */
 
-var Config        = require('./../../../config.json');
-var db  = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const  Config = require('./../../../config.json');
+const  db     = require('./../../db_manager');
+const  IOF    = require('./../../constants').PFIELDS;
 
-var BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
+const  BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
 
 module.exports = function (blockedProfile, date, callback) {
-  var self = this;
+  let  self = this;
   
-  var blockedID = blockedProfile.getID();
+  let  blockedID = blockedProfile.getID();
   
-  var params = {};
-  params[IOF.ID]     = blockedID;
-  params[IOF.VID]    = blockedProfile.getVID();
-  params[IOF.DATE]   = date;
+  let  params = {
+    [IOF.ID]     : blockedID,
+    [IOF.VID]    : blockedProfile.getVID(),
+    [IOF.DATE]   : date
+  };
   
   db.addBlocked(self._pID, params, function (err) {
     if (err) { return callback(err, null); }
@@ -38,7 +39,7 @@ module.exports = function (blockedProfile, date, callback) {
   
   function setBlockedTimeout(profile, blockedID, delay) {
     
-    var timeout = setTimeout(function () {
+    let  timeout = setTimeout(function () {
       profile.delFromBlackList(blockedID, function (err) {
         if(err){ console.log("Ошибка при удалении пользователя из черного списка");}
       })

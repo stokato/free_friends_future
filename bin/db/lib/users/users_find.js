@@ -1,8 +1,10 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USERS.fields;
-var PF = dbConst.PFIELDS;
-var bdayToAge = require('./../common/bdayToAge');
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const bdayToAge = require('./../common/bdayToAge');
+
+const DBF = dbConst.DB.USERS.fields;
+const PF  = dbConst.PFIELDS;
+
 
 /*
  Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, список искомых полей
@@ -17,8 +19,8 @@ module.exports = function(id, vid, f_list, callback) {
     return callback(new Error("Ошибка при поиске пользователя: Не задан ID или VID"), null);
   }
 
-  var constraint = '';
-  var param = [];
+  let constraint = '';
+  let param = [];
 
   if(id) {
     constraint = DBF.ID_uuid_p;
@@ -28,7 +30,7 @@ module.exports = function(id, vid, f_list, callback) {
     param.push(vid);
   }
 
-  var i, fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
+  let i, fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
   for(i = 0; i < f_list.length; i++) {
     switch (f_list[i]) {
       case PF.ID          : fields.push(DBF.ID_uuid_p);       break;
@@ -49,31 +51,32 @@ module.exports = function(id, vid, f_list, callback) {
     }
   }
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.USERS.name, [constraint], [1]);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.USERS.name, [constraint], [1]);
 
   cdb.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
         
     if(result.rows.length > 0) {
       
-      var row = result.rows[0];
+      let row = result.rows[0];
 
-      var user = {};
-      user[PF.ID]           = row[DBF.ID_uuid_p].toString();
-      user[PF.VID]          = row[DBF.VID_varchar_i];
-      user[PF.BDATE]        = row[DBF.BDATE_timestamp];
-      user[PF.CITY]         = row[DBF.CITY_int];
-      user[PF.COUNTRY]      = row[DBF.COUNTRY_int];
-      user[PF.SEX]          = row[DBF.SEX_int];
-      user[PF.STATUS]       = row[DBF.STATUS_varchar];
-      user[PF.POINTS]       = row[DBF.POINTS_int];
-      user[PF.GIFT1]        = (row[DBF.GIFT1_uuid])? row[DBF.GIFT1_uuid].toString() : null;
-      user[PF.ISMENU]       = row[DBF.ISMENU] || null;
-      user[PF.MONEY]        = Number(row[DBF.MONEY_int]);
-      user[PF.LEVEL]        = Number(row[DBF.LEVEL_int]);
-      user[PF.FREE_GIFTS]   = Number(row[DBF.FREE_GIFTS_int]);
-      user[PF.FREE_TRACKS]  = Number(row[DBF.FREE_MUSIC_int]);
-      user[PF.VIP]          = Number(row[DBF.VIP_boolean]);
+      let user = {
+        [PF.ID]           : row[DBF.ID_uuid_p].toString(),
+        [PF.VID]          : row[DBF.VID_varchar_i],
+        [PF.BDATE]        : row[DBF.BDATE_timestamp],
+        [PF.CITY]         : row[DBF.CITY_int],
+        [PF.COUNTRY]      : row[DBF.COUNTRY_int],
+        [PF.SEX]          : row[DBF.SEX_int],
+        [PF.STATUS]       : row[DBF.STATUS_varchar],
+        [PF.POINTS]       : row[DBF.POINTS_int],
+        [PF.GIFT1]        : (row[DBF.GIFT1_uuid])? row[DBF.GIFT1_uuid].toString() : null,
+        [PF.ISMENU]       : row[DBF.ISMENU] || null,
+        [PF.MONEY]        : Number(row[DBF.MONEY_int]),
+        [PF.LEVEL]        : Number(row[DBF.LEVEL_int]),
+        [PF.FREE_GIFTS]   : Number(row[DBF.FREE_GIFTS_int]),
+        [PF.FREE_TRACKS]  : Number(row[DBF.FREE_MUSIC_int]),
+        [PF.VIP]          : Number(row[DBF.VIP_boolean])
+      };
       
       callback(null, user);
     } else {

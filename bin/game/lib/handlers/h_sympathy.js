@@ -1,23 +1,22 @@
-var constants = require('../../../constants'),
-    PF = constants.PFIELDS;
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool');
-var handleError     = require('./../common/handle_error');
-var addPoints = require('./../common/add_points');
-var GameError = require('./../common/game_error'),
-    stat = require('./../../../stat_manager');
+const Config      = require('./../../../../config.json');
+const constants   = require('../../../constants');
+const addAction   = require('./../common/add_action');
+const oPool       = require('./../../../objects_pool');
+const handleError = require('./../common/handle_error');
+const addPoints   = require('./../common/add_points');
+const stat        = require('./../../../stat_manager');
 
-var Config        = require('./../../../../config.json');
-var MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
-var SYMPATHY_TIMEOUT = Number(Config.game.timeouts.sympathy_show);
+const PF = constants.PFIELDS;
+const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
+const SYMPATHY_TIMEOUT = Number(Config.game.timeouts.sympathy_show);
 
 // Симпатии, ждем, когда все ответят и переходим к показу результатов
 module.exports = function(game) {
   return function (timer, socket, options) {
   
     if(!timer) {
-      var selfProfile = oPool.userList[socket.id];
-      var uid = selfProfile.getID();
+      let selfProfile = oPool.userList[socket.id];
+      let uid = selfProfile.getID();
   
       // В игре симпатии нельзя указать себя
       if(game._nextGame == constants.G_SYMPATHY && uid == options[constants.PFIELDS.PICK]) {
@@ -34,9 +33,9 @@ module.exports = function(game) {
         return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY, constants.errors.IS_ALREADY_SELECTED);
       }
   
-      var actions = game._actionsQueue[uid];
+      let actions = game._actionsQueue[uid];
   
-      for( var i = 0; i < actions.length; i++) {
+      for( let i = 0; i < actions.length; i++) {
         if(actions[i][constants.PFIELDS.PICK] == options[constants.PFIELDS.PICK]) {
           return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY, constants.errors.FORBIDDEN_CHOICE);
         }
@@ -55,18 +54,18 @@ module.exports = function(game) {
       
       stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
       
-      var players = [], count = 0;
+      let players = [], count = 0;
       
-      for(var selfID in game._actionsQueue) if (game._actionsQueue.hasOwnProperty(selfID)) {
-        var selfPicks = game._actionsQueue[selfID];
+      for(let selfID in game._actionsQueue) if (game._actionsQueue.hasOwnProperty(selfID)) {
+        let selfPicks = game._actionsQueue[selfID];
         
-        for(var selfPickOptions = 0; selfPickOptions < selfPicks.length; selfPickOptions++) {
-          var selfPick = selfPicks[selfPickOptions][PF.PICK];
+        for(let selfPickOptions = 0; selfPickOptions < selfPicks.length; selfPickOptions++) {
+          let selfPick = selfPicks[selfPickOptions][PF.PICK];
           
-          var otherPicks = game._actionsQueue[selfPick];
+          let otherPicks = game._actionsQueue[selfPick];
           if(otherPicks) {
-            for(var otherPickOptions = 0; otherPickOptions < otherPicks.length; otherPickOptions++) {
-              var otherPick = otherPicks[otherPickOptions][PF.PICK];
+            for(let otherPickOptions = 0; otherPickOptions < otherPicks.length; otherPickOptions++) {
+              let otherPick = otherPicks[otherPickOptions][PF.PICK];
               if(otherPick && otherPick == selfID) {
                 players.push(selfID);
               }
@@ -90,7 +89,7 @@ module.exports = function(game) {
 
       // Все игроки могут посмотреть результаты всех
       game.activateAllPlayers();
-      var countPrisoners = (game._prisoner === null)? 0 : 1;
+      let countPrisoners = (game._prisoner === null)? 0 : 1;
 
       game.setActionLimit(game._room.getCountInRoom(constants.GIRL)
                   + game._room.getCountInRoom(constants.GUY) - 1 - countPrisoners);
@@ -98,17 +97,19 @@ module.exports = function(game) {
                   + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 10;
 
       // Отправляем результаты
-      var result = {};
-      result[PF.NEXTGAME] = game._nextGame;
-      result[PF.PLAYERS] = game.getPlayersID();
-      result[PF.PRISON] = null;
+      let result = {
+        [PF.NEXTGAME] : game._nextGame,
+        [PF.PLAYERS]  : game.getPlayersID(),
+        [PF.PRISON]   : null
+      };
       
       
       if(game._prisoner !== null) {
-        result[PF.PRISON] = {};
-        result[PF.PRISON][PF.ID]  = game._prisoner.id;
-        result[PF.PRISON][PF.VID] = game._prisoner.vid;
-        result[PF.PRISON][PF.SEX] = game._prisoner.sex;
+        result[PF.PRISON] = {
+          [PF.ID]  : game._prisoner.id,
+          [PF.VID] : game._prisoner.vid,
+          [PF.SEX] : game._prisoner.sex
+        };
       }
 
       game.emit(result);

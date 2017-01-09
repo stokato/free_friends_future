@@ -3,13 +3,13 @@
   */
 module.exports = function (excessIds) {  excessIds = excessIds || [];
   
-  var prisonerId = (this._prisoner)? this._prisoner.id : null;
+  let prisonerId = (this._prisoner)? this._prisoner.id : null;
 
-  var players = this._room.getAllPlayers();
+  let players = this._room.getAllPlayers();
   
-  var currId;
+  let currId;
   
-  for(var i = 0; i < players.length; i++) {
+  for(let i = 0; i < players.length; i++) {
     currId = players[i].getID();
     
     if(excessIds.indexOf(currId) < 0 && currId != prisonerId) {

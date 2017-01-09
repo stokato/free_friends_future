@@ -1,6 +1,7 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.SHOP.fields;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF     = dbConst.DB.SHOP.fields;
 
 /*
  Удалить товар из БД: ИД
@@ -11,10 +12,10 @@ var DBF = dbConst.DB.SHOP.fields;
 module.exports = function(goodid, callback) {
   if (!goodid) { return callback(new Error("Задан пустой Id товара")); }
 
-  var constFields = [DBF.ID_varchar_p];
-  var constValues = [1];
+  let constFields = [DBF.ID_varchar_p];
+  let constValues = [1];
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.SHOP.name, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.SHOP.name, constFields, constValues);
 
   cdb.client.execute(query, [goodid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }

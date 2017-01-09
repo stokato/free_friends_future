@@ -1,10 +1,11 @@
-var async = require('async');
+const async = require('async');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USER_GIFTS.fields;
-var DBFN = dbConst.DB.USER_NEW_GIFTS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF   = dbConst.DB.USER_GIFTS.fields;
+const DBFN  = dbConst.DB.USER_NEW_GIFTS.fields;
+const PF    = dbConst.PFIELDS;
 
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
@@ -21,11 +22,11 @@ module.exports = function(uid, options, callback) { options = options || {};
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
-  var id = cdb.uuid.random();
+  let id = cdb.uuid.random();
 
   async.waterfall([ //--------------------------------------------------------------
     function (cb) {
-      var fields = [
+      let fields = [
         DBF.ID_uuid_p,
         DBF.USERID_uuid_i,
         DBF.GIFTID_varchar,
@@ -39,20 +40,22 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FROMBDATE_timestamp
       ];
       
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
   
-      var params = [];
-      params.push(id);
-      params.push(uid);
-      params.push(options[PF.GIFTID]);
-      params.push(options[PF.TYPE]);
-      params.push(options[PF.SRC]);
-      params.push(options[PF.DATE]);
-      params.push(options[PF.TITLE]);
-      params.push(options[PF.ID]);
-      params.push(options[PF.VID]);
-      params.push(options[PF.SEX]);
-      params.push(options[PF.BDATE]);
+      let params = [
+        id,
+        uid,
+        options[PF.GIFTID],
+        options[PF.TYPE],
+        options[PF.SRC],
+        options[PF.DATE],
+        options[PF.TITLE],
+        options[PF.ID],
+        options[PF.VID],
+        options[PF.SEX],
+        options[PF.BDATE]
+      ];
+
   
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -63,14 +66,14 @@ module.exports = function(uid, options, callback) { options = options || {};
       });
     }, //-----------------------------------------------------------
     function (res, cb) {
-      var fields = [
+      let fields = [
         DBFN.ID_uuid_p,
         DBFN.USERID_uuid_i
       ];
       
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GIFTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GIFTS.name);
   
-      var params = [id, uid];
+      let params = [id, uid];
   
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }

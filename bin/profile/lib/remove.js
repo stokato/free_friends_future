@@ -1,4 +1,4 @@
-var db = require('./../../db_manager');
+const db = require('./../../db_manager');
 
 /*
  Удаляем польлзователя из БД
@@ -11,7 +11,7 @@ var db = require('./../../db_manager');
  */
 module.exports = function(callback) {
 
-  var self = this;
+  let self = this;
   self._pSocket   = null;
 
   self._pVID      = null;

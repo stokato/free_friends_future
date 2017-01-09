@@ -5,16 +5,17 @@
  * @return список сообщений
  */
 
-var db = require('./../../db_manager');
-var IOF = require('./../../constants').PFIELDS;
+const db = require('./../../db_manager');
+const IOF = require('./../../constants').PFIELDS;
 
 module.exports = function(id, fdate, sdate, callback) {
-  var self = this;
+  let self = this;
   
-  var params = {};
-  params[IOF.ID_LIST]    = [id];
-  params[IOF.DATE_FROM]  = fdate;
-  params[IOF.DATE_TO]    = sdate;
+  let params = {
+    [IOF.ID_LIST]   : [id],
+    [IOF.DATE_FROM] : fdate,
+    [IOF.DATE_TO]   : sdate
+  };
 
   db.findMessages(self._pID, params, function(err, messages) { messages = messages || [];
     if (err) { return callback(err, null); }

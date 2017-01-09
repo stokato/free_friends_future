@@ -5,24 +5,26 @@
  *
  */
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.MAIN_STAT.fields;
-var PF = dbConst.PFIELDS;
-var SF = require('./../../../constants').SFIELDS;
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+const constants = require('./../../../constants');
+
+const DBF = dbConst.DB.MAIN_STAT.fields;
+const PF  = dbConst.PFIELDS;
+const SF  = constants.SFIELDS;
 
 module.exports = function(id, f_list, callback) {
   if (!id) {
     return callback(new Error("Ошибка при поиске статистики: Не задан ID"), null);
   }
   
-  var param = [id];
+  let param = [id];
   
-  var contsFields = [DBF.ID_varchar_p];
-  var constValues = [1];
-  var dbName = dbConst.DB.MAIN_STAT.name;
+  let contsFields = [DBF.ID_varchar_p];
+  let constValues = [1];
+  let dbName = dbConst.DB.MAIN_STAT.name;
   
-  var i, fields = [DBF.ID_varchar_p];
+  let i, fields = [DBF.ID_varchar_p];
   for(i = 0; i < f_list.length; i++) {
     switch (f_list[i]) {
       case SF.GIFTS_LOVES       : fields.push(DBF.C_GIFTS_LOVES_counter);       break;
@@ -55,44 +57,46 @@ module.exports = function(id, f_list, callback) {
     }
   }
   
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, contsFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, contsFields, constValues);
   
   cdb.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     if(result.rows.length > 0) {
       
-      var row = result.rows[0];
+      let row = result.rows[0];
       
-      var user = {};
-      user[PF.ID]                 = row[DBF.ID_varchar_p];
-      user[SF.GIFTS_LOVES]        = row[DBF.C_GIFTS_LOVES_counter];
-      user[SF.GIFTS_BREATH]       = row[DBF.C_GIFTS_BREATH_counter];
-      user[SF.GIFTS_FLOWERS]      = row[DBF.C_GIFTS_FLOWERS_counter];
-      user[SF.GIFTS_DRINKS]       = row[DBF.C_GIFTS_DRINKS_counter];
-      user[SF.GIFTS_COMMON]       = row[DBF.C_GIFTS_COMMON_counter];
-      user[SF.GIFTS_FLIRTATION]   = row[DBF.C_GIFTS_FLIRTATION_counter];
-      user[SF.GIFTS_MERRY]        = row[DBF.C_GIFTS_MERRY_counter];
-      user[SF.MONEY_1_GIVEN]      = row[DBF.C_MONEY_1_GIVEN_counter];
-      user[SF.MONEY_3_GIVEN]      = row[DBF.C_MONEY_3_GIVEN_counter];
-      user[SF.MONEY_10_GIVEN]     = row[DBF.C_MONEY_10_GIVEN_counter];
-      user[SF.MONEY_20_GIVEN]     = row[DBF.C_MONEY_20_GIVEN_counter];
-      user[SF.MONEY_60_GIVEN]     = row[DBF.C_MONEY_60_GIVEN_counter];
-      user[SF.MONEY_200_GIVEN]    = row[DBF.C_MONEY_200_GIVEN_counter];
-      user[SF.MONEY_1_TAKEN]      = row[DBF.C_MONEY_1_TAKEN_counter];
-      user[SF.MONEY_3_TAKEN]      = row[DBF.C_MONEY_3_TAKEN_counter];
-      user[SF.MONEY_10_TAKEN]     = row[DBF.C_MONEY_10_TAKEN_counter];
-      user[SF.MONEY_20_TAKEN]     = row[DBF.C_MONEY_20_TAKEN_counter];
-      user[SF.MONEY_60_TAKEN]     = row[DBF.C_MONEY_60_TAKEN_counter];
-      user[SF.MONEY_200_TAKEN]    = row[DBF.C_MONEY_200_TAKEN_counter];
-      user[SF.MENU_APPEND]        = row[DBF.C_MENU_APPEND_counter];
-      user[SF.BEST_ACTIVITY]      = row[DBF.C_BEST_ACTIVITY_counter];
-      user[SF.BOTTLE_ACTIVITY]    = row[DBF.C_BOTTLE_ACTIVITY_counter];
-      user[SF.CARDS_ACTIVITY]     = row[DBF.C_CARDS_ACTIVITY_counter];
-      user[SF.QUESTION_ACITVITY]  = row[DBF.C_QUESTION_ACITVITY_counter];
-      user[SF.SYMPATHY_ACITVITY]  = row[DBF.C_SYMPATHY_ACITVITY_counter];
-      user[SF.COINS_EARNED]       = row[DBF.C_COINS_EARNED_counter];
-      user[SF.COINS_SPENT]        = row[DBF.C_COUNS_SPENT_counter];
+      let user = {
+        [PF.ID]                : row[DBF.ID_varchar_p],
+        [SF.GIFTS_LOVES]       : row[DBF.C_GIFTS_LOVES_counter],
+        [SF.GIFTS_BREATH]      : row[DBF.C_GIFTS_BREATH_counter],
+        [SF.GIFTS_FLOWERS]     : row[DBF.C_GIFTS_FLOWERS_counter],
+        [SF.GIFTS_DRINKS]      : row[DBF.C_GIFTS_DRINKS_counter],
+        [SF.GIFTS_COMMON]      : row[DBF.C_GIFTS_COMMON_counter],
+        [SF.GIFTS_FLIRTATION]  : row[DBF.C_GIFTS_FLIRTATION_counter],
+        [SF.GIFTS_MERRY]       : row[DBF.C_GIFTS_MERRY_counter],
+        [SF.MONEY_1_GIVEN]     : row[DBF.C_MONEY_1_GIVEN_counter],
+        [SF.MONEY_3_GIVEN]     : row[DBF.C_MONEY_3_GIVEN_counter],
+        [SF.MONEY_10_GIVEN]    : row[DBF.C_MONEY_10_GIVEN_counter],
+        [SF.MONEY_20_GIVEN]    : row[DBF.C_MONEY_20_GIVEN_counter],
+        [SF.MONEY_60_GIVEN]    : row[DBF.C_MONEY_60_GIVEN_counter],
+        [SF.MONEY_200_GIVEN]   : row[DBF.C_MONEY_200_GIVEN_counter],
+        [SF.MONEY_1_TAKEN]     : row[DBF.C_MONEY_1_TAKEN_counter],
+        [SF.MONEY_3_TAKEN]     : row[DBF.C_MONEY_3_TAKEN_counter],
+        [SF.MONEY_10_TAKEN]    : row[DBF.C_MONEY_10_TAKEN_counter],
+        [SF.MONEY_20_TAKEN]    : row[DBF.C_MONEY_20_TAKEN_counter],
+        [SF.MONEY_60_TAKEN]    : row[DBF.C_MONEY_60_TAKEN_counter],
+        [SF.MONEY_200_TAKEN]   : row[DBF.C_MONEY_200_TAKEN_counter],
+        [SF.MENU_APPEND]       : row[DBF.C_MENU_APPEND_counter],
+        [SF.BEST_ACTIVITY]     : row[DBF.C_BEST_ACTIVITY_counter],
+        [SF.BOTTLE_ACTIVITY]   : row[DBF.C_BOTTLE_ACTIVITY_counter],
+        [SF.CARDS_ACTIVITY]    : row[DBF.C_CARDS_ACTIVITY_counter],
+        [SF.QUESTION_ACITVITY] : row[DBF.C_QUESTION_ACITVITY_counter],
+        [SF.SYMPATHY_ACITVITY] : row[DBF.C_SYMPATHY_ACITVITY_counter],
+        [SF.COINS_EARNED]      : row[DBF.C_COINS_EARNED_counter],
+        [SF.COINS_SPENT]       : row[DBF.C_COUNS_SPENT_counter]
+      };
+
       
       callback(null, user);
     } else {

@@ -1,10 +1,11 @@
-var async = require('async');
+const async = require('async');
 
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USER_GUESTS.fields;
-var DBFN = dbConst.DB.USER_NEW_GUESTS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF   = dbConst.DB.USER_GUESTS.fields;
+const DBFN  = dbConst.DB.USER_NEW_GUESTS.fields;
+const PF    = dbConst.PFIELDS;
 
 /*
  Добавить гостя в БД: ИД, объект с данными гостя
@@ -21,7 +22,7 @@ module.exports = function(uid, options, callback) { options = options || {};
 
   async.waterfall([ //----------------------------------------------
     function (cb) {
-      var fields = [
+      let fields = [
         DBF.USERID_uuid_p,
         DBF.GUESTID_uuid_ci,
         DBF.GUESTVID_varchar,
@@ -30,9 +31,9 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.GUESTBDATE_timestamp
       ];
       
-      var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GUESTS.name);
   
-      var params = [
+      let params = [
         uid,
         options[PF.ID],
         options[PF.VID],
@@ -48,14 +49,14 @@ module.exports = function(uid, options, callback) { options = options || {};
       });
     }, //-----------------------------------------------------------------
       function (res, cb) {
-        var fields = [
+        let fields = [
           DBFN.USERID_uuid_pc1i,
           DBFN.GUESTID_uuid_pc2i
         ];
       
-        var query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GUESTS.name);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GUESTS.name);
       
-        var params = [
+        let params = [
           uid,
           options[PF.ID]
         ];

@@ -4,11 +4,11 @@
  * Удаляем пользователя из черного списка
  */
 
-var db  = require('./../../db_manager');
+const  db  = require('./../../db_manager');
 
 module.exports = function (blockedID, callback) {
   
-  var self = this;
+  let  self = this;
   
   db.deleteBlocked(self._pID, blockedID, function (err) {
     if(err) { return callback(err); }

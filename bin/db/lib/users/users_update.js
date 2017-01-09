@@ -1,7 +1,8 @@
-var cdb = require('./../common/cassandra_db');
-var dbConst = require('./../../constants');
-var DBF = dbConst.DB.USERS.fields;
-var PF = dbConst.PFIELDS;
+const cdb     = require('./../common/cassandra_db');
+const dbConst = require('./../../constants');
+
+const DBF = dbConst.DB.USERS.fields;
+const PF  = dbConst.PFIELDS;
 
 /*
  Изменяем данные пользователя: объек с данными
@@ -15,12 +16,12 @@ module.exports = function(options, callback) { options = options || {};
     return callback(new Error("Задан пустй Id пользователя"), null);
   }
 
-  var fields = [DBF.VID_varchar_i];
-  var constFields = [DBF.ID_uuid_p];
-  var constValues = [1];
-  var dbName = dbConst.DB.USERS.name;
+  let fields = [DBF.VID_varchar_i];
+  let constFields = [DBF.ID_uuid_p];
+  let constValues = [1];
+  let dbName = dbConst.DB.USERS.name;
 
-  var params = [];
+  let params = [];
   params.push(options[PF.VID]);
   if (PF.BDATE in options)         { fields.push(DBF.BDATE_timestamp);   params.push(options[PF.AGE]); }
   if (PF.COUNTRY in options)       { fields.push(DBF.COUNTRY_int);       params.push(options[PF.COUNTRY]); }
@@ -36,7 +37,7 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.FREE_TRACKS in options)   { fields.push(DBF.FREE_TRACKS);       params.push(options[PF.FREE_TRACKS]); }
   if (PF.VIP in options)           { fields.push(DBF.VIP_boolean);       params.push(options[PF.VIP]); }
 
-  var query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
 
   params.push(options[PF.ID]);
 

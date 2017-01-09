@@ -3,11 +3,11 @@
  *
  * @param result - объект с результатами предидущей игры, istimeout - устанавливать таймаут на старт следующей игры
  */
-var Config        = require('./../../../../config.json');
-var constants = require('../../../constants'),
-    PF        = constants.PFIELDS;
+const  Config    = require('./../../../../config.json');
+const  constants = require('../../../constants');
 
-var RESULTS_TIMEOUT = Number(Config.game.timeouts.results);
+const  RESULTS_TIMEOUT = Number(Config.game.timeouts.results);
+const  PF              = constants.PFIELDS;
 
 module.exports = function(result, istimeout) { result = result || {}; istimeout = istimeout || false;
 
@@ -24,16 +24,17 @@ module.exports = function(result, istimeout) { result = result || {}; istimeout 
   result[PF.PRISON]   = null;
   
   if(this._prisoner !== null) {
-    result.prison = {};
-    result[PF.PRISON][PF.ID]  = this._prisoner.id;
-    result[PF.PRISON][PF.VID] = this._prisoner.vid;
-    result[PF.PRISON][PF.SEX] = this._prisoner.sex;
+    result.prison = {
+      [PF.ID]  : this._prisoner.id,
+      [PF.VID] : this._prisoner.vid,
+      [PF.SEX] : this._prisoner.sex
+    };
   }
 
   this.emit(result);
   this._gameState = result;
 
   // Устанавливаем таймаут
-  var timeout = (istimeout)? RESULTS_TIMEOUT : 0;
+  let  timeout = (istimeout)? RESULTS_TIMEOUT : 0;
   this.startTimer(this._handlers[this._nextGame], timeout);
 };

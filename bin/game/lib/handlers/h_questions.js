@@ -1,7 +1,7 @@
-var constants = require('./../../../constants');
-var PF = constants.PFIELDS;
-var addAction = require('./../common/add_action');
-var oPool = require('./../../../objects_pool'),
+const constants = require('./../../../constants');
+const PF = constants.PFIELDS;
+const addAction = require('./../common/add_action');
+const oPool = require('./../../../objects_pool'),
     stat = require('./../../../stat_manager');
 
 // Вопросы, ждем, когда все ответят, потом показываем ответы
@@ -9,8 +9,8 @@ module.exports = function(game) {
   return function(timer, socket, options) {
   
     if(!timer) {
-      var selfProfile = oPool.userList[socket.id];
-      var uid = selfProfile.getID();
+      let selfProfile = oPool.userList[socket.id];
+      let uid = selfProfile.getID();
   
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];
@@ -27,19 +27,21 @@ module.exports = function(game) {
         return game.stop();
       }
 
-      var result = {};
-      result[PF.PICKS] = [];
+      let result = {
+        [PF.PICKS] : []
+      };
 
-      var playerInfo, picks;
-      for (var item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+      let playerInfo, picks;
+      for (let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
         playerInfo = game._activePlayers[item];
         picks = game._actionsQueue[playerInfo.id];
 
         if(picks) {
-          var pick = {};
-          pick[PF.ID] = playerInfo.id;
-          pick[PF.VID] = playerInfo.vid;
-          pick[PF.PICK] = picks[0][PF.PICK];
+          let pick = {
+            [PF.ID]   : playerInfo.id,
+            [PF.VID]  : playerInfo.vid,
+            [PF.PICK] : picks[0][PF.PICK]
+          };
           
           result[PF.PICKS].push(pick);
         }

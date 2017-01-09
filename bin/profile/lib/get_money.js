@@ -6,16 +6,16 @@
  * @return money - количество монет у пользоателя
  */
 
-var db = require('./../../db_manager');
-var constants = require('./../../constants');
+const db = require('./../../db_manager');
+const constants = require('./../../constants');
 
 /*
     Получаем деньги
  */
 module.exports = function(callback) {
-  var self = this;
+  let self = this;
 
-  var fList = [db.CONST.MONEY];
+  let fList = [db.CONST.MONEY];
   db.findUser(self._pID, null, fList, function(err, foundUser) {
     if (err) { return callback(err); }
     

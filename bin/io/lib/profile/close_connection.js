@@ -80,25 +80,17 @@ module.exports = function (socket) {
             },//----------------------------------------------------------------
             function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
               if(room) {
-          
-                let roomInfo = room.getInfo();
-          
-                sendUsersInRoom(roomInfo, selfProfile.getID(), function(err, roomInfo) {
-                  if(err) { return cb(err); }
+
+                sendUsersInRoom(room, selfProfile.getID());
+
+                let params = {
+                  [PF.ID]   : selfProfile.getID(),
+                  [PF.VID]  : selfProfile.getVID()
+                };
             
-                  let params = {
-                    [PF.ID]   : selfProfile.getID(),
-                    [PF.VID]  : selfProfile.getVID()
-                  };
-            
-                  emitAllRooms(socket, constants.IO_OFFLINE, params);
-            
-                  cb(null, null);
-                });
-          
-              } else {
-                cb(null, null);
+                emitAllRooms(socket, constants.IO_OFFLINE, params);
               }
+              cb(null, null);
             }//----------------------------------------------------------------
           ], function (err) {
             if (err) { logger.error(constants.IO_DISCONNECT + err);  }

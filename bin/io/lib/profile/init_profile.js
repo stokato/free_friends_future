@@ -160,14 +160,10 @@ module.exports = function (socket, options) {
       cb(null, info, room, roomInfo);
     },//------------------------------------------------------------
     function(info, room, roomInfo, cb) { // Отравляем в комнату сведения о пользователях в ней
-    
-      sendUsersInRoom(roomInfo, info[PF.ID], function(err, roomInfo) {
-        if(err) { return cb(err); }
-      
-        info[PF.ROOM] = roomInfo;
-      
-        cb(null, info, room);
-      });
+
+      info[PF.ROOM] = sendUsersInRoom(room, info[PF.ID]);
+
+      cb(null, info, room);
     },//------------------------------------------------------------
     function(info, room, cb) {
   

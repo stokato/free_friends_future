@@ -18,21 +18,22 @@ const sendUsersInRoom = require('./send_users_in_room');
 const GIFT_TIMEOUT = Number(Config.user.settings.gift_timeout);
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
-//TODO: Переделать - чтобы при подраке тому же игроку, снимался таймер, если он для него
 module.exports = function(id) {
-  setTimeout(function () {
+
+  let  profile = oPool.profiles[id];
+  let socket = profile.getSocket();
+  let room = oPool.roomList[socket.id];
+
+  let timer = setTimeout(function () {
     let  profile = oPool.profiles[id];
     if(profile) {
       profile.clearGiftInfo(function() {
-        
-        let  roomInfo = oPool.roomList[profile.getSocket().id].getInfo();
-        
-        sendUsersInRoom(roomInfo, null, function(err, roomInfo) {
-          if(err) {
-            return logger('setGiftTimeout' + err);
-          }
-        });
+
+        sendUsersInRoom(oPool.roomList[profile.getSocket().id]);
+
       });
     }
   }, GIFT_TIMEOUT);
+
+  room.setGiftTimer(id, timer);
 };

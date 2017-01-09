@@ -37,6 +37,8 @@ module.exports.RANKS = {
   RELEASER  : 'releaser'
 };
 
+module.exports.ALMIGHTY = 'almighty';
+
 // ошибки
 module.exports.errors = {
   NO_SUCH_GOOD        : { message: "Нет такого товара",                                                   code : 401},

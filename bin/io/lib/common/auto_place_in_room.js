@@ -50,14 +50,18 @@ module.exports = function (socket,  callback) {
       delete oPool.rooms[oldRoom.getName()];
     }
   }
-  
-  newRoom.addProfile(selfProfile);
-  newRoom.getRanks().addEmits(socket);
-  newRoom.getMusicPlayer().addEmits(socket);
-  
-  selfProfile.setGame(newRoom.getGame());
-  oPool.roomList[socket.id] = newRoom;
 
-  callback(null, newRoom);
+  newRoom.addProfile(selfProfile, function (err) {
+    if(err) { return callback(err); }
+
+    newRoom.getRanks().addEmits(socket);
+    newRoom.getMusicPlayer().addEmits(socket);
+
+    selfProfile.setGame(newRoom.getGame());
+    oPool.roomList[socket.id] = newRoom;
+
+    callback(null, newRoom);
+  });
+
 };
 

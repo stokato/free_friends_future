@@ -34,9 +34,14 @@ module.exports = function (rank, uid) {
   
       this.onNewRank(null, rank, uid, currOwnerID);
       this.awardProfile(rank, uid);
+
+      if(this._rRankOwners[constants.ALMIGHTY == currOwnerID]) {
+        this._rRankOwners[constants.ALMIGHTY] = null;
+      }
     }
   }
   
   this.emitAddBall(uid);
-  
+
+  this.checkAlmighty(uid);
 };

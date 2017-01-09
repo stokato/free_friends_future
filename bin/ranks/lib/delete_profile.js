@@ -23,4 +23,8 @@ module.exports = function (profile) {
       this._rBonuses[constants.RANKS[item]] = 0;
     }
   }
+
+  if(this._rRankOwners[constants.ALMIGHTY] == uid) {
+    this._rRankOwners[constants.ALMIGHTY] = null;
+  }
 };

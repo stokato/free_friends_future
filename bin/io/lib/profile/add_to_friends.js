@@ -58,7 +58,7 @@ module.exports = function (socket, options) {
       }], //-----------------------------------------------------
     function (err, friendProfile) { // Отправляем сведения о новом друге
       if (err) { return emitRes(err, socket, constants.IO_ADD_FRIEND); }
-      
+
       let friendInfo = fillInfo(friendProfile, date);
       
       if (oPool.isProfile(friendProfile.getID())) { // Если друг онлайн, то и ему
@@ -66,6 +66,12 @@ module.exports = function (socket, options) {
         
         let friendSocket = friendProfile.getSocket();
         friendSocket.emit(constants.IO_NEW_FRIEND, selfInfo);
+
+        let selfRoom = oPool.roomList[socket.id];
+        let friendRoom = oPool.roomList[friendSocket.id];
+        if(selfRoom.getName() == friendRoom.getName()) {
+          selfRoom.setFriendInfo(selfProfile.getID(), friendProfile.getID(), true);
+        }
       }
       
       emitRes(null, socket, constants.IO_ADD_FRIEND, friendInfo);

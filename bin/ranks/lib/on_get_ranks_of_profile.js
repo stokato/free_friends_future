@@ -24,6 +24,8 @@ module.exports = function () {
     }
   
     let ranks = {};
+    let rOwner = 0;
+    let rCount = 0;
   
     for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
       let rank = constants.RANKS[item];
@@ -32,9 +34,13 @@ module.exports = function () {
       let rankStep = Number(Config.ranks[rank].step);
     
       let rankInfo = {};
-    
-      rankInfo[PF.ISOWNER] = (self._rRankOwners[rank] == uid);
-    
+
+      rCount ++;
+      if(self._rRankOwners[rank] == uid) {
+        rankInfo[PF.ISOWNER] = true;
+        rOwner++;
+      }
+
       if(!rankInfo[PF.ISOWNER]) {
         rankInfo[PF.BALLS] = self._rProfiles[uid][rank];
       
@@ -57,6 +63,16 @@ module.exports = function () {
     }
   
     ranks[constants.PFIELDS.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;
+
+    ranks[constants.ALMIGHTY] = {};
+
+    if(rOwner == rCount) {
+      ranks[constants.ALMIGHTY][PF.ISOWNER] = true;
+    } else {
+      ranks[constants.ALMIGHTY][PF.NEED_BALLS] = rCount;
+      ranks[constants.ALMIGHTY][PF.BALLS] = rOwner;
+      ranks[constants.ALMIGHTY][PF.PROGRESS] = Math.floor(rOwner / rCount * 100);
+    }
   
     emitRes(null, socket, constants.IO_GET_RANKS, ranks);
   }

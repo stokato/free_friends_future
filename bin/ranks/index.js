@@ -19,7 +19,8 @@ const addProfile        = require('./lib/add_profile'),
     onGetActiveRank     = require('./lib/on_get_active_rank'),
     onSetActiveRank     = require('./lib/on_set_active_rank'),
     addEmits            = require('./lib/add_emits'),
-    deleteEmits         = require('./lib/delete_emits');
+    deleteEmits         = require('./lib/delete_emits'),
+    checkAlmgihty       = require('./lib/check_almighty');
 
 function RanksManager() {
   // Обладатели званий
@@ -32,6 +33,8 @@ function RanksManager() {
     this._rRankOwners[constants.RANKS[item]] = null;
     this._rBonuses[constants.RANKS[item]] = 0;
   }
+
+  this._rRankOwners[constants.ALMIGHTY] = null;
   
   // Список пользователей со счетчиками званий
   this._rProfiles = {};
@@ -40,6 +43,7 @@ function RanksManager() {
   this._onRankBonus = {
     [constants.RANKS.POPULAR] : onPopularBonus
   };
+
 }
 
 RanksManager.prototype.getRankOwner   = function (rank) { return this._rRankOwners[rank]; };
@@ -56,5 +60,6 @@ RanksManager.prototype.onSetActiveRank      = onSetActiveRank;
 RanksManager.prototype.emitAddBall          = emitAddBall;
 RanksManager.prototype.addEmits             = addEmits;
 RanksManager.prototype.deleteEmits          = deleteEmits;
+RanksManager.prototype.checkAlmighty        = checkAlmgihty;
 
 module.exports = RanksManager;

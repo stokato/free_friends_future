@@ -66,6 +66,12 @@ module.exports = function (socket, options) {
           let friendSocket = friendProfile.getSocket();
 
           friendSocket.emit(constants.IO_NO_FRIEND, selfInfo);
+
+          let selfRoom = oPool.roomList[socket.id];
+          let friendRoom = oPool.roomList[friendSocket.id];
+          if(selfRoom.getName() == friendRoom.getName()) {
+            selfRoom.setFriendInfo(selfProfile.getID(), friendProfile.getID(), false);
+          }
         }
   
         emitRes(null, socket, constants.IO_DEL_FROM_FRIENDS, friendInfo);

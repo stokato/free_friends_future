@@ -80,41 +80,31 @@ module.exports = function (socket, options) {
     currRoom.getMusicPlayer().checkTrack(currRoom, selfProfile);
   }
   
-  newRoom.addProfile(selfProfile);
-  newRoom.getMusicPlayer().addEmits(socket);
-  newRoom.getRanks().addEmits(socket);
-  
-  oPool.roomList[socket.id] = newRoom;
-  
   async.waterfall([//-----------------------------------------------------------------------
     function (cb) { // Если пользователь перешел из другой комнаты, обновляем в ней список участников
-      if(isCurrRoom) {
-        let  currRoomInfo = currRoom.getInfo();
-  
-        sendUsersInRoom(currRoomInfo, null, function(err) {
-          if(err) { return cb(err); }
-    
-          cb(null, null);
-        });
+      newRoom.addProfile(selfProfile, function (err) {
+        if(err) { return cb(err, null); }
 
-      } else {
-        cb(null, null);
-      }
-    },//-----------------------------------------------------------------------
-    function (res, cb) { // Устанавливаем таймаут на смену комнаты для этого пользователя
-      
-      let  info = newRoom.getInfo();
-      oPool.roomChangeLocks[selfProfile.getID()] = true;
-      setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), ROOM_CHANGE_TIMEOUT);
-    
-      cb(null, info);
-    },//-----------------------------------------------------------------------
-    function (info, cb) { // Отправляем в комнату новые слведения
-      sendUsersInRoom(info, null, function(err) {
-        if(err) { return cb(err) }
-    
+        newRoom.getMusicPlayer().addEmits(socket);
+        newRoom.getRanks().addEmits(socket);
+
+        oPool.roomList[socket.id] = newRoom;
+
+        if(isCurrRoom) {
+          sendUsersInRoom(currRoom);
+        }
         cb(null, null);
       });
+
+    },//-----------------------------------------------------------------------
+    function (res, cb) { // Устанавливаем таймаут на смену комнаты для этого пользователя
+
+      oPool.roomChangeLocks[selfProfile.getID()] = true;
+      setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), ROOM_CHANGE_TIMEOUT);
+
+      sendUsersInRoom(newRoom);
+    
+      cb(null, null);
     }//-----------------------------------------------------------------------
   ], function (err) {
     if(err) {

@@ -20,7 +20,8 @@ const addProfile      = require('./lib/add_profile'),
     getInfo         = require('./lib/get_info'),
     getAnySocket    = require('./lib/get_any_socket'),
     getAllPlayers   = require('./lib/get_all_players'),
-    randomProfile   = require('./lib/random_profile');
+    randomProfile   = require('./lib/random_profile'),
+    getPersonalInfo = require('./lib/get_personal_info');
 
 /*
     Класс комнаты
@@ -35,6 +36,8 @@ function Room(name, title)  {
   this._guys_count = 0;
   this._girls = {};
   this._girls_count= 0;
+
+  this._friends = {}; // key - id : { id : true / false }
   
   // Сообщения в общем чате
   this._messages = [];
@@ -54,8 +57,8 @@ function Room(name, title)  {
     this._girls_indexes.push(i);
     this._guys_indexes.push(i);
   }
-  
-  this._giftTimer = null;
+
+  this._giftTimers = {};
   
 }
 
@@ -76,8 +79,22 @@ Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
 Room.prototype.getRanks       = function () {  return this._ranks; };
-Room.prototype.clearGiftTimer = function () {  clearTimeout(this._giftTimer); };
-Room.prototype.setGiftTimer   = function (timer) { this._giftTimer = timer; };
+Room.prototype.clearGiftTimer = function (uid) {  clearTimeout(this._giftTimers[uid]); };
+Room.prototype.setGiftTimer   = function (uid, timer) {
+  clearTimeout(this._giftTimers[uid]);
+  this._giftTimers[uid] = timer;
+};
+Room.prototype.setFriendInfo  = function (id1, id2, isfriends) {
+  if(!this._friends[id1]) {
+    this._friends[id1] = {};
+  }
+  this._friends[id1][id2] = isfriends;
+
+  if(!this._friends[id2]) {
+    this._friends[id2] = {};
+  }
+  this._friends[id2][id1] = isfriends;
+};
 
 Room.prototype.addProfile     = addProfile;
 Room.prototype.deleteProfile  = deleteProfile;
@@ -86,5 +103,6 @@ Room.prototype.getUsersInfo   = getUsersInfo;
 Room.prototype.getAnySocket   = getAnySocket;
 Room.prototype.getAllPlayers  = getAllPlayers;
 Room.prototype.randomProfile  = randomProfile;
+Room.prototype.getPersonalInfo = getPersonalInfo;
 
 module.exports = Room;

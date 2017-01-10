@@ -21,28 +21,5 @@ module.exports = function (uid, count, callback) {
       player.addPoints(count, callback);
     });
   }
-  
-  // // Функция обрабатывает результы начисления очков, оповещает игрока
-  // function onPoints(player) {
-  //   return function(err, points) {
-  //     let socket = player.getSocket();
-  //
-  //     if(err) {
-  //       if(socket) {
-  //         handleError(socket, constants.IO_GAME_ERROR, err);
-  //       } else {
-  //         new GameError(constants.IO_GAME_ERROR, err.message);
-  //       }
-  //
-  //       return callback(err);
-  //     }
-  //
-  //     let res = {};
-  //     res[constants.PFIELDS.POINTS] = points;
-  //
-  //     socket.emit(constants.IO_ADD_POINTS, res);
-  //
-  //     callback(null, null);
-  //   }
-  // }
+
 };

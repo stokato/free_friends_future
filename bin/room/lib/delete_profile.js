@@ -34,4 +34,12 @@ module.exports = function (profile) {
   let arr = (sex == constants.GUY)? this._guys_indexes : this._girls_indexes;
   
   arr.push(profile.getGameIndex());
+
+  for(let item in this._friends) if(this._friends.hasOwnProperty(item)) {
+    if(item == profile.getID()) {
+      delete this._friends[item];
+    } else {
+      delete thiis._friends[item][profile.getID()];
+    }
+  }
 };

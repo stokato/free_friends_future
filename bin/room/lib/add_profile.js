@@ -6,10 +6,12 @@
  * @param profile - профиль
  */
 
+const async  = require('async');
 const constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
+const PF = constants.PFIELDS;
 
-module.exports = function (profile) {
+module.exports = function (profile, callback) {
   
   this._ranks.addProfile(profile);
   // this._ranks.addEmits(profile.getSocket());
@@ -41,4 +43,41 @@ module.exports = function (profile) {
   profile.setGameIndex(index);
   
   profile.setGame(this._game);
+  
+  let users = this.getAllPlayers();
+  let userList = [];
+  for(let i = 0; i < users.length; i++) {
+    if(users[i].getID() != profile.getID()) {
+      userList.push(users[i].getID());
+    }
+  }
+
+  var self = this;
+
+  profile.isFriend(userList, function (err, res) {
+    if(err) { return callback(err); }
+
+    if(!res) { return callback(null, null); }
+
+    for(let i = 0; i < res.length; i++) {
+      let fInfo = res[i];
+
+      if(fInfo[PF.ISFRIEND] == true) {
+
+        if(!self._friends[profile.getID()]) {
+          self._friends[profile.getID()] = {};
+        }
+
+        self._friends[profile.getID()][fInfo[PF.ID]] = true;
+
+        if(!self._friends[fInfo[PF.ID]]) {
+          self._friends[fInfo[PF.ID]] = {};
+        }
+
+        self._friends[fInfo[PF.ID]][profile.getID()] = true;
+      }
+    }
+
+    callback(null, null);
+  });
 };

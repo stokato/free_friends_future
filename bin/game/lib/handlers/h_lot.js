@@ -18,9 +18,11 @@ const PRISON_TIMEOUT = Number(Config.game.timeouts.prison);
 module.exports = function(game) {
   return function(timer, socket, options) {
     
+    let uid;
+    
     // Если вызов произведени игроком - сохраняем его выбор
     if(!timer) {
-      let uid = oPool.userList[socket.id].getID();
+      uid = oPool.userList[socket.id].getID();
       
       if(!game._actionsQueue[uid]) {
         game._actionsQueue[uid] = [];

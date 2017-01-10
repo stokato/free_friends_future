@@ -1,8 +1,9 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USERS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USERS.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Изменяем данные пользователя: объек с данными
@@ -19,7 +20,7 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [DBF.VID_varchar_i];
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.DB.USERS.name;
+  let dbName = dbConst.USERS.name;
 
   let params = [];
   params.push(options[PF.VID]);

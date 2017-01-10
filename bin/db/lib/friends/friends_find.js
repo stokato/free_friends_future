@@ -14,10 +14,11 @@ const async = require('async');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBFN      = dbConst.DB.USER_NEW_FRIENDS.fields;
-const DBF       = dbConst.DB.USER_FRIENDS.fields;
-const PF        = dbConst.PFIELDS;
+const DBFN      = dbConst.USER_NEW_FRIENDS.fields;
+const DBF       = dbConst.USER_FRIENDS.fields;
+const PF        = constants.PFIELDS;
 
 module.exports = function(uid, friendsID, withnew, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id"), null); }
@@ -26,7 +27,7 @@ module.exports = function(uid, friendsID, withnew, callback) {
       function (cb) {
         if(withnew) {
           let fields      = [DBFN.FRIENDID_uuid_pc2];
-          let dbName      = dbConst.DB.USER_NEW_FRIENDS.name;
+          let dbName      = dbConst.USER_NEW_FRIENDS.name;
           let constFields = [DBFN.USERID_uuid_pc1i];
           let constValues = [1];
           
@@ -57,7 +58,7 @@ module.exports = function(uid, friendsID, withnew, callback) {
         
         let constFields = [DBF.USERID_uuid_pi];
         let constCount  = [1];
-        let dbName      = dbConst.DB.USER_FRIENDS.name;
+        let dbName      = dbConst.USER_FRIENDS.name;
         let params      = [uid];
   
         if(friendsID) {

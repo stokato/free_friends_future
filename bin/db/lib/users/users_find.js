@@ -1,9 +1,10 @@
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
-const bdayToAge = require('./../common/bdayToAge');
+// const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USERS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USERS.fields;
+const PF  = constants.PFIELDS;
 
 
 /*
@@ -51,7 +52,7 @@ module.exports = function(id, vid, f_list, callback) {
     }
   }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.USERS.name, [constraint], [1]);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.USERS.name, [constraint], [1]);
 
   cdb.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }

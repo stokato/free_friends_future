@@ -12,10 +12,11 @@ const async = require('async');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF   = dbConst.DB.USER_CHATS.fields;
-const DBFN  = dbConst.DB.USER_NEW_CHATS.fields;
-const PF    = dbConst.PFIELDS;
+const DBF   = dbConst.USER_CHATS.fields;
+const DBFN  = dbConst.USER_NEW_CHATS.fields;
+const PF    = constants.PFIELDS;
 
 
 module.exports = function(uid, callback) {
@@ -31,7 +32,7 @@ module.exports = function(uid, callback) {
       
       let constFields = [DBFN.USERID_uuid_pc1i];
       let constValues = [1];
-      let dbName = dbConst.DB.USER_NEW_CHATS.name;
+      let dbName = dbConst.USER_NEW_CHATS.name;
       
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
       
@@ -60,7 +61,7 @@ module.exports = function(uid, callback) {
   
       let const_fields = [DBF.USERID_uuid_p];
       let const_values = [1];
-      let dbName        = dbConst.DB.USER_CHATS.name;
+      let dbName        = dbConst.USER_CHATS.name;
   
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, const_fields, const_values);
   

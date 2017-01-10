@@ -4,7 +4,7 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF = dbConst.DB.USER_GIFTS.fields;
+const DBF = dbConst.USER_GIFTS.fields;
 
 /*
  Снимаем поментку Новый со всех подарков пользователя
@@ -15,7 +15,7 @@ module.exports = function(uid, callback) {
   let fields = [DBF.ID_uuid_p];
   let constFields = [DBF.USERID_uuid_i];
   let constValues = [1];
-  let dbName = dbConst.DB.USER_NEW_GIFTS.name;
+  let dbName = dbConst.USER_NEW_GIFTS.name;
   
   // Отбираем все новые подарки пользователя
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);

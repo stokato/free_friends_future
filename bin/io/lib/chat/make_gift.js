@@ -16,7 +16,7 @@ const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitizer');
 const getUserProfile  = require('./../common/get_user_profile');
-const setGiftTimeout  = require('./../common/set_gift_timeout');
+// const setGiftTimeout  = require('./../common/set_gift_timeout');
 
 const PF            = constants.PFIELDS;
 const SF            = constants.SFIELDS;
@@ -143,9 +143,9 @@ module.exports = function (socket, options) {
         friendSocket.emit(constants.IO_NEW_GIFT, res);
       }
   
-      if(oPool.isProfile(friendProfile.getID())) {
-        setGiftTimeout(friendProfile.getID());
-      }
+      // if(oPool.isProfile(friendProfile.getID())) {
+      //   setGiftTimeout(friendProfile.getID());
+      // }
       
       emitRes(null, socket, constants.IO_MAKE_GIFT);
       

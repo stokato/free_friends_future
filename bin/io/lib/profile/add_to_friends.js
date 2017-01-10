@@ -79,8 +79,8 @@ module.exports = function (socket, options) {
   
   //--------------
   function fillInfo(profile, date) {
-    
-    let res = {
+  
+    return {
       [PF.ID]      : profile.getID(),
       [PF.VID]     : profile.getVID(),
       [PF.DATE]    : date,
@@ -90,8 +90,6 @@ module.exports = function (socket, options) {
       [PF.COUNTRY] : profile.getCountry(),
       [PF.SEX]     : profile.getSex()
     };
-    
-    return res;
   }
   
 };

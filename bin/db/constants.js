@@ -4,52 +4,7 @@
 
 const constants = require('./../constants');
 
-module.exports.PFIELDS = constants.PFIELDS;
-
-// module.exports.PFIELDS = {
-//   DATE            : 'date',
-//   DATE_FROM       : 'first_date',
-//   DATE_TO         : 'second_date',
-//   SRC             : 'src',
-//   TYPE            : 'type',
-//   TITLE           : 'title',
-//   INCOMING        : 'incoming',
-//   TEXT            : 'text',
-//   OPENED          : 'opened',
-//   SEX             : 'sex',
-//   POINTS          : 'points',
-//   ID_LIST         : 'id_list',
-//   MONEY           : 'money',
-//   ID              : 'id',
-//   VID             : 'vid',
-//   UGIFTID         : 'gid',
-//   ORDERID         : 'userid',
-//   ORDERVID        : 'uservid',
-//   GIFTID          : 'giftid',
-//   GOODID          : 'goodid',
-//   FID             : 'fromid',
-//   FVID            : 'fromvid',
-//   GIFT1           : 'gift1',
-//   AGE             : 'age',
-//   COUNTRY         : 'country',
-//   CITY            : 'city',
-//   STATUS          : 'status',
-//   ISMENU          : 'ismenu',
-//   SUM             : 'sum',
-//   PRICE           : 'price',
-//   GOODTYPE        : 'goodtype',
-//   ISNEW           : 'is_new',
-//   GIFTS           : 'gifts',
-//   BDATE            : 'bday',
-//   CHATID          : 'chat',
-//   CHATVID         : 'chatVID',
-//   NUMBER          : 'number',
-//   PRICE2          : 'price2',
-//   FSEX            : 'usex',
-//   FBDATE           : 'ubday'
-// };
-
-module.exports.DB = {
+module.exports = {
   
   /*
    Таблица пользователей users:
@@ -291,14 +246,29 @@ module.exports.DB = {
     name    : 'shop',
     fields  : {
       ID_varchar_p        : 'id',
-      TITLE_varchar       : 'title',
-      PRICE_int           : 'price',
-      PRICE2_int          : 'price2',
+      TITLE_varchar       : 'good_title',
+      PRICE_COINS_int     : 'price_coins',
+      PRICE_VK_int        : 'price_vk',
       SRC_varchar         : 'src',
-      TYPE_varchar        : 'type',
-      GOODTYPE_varchar_i  : 'goodtype'
+      TYPE_varchar_i      : 'type',
+      GROUP_varchar       : 'group_name',
+      GROUP_TITLE_varchar : 'group_title'
     }
   },
+  
+  
+  // SHOP : {
+  //   name    : 'shop',
+  //   fields  : {
+  //     ID_varchar_p        : 'id',
+  //     TITLE_varchar       : 'title',
+  //     PRICE_int           : 'price',
+  //     PRICE2_int          : 'price2',
+  //     SRC_varchar         : 'src',
+  //     TYPE_varchar        : 'type',
+  //     GOODTYPE_varchar_i  : 'goodtype'
+  //   }
+  // },
   
   /*
    Таблица заказов:
@@ -337,7 +307,8 @@ module.exports.DB = {
       TEXT_varchar  : 'text',
       IMAGE1_varchar : 'image1',
       IMAGE2_varchar : 'image2',
-      IMAGE3_varchar : 'image3'
+      IMAGE3_varchar : 'image3',
+      ACTIVITY_boolean : 'activity'
     }
   },
   

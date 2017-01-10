@@ -9,8 +9,8 @@ const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.MAIN_STAT.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.MAIN_STAT.fields;
+const PF  = constants.PFIELDS;
 const SF  = constants.SFIELDS;
 
 module.exports = function(id, f_list, callback) {
@@ -22,7 +22,7 @@ module.exports = function(id, f_list, callback) {
   
   let contsFields = [DBF.ID_varchar_p];
   let constValues = [1];
-  let dbName = dbConst.DB.MAIN_STAT.name;
+  let dbName = dbConst.MAIN_STAT.name;
   
   let i, fields = [DBF.ID_varchar_p];
   for(i = 0; i < f_list.length; i++) {

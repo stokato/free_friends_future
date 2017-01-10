@@ -21,7 +21,7 @@
   },
   "cassandra" : {
     "host": "localhost",
-    "keyspace": "free_friends",
+    "keyspace": "free_friends2",
     "table_sessions": "sessions"
   },
   "user" : {
@@ -98,6 +98,10 @@
     "len_room_history" : "5",
     "one_sex_in_room"  : "6",
     "exit_timeout"  : "30000"
+  },
+  "good_types" : {
+    "gift" : "gift",
+    "money" : "money"
   },
   "static" : "public",
   "logs" : {

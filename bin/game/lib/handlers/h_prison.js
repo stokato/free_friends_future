@@ -28,9 +28,9 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game._timer); }
 
       // Если игроков не хватает - останавливаем игру
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
 
       // Помещаем тукущего игрока в темницу
       for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {

@@ -7,9 +7,10 @@
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USER_QUESTIONS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USER_QUESTIONS.fields;
+const PF  = constants.PFIELDS;
 
 module.exports = function (uid, options, callback) { options = options || {};
   
@@ -39,7 +40,7 @@ module.exports = function (uid, options, callback) { options = options || {};
     options[PF.FVID]
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_QUESTIONS.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_QUESTIONS.name);
   
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

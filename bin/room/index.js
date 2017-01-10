@@ -21,7 +21,8 @@ const addProfile      = require('./lib/add_profile'),
     getAnySocket    = require('./lib/get_any_socket'),
     getAllPlayers   = require('./lib/get_all_players'),
     randomProfile   = require('./lib/random_profile'),
-    getPersonalInfo = require('./lib/get_personal_info');
+    getPersonalInfo = require('./lib/get_personal_info'),
+    onGame          = require('./lib/on_game');
 
 /*
     Класс комнаты
@@ -44,6 +45,10 @@ function Room(name, title)  {
   
   // Игра и позиции игроков на столе
   this._game = new GameJS(this);
+  let self = this;
+  this._game.setOnStart(function () {
+    self.onGame();
+  });
   this._girls_indexes = [];
   this._guys_indexes  = [];
   
@@ -58,7 +63,7 @@ function Room(name, title)  {
     this._guys_indexes.push(i);
   }
 
-  this._giftTimers = {};
+  // this._giftTimers = {};
   
 }
 
@@ -79,11 +84,13 @@ Room.prototype.getName        = function () {  return this._nameOfRoom; };
 Room.prototype.getMusicPlayer = function () {  return this._mplayer; };
 Room.prototype.getMessages    = function () {  return this._messages; };
 Room.prototype.getRanks       = function () {  return this._ranks; };
-Room.prototype.clearGiftTimer = function (uid) {  clearTimeout(this._giftTimers[uid]); };
-Room.prototype.setGiftTimer   = function (uid, timer) {
-  clearTimeout(this._giftTimers[uid]);
-  this._giftTimers[uid] = timer;
-};
+
+// Room.prototype.clearGiftTimer = function (uid) {  clearTimeout(this._giftTimers[uid]); };
+// Room.prototype.setGiftTimer   = function (uid, timer) {
+//   clearTimeout(this._giftTimers[uid]);
+//   this._giftTimers[uid] = timer;
+// };
+
 Room.prototype.setFriendInfo  = function (id1, id2, isfriends) {
   if(!this._friends[id1]) {
     this._friends[id1] = {};
@@ -104,5 +111,6 @@ Room.prototype.getAnySocket   = getAnySocket;
 Room.prototype.getAllPlayers  = getAllPlayers;
 Room.prototype.randomProfile  = randomProfile;
 Room.prototype.getPersonalInfo = getPersonalInfo;
+Room.prototype.onGame         = onGame;
 
 module.exports = Room;

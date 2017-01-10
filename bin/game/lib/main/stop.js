@@ -5,6 +5,7 @@ const constants = require('../../../constants');
 
 module.exports = function() {
   clearTimeout(this._timer);
+  this._isActive = false;
 
   this._nextGame = constants.G_START;
 
@@ -19,6 +20,10 @@ module.exports = function() {
   this._actionsCount = 0;
 
   this._prisoner = null;
+  
+  if(this._onStart) {
+    this._onStart();
+  }
 
   this.start();
 };

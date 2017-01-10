@@ -3,10 +3,11 @@ const async = require('async');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF   = dbConst.DB.USER_GUESTS.fields;
-const DBFN  = dbConst.DB.USER_NEW_GUESTS.fields;
-const PF    = dbConst.PFIELDS;
+const DBF   = dbConst.USER_GUESTS.fields;
+const DBFN  = dbConst.USER_NEW_GUESTS.fields;
+const PF    = constants.PFIELDS;
 
 
 /*
@@ -23,7 +24,7 @@ module.exports = function(uid, isSelf, callback) {
       function (cb) {
         if(isSelf) {
           let fields = [DBFN.GUESTID_uuid_pc2i];
-          let dbName = dbConst.DB.USER_NEW_GUESTS.name;
+          let dbName = dbConst.USER_NEW_GUESTS.name;
           let constFields = [DBFN.USERID_uuid_pc1i];
           let constValues = [1];
           
@@ -56,7 +57,7 @@ module.exports = function(uid, isSelf, callback) {
         
         let constFields = [DBF.USERID_uuid_p];
         let constValues = [1];
-        let dbName = dbConst.DB.USER_GUESTS.name;
+        let dbName = dbConst.USER_GUESTS.name;
         
         //let query = "select guestid, guestvid, date FROM user_guests where userid = ?";
         let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);

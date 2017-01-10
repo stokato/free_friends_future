@@ -15,7 +15,7 @@ const constants = require('./../../constants');
 module.exports = function(callback) {
   let self = this;
 
-  let fList = [db.CONST.MONEY];
+  let fList = [constants.PFIELDS.MONEY];
   db.findUser(self._pID, null, fList, function(err, foundUser) {
     if (err) { return callback(err); }
     

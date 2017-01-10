@@ -10,10 +10,11 @@ const async = require('async');
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF     = dbConst.DB.USER_FRIENDS.fields;
-const DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
-const PF      = dbConst.PFIELDS;
+const DBF     = dbConst.USER_FRIENDS.fields;
+const DBFN    = dbConst.USER_NEW_FRIENDS.fields;
+const PF      = constants.PFIELDS;
 
 /*
  Добавить друга в БД: ИД, объект с данными друга
@@ -48,7 +49,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.BDATE]
       ];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_FRIENDS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_FRIENDS.name);
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -68,7 +69,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.ID]
       ];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_FRIENDS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_FRIENDS.name);
   
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }

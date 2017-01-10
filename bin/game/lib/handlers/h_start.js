@@ -36,7 +36,9 @@ module.exports = function(game) {
 
       // Если игроков недостаточно - останавливаем игру
       if(!game.checkCountPlayers()) {
-        return game.stop();
+        game.stop();
+        
+        return;
       }
     
       // Если игрока в темнице нет в комнате - очищаем темницу
@@ -86,6 +88,10 @@ module.exports = function(game) {
 
       // Устанавливаем таймаут
       game.startTimer(game._handlers[game._nextGame], LOT_TIMEOUT);
+      
+      if(game._onStart) {
+        game._onStart();
+      }      
     }
   }
 };

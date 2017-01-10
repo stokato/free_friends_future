@@ -1,8 +1,9 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USERS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USERS.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Добавляем пользователя в БД: объект с данными пользователя из соц. сетей
@@ -33,7 +34,7 @@ module.exports = function(options, callback) { options = options || {};
   if (options[PF.FREE_TRACKS])  { fields.push(DBF.FREE_MUSIC_int);   params.push(options[PF.FREE_TRACKS]); }
   if (options[PF.VID])          { fields.push(DBF.VIP_boolean);      params.push(options[PF.VIP]); }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USERS.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USERS.name);
 
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

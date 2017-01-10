@@ -8,9 +8,10 @@ const async = require('async');
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF     = dbConst.DB.BLOCKED.fields;
-const PF      = dbConst.PFIELDS;
+const DBF     = dbConst.BLOCKED.fields;
+const PF      = constants.PFIELDS;
 
 
 module.exports = function (uid, options, callback) { options = options || {};
@@ -33,7 +34,7 @@ module.exports = function (uid, options, callback) { options = options || {};
     options[PF.DATE]
   ];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.BLOCKED.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.BLOCKED.name);
 
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

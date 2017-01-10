@@ -42,9 +42,9 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game._timer); }
 
       // Если игроков недостаточно - останавливаем игру
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
 
       // Готовим сведения о выборе игорков и отбираем победителей
       let gold    = Math.floor(Math.random() * CARD_COUNT);

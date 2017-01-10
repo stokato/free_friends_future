@@ -57,9 +57,9 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game._timer); }
       
       // Если игроков недостаточно - останавливаме игру
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
       
       let count = 0, players = [];
       

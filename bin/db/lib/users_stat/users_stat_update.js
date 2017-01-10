@@ -8,8 +8,8 @@ const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USERS_STAT.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USERS_STAT.fields;
+const PF  = constants.PFIELDS;
 const SF  = constants.SFIELDS;
 
 module.exports = function(options, callback) { options = options || {};
@@ -21,7 +21,7 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [];
   let constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   let constValues = [1, 1];
-  let dbName = dbConst.DB.USERS_STAT.name;
+  let dbName = dbConst.USERS_STAT.name;
   
   let params = [];
   if (SF.GIFTS_GIVEN in options)   { fields.push(DBF.C_GIFTS_GIVEN_counter);   params.push(options[SF.GIFTS_GIVEN]); }

@@ -52,6 +52,8 @@ module.exports = Game;
 
 function Game(room) {
   let  self = this;
+  
+  this._isActive = false;
 
   this._room = room;                  // Комната, которй принадлежить эта игра
 
@@ -85,19 +87,15 @@ function Game(room) {
   this._handlers[constants.G_SYMPATHY]      = hSympathy(self);
   this._handlers[constants.G_SYMPATHY_SHOW] = hSympathyShow(self);
   this._handlers[constants.G_PRISON]        = hPrison(self);
+  
+  this._onStart = null;
 }
 
-Game.prototype.getGameState = function () {
-  return this._gameState;
-};
-
-Game.prototype.clearPrison = function () {
-  this._prisoner = null;
-};
-
-Game.prototype.getPrisonerInfo = function () {
-  return this._prisoner;
-};
+Game.prototype.getGameState     = function () { return this._gameState; };
+Game.prototype.clearPrison      = function () { this._prisoner = null; };
+Game.prototype.getPrisonerInfo  = function () { return this._prisoner; };
+Game.prototype.setOnStart       = function (func) { this._onStart = func; };
+Game.prototype.isActive         = function () { return this._isActive; };
 
 Game.prototype.start                  = start;
 Game.prototype.stop                   = stop;
@@ -117,17 +115,14 @@ Game.prototype.addProfile               = addEmits;
 Game.prototype.getActivityRating      = getActivityRating;
 
 // Получаем вопросы
-Game.prototype.getQuestions = function() {
-  return gameQuestions;
-};
-
-Game.prototype.getNextGame = function() { return this._nextGame; };
+Game.prototype.getQuestions = function() { return gameQuestions; };
+Game.prototype.getNextGame  = function() { return this._nextGame; };
 
 getQuestionsFromDB();
 
 // --------------------
 function getQuestionsFromDB() {
-  db.findAllQuestions(function(err, questions) {
+  db.findQuestionsActivity(true, function(err, questions) {
     if(err) {
       return logger.error(400, "Ошибка при получении вопросов из базы данных");
        //console.log("Ошибка при получении вопросов из базы данных");

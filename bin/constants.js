@@ -104,6 +104,7 @@ module.exports.IO_GIVE_MONEY          = 'give_money';
 
 module.exports.IO_SERVER_INIT         = 'server_init';
 module.exports.IO_NEW_GIFT            = 'new_gift';
+module.exports.IO_HIDE_GIFT           = 'hide_gift';
 
 module.exports.IO_ADD_TRECK           = 'add_track';
 module.exports.IO_GET_TRACK_LIST      = 'get_track_list';
@@ -152,21 +153,22 @@ const G_START         = 'results',
       G_SYMPATHY_SHOW = 'sympathy_show',
       G_PRISON        = 'prison';
 
-module.exports.G_START                = G_START;
-module.exports.G_LOT                  = G_LOT;
-module.exports.G_BOTTLE               = G_BOTTLE;
-module.exports.G_BOTTLE_KISSES        = G_BOTTLE_KISSES;
-module.exports.G_QUESTIONS            = G_QUESTIONS;
-module.exports.G_CARDS                = G_CARDS;
-module.exports.G_BEST                 = G_BEST;
-module.exports.G_SYMPATHY             = G_SYMPATHY;
-module.exports.G_SYMPATHY_SHOW        = G_SYMPATHY_SHOW;
-module.exports.G_PRISON               = G_PRISON;
+module.exports.G_START            = G_START;
+module.exports.G_LOT              = G_LOT;
+module.exports.G_BOTTLE           = G_BOTTLE;
+module.exports.G_BOTTLE_KISSES    = G_BOTTLE_KISSES;
+module.exports.G_QUESTIONS        = G_QUESTIONS;
+module.exports.G_CARDS            = G_CARDS;
+module.exports.G_BEST             = G_BEST;
+module.exports.G_SYMPATHY         = G_SYMPATHY;
+module.exports.G_SYMPATHY_SHOW    = G_SYMPATHY_SHOW;
+module.exports.G_PRISON           = G_PRISON;
 
 // Игры с тюрьмой и без
- module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON];
- // module.exports.GAMES = [ G_BOTTLE, G_BOTTLE ];
- module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY];
+ module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON ];
+ module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
+ 
+// module.exports.GAMES = [ G_BOTTLE, G_BOTTLE ];
 // module.exports.GAMES_WITHOUT_PRISON = [G_BOTTLE, G_BOTTLE];
 
 module.exports.QUESTIONS_COUNT        = 3;
@@ -298,7 +300,10 @@ module.exports.PFIELDS = {
   ALL_POINTS      : 'all_points',
   NEW_LEVEL_POINTS    : 'new_level_points',
   CURR_LEVEL_POINTS : 'curr_level_points',
-  PROGRESS        : 'progress'
+  PROGRESS        : 'progress',
+  ACTIVITY        : 'activity',
+  GROUP           : 'group',
+  GROUP_TITLE     : 'group_title'
 };
 
 module.exports.SFIELDS = {

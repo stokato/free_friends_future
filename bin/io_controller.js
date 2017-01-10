@@ -17,7 +17,7 @@ module.exports.setEmit = function (socket, emit, handler) {
       
       
       if(!handler) {
-        return emitRes({}, socket, emit); // TODO: добавить ошибку - отсутствует обработчик
+        return emitRes({ message : 'Нет обработчика для: ioController'}, socket, emit); // TODO: добавить ошибку - отсутствует обработчик
       }
       
       handler(socket, options);

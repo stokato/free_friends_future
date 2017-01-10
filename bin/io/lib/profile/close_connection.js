@@ -13,7 +13,7 @@ const oPool           = require('./../../../objects_pool');
 const stat            = require('./../../../stat_manager');
 
 const emitAllRooms    = require('../common/emit_all_rooms');
-const sendUsersInRoom = require('./../common/send_users_in_room');
+// const sendUsersInRoom = require('./../common/get_users_in_room');
 
 const PF              = constants.PFIELDS;
 const EXIT_TIMEOUT    = Number(Config.io.exit_timeout);
@@ -31,16 +31,13 @@ module.exports = function (socket) {
     
           async.waterfall([//----------------------------------------------------------------
             function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
-        
-              let info = {
+  
+              let params = {
                 [PF.ID]   : selfProfile.getID(),
                 [PF.VID]  : selfProfile.getVID()
               };
-        
-        
-              for(let r in oPool.rooms) if(oPool.rooms.hasOwnProperty(r)) {
-                socket.broadcast.in(oPool.rooms[r].getName()).emit(constants.IO_OFFLINE, info);
-              }
+  
+              emitAllRooms(socket, constants.IO_OFFLINE, params);
         
               cb(null, null);
             }, //----------------------------------------------------------------
@@ -68,7 +65,6 @@ module.exports = function (socket) {
                   delete oPool.rooms[room.getName()];
                   room = null;
                 } else {
-                  // checkTrack(room, selfProfile);
                   room.getMusicPlayer().checkTrack(room, selfProfile);
                 }
           
@@ -79,17 +75,19 @@ module.exports = function (socket) {
               cb(null, room);
             },//----------------------------------------------------------------
             function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
-              if(room) {
-
-                sendUsersInRoom(room, selfProfile.getID());
-
-                let params = {
-                  [PF.ID]   : selfProfile.getID(),
-                  [PF.VID]  : selfProfile.getVID()
-                };
-            
-                emitAllRooms(socket, constants.IO_OFFLINE, params);
-              }
+             
+              // if(room) {
+              //
+              //   // sendUsersInRoom(room, selfProfile.getID());
+              //
+              //   let params = {
+              //     [PF.ID]   : selfProfile.getID(),
+              //     [PF.VID]  : selfProfile.getVID()
+              //   };
+              //
+              //   emitAllRooms(socket, constants.IO_OFFLINE, params);
+              // }
+              
               cb(null, null);
             }//----------------------------------------------------------------
           ], function (err) {

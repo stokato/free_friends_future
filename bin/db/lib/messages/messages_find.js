@@ -3,11 +3,12 @@ const async = require('async');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF     = dbConst.DB.USER_MESSAGES.fields;
-const DBFN    = dbConst.DB.USER_NEW_MESSAGES.fields;
-const DBFCN   = dbConst.DB.USER_NEW_CHATS.fields;
-const PF      = dbConst.PFIELDS;
+const DBF     = dbConst.USER_MESSAGES.fields;
+const DBFN    = dbConst.USER_NEW_MESSAGES.fields;
+const DBFCN   = dbConst.USER_NEW_CHATS.fields;
+const PF      = constants.PFIELDS;
 
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
@@ -35,7 +36,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   async.waterfall([//-----------------------------------------------------------
       function (cb) {
         let fields = [DBFN.COMPANIONID_uuid_pc2i];
-        let dbName = dbConst.DB.USER_NEW_MESSAGES.name;
+        let dbName = dbConst.USER_NEW_MESSAGES.name;
         let constFields = [DBFN.USERID_uuid_pci];
         let constValues = [1];
         
@@ -65,7 +66,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         
         let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i];
         let constValues = [1, companions.length];
-        let dbName = dbConst.DB.USER_MESSAGES.name;
+        let dbName = dbConst.USER_MESSAGES.name;
         
         let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS],
           dbName, constFields, constValues, const_more, const_less);
@@ -112,7 +113,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       function(messages, cb) { // Удаляем сообщения из таблицы новых
         let constFields = [DBFN.USERID_uuid_pci, DBFN.COMPANIONID_uuid_pc2i];
         let constValues = [1, companions.length];
-        let dbName = dbConst.DB.USER_NEW_MESSAGES.name;
+        let dbName = dbConst.USER_NEW_MESSAGES.name;
         
         //let query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
         let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
@@ -128,7 +129,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         let params = [uid];
         let constFields = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
         let constValues = [ 1, companions.length ];
-        let dbName = dbConst.DB.USER_NEW_CHATS.name;
+        let dbName = dbConst.USER_NEW_CHATS.name;
         
         for (let i = 0; i < companions.length; i ++) {
           params.push(companions[i]);

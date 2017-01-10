@@ -13,9 +13,11 @@ const PF              = constants.PFIELDS;
 module.exports = function(game) {
   return function(timer, socket, options) { options = options || {};
     
+    let uid;
+    
     if(!timer) {
       let selfProfile = oPool.userList[socket.id];
-      let uid = selfProfile.getID();
+      uid = selfProfile.getID();
       
       if(game._nextGame == constants.G_SYMPATHY_SHOW && uid == options[constants.PFIELDS.PICK]) {
         return handleError(socket, constants.IO_GAME, constants.G_SYMPATHY_SHOW, constants.errors.SELF_ILLEGAL);
@@ -69,9 +71,9 @@ module.exports = function(game) {
     if(game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
       
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
       
       game.restoreGame(null, false);
     }

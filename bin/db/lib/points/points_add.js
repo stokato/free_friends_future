@@ -4,8 +4,8 @@ const constants = require('./../../../constants');
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
-const DBF     = dbConst.DB.POINTS.fields;
-const PF      = dbConst.PFIELDS;
+const DBF     = dbConst.POINTS.fields;
+const PF      = constants.PFIELDS;
 
 
 
@@ -60,7 +60,7 @@ module.exports = function(options, callback) { options    = options || {};
         options[PF.ID]
       ];
         
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.POINTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.POINTS.name);
       
       cdb.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
@@ -69,14 +69,14 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Отбираем все записи для этого пользователя
-      delOldPoints(fields, dbConst.DB.POINTS.name, function () {
+      delOldPoints(fields, dbConst.POINTS.name, function () {
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
       let db = (options[PF.SEX] == constants.GIRL)?
-                        dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
+                        dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
 
       cdb.client.execute(query, params, {prepare: true },  function(err) {
@@ -87,7 +87,7 @@ module.exports = function(options, callback) { options    = options || {};
     }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Удаляем старые записи
       let db = (options[PF.SEX] == constants.GIRL)?
-                        dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
+                        dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
 
       delOldPoints(fields, db, function () {
         cb(null, null);

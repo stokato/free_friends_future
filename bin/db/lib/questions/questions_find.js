@@ -7,9 +7,10 @@
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.QUESTIONS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.QUESTIONS.fields;
+const PF  = constants.PFIELDS;
 
 module.exports = function(ids, callback) { ids = ids || [];
   
@@ -18,12 +19,13 @@ module.exports = function(ids, callback) { ids = ids || [];
     DBF.TEXT_varchar,
     DBF.IMAGE1_varchar,
     DBF.IMAGE2_varchar,
-    DBF.IMAGE3_varchar
+    DBF.IMAGE3_varchar,
+    DBF.ACTIVITY_boolean
   ];
   
   let constFields = [DBF.ID_uuid_p];
   let constValues = [ids.length];
-  let dbName = dbConst.DB.QUESTIONS.name;
+  let dbName = dbConst.QUESTIONS.name;
   let params = [];
   
   for(let i = 0; i < ids.length; i++) {
@@ -43,11 +45,12 @@ module.exports = function(ids, callback) { ids = ids || [];
       row = result.rows[i];
       
       question = {
-        [PF.ID]      : row[DBF.ID_uuid_p].toString(),
-        [PF.TEXT]    : row[DBF.TEXT_varchar],
-        [PF.IMAGE_1] : row[DBF.IMAGE1_varchar],
-        [PF.IMAGE_2] : row[DBF.IMAGE2_varchar],
-        [PF.IMAGE_3] : row[DBF.IMAGE3_varchar]
+        [PF.ID]       : row[DBF.ID_uuid_p].toString(),
+        [PF.TEXT]     : row[DBF.TEXT_varchar],
+        [PF.IMAGE_1]  : row[DBF.IMAGE1_varchar],
+        [PF.IMAGE_2]  : row[DBF.IMAGE2_varchar],
+        [PF.IMAGE_3]  : row[DBF.IMAGE3_varchar],
+        [PF.ACTIVITY] : row[DBF.ACTIVITY_boolean]
       };
       
       questions.push(question);

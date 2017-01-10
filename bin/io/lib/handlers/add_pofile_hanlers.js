@@ -6,10 +6,12 @@
 
 const handleAddPoints = require('./handle_add_points');
 const handlePay       = require('./handle_pay');
+const handleGiftTimeout = require('./handle_gift_timeout');
 
 module.exports = function (profile) {
   
   profile.setOnAddPoints(handleAddPoints);
   profile.setOnPay(handlePay);
+  profile.setOnGiftTimeout(handleGiftTimeout);
   
 };

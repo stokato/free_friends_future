@@ -2,10 +2,11 @@ const async = require('async');
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF   = dbConst.DB.USER_GIFTS.fields;
-const DBFN  = dbConst.DB.USER_NEW_GIFTS.fields;
-const PF    = dbConst.PFIELDS;
+const DBF   = dbConst.USER_GIFTS.fields;
+const DBFN  = dbConst.USER_NEW_GIFTS.fields;
+const PF    = constants.PFIELDS;
 
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
@@ -40,7 +41,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FROMBDATE_timestamp
       ];
       
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_GIFTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_GIFTS.name);
   
       let params = [
         id,
@@ -71,7 +72,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBFN.USERID_uuid_i
       ];
       
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_GIFTS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_GIFTS.name);
   
       let params = [id, uid];
   

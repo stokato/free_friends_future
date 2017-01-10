@@ -23,6 +23,10 @@ module.exports = function (sex, excessIds) { excessIds = excessIds || [];
     }
   }
   
+  if(targetPlayers.length == 0) {
+    return null;
+  }
+  
   let rand = Math.floor(Math.random() * targetPlayers.length);
   
   return targetPlayers[rand];

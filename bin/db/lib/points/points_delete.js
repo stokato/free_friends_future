@@ -4,8 +4,8 @@ const constants = require('./../../../constants');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 
-const DBF = dbConst.DB.POINTS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.POINTS.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Удалить очки пользователя
@@ -24,7 +24,7 @@ module.exports = function(options, callback) { options = options || {};
       let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc, DBF.USERID_uuid];
       let constValues = [1, 1, 1];
 
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.POINTS.name, constFields, constValues);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.POINTS.name, constFields, constValues);
 
       let params = ["max", options[PF.POINTS], options[PF.ID]];
 
@@ -35,7 +35,7 @@ module.exports = function(options, callback) { options = options || {};
       });
     }, //----------------------------------------------------------------
     function(params, constFields, constValues, cb) { // Удаляем записи из таблицы его пола
-      let db = (options[PF.SEX] == constants.GIRL)? dbConst.DB.POINTS_GIRLS.name : dbConst.DB.POINTS_GUYS.name;
+      let db = (options[PF.SEX] == constants.GIRL)? dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
 
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
       cdb.client.execute(query, params, {prepare: true }, function(err) {

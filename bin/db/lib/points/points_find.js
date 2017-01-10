@@ -3,8 +3,8 @@ const constants = require('./../../../constants');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 
-const DBF = dbConst.DB.POINTS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.POINTS.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Найти 100 пользователей по набранным очкам
@@ -22,11 +22,11 @@ module.exports = function(sex, callback) {
   ];
 
   // Определяем - к какой таблице обращаться
-  let db = dbConst.DB.POINTS.name;
+  let db = dbConst.POINTS.name;
   if(sex == constants.GIRL) {
-    db = dbConst.DB.POINTS_GIRLS.name;
+    db = dbConst.POINTS_GIRLS.name;
   } else if(sex == constants.GUY) {
-    db = dbConst.DB.POINTS_GUYS.name;
+    db = dbConst.POINTS_GUYS.name;
   }
   
   let topSize = Number(Config.user.settings.top_size);

@@ -2,13 +2,13 @@ const async = require('async');
 
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
-const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USER_MESSAGES.fields;
-const DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
-const DBFC = dbConst.DB.USER_CHATS.fields;
-const DBFCN = dbConst.DB.USER_NEW_CHATS.fields;
-const PF = dbConst.PFIELDS;
+const DBF = dbConst.USER_MESSAGES.fields;
+const DBFN = dbConst.USER_NEW_MESSAGES.fields;
+const DBFC = dbConst.USER_CHATS.fields;
+const DBFCN = dbConst.USER_NEW_CHATS.fields;
+const PF = constants.PFIELDS;
 
 
 /*
@@ -62,7 +62,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       ];
 
       //let query = "INSERT INTO user_messages (" + fields + ") VALUES (" + values + ")";
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_MESSAGES.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_MESSAGES.name);
 
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }
@@ -85,7 +85,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         ];
         
         //let query = "INSERT INTO user_new_messages (" + fields + ") VALUES (" + values + ")";
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_MESSAGES.name);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_MESSAGES.name);
 
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) {  return cb(err); }
@@ -109,7 +109,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         ];
   
         //let query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_NEW_CHATS.name);
+        let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_CHATS.name);
   
         cdb.client.execute(query, params, { prepare: true },  function(err) {
           if (err) { return cb(err); }
@@ -139,7 +139,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       ];
 
       //let query = "INSERT INTO user_chats ( userid, companionid, isnew) VALUES (?, ?, ?)";
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.USER_CHATS.name);
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_CHATS.name);
 
       cdb.client.execute(query, params, { prepare: true },  function(err) {
         if (err) { return cb(err); }

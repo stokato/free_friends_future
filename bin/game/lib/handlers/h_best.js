@@ -71,9 +71,9 @@ module.exports = function(game) {
       if(!timer) { clearTimeout(game._timer); }
 
       // Если игроков недостаточно - останавливаем игру
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
       
       stat.setMainStat(constants.SFIELDS.BEST_ACTIVITY, game.getActivityRating());
       

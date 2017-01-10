@@ -15,7 +15,7 @@ const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitizer');
 const createRoom      = require('./../common/create_room');
 const getLastMessages = require('./../common/get_last_messages');
-const sendUsersInRoom = require('./../common/send_users_in_room');
+// const sendUsersInRoom = require('./../common/get_users_in_room');
 
 const  PF                   = constants.PFIELDS;
 const  ROOM_CHANGE_TIMEOUT  = Number(Config.user.settings.room_change_timeout);
@@ -90,9 +90,9 @@ module.exports = function (socket, options) {
 
         oPool.roomList[socket.id] = newRoom;
 
-        if(isCurrRoom) {
-          sendUsersInRoom(currRoom);
-        }
+        // if(isCurrRoom) {
+        //   sendUsersInRoom(currRoom);
+        // }
         cb(null, null);
       });
 
@@ -102,7 +102,7 @@ module.exports = function (socket, options) {
       oPool.roomChangeLocks[selfProfile.getID()] = true;
       setChangeTimeout(oPool.roomChangeLocks, selfProfile.getID(), ROOM_CHANGE_TIMEOUT);
 
-      sendUsersInRoom(newRoom);
+      // sendUsersInRoom(newRoom);
     
       cb(null, null);
     }//-----------------------------------------------------------------------
@@ -112,6 +112,10 @@ module.exports = function (socket, options) {
     }
     
     emitRes(null, socket, constants.IO_CHANGE_ROOM);
+    
+    let info = newRoom.getPersonalInfo(selfProfile.getID());
+    
+    socket.emit(constants.IO_ROOM_USERS, info);
   
     newRoom.getGame().start(socket);
   

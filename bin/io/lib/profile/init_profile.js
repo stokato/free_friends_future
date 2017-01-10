@@ -15,7 +15,7 @@ const ProfileJS = require('./../../../profile/index');
 
 const addProfileToPool    = require('./../common/add_profile_to_pool');
 const autoPlace           = require('./../common/auto_place_in_room');
-const sendUsersInRoom     = require('./../common/send_users_in_room');
+// const sendUsersInRoom     = require('./../common/get_users_in_room');
 const addEmits            = require('../common/add_emits');
 const emitAllRooms        = require('../common/emit_all_rooms');
 const sendPrivateChats    = require('../common/send_private_chats');
@@ -82,9 +82,7 @@ module.exports = function (socket, options) {
     },//------------------------------------------------------------
     function (info, room, selfProfile, cb) { // Получаем данные по игрокам в комнате (для стола)
   
-      let roomInfo = room.getInfo();
-  
-      info[PF.ROOM] = roomInfo;
+      info[PF.ROOM] = room.getPersonalInfo(selfProfile.getID());
   
       if(info[PF.GIFT1]) {
         let currDate = new Date();
@@ -93,16 +91,16 @@ module.exports = function (socket, options) {
           selfProfile.clearGiftInfo(function() {
             info[PF.GIFT1] = null;
         
-            cb(null, info, room, roomInfo);
+            cb(null, info, room);
           });
         } else {
-          cb(null, info, room, roomInfo);
+          cb(null, info, room);
         }
       } else {
-        cb(null, info, room, roomInfo, selfProfile);
+        cb(null, info, room, selfProfile);
       }
     },//------------------------------------------------------------
-    function(info, room, roomInfo, selfProfile, cb) { // Временно - устанавливаем уровень TODO: убрать
+    function(info, room, selfProfile, cb) { // Временно - устанавливаем уровень TODO: убрать
       let levelStart = Number(Config.levels.start);
       let levelStep  = Number(Config.levels.step);
   
@@ -123,13 +121,13 @@ module.exports = function (socket, options) {
         selfProfile.setLevel(needLevel-2, function (err, level) {
           if(err) { return cb(err); }
       
-          cb(null, info, room, roomInfo, selfProfile);
+          cb(null, info, room, selfProfile);
         })
       } else {
-        cb(null, info, room, roomInfo, selfProfile);
+        cb(null, info, room, selfProfile);
       }
     },//------------------------------------------------------------
-    function(info, room, roomInfo, selfProfile, cb) { // Получаем данные по уровню игрока
+    function(info, room, selfProfile, cb) { // Получаем данные по уровню игрока
             
       let levelStart    = Number(Config.levels.start);
       let levelStep     = Number(Config.levels.step);
@@ -157,15 +155,11 @@ module.exports = function (socket, options) {
         [PF.VIP]               : newVIP || false
       };
       
-      cb(null, info, room, roomInfo);
-    },//------------------------------------------------------------
-    function(info, room, roomInfo, cb) { // Отравляем в комнату сведения о пользователях в ней
-
-      info[PF.ROOM] = sendUsersInRoom(room, info[PF.ID]);
-
       cb(null, info, room);
     },//------------------------------------------------------------
     function(info, room, cb) {
+  
+      emitRes(null, socket, constants.IO_INIT, info);
   
       // Запускаем игру
       let game = room.getGame();
@@ -178,8 +172,6 @@ module.exports = function (socket, options) {
     } //------------------------------------------------------------
   ], function (err, info) { // Обрабатываем ошибки, либо передаем данные клиенту
     if(err) { emitRes(err, socket, constants.IO_INIT); }
-    
-    emitRes(null, socket, constants.IO_INIT, info);
   
   
     let params = {

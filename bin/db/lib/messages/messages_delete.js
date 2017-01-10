@@ -1,9 +1,9 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF  = dbConst.DB.USER_MESSAGES.fields;
-const DBFN = dbConst.DB.USER_NEW_MESSAGES.fields;
-const DBFC = dbConst.DB.USER_CHATS.fields;
+const DBF  = dbConst.USER_MESSAGES.fields;
+const DBFN = dbConst.USER_NEW_MESSAGES.fields;
+const DBFC = dbConst.USER_CHATS.fields;
 
 /*
  Удалить все сообщения игрока: ИД
@@ -20,7 +20,7 @@ module.exports = function(uid, callback) {
   let fields = [DBFC.COMPANIONID_uuid_c];
   let constFields =[DBFC.USERID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.DB.USER_CHATS.name;
+  let dbName = dbConst.USER_CHATS.name;
 
   //let query = "select companionid FROM user_chats where userid = ?";
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
@@ -45,7 +45,7 @@ module.exports = function(uid, callback) {
       result.rows.length
     ];
     
-    let dbName = dbConst.DB.USER_MESSAGES.name;
+    let dbName = dbConst.USER_MESSAGES.name;
 
     //let query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
     query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
@@ -57,7 +57,7 @@ module.exports = function(uid, callback) {
       //query = "DELETE FROM user_chats WHERE userid = ?";
       let constFields = [DBFC.USERID_uuid_p];
       let constValues = [1];
-      let dbName = dbConst.DB.USER_CHATS.name;
+      let dbName = dbConst.USER_CHATS.name;
 
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
 

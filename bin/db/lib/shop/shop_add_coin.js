@@ -1,9 +1,11 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
+const Config = require('./../../../../config.json');
 
-const DBF = dbConst.DB.SHOP.fields;
-const PF  = dbConst.PFIELDS;
-
+const DBF = dbConst.SHOP.fields;
+const PF  = constants.PFIELDS;
+CONST_TYPE = Config.good_types.money;
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -12,38 +14,42 @@ const PF  = dbConst.PFIELDS;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-
-  if ( !options[PF.TITLE] || !options[PF.PRICE] || !options[PF.SRC] || !options[PF.GOODTYPE]) {
-    return callback(new Error("Не указаны необходимые поля товара"), null);
+  
+  if ( !options[PF.ID] ||
+    !options[PF.TITLE] ||
+    !options[PF.PRICE] ||
+    !options[PF.PRICE2] ||
+    !options[PF.SRC]) {
+    return callback(new Error("Не указаны необходимые поля подарка"), null);
   }
-
-  let id = cdb.uuid.random();
-
+  
+  // let id = cdb.uuid.random();
+  
   let fields = [
     DBF.ID_varchar_p,
     DBF.TITLE_varchar,
-    DBF.PRICE_int,
+    DBF.PRICE_COINS_int,
+    DBF.PRICE_VK_int,
     DBF.SRC_varchar,
-    DBF.TYPE_varchar,
-    DBF.GOODTYPE_varchar_i
+    DBF.TYPE_varchar_i
   ];
   
   let params = [
-    id,
+    options[PF.ID],
     options[PF.TITLE],
     options[PF.PRICE],
+    options[PF.PRICE2],
     options[PF.SRC],
-    options[PF.TYPE],
-    options[PF.GOODTYPE]
+    CONST_TYPE
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.SHOP.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.SHOP.name);
   
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
-
-    options[PF.ID] = id;
-
+    
+    // options[PF.ID] = id;
+    
     callback(null, options);
   });
 };

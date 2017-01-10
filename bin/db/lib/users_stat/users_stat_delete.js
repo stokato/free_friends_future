@@ -8,12 +8,12 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF = dbConst.DB.USERS_STAT.fields;
+const DBF = dbConst.USERS_STAT.fields;
 
 module.exports = function(id, vid, callback) {
   if (!id) { callback(new Error("Задан пустой ID или VID")); }
   
-  let dbName      = dbConst.DB.USERS_STAT.name;
+  let dbName      = dbConst.USERS_STAT.name;
   let constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   let constValues = [1, 1];
   

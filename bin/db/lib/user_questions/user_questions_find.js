@@ -8,8 +8,8 @@ const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USER_QUESTIONS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USER_QUESTIONS.fields;
+const PF  = constants.PFIELDS;
 
 module.exports = function(ids, callback) {
   
@@ -25,7 +25,7 @@ module.exports = function(ids, callback) {
   let constFields = null;
   let constValues = null;
   let limit = null;
-  let dbName = dbConst.DB.USER_QUESTIONS.name;
+  let dbName = dbConst.USER_QUESTIONS.name;
   let params = [];
   
   if(ids) {

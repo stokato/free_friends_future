@@ -11,14 +11,14 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBFN    = dbConst.DB.USER_NEW_FRIENDS.fields;
+const DBFN    = dbConst.USER_NEW_FRIENDS.fields;
 
 module.exports = function(uid, callback) {
   if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
   
   // Отбираем всех новых друзей
   let fields      = [DBFN.FRIENDID_uuid_pc2];
-  let dbName      = dbConst.DB.USER_NEW_FRIENDS.name;
+  let dbName      = dbConst.USER_NEW_FRIENDS.name;
   let constFields = [DBFN.USERID_uuid_pc1i];
   let constValues = [1];
   

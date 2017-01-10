@@ -3,7 +3,7 @@
  */
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
-const DBFN    = dbConst.DB.USER_NEW_GUESTS.fields;
+const DBFN    = dbConst.USER_NEW_GUESTS.fields;
 
 /*
  Снимаем поментку Новый со всех гостей пользователя
@@ -13,7 +13,7 @@ module.exports = function(uid, callback) {
   
   // Отбираем всех новых друзей
   let fields = [DBFN.GUESTID_uuid_pc2i];
-  let dbName = dbConst.DB.USER_NEW_GUESTS.name;
+  let dbName = dbConst.USER_NEW_GUESTS.name;
   let constFields = [DBFN.USERID_uuid_pc1i];
   let constValues = [1];
   

@@ -7,7 +7,7 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF = dbConst.DB.USER_QUESTIONS.fields;
+const DBF = dbConst.USER_QUESTIONS.fields;
 
 module.exports = function(ids, callback) {
   if (!ids) { callback(new Error("Не заданы ид вопросов")); }
@@ -15,7 +15,7 @@ module.exports = function(ids, callback) {
   let constFields = [DBF.ID_uuid_p];
   let constValues = [ids.length];
   let params = [];
-  let dbName = dbConst.DB.USER_QUESTIONS.name;
+  let dbName = dbConst.USER_QUESTIONS.name;
   
   for(let i = 0; i < ids.length; i++) {
     params.push(ids[i]);

@@ -273,11 +273,35 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
     price2 int,
     src varchar,
     type varchar,
+    type2 varchar,
     goodtype varchar,
     PRIMARY KEY (id)
   );
  CREATE INDEX IF NOT EXISTS shop_goodtype ON shop(goodtype);
 
+-- Таблица магазин подарков (исправленный)
+-- ИД: (ключевое поле)
+-- Название товара
+-- Цена в монетах
+-- Цена ВК
+-- Ссылка
+-- Тип товара
+-- Группа
+-- Наименование группы
+
+CREATE TABLE IF NOT EXISTS shop (
+  id varchar,
+  good_title varchar,
+  price_coins int,
+  price_vk int,
+  src varchar,
+  type varchar,
+  group_name varchar,
+  group_title varchar,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS shop_type ON shop(type);
 
 -- Таблица заказов:
 -- ИД: генерируется (ключевое поле),
@@ -305,6 +329,10 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
 -- Таблица с вопросами:
 -- ИД: генерируется (ключевое поле),
 -- Текст - текст вопроса
+-- Рисунок 1
+-- Рисунок 2
+-- Рисунок 3
+-- Флаг активности
 
   CREATE TABLE IF NOT EXISTS questions (
     id uuid,
@@ -312,9 +340,11 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
     image1 VARCHAR,
     image2 VARCHAR,
     image3 VARCHAR,
+    activity boolean,
     PRIMARY KEY (id)
   );
 
+CREATE INDEX IF NOT EXISTS questions_activity ON questions (activity);
 
 -- Таблица топа игроков обоих полов:
 -- ИД: фиксированный  (ключевое поле),

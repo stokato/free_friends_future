@@ -1,9 +1,9 @@
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
-const bdayToAge = require('./../common/bdayToAge');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.USER_MESSAGES.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.USER_MESSAGES.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Изменить сообщение в БД: Свойства сообщения
@@ -19,7 +19,7 @@ module.exports = function(uid, options, callback) { options = options || {};
   let fields = [DBF.ID_timeuuid_c];
   let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i, DBF.ID_timeuuid_c];
   let constValues = [1, 1, 1];
-  let dbName = dbConst.DB.USER_MESSAGES.name;
+  let dbName = dbConst.USER_MESSAGES.name;
 
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
 

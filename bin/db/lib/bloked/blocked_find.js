@@ -6,9 +6,10 @@
 
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF       = dbConst.DB.BLOCKED.fields;
-const PF        = dbConst.PFIELDS;
+const DBF       = dbConst.BLOCKED.fields;
+const PF        = constants.PFIELDS;
 
 module.exports = function(uid, callback) {
   if (!uid) {
@@ -23,7 +24,7 @@ module.exports = function(uid, callback) {
 
   let constFields = [DBF.USERID_uuid_p];
   let constCount = [1];
-  let dbName = dbConst.DB.BLOCKED.name;
+  let dbName = dbConst.BLOCKED.name;
   let params = [uid];
 
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constCount);

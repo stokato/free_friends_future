@@ -77,6 +77,10 @@ module.exports = function (profile, callback) {
         self._friends[fInfo[PF.ID]][profile.getID()] = true;
       }
     }
+    
+    if(! self._game.isActive()) {
+      self.onGame(profile.getID());
+    }
 
     callback(null, null);
   });

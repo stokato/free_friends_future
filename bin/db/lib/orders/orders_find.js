@@ -1,7 +1,9 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
-const DBF     = dbConst.DB.ORDERS.fields;
-const PF      = dbConst.PFIELDS;
+const constants = require('./../../../constants');
+
+const DBF     = dbConst.ORDERS.fields;
+const PF      = constants.PFIELDS;
 
 /*
  Найти все заказы пользователя: ИД
@@ -22,7 +24,7 @@ module.exports = function(userid, callback) {
   let constFields = [DBF.USERID_uuid_i];
   let constValues = [1];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.ORDERS.name, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.ORDERS.name, constFields, constValues);
 
   cdb.client.execute(query,[userid], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }

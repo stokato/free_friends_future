@@ -32,9 +32,9 @@ module.exports = function(game) {
     }
 
     // Если пользователей недостаточно - останавливаем игру
-    if(!game.checkCountPlayers()) {
-      return game.stop();
-    }
+    // if(!game.checkCountPlayers()) {
+    //   return game.stop();
+    // }
 
     // Получаем данные по первому игроку
     let firstPlayerInfo = null;

@@ -43,8 +43,8 @@ module.exports = function(socket, options, callback) {
         IOF.COUNTRY,
         IOF.CITY,
         IOF.STATUS,
-        IOF.ISMENU,
-        IOF.GIFT1
+        IOF.ISMENU//,
+        // IOF.GIFT1
       ];
 
       db.findUser(null, self._pVID, fList, function(err, foundUser) {
@@ -61,18 +61,18 @@ module.exports = function(socket, options, callback) {
           self._pCity     = (self._pCity)    ? self._pCity    : foundUser[IOF.CITY];
           self._pIsInMenu = foundUser[IOF.ISMENU] || false;
 
-          if(foundUser[IOF.GIFT1]) {
-            db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
-              if (err) { return  callback(err, null); }
-
-              self._pGift1 = gift || null;
-
-              cb(null, foundUser);
-            });
-          } else {
+          // if(foundUser[IOF.GIFT1]) {
+          //   db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
+          //     if (err) { return  callback(err, null); }
+          //
+          //     self._pGift1 = gift || null;
+          //
+          //     cb(null, foundUser);
+          //   });
+          // } else {
 
             cb(null, foundUser);
-          }
+          // }
         } else {
           cb(null, null);
         }

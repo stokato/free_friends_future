@@ -7,9 +7,10 @@
 
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.AUTH_USERS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.AUTH_USERS.fields;
+const PF  = constants.PFIELDS;
 
 module.exports = function(id, login, callback) {
   if (!login && !id) {
@@ -29,7 +30,7 @@ module.exports = function(id, login, callback) {
   
   let fields = [DBF.ID_uuid_p, DBF.LOGIN_varchar_i, DBF.PASSWORD_varchar];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.DB.AUTH_USERS.name, [constraint], [1]);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.AUTH_USERS.name, [constraint], [1]);
   
   cdb.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }

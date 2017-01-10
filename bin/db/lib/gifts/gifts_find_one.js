@@ -1,7 +1,9 @@
 const cdb = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
-const DBF = dbConst.DB.USER_GIFTS.fields;
-const PF = dbConst.PFIELDS;
+const constants = require('./../../../constants');
+
+const DBF = dbConst.USER_GIFTS.fields;
+const PF = constants.PFIELDS;
 
 /*
  Найти подарок пользователя по его id
@@ -21,7 +23,7 @@ module.exports = function(id, callback) {
   
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.DB.USER_GIFTS.name;
+  let dbName = dbConst.USER_GIFTS.name;
 
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
 

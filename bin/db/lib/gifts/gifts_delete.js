@@ -3,7 +3,7 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF = dbConst.DB.USER_GIFTS.fields;
+const DBF = dbConst.USER_GIFTS.fields;
 
 /*
  Удалить все подарки игрока: ИД
@@ -20,7 +20,7 @@ module.exports = function(uid, callback) {
   let fields = [DBF.ID_uuid_p, DBF.USERID_uuid_i];
   let constFields = [DBF.USERID_uuid_i];
   let constValues = [1];
-  let dbName = dbConst.DB.USER_GIFTS.name;
+  let dbName = dbConst.USER_GIFTS.name;
   
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   

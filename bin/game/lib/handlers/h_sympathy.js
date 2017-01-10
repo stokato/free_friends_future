@@ -48,9 +48,9 @@ module.exports = function(game) {
     if (game._actionsCount == 0 || timer) {
       if(!timer) { clearTimeout(game._timer); }
 
-      if(!game.checkCountPlayers()) {
-        return game.stop();
-      }
+      // if(!game.checkCountPlayers()) {
+      //   return game.stop();
+      // }
       
       stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
       

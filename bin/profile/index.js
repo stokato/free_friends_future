@@ -80,6 +80,8 @@ function Profile() {
 
   this._pGift1        = null;   // На игрвом столе на аватарах игроков весят подарки
   this._pGift1Time    = null;
+  this._pGift1Timeout = null;
+  this._onGiftTimeout = null;
 
   this._pGift2        = null;
 
@@ -138,6 +140,7 @@ Profile.prototype.onGetActiveRank     = function () { return this._pActiveRank; 
 
 Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
 Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };
+Profile.prototype.setOnGiftTimeout  = function (handler) { this._onGiftTimeout = handler; };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;

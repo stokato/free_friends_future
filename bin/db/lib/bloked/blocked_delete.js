@@ -7,7 +7,7 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 
-const DBF = dbConst.DB.BLOCKED.fields;
+const DBF = dbConst.BLOCKED.fields;
 
 module.exports = function(uid, fid, callback) {
   if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
@@ -16,7 +16,7 @@ module.exports = function(uid, fid, callback) {
   let constValues   = [1];
   let params        = [uid];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.DB.BLOCKED.name, constFields, constValues);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.BLOCKED.name, constFields, constValues);
 
   cdb.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }

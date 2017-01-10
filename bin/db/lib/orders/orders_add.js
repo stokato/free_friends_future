@@ -1,8 +1,9 @@
 const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
+const constants = require('./../../../constants');
 
-const DBF = dbConst.DB.ORDERS.fields;
-const PF  = dbConst.PFIELDS;
+const DBF = dbConst.ORDERS.fields;
+const PF  = constants.PFIELDS;
 
 /*
  Добавляем заказ в БД
@@ -35,7 +36,7 @@ module.exports = function(options, callback) { options   = options || {};
     date
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.DB.ORDERS.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.ORDERS.name);
 
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

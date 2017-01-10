@@ -39,7 +39,11 @@ module.exports = function (profile) {
     if(item == profile.getID()) {
       delete this._friends[item];
     } else {
-      delete thiis._friends[item][profile.getID()];
+      delete this._friends[item][profile.getID()];
     }
+  }
+  
+  if(! this._game.isActive()) {
+    this.onGame();
   }
 };

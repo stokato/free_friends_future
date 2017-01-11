@@ -95,7 +95,7 @@ function getItem(request, callback) {
         "item_id"   : goodInfo[PF.ID],
         "title"     : goodInfo[PF.TITLE],
         "photo_url" : goodInfo[PF.DATE],
-        "price"     : goodInfo[PF.PRICE]
+        "price"     : goodInfo[PF.PRICE2]
       };
     }
 
@@ -126,7 +126,7 @@ function changeOrderStatus(request, callback) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
-            if(goodInfo[PF.PRICE] != options[PF.PRICE])
+            if(goodInfo[PF.PRICE2] != options[PF.PRICE])
               cb(new Error("Неверно указана цена товара"), null);
             else
               cb(null, goodInfo);
@@ -158,7 +158,7 @@ function changeOrderStatus(request, callback) {
           [PF.GOODID]   : goodInfo[PF.ID],
           [PF.ID]       : info[PF.ID],
           [PF.VID]      : info[PF.VID],
-          [PF.SUM]      : goodInfo[PF.PRICE],
+          [PF.SUM]      : goodInfo[PF.PRICE2],
           [PF.DATE]     : new Date()
         };
 
@@ -181,7 +181,7 @@ function changeOrderStatus(request, callback) {
               getUserProfile(info[PF.ID], function (err, friendProfile) {
                 if(err) { return cb(err, null); }
                 
-                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
+                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE], function (err, money) {
                   if(err) { return cb(err, null); }
                   
                   let friendSocket = friendProfile.getSocket();
@@ -191,7 +191,7 @@ function changeOrderStatus(request, callback) {
   
                   options[PF.ID] = friendProfile.getID();
                   options[PF.VID] = friendProfile.getVID();
-                  options[PF.MONEY] = goodInfo[PF.PRICE2];
+                  options[PF.MONEY] = goodInfo[PF.PRICE];
   
                   stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
   
@@ -209,7 +209,7 @@ function changeOrderStatus(request, callback) {
                     }
                   }
                   
-                  let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+                  let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
                   profile.addPoints(newPoints, function (err) {
                     if(err) { return cb(err, null); }
   
@@ -227,7 +227,7 @@ function changeOrderStatus(request, callback) {
           // options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
           // options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
-          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE2], function (err, money) {
+          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE], function (err, money) {
             if (err) { return cb(err, null); }
             
             let socket = profile.getSocket();
@@ -235,12 +235,12 @@ function changeOrderStatus(request, callback) {
               socket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
             }
             
-            let newPoints = goodInfo[PF.PRICE2] * REFILL_POINTS;
+            let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
             
             profile.addPoints(newPoints, function (err, points) {
               if (err) { return cb(err, null); }
   
-              options[PF.MONEY] = goodInfo[PF.PRICE2];
+              options[PF.MONEY] = goodInfo[PF.PRICE];
   
               if(oPool.profiles[options.id]) {
                 oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);

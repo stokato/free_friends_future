@@ -84,18 +84,20 @@ module.exports = function(game) {
       game._storedOptions = game._actionsQueue;
 
       // Очищаем настройки
-      game._activePlayers = {};
+      // game._activePlayers = {};
       game._actionsQueue = {};
 
       // Все игроки могут посмотреть результаты всех
-      game.activateAllPlayers();
+      // game.activateAllPlayers();
       let countPrisoners = (game._prisoner === null)? 0 : 1;
 
-      game.setActionLimit(game._room.getCountInRoom(constants.GIRL)
-                  + game._room.getCountInRoom(constants.GUY) - 1 - countPrisoners);
-      game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
-                  + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 10;
-
+      game.setActionLimit(game._currCountInRoom - 1 - countPrisoners);
+      // game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
+      //             + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 10;
+      
+      game._actionsCount = (game._currCountInRoom - countPrisoners) * 10;
+      game._actionsMain = game._actionsCount;
+      
       // Отправляем результаты
       let result = {
         [PF.NEXTGAME] : game._nextGame,

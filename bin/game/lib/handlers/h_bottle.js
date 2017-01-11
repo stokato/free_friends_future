@@ -58,11 +58,13 @@ module.exports = function(game) {
       excludeIDs.push(game.getPrisonerInfo().id);
     }
 
-    let secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
+    // let secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
+    let rand = Math.floor(Math.random() * game._storedOptions.length);
+    let secondPlayer = game._storedOptions[rand];
 
-    if(!secondPlayer) {
-      return game.stop();
-    }
+    // if(!secondPlayer) {
+    //   return game.stop();
+    // }
 
     // Разрешаем второму игроку ходить
     game._activePlayers[secondPlayer.getID()] = game.getPlayerInfo(secondPlayer);

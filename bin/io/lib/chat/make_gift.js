@@ -20,10 +20,10 @@ const getUserProfile  = require('./../common/get_user_profile');
 
 const PF            = constants.PFIELDS;
 const SF            = constants.SFIELDS;
+const GT            = constants.GIFT_TYPES;
 const WASTE_POINTS  = Number(Config.points.waste);
 const GIFT_POINTS   = Number(Config.points.taken_gift);
-
-
+const GIFT_TYPE     = Config.good_types.gift;
 
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
@@ -46,7 +46,7 @@ module.exports = function (socket, options) {
           if (err) { return cb(err, null) }
 
           if (gift) {
-            if(gift[PF.GOODTYPE] != constants.GT_GIFT) {
+            if(gift[PF.TYPE] != GIFT_TYPE) {
               cb(constants.errors.NO_SUCH_GOOD, null);
             } else {
               
@@ -90,7 +90,7 @@ module.exports = function (socket, options) {
       },//---------------------------------------------------------------
       function (friendProfile, gift, cb) { // Добавляем подарок адресату
 
-        friendProfile.addGift(selfProfile, date, gift[PF.SRC], gift[PF.ID],  gift[PF.TYPE], gift[PF.TITLE],
+        friendProfile.addGift(selfProfile, date, gift[PF.SRC], gift[PF.ID],  gift[PF.GROUP], gift[PF.TITLE],
                                                                       function (err, result) {
           if (err) { return cb(err, null); }
 
@@ -104,10 +104,18 @@ module.exports = function (socket, options) {
         friendProfile.addPoints(GIFT_POINTS * gift[PF.PRICE], function (err, points) {
           if (err) { return cb(err, null); }
           
-          let friendSocket = friendProfile.getSocket();
-          let ranks = oPool.roomList[friendSocket.id].getRanks();
-          ranks.addRankBall(constants.RANKS.POPULAR, friendProfile.getID());
+          let selfRoom = oPool.roomList[socket.id];
           
+          let friendSocket = friendProfile.getSocket();
+          if(friendSocket) {
+            let friendRoom = oPool.roomList[friendSocket.id];
+            
+            if(selfRoom.getName() == friendRoom.getName()) {
+              let ranks = oPool.roomList[friendSocket.id].getRanks();
+              ranks.addRankBall(constants.RANKS.POPULAR, friendProfile.getID());
+            }
+          }
+                    
           cb(null, friendProfile);
         });
 
@@ -154,15 +162,15 @@ module.exports = function (socket, options) {
   function addToStat(gift) {
     let field, types = constants.GIFT_TYPES;
     
-    switch (gift[PF.TYPE]) {
-      case types.BREATH     : field = SF.GIFTS_BREATH;      break;
-      case types.COMMON     : field = SF.GIFTS_COMMON;      break;
-      case types.DRINKS     : field = SF.GIFTS_DRINKS;      break;
-      case types.FLIRTATION : field = SF.GIFTS_FLIRTATION;  break;
-      case types.FLOWERS    : field = SF.FLOWERS;           break;
-      case types.LOVES      : field = SF.LOVES;             break;
-      case types.MERRY      : field = SF.GIFTS_MERRY;       break;
-      case types.MERRY2     : field = SF.GIFTS_MERRY;       break;
+    switch (gift[PF.GROUP_TITLE]) {
+      case types.BREATH     : field = GT.GIFTS_BREATH;      break;
+      case types.COMMON     : field = GT.GIFTS_COMMON;      break;
+      case types.DRINKS     : field = GT.GIFTS_DRINKS;      break;
+      case types.FLIRTATION : field = GT.GIFTS_FLIRTATION;  break;
+      case types.FLOWERS    : field = GT.FLOWERS;           break;
+      case types.LOVES      : field = GT.LOVES;             break;
+      case types.MERRY      : field = GT.GIFTS_MERRY;       break;
+      case types.MERRY2     : field = GT.GIFTS_MERRY;       break;
     }
     
     stat.setMainStat(field, 1);

@@ -303,7 +303,10 @@ module.exports.PFIELDS = {
   PROGRESS        : 'progress',
   ACTIVITY        : 'activity',
   GROUP           : 'group',
-  GROUP_TITLE     : 'group_title'
+  GROUP_TITLE     : 'group_title',
+  CONTENT         : 'content',
+  PRICE_COINS     : 'price_coins',
+  PRICE_VK        : 'price_vk'
 };
 
 module.exports.SFIELDS = {

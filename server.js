@@ -17,6 +17,7 @@ const io            = require('./bin/io');
 const crossDomain   = require('./lib/cross_dimain');
 const questions     = require('./lib/questions/index');
 const stat          = require('./lib/stat/index');
+const shop          = require('./lib/shop/index');
 
 let profiles;
 
@@ -44,6 +45,8 @@ app.use(crossDomain);
 app.use('/', vkHandle);
 app.use('/questions', questions);
 app.use('/stat', stat);
+app.use('/shop', shop);
+
 let auth = require('./lib/passport/index')(passport);
 app.use('/auth', auth);
 

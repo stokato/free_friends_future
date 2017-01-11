@@ -9,7 +9,7 @@
 
 const constants = require('./../../constants');
 
-module.exports = function (sex) { sex = sex || null;
+module.exports = function (sex = null) {// sex = sex || null;
   let players = [], index;
   
   if(!sex || sex == constants.GUY) {

@@ -12,7 +12,15 @@ const PF  = constants.PFIELDS;
  */
 module.exports = function(callback) {
 
-  let fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar];
+  let fields = [
+    DBF.ID_uuid_p,
+    DBF.TEXT_varchar,
+    DBF.IMAGE1_varchar,
+    DBF.IMAGE2_varchar,
+    DBF.IMAGE3_varchar,
+    DBF.ACTIVITY_boolean
+  ];
+  
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.QUESTIONS.name);
 
   cdb.client.execute(query,[], {prepare: true }, function(err, result) {

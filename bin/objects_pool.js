@@ -19,7 +19,9 @@ function ObjectsPool () {
   this.roomChangeLocks = {};
   this.isProfile = function (prifleID) {
     return !!this.profiles[prifleID];
-  }
+  };
+  
+  this.gameQuestions = [];
 }
 
 let oPool = new ObjectsPool();

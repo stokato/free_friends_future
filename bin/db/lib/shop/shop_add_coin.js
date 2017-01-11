@@ -5,7 +5,6 @@ const Config = require('./../../../../config.json');
 
 const DBF = dbConst.SHOP.fields;
 const PF  = constants.PFIELDS;
-CONST_TYPE = Config.good_types.money;
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -14,6 +13,8 @@ CONST_TYPE = Config.good_types.money;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
+
+let type = Config.good_types.money;
   
   if ( !options[PF.ID] ||
     !options[PF.TITLE] ||
@@ -40,7 +41,7 @@ module.exports = function(options, callback) { options    = options || {};
     options[PF.PRICE],
     options[PF.PRICE2],
     options[PF.SRC],
-    CONST_TYPE
+    type
   ];
   
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.SHOP.name);

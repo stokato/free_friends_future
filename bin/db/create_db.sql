@@ -266,18 +266,18 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
 -- Тип подарка
 
 
-  CREATE TABLE IF NOT EXISTS shop (
-    id varchar,
-    title varchar,
-    price int,
-    price2 int,
-    src varchar,
-    type varchar,
-    type2 varchar,
-    goodtype varchar,
-    PRIMARY KEY (id)
-  );
- CREATE INDEX IF NOT EXISTS shop_goodtype ON shop(goodtype);
+--   CREATE TABLE IF NOT EXISTS shop (
+--     id varchar,
+--     title varchar,
+--     price int,
+--     price2 int,
+--     src varchar,
+--     type varchar,
+--     type2 varchar,
+--     goodtype varchar,
+--     PRIMARY KEY (id)
+--   );
+--  CREATE INDEX IF NOT EXISTS shop_goodtype ON shop(goodtype);
 
 -- Таблица магазин подарков (исправленный)
 -- ИД: (ключевое поле)

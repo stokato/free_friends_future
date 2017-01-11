@@ -5,7 +5,6 @@ const Config = require('./../../../../config.json');
 
 const DBF = dbConst.SHOP.fields;
 const PF  = constants.PFIELDS;
-CONST_TYPE = Config.good_types.gift;
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -14,6 +13,8 @@ CONST_TYPE = Config.good_types.gift;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
+
+let type = Config.good_types.gift;
   
   if ( !options[PF.ID] ||
     !options[PF.TITLE] ||
@@ -41,7 +42,7 @@ module.exports = function(options, callback) { options    = options || {};
     options[PF.TITLE],
     options[PF.PRICE],
     options[PF.SRC],
-    CONST_TYPE,
+    type,
     options[PF.GROUP],
     options[PF.GROUP_TITLE]
   ];

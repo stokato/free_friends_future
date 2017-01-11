@@ -19,6 +19,7 @@ module.exports = function(game) {
   return function(timer, socket, options) {
     
     let uid;
+    game._currCountInRoom = game.getCountInRoom(constants.GIRL) + game.getCountInRoom(constants.GUY);
     
     // Если вызов произведени игроком - сохраняем его выбор
     if(!timer) {
@@ -70,6 +71,16 @@ module.exports = function(game) {
         game._actionsCount = 1;
         game.setActionLimit(1);
         
+        let player = null;
+        for(let item in game._activePlayers) if (game._activePlayers.hasOwnProperty(item)) {
+          player = game._activePlayers[item];
+        }
+        
+        let sex = (player.sex == constants.GUY)? constants.GIRL : constants.GUY;
+        
+        //TODO: Инфо а не сами профили
+        game._storedOptions = game._room.getAllPlayers(sex);
+        
         timeout = BOTTLE_TIMEOUT;
         break;
       //--------------------------------- ВОПРОСЫ ------------------------------------------
@@ -79,8 +90,7 @@ module.exports = function(game) {
         
         game.setActionLimit(1);
         
-        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
-          + game._room.getCountInRoom(constants.GUY) - countPrisoners;
+        game._actionsCount = game._currCountInRoom - countPrisoners;
         game._actionsMain = game._actionsCount;
         
         result[PF.QUESTION] =  game.getRandomQuestion();
@@ -92,8 +102,7 @@ module.exports = function(game) {
         
         game.setActionLimit(1);
         
-        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
-          + game._room.getCountInRoom(constants.GUY) - countPrisoners;
+        game._actionsCount = game._currCountInRoom - countPrisoners;
         game._actionsMain = game._actionsCount;
         
         break;
@@ -157,8 +166,7 @@ module.exports = function(game) {
         game.activateAllPlayers(bestPlayers);
         
         game.setActionLimit(1);
-        game._actionsCount = game._room.getCountInRoom(constants.GIRL)
-          + game._room.getCountInRoom(constants.GUY) - countPrisoners - 2;
+        game._actionsCount = game._currCountInRoom - countPrisoners - 2;
         game._actionsMain = game._actionsCount;
         
         result.best = bestPlayerInfo;
@@ -169,8 +177,7 @@ module.exports = function(game) {
         game.activateAllPlayers();
         
         game.setActionLimit(Config.game.show_sympathy_limit);
-        game._actionsCount = (game._room.getCountInRoom(constants.GIRL)
-          + game._room.getCountInRoom(constants.GUY) - countPrisoners) * 2;
+        game._actionsCount = (game._currCountInRoom - countPrisoners) * 2;
         game._actionsMain = game._actionsCount;
         
         break;

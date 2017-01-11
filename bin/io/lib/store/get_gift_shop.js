@@ -5,55 +5,55 @@
  * @return {Object} - объект с подарками
  */
 
+const Config      = require('./../../../../config.json');
 const constants   = require('./../../../constants');
 const db          = require('./../../../db_manager');
 const emitRes     = require('./../../../emit_result');
+
 const PF          = constants.PFIELDS;
+const CONST_TYPE  = Config.good_types.gift;
 
 module.exports = function (socket, options) {
   
   // Получаем все подраки
-  db.findAllGoods(constants.GT_GIFT, function (err, goods) {
+  db.findAllGoods(CONST_TYPE, function (err, goods) {
     if (err) { return emitRes(err, socket, constants.IO_GET_GIFT_SHOP); }
-    
-    var i, type, gift;
     
     // Сортируем по типу
     goods.sort(function (gift1, gift2) {
-      if(gift1[PF.TYPE] < gift2[PF.TYPE]) return -1;
-      if(gift2[PF.TYPE] < gift1[PF.TYPE]) return 1;
+      if(gift1[PF.GROUP] < gift2[PF.GROUP]) return -1;
+      if(gift2[PF.GROUP] < gift1[PF.GROUP]) return 1;
       return 0;
     });
     
     // Выбираем все типы
-    var types = {};
-    for(i = 0; i < goods.length; i++) {
-      type = goods[i][PF.TYPE];
-      if(!types[type]) {
-        types[type] = {};
-        types[type][PF.GIFTS] = [];
-        types[type][PF.TYPE] = type;
+    let types = {};
+    for(let i = 0; i < goods.length; i++) {
+      let group = goods[i][PF.GROUP_TITLE];
+      if(!types[group]) {
+        types[group] = {
+          [PF.GIFTS] : [],
+          [PF.TYPE]  : group
+        };
       }
     }
     
     // Группируем подарки по типам
-    for(i = 0; i < goods.length; i++) {
-      type            = goods[i][PF.TYPE];
-  
-      gift = {
+    for(let i = 0; i < goods.length; i++) {
+      let group = goods[i][PF.GROUP_TITLE];
+      
+      types[group].gifts.push({
         [PF.ID]     : goods[i][PF.ID],
         [PF.SRC]    : goods[i][PF.SRC],
-        [PF.TYPE]   : type,
+        [PF.TYPE]   : group,
         [PF.PRICE]  : goods[i][PF.PRICE],
         [PF.TITLE]  : goods[i][PF.TITLE]
-      };
-      
-      types[type].gifts.push(gift);
+      });
     }
     
     // Формируем массив
     let gifts = [];
-    for(i in types) if(types.hasOwnProperty(i)) {
+    for(let i in types) if(types.hasOwnProperty(i)) {
       gifts.push(types[i]);
     }
     

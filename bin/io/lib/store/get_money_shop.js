@@ -5,13 +5,15 @@
  *  @return {Object} - объект со списом лотов
  */
 
-const constants = require('./../../../constants');
-const db        = require('./../../../db_manager');
-const emitRes   = require('./../../../emit_result');
+const Config      = require('./../../../../config.json');
+const constants   = require('./../../../constants');
+const db          = require('./../../../db_manager');
+const emitRes     = require('./../../../emit_result');
+const CONST_TYPE  = Config.good_types.money;
 
 module.exports = function (socket, options) {
 
-  db.findAllGoods(constants.GT_MONEY, function (err, goods) {
+  db.findAllGoods(CONST_TYPE, function (err, goods) {
     if (err) {  return emitRes(err, socket, constants.IO_GET_MONEY_SHOP); }
     
     emitRes(null, socket, constants.IO_GET_MONEY_SHOP, { [constants.PFIELDS.LOTS] : goods });

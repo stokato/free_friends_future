@@ -47,19 +47,9 @@ module.exports = function(game) {
       selfProfile.pay(SYMPATHY_PRICE, function (err, money) {
         if(err) { return onError(err, selfProfile);  }
         
-        // let res = {};
-        // res[PF.MONEY] = money;
-        //
-        // let socket = selfProfile.getSocket();
-        // socket.emit(constants.IO_GET_MONEY, res);
         
         selfProfile.addPoints(WASTE_POINTS * SYMPATHY_PRICE, function (err, points) {
           if(err) { return onError(err, selfProfile);  }
-  
-          // let res = {};
-          // res[constants.PFIELDS.POINTS] = points;
-          //
-          // socket.emit(constants.IO_ADD_POINTS, res);
           
           onPick();
         });

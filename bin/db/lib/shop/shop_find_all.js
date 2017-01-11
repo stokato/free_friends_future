@@ -11,8 +11,8 @@ const PF  = constants.PFIELDS;
  - Строим запрос (все поля) и выполняем
  - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
  */
-module.exports = function(goodtype, callback) {
-  if(!goodtype) { return callback(new Error("Не задан тип товаров")); }
+module.exports = function(type, callback) {
+  if(!type) { return callback(new Error("Не задан тип товаров")); }
 
   let fields = [
     DBF.ID_varchar_p,
@@ -30,7 +30,7 @@ module.exports = function(goodtype, callback) {
 
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.SHOP.name, constFields, constValues);
 
-  cdb.client.execute(query,[goodtype], {prepare: true }, function(err, result) {
+  cdb.client.execute(query,[type], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, []);

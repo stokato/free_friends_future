@@ -12,7 +12,7 @@ const PF  = constants.PFIELDS;
  */
 module.exports = function(activity, callback) { activity = activity || false;
 
-  let fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar];
+  let fields = [DBF.ID_uuid_p, DBF.TEXT_varchar, DBF.IMAGE1_varchar, DBF.IMAGE2_varchar, DBF.IMAGE3_varchar, DBF.ACTIVITY_boolean];
   let constFields = [DBF.ACTIVITY_boolean];
   let constValues = [1];
   let dbName = dbConst.QUESTIONS.name;

@@ -13,6 +13,15 @@ const  logger = require('./../../lib/log')(module);
 
 const  constants             = require('../constants');
 const  db                    = require ('./../db_manager');
+const oPool                  = require('./../objects_pool');
+
+const loadGameQuestions = require('./../load_game_questions');
+
+loadGameQuestions(function (err) {
+  if(err) {
+    logger.error(400, "Ошибка при получении вопросов из базы данных");
+  }
+});
 
 // Методы
 const  start                 = require('./lib/main/start'),
@@ -61,6 +70,8 @@ function Game(room) {
   this._actionsLimits = {};           // Лимиты ответов для игроков
   this._actionsCount  = 0;            // Текущее количество ответов до перехода к следующей игре
   this._actionsMain   = 0;            // Общее количество ответов до перехода к следующей игре
+  
+  this._currCountInRoom = 0;          // Количество игроков в комнате на начало текущего раунда
 
   this._storedOptions  = {};          // опции, сохраненные на предидущих этапах
   this._activePlayers  = {};          // Игроки, которые на данном этапе могут ходить
@@ -115,21 +126,21 @@ Game.prototype.addProfile               = addEmits;
 Game.prototype.getActivityRating      = getActivityRating;
 
 // Получаем вопросы
-Game.prototype.getQuestions = function() { return gameQuestions; };
+Game.prototype.getQuestions = function() { return oPool.gameQuestions; };
 Game.prototype.getNextGame  = function() { return this._nextGame; };
 
-getQuestionsFromDB();
+// getQuestionsFromDB();
 
 // --------------------
-function getQuestionsFromDB() {
-  db.findQuestionsActivity(true, function(err, questions) {
-    if(err) {
-      return logger.error(400, "Ошибка при получении вопросов из базы данных");
-       //console.log("Ошибка при получении вопросов из базы данных");
-    }
-
-    gameQuestions = questions;
-
-    setTimeout(function(){ getQuestionsFromDB()}, LOAD_QUESTIONS_TIMEOUT);
-  });
-}
+// function getQuestionsFromDB() {
+//   db.findQuestionsActivity(true, function(err, questions) {
+//     if(err) {
+//       return logger.error(400, "Ошибка при получении вопросов из базы данных");
+//        //console.log("Ошибка при получении вопросов из базы данных");
+//     }
+//
+//     gameQuestions = questions;
+//
+//     setTimeout(function(){ getQuestionsFromDB()}, LOAD_QUESTIONS_TIMEOUT);
+//   });
+// }

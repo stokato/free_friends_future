@@ -9,23 +9,25 @@
  * @return profiles - коллекция профилей для модуля vk
  */
 
-var socketio  = require('socket.io');
-var ios       = require('socket.io-express-session');
-var ioClient  = require('socket.io-client');
-var initProfile = require('./lib/profile/init_profile');
-var session   = require('./../../lib/session');
-//var checkSession = require('./checkSession');
+const  logger = require('./../../lib/log')(module);
+const socketio  = require('socket.io');
+const ios       = require('socket.io-express-session');
+const ioClient  = require('socket.io-client');
+const initProfile = require('./lib/profile/init_profile');
+const session   = require('./../../lib/session');
+//const checkSession = require('./checkSession');
 
-var oPool     = require('./../objects_pool');
-var stat      = require('./../stat_manager');
-var constants = require('./../constants');
-var ioc = require('./../io_controller');
+const oPool     = require('./../objects_pool');
+const stat      = require('./../stat_manager');
+const constants = require('./../constants');
+const ioc = require('./../io_controller');
 
-var io = null;                                      // Сокет
+// let io = null;                                      // Сокет
+
 
 module.exports.listen = function(server, callback) {
-  io = socketio(server);
-
+  let io = socketio(server);
+  
   //io.set('log level', 1);
   /*
    'dev.foo.com:* foo.com:* 10.10.17.252:* www.foo.com:* https://dev.foo.com:* https://foo.com:* https://10.10.17.252:* https://www.foo.com:*'
@@ -44,18 +46,18 @@ module.exports.listen = function(server, callback) {
   // Боты
   (function () {
     //////////// Боты  60575188, 38068582, 10265088        // 8006539, 2537182
-    var bots1 = [];
-    var bots2 = [];
-    var room1 = [14179168, 202855663, 138702971, 138288707,  369865764];
-    var room2 = [8729179, 2067815, 20393197, 269720831, 26052562];
-    var males1 = [1, 1, 2, 2, 1];
-    var males2 = [1, 1, 1, 2, 2];
-    var countries = [1, 2, 3, 4, 9];
-    var cities = [2, 314, 467, 284, 378];
-    var bDate =new Date(1993, 4, 1, 0, 0, 0, 0);
-    var clientS;
+    let bots1 = [];
+    let bots2 = [];
+    let room1 = [14179168, 202855663, 138702971, 138288707,  369865764];
+    let room2 = [8729179, 2067815, 20393197, 269720831, 26052562];
+    let males1 = [1, 1, 2, 2, 1];
+    let males2 = [1, 1, 1, 2, 2];
+    let countries = [1, 2, 3, 4, 9];
+    let cities = [2, 314, 467, 284, 378];
+    let bDate =new Date(1993, 4, 1, 0, 0, 0, 0);
+    let clientS;
   
-    for(var b = 0; b < 5; b++) {
+    for(let b = 0; b < 5; b++) {
       clientS = ioClient.connect('http://localhost:' + '3000');
     
       clientS.emit('init', {
@@ -77,13 +79,13 @@ module.exports.listen = function(server, callback) {
       bots2.push(clientS);
     }
   
-    var count = 0;
+    let count = 0;
     initB(bots2[count], true);
   
     function initB(clientS, isFirst) {
     
       clientS.on('init', function (message) {
-        var options;
+        let options;
       
         if(isFirst) {
           options = {
@@ -124,12 +126,12 @@ module.exports.listen = function(server, callback) {
   
     function md5 ( str ) {
     
-      var RotateLeft = function(lValue, iShiftBits) {
+      let RotateLeft = function(lValue, iShiftBits) {
         return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
       };
     
-      var AddUnsigned = function(lX,lY) {
-        var lX4,lY4,lX8,lY8,lResult;
+      let AddUnsigned = function(lX,lY) {
+        let lX4,lY4,lX8,lY8,lResult;
         lX8 = (lX & 0x80000000);
         lY8 = (lY & 0x80000000);
         lX4 = (lX & 0x40000000);
@@ -149,40 +151,40 @@ module.exports.listen = function(server, callback) {
         }
       };
     
-      var F = function(x,y,z) { return (x & y) | ((~x) & z); };
-      var G = function(x,y,z) { return (x & z) | (y & (~z)); };
-      var H = function(x,y,z) { return (x ^ y ^ z); };
-      var I = function(x,y,z) { return (y ^ (x | (~z))); };
+      let F = function(x,y,z) { return (x & y) | ((~x) & z); };
+      let G = function(x,y,z) { return (x & z) | (y & (~z)); };
+      let H = function(x,y,z) { return (x ^ y ^ z); };
+      let I = function(x,y,z) { return (y ^ (x | (~z))); };
     
-      var FF = function(a,b,c,d,x,s,ac) {
+      let FF = function(a,b,c,d,x,s,ac) {
         a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
         return AddUnsigned(RotateLeft(a, s), b);
       };
     
-      var GG = function(a,b,c,d,x,s,ac) {
+      let GG = function(a,b,c,d,x,s,ac) {
         a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
         return AddUnsigned(RotateLeft(a, s), b);
       };
     
-      var HH = function(a,b,c,d,x,s,ac) {
+      let HH = function(a,b,c,d,x,s,ac) {
         a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
         return AddUnsigned(RotateLeft(a, s), b);
       };
     
-      var II = function(a,b,c,d,x,s,ac) {
+      let II = function(a,b,c,d,x,s,ac) {
         a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
         return AddUnsigned(RotateLeft(a, s), b);
       };
     
-      var ConvertToWordArray = function(str) {
-        var lWordCount;
-        var lMessageLength = str.length;
-        var lNumberOfWords_temp1=lMessageLength + 8;
-        var lNumberOfWords_temp2=(lNumberOfWords_temp1-(lNumberOfWords_temp1 % 64))/64;
-        var lNumberOfWords = (lNumberOfWords_temp2+1)*16;
-        var lWordArray=Array(lNumberOfWords-1);
-        var lBytePosition = 0;
-        var lByteCount = 0;
+      let ConvertToWordArray = function(str) {
+        let lWordCount;
+        let lMessageLength = str.length;
+        let lNumberOfWords_temp1=lMessageLength + 8;
+        let lNumberOfWords_temp2=(lNumberOfWords_temp1-(lNumberOfWords_temp1 % 64))/64;
+        let lNumberOfWords = (lNumberOfWords_temp2+1)*16;
+        let lWordArray=Array(lNumberOfWords-1);
+        let lBytePosition = 0;
+        let lByteCount = 0;
         while ( lByteCount < lMessageLength ) {
           lWordCount = (lByteCount-(lByteCount % 4))/4;
           lBytePosition = (lByteCount % 4)*8;
@@ -197,8 +199,8 @@ module.exports.listen = function(server, callback) {
         return lWordArray;
       };
     
-      var WordToHex = function(lValue) {
-        var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
+      let WordToHex = function(lValue) {
+        let WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
         for (lCount = 0;lCount<=3;lCount++) {
           lByte = (lValue>>>(lCount*8)) & 255;
           WordToHexValue_temp = "0" + lByte.toString(16);
@@ -207,12 +209,12 @@ module.exports.listen = function(server, callback) {
         return WordToHexValue;
       };
     
-      var x=Array();
-      var k,AA,BB,CC,DD,a,b,c,d;
-      var S11=7, S12=12, S13=17, S14=22;
-      var S21=5, S22=9 , S23=14, S24=20;
-      var S31=4, S32=11, S33=16, S34=23;
-      var S41=6, S42=10, S43=15, S44=21;
+      let x=Array();
+      let k,AA,BB,CC,DD,a,b,c,d;
+      let S11=7, S12=12, S13=17, S14=22;
+      let S21=5, S22=9 , S23=14, S24=20;
+      let S31=4, S32=11, S33=16, S34=23;
+      let S41=6, S42=10, S43=15, S44=21;
     
       str = utf8_encode(str);
       x = ConvertToWordArray(str);
@@ -290,7 +292,7 @@ module.exports.listen = function(server, callback) {
         d=AddUnsigned(d,DD);
       }
     
-      var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
+      let temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
     
       return temp.toLowerCase();
     
@@ -300,10 +302,10 @@ module.exports.listen = function(server, callback) {
         // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
       
         str_data = str_data.replace(/\r\n/g,"\n");
-        var utftext = "";
+        let utftext = "";
       
-        for (var n = 0; n < str_data.length; n++) {
-          var c = str_data.charCodeAt(n);
+        for (let n = 0; n < str_data.length; n++) {
+          let c = str_data.charCodeAt(n);
           if (c < 128) {
             utftext += String.fromCharCode(c);
           } else if((c > 127) && (c < 2048)) {

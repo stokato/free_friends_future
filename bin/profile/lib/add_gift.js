@@ -50,7 +50,8 @@ module.exports = function(giftMaker, date, gsrc, gid, gtype, gtitle, callback) {
       }
       
     }, GIFT_TIMEOUT);
+  
+    callback(null, options);
   });
-
-  callback(null, options);
+  
 };

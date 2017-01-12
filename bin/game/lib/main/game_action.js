@@ -29,7 +29,8 @@ module.exports = function (socket) {
         if(game._activePlayers[uid] && game._actionsLimits[uid] > 0) {
         
           // Вызваем обработчик текущей игры
-          game._handlers[game._nextGame](false, socket, options);
+          // game._handlers[game._nextGame](false, socket, options);
+          game._onGame(false, socket, options);
         }
         cb(null, null);
       }], //-------------------------------------------------------------------

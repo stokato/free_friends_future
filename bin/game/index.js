@@ -100,6 +100,8 @@ function Game(room) {
   this._handlers[constants.G_PRISON]        = hPrison(self);
   
   this._onStart = null;
+  
+  this._onGame = null;
 }
 
 Game.prototype.getGameState     = function () { return this._gameState; };

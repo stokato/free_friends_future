@@ -30,7 +30,7 @@ module.exports = function (socket) {
         
           // Вызваем обработчик текущей игры
           // game._handlers[game._nextGame](false, socket, options);
-          game._onGame(false, socket, options);
+          game._onGame(socket, options);
         }
         cb(null, null);
       }], //-------------------------------------------------------------------

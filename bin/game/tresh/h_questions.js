@@ -1,8 +1,8 @@
-const constants = require('./../../../constants');
+const constants = require('./../../constants');
 const PF = constants.PFIELDS;
-const addAction = require('./../common/add_action');
-const oPool = require('./../../../objects_pool'),
-    stat = require('./../../../stat_manager');
+const addAction = require('./../lib/common/add_action');
+const oPool = require('./../../objects_pool'),
+    stat = require('./../../stat_manager');
 
 // Вопросы, ждем, когда все ответят, потом показываем ответы
 module.exports = function(game) {

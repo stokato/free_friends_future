@@ -1,10 +1,10 @@
-const Config      = require('./../../../../config.json');
-const constants   = require('../../../constants');
-const addAction   = require('./../common/add_action');
-const oPool       = require('./../../../objects_pool');
-const handleError = require('./../common/handle_error');
-const addPoints   = require('./../common/add_points');
-const stat        = require('./../../../stat_manager');
+const Config      = require('./../../../config.json');
+const constants   = require('../../constants');
+const addAction   = require('./../lib/common/add_action');
+const oPool       = require('./../../objects_pool');
+const handleError = require('./../lib/common/handle_error');
+const addPoints   = require('./../lib/common/add_points');
+const stat        = require('./../../stat_manager');
 
 const PF = constants.PFIELDS;
 const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);

@@ -6,16 +6,16 @@
 
 const async = require('async');
 
-const Config        = require('./../../../../config.json');
-const constants     = require('../../../constants'),
+const Config        = require('./../../../config.json');
+const constants     = require('../../constants'),
     PF            = constants.PFIELDS,
-    addAction     = require('./../common/add_action'),
-    GameError     = require('./../common/game_error'),
-    ProfileJS     = require('../../../profile/index'),
-    handleError   = require('../common/handle_error'),
-    oPool         = require('./../../../objects_pool'),
-    stat          = require('./../../../stat_manager'),
-    addPoints     = require('./../common/add_points');
+    addAction     = require('./../lib/common/add_action'),
+    GameError     = require('./../lib/common/game_error'),
+    ProfileJS     = require('../../profile/index'),
+    handleError   = require('../lib/common/handle_error'),
+    oPool         = require('./../../objects_pool'),
+    stat          = require('./../../stat_manager'),
+    addPoints     = require('./../lib/common/add_points');
 
 const CARD_COUNT = Number(Config.game.card_count);
 const CARD_BONUS = Number(Config.moneys.card_bonus);

@@ -8,11 +8,12 @@ const GameError = require('../../common/game_error');
 const stat      = require('../../../../stat_manager');
 
 const addPoints = require('../../common/add_points');
+const startPause   = require('../starters/s_pause');
 
 const PF          = constants.PFIELDS;
 const KISS_POINTS = Number(Config.points.game.mutual_kiss);
 
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   
   clearTimeout(game._timer);
   
@@ -36,7 +37,7 @@ module.exports = function (timer, socket, game) {
   
   stat.setMainStat(constants.SFIELDS.BOTTLE_ACTIVITY, game.getActivityRating());
   
-  game.restoreGame(null, true);
+  game._handlers.starters.startPause(game, null, true);
   
   //----------------
   function onComplete(err) {

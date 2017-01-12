@@ -4,16 +4,14 @@
 
 const constants = require('../../../../constants');
 
-const onBest        = require('./../pickers/p_best');
-const onBottle      = require('./../pickers/p_bottle');
-const onCards       = require('./../pickers/p_cards');
-const onPrison      = require('./../pickers/p_prison');
-const onQuestion    = require('./../pickers/p_questions');
-const onSympathy    = require('./../pickers/p_sympathy');
+const startBest        = require('../starters/s_best');
+const startBottle      = require('../starters/s_bottle');
+const startCards       = require('../starters/s_cards');
+const startPrison      = require('../starters/s_prison');
+const startQuestions   = require('../starters/s_questions');
+const startSympathy    = require('../starters/s_sympathy');
 
-const  PF        = constants.PFIELDS;
-
-module.exports = function(timer, socket, game) {
+module.exports = function(timer, game) {
   // Сбрасываем таймер
   clearTimeout(game._timer);
   
@@ -22,33 +20,33 @@ module.exports = function(timer, socket, game) {
     return game.stop();
   }
   
-  game._currCountInRoom = game._room.getCountInRoom(constants.GIRL) + game._room.getCountInRoom(constants.GUY);
+  game._currCountInRoom = game._room.getCountInRoom(constants.GIRL) +
+                          game._room.getCountInRoom(constants.GUY);
 
   // Определяем следующую игру, если игроков слишком мало - то без тюрьмы
-  let rand;
-  let games = (game._prisoner !== null ||
-  game._room.getCountInRoom(constants.GIRL) <= 2 ||
-  game._room.getCountInRoom(constants.GUY) <= 2)?
-    constants.GAMES_WITHOUT_PRISON : constants.GAMES;
+  let rand, games;
+  
+  if(game._prisoner !== null ||
+      game._room.getCountInRoom(constants.GIRL) <= 2 ||
+      game._room.getCountInRoom(constants.GUY) <= 2) {
+    
+    games = constants.GAMES_WITHOUT_PRISON;
+  } else {
+    games = constants.GAMES;
+  }
+  
   do {
     rand = Math.floor(Math.random() * games.length);
-  } while(rand == game.gStoredRand);
+  } while(rand == game._storedRand);
   
-  game._nextGame = games[rand];
+  game._storedRand = rand;
   
-  game._actionsQueue = {};
-  
-  let result = {
-    [PF.NEXTGAME] : game._nextGame,
-    [PF.PLAYERS] : []
-  };
-  
-  switch (game._nextGame) {
-    case constants.G_BOTTLE     : game._onGame = onBottle(game, result);    break;
-    case constants.G_QUESTIONS  : game._onGame = onQuestion(game, result);  break;
-    case constants.G_CARDS      : game._onGame = onCards(game, result);     break;
-    case constants.G_BEST       : game._onGame = onBest(game, result);      break;
-    case constants.G_SYMPATHY   : game._onGame = onSympathy(game, result);  break;
-    case constants.G_PRISON     : game._onGame = onPrison(game, result);    break;
+  switch (games[rand]) {
+    case constants.G_BOTTLE     : game._handlers.starters.startBottle(game);    break;
+    case constants.G_QUESTIONS  : game._handlers.starters.startQuestions(game);  break;
+    case constants.G_CARDS      : game._handlers.starters.startCards(game);     break;
+    case constants.G_BEST       : game._handlers.starters.startBest(game);      break;
+    case constants.G_SYMPATHY   : game._handlers.starters.startSympathy(game);  break;
+    case constants.G_PRISON     : game._handlers.starters.startPrison(game);    break;
   }
 };

@@ -1,7 +1,8 @@
 // Получить слуайный вопрос
-module.exports = function() {
-  let questions = this.getQuestions();
-  let rand = Math.floor(Math.random() * questions.length);
+const oPool = require('./../../../objects_pool');
 
-  return questions[rand].text;
+module.exports = function() {
+  let rand = Math.floor(Math.random() * oPool.gameQuestions.length);
+
+  return oPool.gameQuestions[rand].text;
 };

@@ -3,26 +3,36 @@
  */
 
 const Config = require('./../../../../../config.json');
+const constants = require('./../../../../constants');
 const oPool  = require('../../../../objects_pool');
 
 const addAction     = require('../../common/add_action');
-const checkPrisoner = require('./../../common/check_prisoner');
 const finishPrison  = require('../finishers/f_prison');
 
 const PRISON_TIMEOUT = Config.game.timeouts.prison;
+const PF             = constants.PFIELDS;
   
-module.exports = function (game, result) {
+module.exports = function (game) {
+  
+  game._nextGame = constants.G_PRISON;
+  
+  game._actionsQueue = {};
+  
+  let result = {
+    [PF.NEXTGAME] : constants.G_PRISON,
+    [PF.PLAYERS] : []
+  };
   
   result.players = game.getPlayersID();
   
-  checkPrisoner(game, result);
+  game.checkPrisoner(result);
   
   game.emit(result);
   game._gameState = result;
   
-  game.startTimer(game._handlers[game._nextGame], PRISON_TIMEOUT);
+  game.startTimer(game._handlers.finishers.finishPrison, PRISON_TIMEOUT, game);
   
-  return function (socket, options) {
+  game._onGame = function (socket, options) {
   
     let selfProfile = oPool.userList[socket.id];
     let uid = selfProfile.getID();
@@ -34,7 +44,7 @@ module.exports = function (game, result) {
     addAction(game, uid, options);
   
     if(game._actionsCount == 0) {
-      finishPrison(false, socket, game);
+      game._handlers.finishers.finishPrison(false, game);
     }
   }
 };

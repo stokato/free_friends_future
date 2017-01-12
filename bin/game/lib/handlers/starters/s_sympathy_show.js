@@ -7,17 +7,19 @@ const constants   = require('../../../../constants');
 const oPool       = require('../../../../objects_pool');
 const GameError   = require('../../common/game_error');
 
-const addAction   = require('../../common/add_action');
-const handleError = require('../../common/handle_error');
-const finishSympathyShow = require('../finishers/f_sympathy_show');
+const addAction           = require('../../common/add_action');
+const handleError         = require('../../common/handle_error');
+const finishSympathyShow  = require('../finishers/f_sympathy_show');
 
 const PF                = constants.PFIELDS;
 const SYMPATHY_TIMEOUT  = Number(Config.game.timeouts.sympathy_show);
 const SYMPATHY_PRICE    = Number(Config.moneys.sympathy_price);
 const WASTE_POINTS      = Number(Config.points.waste);
 
-module.exports = function (game, result) {
-    
+module.exports = function (game) {
+  
+  game._nextGame = constants.G_SYMPATHY_SHOW;
+  
   // Очищаем настройки
   game._actionsQueue = {};
   
@@ -37,13 +39,7 @@ module.exports = function (game, result) {
   };
   
   
-  if(game._prisoner !== null) {
-    result[PF.PRISON] = {
-      [PF.ID]  : game._prisoner.id,
-      [PF.VID] : game._prisoner.vid,
-      [PF.SEX] : game._prisoner.sex
-    };
-  }
+  game.checkPrisoner(result);
   
   game.emit(result);
   
@@ -51,9 +47,9 @@ module.exports = function (game, result) {
   game._gameState = result;
   
   // Устанавливаем таймер
-  game.startTimer(game._handlers[game._nextGame], SYMPATHY_TIMEOUT);
+  game.startTimer(finishSympathyShow, SYMPATHY_TIMEOUT, game);
 
- return function (socket, options) {
+ game._onGame = function (socket, options) {
   
    let selfProfile = oPool.userList[socket.id];
    uid = selfProfile.getID();
@@ -95,16 +91,14 @@ module.exports = function (game, result) {
    });
   
    if(game._actionsCount == 0) {
-     finishSympathyShow(false, socket, game);
+     finishSympathyShow(false, game);
    }
  };
   
   //-----------------------------------------------------------------------------------
   function onPick(options) {
     
-    let result = {
-      [PF.PICKS] : []
-    };
+    let result = { [PF.PICKS] : [] };
     
     // Получаем все его ходы игрока, о котором хочет узнать текущий и отправляем
     let pickedId, playerInfo, sympathy = game._storedOptions[options[PF.PICK]];

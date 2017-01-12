@@ -7,14 +7,15 @@ const constants   = require('../../../../constants');
 const oPool       = require('./../../../../objects_pool');
 const stat        = require('./../../../../stat_manager');
 
-const checkPrisoner       = require('./../../common/check_prisoner');
 const addAction           = require('./../../common/add_action');
 const finishBottleKisses  = require('./../finishers/f_bottle_kisses');
 
 const DEF_TIMEOUT = Number(Config.game.timeouts.default);
 const PF          = constants.PFIELDS;
 
-module.exports = function (game, result = {}) {
+module.exports = function (game) {
+  
+  game._nextGame = constants.G_BOTTLE_KISSES;
   
   let rand = Math.floor(Math.random() * game._storedOptions.length);
   let secondPlayerInfo = game._storedOptions[rand];
@@ -28,8 +29,6 @@ module.exports = function (game, result = {}) {
   game._actionsCount = 2;
   game._actionsMain = game._actionsCount;
   
-  game._nextGame = constants.G_BOTTLE_KISSES;
-  
   // Отправляем результаты
   let result = {
     [PF.PLAYERS]  : game.getPlayersID(),
@@ -37,15 +36,15 @@ module.exports = function (game, result = {}) {
     [PF.PRISON]   : null
   };
   
-  checkPrisoner(game, result);
+  game.checkPrisoner(result);
   
   game.emit(result);
   game._gameState = result;
   
   // Устанавливаем таймаут
-  game.startTimer(game._handlers[game._nextGame], DEF_TIMEOUT);
+  game.startTimer(finishBottleKisses, DEF_TIMEOUT, game);
   
-  return function (socket, options) {
+  game._onGame = function (socket, options) {
     let uid = oPool.userList[socket.id].getID();
   
     if(!game._actionsQueue[uid]) {
@@ -76,7 +75,7 @@ module.exports = function (game, result = {}) {
     game._gameState[PF.PICKS].push(result);
   
     if(game._actionsCount == 0) {
-      finishBottleKisses(false, socket, game);
+      finishBottleKisses(false, game);
     }
   }
 };

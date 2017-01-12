@@ -4,15 +4,16 @@
 
 const Config      = require('../../../../../config.json');
 const constants   = require('../../../../constants');
-const addPoints   = require('../../common/add_points');
 const stat        = require('../../../../stat_manager');
+const GameError   = require('../../common/game_error');
+
+const addPoints   = require('../../common/add_points');
+const startSympathyShow = require('../starters/s_sympathy_show');
 
 const PF                    = constants.PFIELDS;
 const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
 
-const onSympathyShow = require('../pickers/p_sympathy_show');
-
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   clearTimeout(game._timer);
   
   stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
@@ -44,8 +45,7 @@ module.exports = function (timer, socket, game) {
   // Сохраняем выбор игроков
   game._storedOptions = game._actionsQueue;
   
-  game._nextGame = constants.G_SYMPATHY_SHOW;
-  game._onGame = onSympathyShow(game, {});
+  startSympathyShow(game);
   
   //---------------------
   function onComplete(err) {

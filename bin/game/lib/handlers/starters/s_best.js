@@ -9,32 +9,25 @@ const constants   = require('../../../../constants');
 const addAction   = require('../../common/add_action');
 const handleError = require('../../common/handle_error');
 const finishBest  = require('../finishers/f_best');
-const checkPrisoner = require('./../../common/check_prisoner');
 
 const PF          = constants.PFIELDS;
 const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
 
-module.exports = function (game, result) {
+module.exports = function (game) {
   
+  game._actionsQueue = {};
+  
+  // Получаем первого ирока
   let firstPlayer = null;
-  if(uid) {
-    firstPlayer = game._activePlayers[uid];
-  } else {
-    for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
-      firstPlayer = game._activePlayers[item];
-    }
+  for(let item in game._activePlayers) if(game._activePlayers.hasOwnProperty(item)) {
+    firstPlayer = game._activePlayers[item];
   }
   
-  // Получаем второго игрока
+  // Получаем второго, того же пола
   let firstGender = firstPlayer.sex;
-  
   let excludeIds = [firstPlayer.id];
   
   if(game.getPrisonerInfo()){
-    excludeIds.push(game.getPrisonerInfo().id);
-  }
-  
-  if(game.getPrisonerInfo()) {
     excludeIds.push(game.getPrisonerInfo().id);
   }
   
@@ -78,19 +71,26 @@ module.exports = function (game, result) {
   game._actionsCount = game._currCountInRoom - countPrisoners - 2;
   game._actionsMain = game._actionsCount;
   
+  game._nextGame = constants.G_BEST;
+  
+  let result = {
+    [PF.NEXTGAME] : constants.G_BEST,
+    [PF.PLAYERS] : []
+  };
+  
   result.best = bestPlayerInfo;
   
   result.players = game.getPlayersID();
   
-  checkPrisoner(game, result);
+  game.checkPrisoner(result);
   
   game.emit(result);
   game._gameState = result;
   
   // Устанавливаем таймаут
-  game.startTimer(game._handlers[game._nextGame], DEF_TIMEOUT);
+  game.startTimer(game._handlers.finishers.finishBest, DEF_TIMEOUT, game);
   
-  return function (socket, options) {
+  game._onGame = function (socket, options) {
     // Ошибка - если выбранного пользоателя нет среди кандидатов
     if(!game._storedOptions[options[PF.PICK]]) {
       return handleError(socket, constants.IO_GAME, constants.G_BEST, constants.errors.NO_THAT_PLAYER);
@@ -137,7 +137,7 @@ module.exports = function (game, result) {
     game._gameState[PF.PICKS].push(result[PF.PICK]);
   
     if(game._actionsCount == 0) {
-      finishBest(false, socket, game);
+      game._handlers.finishers.finishBest(false, game);
     }
   }
 };

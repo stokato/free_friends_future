@@ -8,10 +8,11 @@ const stat         = require('../../../../stat_manager');
 
 const  addPoints   = require('../../common/add_points');
 const  handleError = require('../../common/handle_error');
+const  startPause     = require('../starters/s_pause');
 
 const BEST_POINTS  = Number(Config.points.game.best);
 
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   clearTimeout(game._timer);
   
   stat.setMainStat(constants.SFIELDS.BEST_ACTIVITY, game.getActivityRating());
@@ -36,6 +37,7 @@ module.exports = function (timer, socket, game) {
     
     if(bestPlayer.id) {
       stat.setUserStat(bestPlayer.id, bestPlayer.vid, constants.SFIELDS.BEST_SELECTED, 1);
+      
       addPoints(bestPlayer.id, BEST_POINTS, function (err) {
         if(err) {
           let socket = game._room.getAnySocket();
@@ -44,8 +46,8 @@ module.exports = function (timer, socket, game) {
       });
     }
     
-    game.restoreGame(null, true);
+    game._handlers.starters.startPause(game, null, true);
   } else {
-    game.restoreGame(null, false);
+    game._handlers.starters.startPause(game, null, false);
   }
 };

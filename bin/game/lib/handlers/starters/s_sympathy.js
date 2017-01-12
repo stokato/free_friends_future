@@ -9,11 +9,16 @@ const oPool       = require('../../../../objects_pool');
 const addAction       = require('../../common/add_action');
 const handleError     = require('../../common/handle_error');
 const finishSympathy  = require('../finishers/f_sympathy');
-const checkPrisoner = require('./../../common/check_prisoner');
 
 const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
+const PF             = constants.PFIELDS;
 
-module.exports = function (game, result) {
+module.exports = function (game) {
+  
+  game._nextGame = constants.G_SYMPATHY;
+  
+  game._actionsQueue = {};
+  
   game._activePlayers = {};
   game.activateAllPlayers();
   
@@ -23,17 +28,22 @@ module.exports = function (game, result) {
   game._actionsCount = (game._currCountInRoom - countPrisoners) * 2;
   game._actionsMain = game._actionsCount;
   
+  let result = {
+    [PF.NEXTGAME] : game._nextGame,
+    [PF.PLAYERS] : []
+  };
+  
   result.players = game.getPlayersID();
   
-  checkPrisoner(game, result);
+  game.checkPrisoner(result);
   
   game.emit(result);
   game._gameState = result;
   
   // Устанавливаем таймаут
-  game.startTimer(game._handlers[game._nextGame], DEF_TIMEOUT);
+  game.startTimer(game._handlers.finishers.finishSympathy, DEF_TIMEOUT, game);
   
-  return function (socket, options) {
+  game._onGame = function (socket, options) {
     let selfProfile = oPool.userList[socket.id];
     let uid = selfProfile.getID();
   
@@ -63,7 +73,7 @@ module.exports = function (game, result) {
     addAction(game, uid, options);
   
     if(game._actionsCount == 0) {
-      finishSympathy(false, socket, game);
+      game._handlers.finishers.finishSympathy(false, game);
     }
   }
 };

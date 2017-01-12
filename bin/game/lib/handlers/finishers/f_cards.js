@@ -13,13 +13,14 @@ const  ProfileJS    = require('../../../../profile/index');
 
 const  addPoints    = require('../../common/add_points');
 const  handleError  = require('../../common/handle_error');
+const  startPause      = require('../starters/s_pause');
 
 const  PF           = constants.PFIELDS;
 const CARD_COUNT    = Number(Config.game.card_count);
 const CARD_BONUS    = Number(Config.moneys.card_bonus);
 const CARD_POINTS   = Number(Config.points.game.gold);
 
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   
   clearTimeout(game._timer);
   
@@ -62,7 +63,7 @@ module.exports = function (timer, socket, game) {
     bonus = Math.round(bonus / winners.length);
     addMoney();
   } else {
-    game.restoreGame(result, true);
+    game._handlers.starters.startPause(game, result, true);
   }
   
   // Функция проверяет, если игрок не онлайн, создает его профиль.
@@ -137,7 +138,7 @@ module.exports = function (timer, socket, game) {
       if(count < winners.length) {
         addMoney();
       } else {
-        game.restoreGame(result, true);
+        game._handlers.starters.startPause(game, result, true);
       }
     });//-------------------------------------------------------
   } // addMoney

@@ -1,13 +1,13 @@
 /**
  * Останавливаем игру
  */
-const constants = require('../../../constants');
 
 module.exports = function() {
   clearTimeout(this._timer);
   this._isActive = false;
 
-  this._nextGame = constants.G_START;
+  this._nextGame = null;
+  this._onGame = null;
 
   this._actionsQueue   = {};
   this._actionsLimits  = {};

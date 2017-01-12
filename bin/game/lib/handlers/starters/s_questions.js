@@ -8,12 +8,15 @@ const oPool       = require('../../../../objects_pool');
 
 const addAction       = require('../../common/add_action');
 const finishQuestions = require('../finishers/f_questions');
-const checkPrisoner = require('./../../common/check_prisoner');
 
 const PF = constants.PFIELDS;
 const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
 
-module.exports = function (game, result) {
+module.exports = function (game) {
+  
+  game._nextGame = constants.G_QUESTIONS;
+  
+  game._actionsQueue = {};
   
   game._activePlayers = {};
   game.activateAllPlayers();
@@ -25,19 +28,24 @@ module.exports = function (game, result) {
   game._actionsCount = game._currCountInRoom - countPrisoners;
   game._actionsMain = game._actionsCount;
   
+  let result = {
+    [PF.NEXTGAME] : constants.G_QUESTIONS,
+    [PF.PLAYERS] : []
+  };
+  
   result[PF.QUESTION] =  game.getRandomQuestion();
   
   result.players = game.getPlayersID();
   
-  checkPrisoner(game, result);
+  game.checkPrisoner(game, result);
   
   game.emit(result);
   game._gameState = result;
   
   // Устанавливаем таймаут
-  game.startTimer(game._handlers[game._nextGame], DEF_TIMEOUT);
+  game.startTimer(game._handlers.finishers.finishQuestions, DEF_TIMEOUT, game);
   
-  return function (socket, options) {
+  game._onGame = function (socket, options) {
     let selfProfile = oPool.userList[socket.id];
     let uid = selfProfile.getID();
   
@@ -48,7 +56,7 @@ module.exports = function (game, result) {
     addAction(game, uid, options);
   
     if(game._actionsCount == 0) {
-      finishQuestions(false, socket, game);
+      game._handlers.finishers.finishQuestions(false, game);
     }
   }
 };

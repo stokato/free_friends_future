@@ -4,12 +4,12 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-const constants = require('../../../constants'),
+const constants = require('../../constants'),
   PF        = constants.PFIELDS,
-  addAction = require('./../common/add_action'),
-  oPool     = require('./../../../objects_pool');
+  addAction = require('./../lib/common/add_action'),
+  oPool     = require('./../../objects_pool');
 
-const Config        = require('./../../../../config.json');
+const Config        = require('./../../../config.json');
 
 const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
 const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);

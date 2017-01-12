@@ -2,9 +2,9 @@
  * Created by s.t.o.k.a.t.o on 12.01.2017.
  */
 
-const finishStart = require('./f_start');
+const finishPause = require('../finishers/f_pause');
 
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   clearTimeout(game._timer);
   
   // Помещаем тукущего игрока в темницу
@@ -14,5 +14,5 @@ module.exports = function (timer, socket, game) {
   
   game._actionsCount = 0;
   
-  finishStart(true, socket, game);
+  game._handlers.finishers.finishPause(true, game);
 };

@@ -5,10 +5,10 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-const Config    = require('./../../../../config.json');
-const constants = require('../../../constants'),
-      addAction = require('./../common/add_action'),
-      oPool     = require('./../../../objects_pool');
+const Config    = require('./../../../config.json');
+const constants = require('../../constants'),
+      addAction = require('./../lib/common/add_action'),
+      oPool     = require('./../../objects_pool');
 
 const PF = constants.PFIELDS;
 

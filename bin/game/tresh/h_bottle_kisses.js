@@ -4,15 +4,15 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-const GameError = require('./../common/game_error'),
-  constants = require('../../../constants'),
+const GameError = require('./../lib/common/game_error'),
+  constants = require('../../constants'),
   PF        = constants.PFIELDS,
-  addPoints = require('./../common/add_points'),
-  addAction = require('./../common/add_action'),
-  oPool = require('./../../../objects_pool'),
-  stat  = require('./../../../stat_manager');
+  addPoints = require('./../lib/common/add_points'),
+  addAction = require('./../lib/common/add_action'),
+  oPool = require('./../../objects_pool'),
+  stat  = require('./../../stat_manager');
 
-const Config        = require('./../../../../config.json');
+const Config        = require('./../../../config.json');
 const KISS_POINTS = Number(Config.points.game.mutual_kiss);
 
 module.exports = function(game) {

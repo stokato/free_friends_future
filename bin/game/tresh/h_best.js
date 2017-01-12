@@ -4,15 +4,15 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-const Config        = require('./../../../../config.json');
+const Config        = require('./../../../config.json');
 
-const constants   = require('../../../constants'),
+const constants   = require('../../constants'),
     PF          = constants.PFIELDS,
-    addPoints   = require('./../common/add_points'),
-    addAction   = require('./../common/add_action'),
-    oPool       = require('./../../../objects_pool'),
-    handleError = require('./../common/handle_error'),
-    stat        = require('./../../../stat_manager');
+    addPoints   = require('./../lib/common/add_points'),
+    addAction   = require('./../lib/common/add_action'),
+    oPool       = require('./../../objects_pool'),
+    handleError = require('./../lib/common/handle_error'),
+    stat        = require('./../../stat_manager');
 
 const BEST_POINTS = Number(Config.points.game.best);
 

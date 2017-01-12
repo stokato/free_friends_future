@@ -1,9 +1,9 @@
-const constants   = require('../../../constants');
-const addAction   = require('./../common/add_action');
-const oPool       = require('./../../../objects_pool');
-const GameError   = require('./../common/game_error');
-const handleError = require('../common/handle_error');
-const Config      = require('./../../../../config.json');
+const constants   = require('../../constants');
+const addAction   = require('./../lib/common/add_action');
+const oPool       = require('./../../objects_pool');
+const GameError   = require('./../lib/common/game_error');
+const handleError = require('../lib/common/handle_error');
+const Config      = require('./../../../config.json');
 
 const SYMPATHY_PRICE  = Number(Config.moneys.sympathy_price);
 const WASTE_POINTS    = Number(Config.points.waste);

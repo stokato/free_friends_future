@@ -5,9 +5,11 @@
 const constants = require('../../../../constants');
 const stat      = require('../../../../stat_manager');
 
+const startPause = require('../starters/s_pause');
+
 const PF = constants.PFIELDS;
 
-module.exports = function (timer, socket, game) {
+module.exports = function (timer, game) {
   
   clearTimeout(game._timer);
   
@@ -31,5 +33,5 @@ module.exports = function (timer, socket, game) {
   
   stat.setMainStat(constants.SFIELDS.QUESTION_ACITVITY, game.getActivityRating());
   
-  game.restoreGame(result, true);
+  game._handlers.starters.startPause(game, result, true);
 };

@@ -4,13 +4,13 @@
 
 const PF  = require('../../../constants').PFIELDS;
   
-module.exports = function (game, result = {}) {
-  if(game._prisoner !== null) {
+module.exports = function (result = {}) {
+  if(this._prisoner !== null) {
     
     result[PF.PRISON] = {
-      [PF.ID]  : game._prisoner.id,
-      [PF.VID] : game._prisoner.vid,
-      [PF.SEX] : game._prisoner.sex
+      [PF.ID]  : this._prisoner.id,
+      [PF.VID] : this._prisoner.vid,
+      [PF.SEX] : this._prisoner.sex
     };
     
   } else {

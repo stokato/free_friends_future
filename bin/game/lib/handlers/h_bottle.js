@@ -47,11 +47,11 @@ module.exports = function(game) {
     }
 
     // Выбираем второго игрока
-    let firstGender = firstPlayerInfo.sex;
-    let male = constants.GUY;
-    let female = constants.GIRL;
+    // let firstGender = firstPlayerInfo.sex;
+    // let male = constants.GUY;
+    // let female = constants.GIRL;
 
-    let secondGender = (firstGender == male)? female : male;
+    // let secondGender = (firstGender == male)? female : male;
 
     let excludeIDs = [];
     if(game.getPrisonerInfo()) {
@@ -60,14 +60,14 @@ module.exports = function(game) {
 
     // let secondPlayer = game._room.randomProfile(secondGender, excludeIDs);
     let rand = Math.floor(Math.random() * game._storedOptions.length);
-    let secondPlayer = game._storedOptions[rand];
+    let secondPlayerInfo = game._storedOptions[rand];
 
     // if(!secondPlayer) {
     //   return game.stop();
     // }
 
     // Разрешаем второму игроку ходить
-    game._activePlayers[secondPlayer.getID()] = game.getPlayerInfo(secondPlayer);
+    game._activePlayers[secondPlayerInfo.id] = secondPlayerInfo;
 
     // Оба могут ответить по разу
     game._actionsQueue = {};

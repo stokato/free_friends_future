@@ -19,7 +19,7 @@ module.exports = function(game) {
   return function(timer, socket, options) {
     
     let uid;
-    game._currCountInRoom = game.getCountInRoom(constants.GIRL) + game.getCountInRoom(constants.GUY);
+    game._currCountInRoom = game._room.getCountInRoom(constants.GIRL) + game._room.getCountInRoom(constants.GUY);
     
     // Если вызов произведени игроком - сохраняем его выбор
     if(!timer) {
@@ -78,8 +78,21 @@ module.exports = function(game) {
         
         let sex = (player.sex == constants.GUY)? constants.GIRL : constants.GUY;
         
-        //TODO: Инфо а не сами профили
-        game._storedOptions = game._room.getAllPlayers(sex);
+        let players = game._room.getAllPlayers(sex);
+        let playersInfo = [];
+        
+        let prisonerID = null;
+        if(game.getPrisonerInfo()) {
+          prisonerID = game.getPrisonerInfo().id;
+        }
+        
+        for(let i = 0 ; i < players.length; i++) {
+          if(prisonerID != players[i].getID()) {
+            playersInfo.push(game.getPlayerInfo(players[i]));
+          }
+        }
+        
+        game._storedOptions = playersInfo;
         
         timeout = BOTTLE_TIMEOUT;
         break;

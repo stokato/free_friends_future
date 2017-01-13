@@ -163,7 +163,7 @@ module.exports = function (socket, options) {
   
       // Запускаем игру
       let game = room.getGame();
-      game.addProfile(socket);
+      game.addEmits(socket);
       game.start(socket);
       
       addEmits(socket);

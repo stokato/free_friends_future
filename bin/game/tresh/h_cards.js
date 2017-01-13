@@ -9,13 +9,13 @@ const async = require('async');
 const Config        = require('./../../../config.json');
 const constants     = require('../../constants'),
     PF            = constants.PFIELDS,
-    addAction     = require('./../lib/common/add_action'),
-    GameError     = require('./../lib/common/game_error'),
+    addAction     = require('./../lib/add_action'),
+    GameError     = require('./../lib/game_error'),
     ProfileJS     = require('../../profile/index'),
-    handleError   = require('../lib/common/handle_error'),
+    handleError   = require('../lib/handle_error'),
     oPool         = require('./../../objects_pool'),
     stat          = require('./../../stat_manager'),
-    addPoints     = require('./../lib/common/add_points');
+    addPoints     = require('./../lib/add_points');
 
 const CARD_COUNT = Number(Config.game.card_count);
 const CARD_BONUS = Number(Config.moneys.card_bonus);

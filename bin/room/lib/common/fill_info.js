@@ -18,6 +18,7 @@ module.exports = function (profile) {
   info[IOF.POINTS]    = profile.getPoints();
   info[IOF.ISFRIEND]  = false;
   info[IOF.INDEX]     = profile.getGameIndex();
+  info[IOF.LEVEL]     = profile.getLevel();
   
   let gift = profile.getGift1();
   

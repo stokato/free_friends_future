@@ -1,8 +1,8 @@
 const constants   = require('../../constants');
-const addAction   = require('./../lib/common/add_action');
+const addAction   = require('./../lib/add_action');
 const oPool       = require('./../../objects_pool');
-const GameError   = require('./../lib/common/game_error');
-const handleError = require('../lib/common/handle_error');
+const GameError   = require('./../lib/game_error');
+const handleError = require('../lib/handle_error');
 const Config      = require('./../../../config.json');
 
 const SYMPATHY_PRICE  = Number(Config.moneys.sympathy_price);

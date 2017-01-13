@@ -7,7 +7,7 @@ const  Config    = require('./../../../config.json');
 const  constants = require('../../constants');
 
 const onStart    = require('./p_start');
-const checkPrisoner = require('../lib/common/check_prisoner');
+const checkPrisoner = require('../lib/check_prisoner');
 
 const  RESULTS_TIMEOUT = Number(Config.game.timeouts.results);
 const  PF              = constants.PFIELDS;

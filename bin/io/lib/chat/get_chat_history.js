@@ -26,7 +26,7 @@ module.exports = function(socket, options) {
     return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_CHAT_HISTORY);
   }
   
-  options[constants.PFIELDS.ID] = sanitize(options[constants.PFIELDS.ID]);
+  options[PF.ID] = sanitize(options[PF.ID]);
   
   
   async.waterfall([ //-----------------------------------------------------

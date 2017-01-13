@@ -7,48 +7,29 @@
  * @constructor
  */
 
-const  logger = require('./../../lib/log')(module);
-const  constants             = require('../constants');
-
-const loadGameQuestions = require('./../load_game_questions');
-
 // Методы
-const start                 = require('./lib/main/start');
-const stop                  = require('./lib/main/stop');
-const emit                  = require('./lib/emits/emit');
-const setActionLimit        = require('./lib/common/set_action_limits');
-const activateAllPlayers    = require('./lib/common/activate_all_players');
-const getPlayersId          = require('./lib/common/get_players_id');
-const startTimer            = require('./lib/common/start_timer');
-const getRandomQuestion     = require('./lib/common/get_random_question');
-const getPlayerInfo         = require('./lib/common/get_player_info');
-const getNextPlayer         = require('./lib/common/get_next_player');
-const checkCountPlayers     = require('./lib/common/check_count_players');
-const addEmits              = require('./lib/emits/add_emits');
-const getActivityRating     = require('./lib/common/get_activity_rating');
-const checkPrisoner         = require('./lib/common/check_prisoner');
+const start                 = require('./lib/start_game');
+const stop                  = require('./lib/stop_game');
+const emit                  = require('./lib/emit');
+const setActionLimit        = require('./lib/set_action_limits');
+const activateAllPlayers    = require('./lib/activate_all_players');
+const getPlayersId          = require('./lib/get_players_id');
+const startTimer            = require('./lib/start_timer');
+const getRandomQuestion     = require('./lib/get_random_question');
+const getPlayerInfo         = require('./lib/get_player_info');
+const selectNextPlayer      = require('./lib/get_next_player');
+const checkCountPlayers     = require('./lib/check_count_players');
+const addEmits              = require('./lib/add_emits');
+const getActivityRating     = require('./lib/get_activity_rating');
+const checkPrisoner         = require('./lib/check_prisoner');
+const getActivePlayers      = require('./lib/get_active_players');
+const addAction             = require('./lib/add_action');
 
-const finishBest      = require('./lib/handlers/finishers/f_best');
-const finishBottle    = require('./lib/handlers/finishers/f_bottle');
-const finishBottleKisses = require('./lib/handlers/finishers/f_bottle_kisses');
-const finishCards     = require('./lib/handlers/finishers/f_cards');
-const finishLot       = require('./lib/handlers/finishers/f_lot');
-const finishPause     = require('./lib/handlers/finishers/f_pause');
-const finishPrison    = require('./lib/handlers/finishers/f_prison');
-const finishQuestions = require('./lib/handlers/finishers/f_questions');
-const finishSympathy  = require('./lib/handlers/finishers/f_sympathy');
-const finishSympathyShow = require('./lib/handlers/finishers/f_sympathy_show');
+const handlers              = require('./handlers/index');
 
-const startBest       = require('./lib/handlers/starters/s_best');
-const startBottle     = require('./lib/handlers/starters/s_bottle');
-const startBottleKisses = require('./lib/handlers/starters/s_bottle_kisses');
-const startCards      = require('./lib/handlers/starters/s_cards');
-const startLot        = require('./lib/handlers/starters/s_lot');
-const startPause      = require('./lib/handlers/starters/s_pause');
-const startPrison     = require('./lib/handlers/starters/s_prison');
-const startQuestions  = require('./lib/handlers/starters/s_questions');
-const startSympathy   = require('./lib/handlers/starters/s_sympathy');
-const startSympathyShow = require('./lib/handlers/starters/s_sympathy_show');
+// Загружаем вопросы из базы при старте
+const  logger               = require('./../../lib/log')(module);
+const loadGameQuestions     = require('./../load_game_questions');
 
 loadGameQuestions(function (err) {
   if(err) {
@@ -58,83 +39,89 @@ loadGameQuestions(function (err) {
 
 function Game(room) {
   
-  this._isActive = false;             // Флаг - игра запущена или нет
+  this._isActive = false;                // Флаг - игра запущена или нет
 
-  this._room = room;                  // Комната, которй принадлежить эта игра
+  this._room            = room;          // Комната, которй принадлежить эта игра
   
-  this._storedRand    = null;         // Предидущий выбор игры (чтобы подряд не повторялся)
+  this._storedRand      = null;          // Предидущий выбор игры (чтобы подряд не повторялся)
 
-  this._actionsQueue  = {};           // Очередь действий игроков
-  this._actionsLimits = {};           // Лимиты ответов для игроков
-  this._actionsCount  = 0;            // Текущее количество ответов до перехода к следующей игре
-  this._actionsMain   = 0;            // Общее количество ответов до перехода к следующей игре
+  this._actionsQueue    = {};            // Очередь действий игроков
+  this._actionsLimits   = {};            // Лимиты ответов для игроков
+  this._actionsCount    = 0;             // Текущее количество ответов до перехода к следующей игре
+  this._actionsMain     = 0;             // Общее количество ответов до перехода к следующей игре
   
-  this._currCountInRoom = 0;          // Количество игроков в комнате на начало текущего раунда
+  this._currCountInRoom = 0;             // Количество игроков в комнате на начало текущего раунда
 
-  this._storedOptions  = {};          // опции, сохраненные на предидущих этапах
-  this._activePlayers  = {};          // Игроки, которые на данном этапе могут ходить
-  this._prisoner = null;              // Игрок в темнице
+  this._storedOptions   = {};            // опции, сохраненные на предидущих этапах
+  this._activePlayers   = {};            // Игроки, которые на данном этапе могут ходить
+  this._prisoner        = null;          // Игрок в темнице
 
-  this._nextGame = null;              // Игра, которая будет вызвана следующей
+  this._nextGame        = null;          // Игра, которая будет вызвана следующей
 
-  this._timer = null;                 // Таймер, ограничивает время действия игроков, вызвывает следующую игру
+  this._timer           = null;          // Таймер, ограничивает время действия игроков, вызвывает следующую игру
 
-  this._gameState = null;             // Состояние игры (отпавляется игроку в случае разрыва соединения)
+  this._gameState       = null;          // Состояние игры (отпавляется игроку в случае разрыва соединения)
 
-  this._girlsIndex = 0;               // Индекс играющей девушки
-  this._guysIndex = 0;                // и парня
-  this._currentSex = 1;               // текущий пол
+  this._girlsIndex      = 0;             // Индекс играющей девушки
+  this._guysIndex       = 0;             // и парня
+  this._currentSex      = 1;             // текущий пол
   
-  this._onStart = null;               // Срабатывает при старте очередного раунда и при остановке
-  this._onGame = null;                // Обработка хода игрока
+  this._onStart         = null;          // Срабатывает при старте очередного раунда и при остановке
+  this._onGame          = null;          // Обработка хода игрока
   
-  this._handlers = {
-    starters : {
-      startBest : startBest,
-      startBottle : startBottle,
-      startCards : startCards,
-      startLot : startLot,
-      startPause : startPause,
-      startPrison : startPrison,
-      startQuestions : startQuestions,
-      startSympathy : startSympathy
-    },
-    finishers : {
-      finishBest : finishBest,
-      finishBottle : finishBottle,
-      finishCards : finishCards,
-      finishLot : finishLot,
-      finishPause : finishPause,
-      finishPrison :finishPrison,
-      finishQuestions : finishQuestions,
-      finishSympathy : finishSympathy
-    }
-  }
+  this._handlers        = handlers;      // Обработчики раундов игры
 }
 
-Game.prototype.getGameState     = function () { return this._gameState; };
-Game.prototype.getPrisonerInfo  = function () { return this._prisoner; };
-Game.prototype.isActive         = function () { return this._isActive; };
-Game.prototype.getNextGame      = function () { return this._nextGame; };
+Game.prototype.getGameState       = function () { return this._gameState; };
+Game.prototype.getPrisonerInfo    = function () { return this._prisoner; };
+Game.prototype.isActive           = function () { return this._isActive; };
+Game.prototype.getNextGame        = function () { return this._nextGame; };
+Game.prototype.getHandler         = function (round, type) { return this._handlers[round][type] };
+Game.prototype.getRoom            = function () { return this._room; };
+Game.prototype.getStoredRand      = function () { return this._storedRand; };
+Game.prototype.getActionsLimits   = function () { return this._actionsLimits; };
+Game.prototype.getActionsCount    = function () { return this._actionsCount; };
+Game.prototype.getActionsMain     = function () { return this._actionsMain; };
+Game.prototype.getCountUsers      = function () { return this._currCountInRoom; };
+Game.prototype.getStoredOptions   = function () { return this._storedOptions; };
+Game.prototype.getActivePlayer    = function (key) { return this._activePlayers[key]; };
+Game.prototype.getAction          = function (key) { return this._actionsQueue[key]; };
 
-Game.prototype.clearPrison      = function () { this._prisoner = null; };
-Game.prototype.setOnStart       = function (func) { this._onStart = func; };
+Game.prototype.clearPrison        = function () { this._prisoner = null; };
+Game.prototype.setOnStart         = function (func) { this._onStart = func; };
+Game.prototype.setStoredRand      = function (val) { this._storedRand = val; };
+Game.prototype.setActionsCount    = function (val) { this._actionsCount = val; };
+Game.prototype.setActionsMain     = function (val) { this._actionsMain = val; };
+Game.prototype.setCountUsers      = function (val) { this._currCountInRoom = val; };
+Game.prototype.setStoredOptions   = function (val) { this._storedOptions = val; };
+Game.prototype.clearActivePlayers = function () { this._activePlayers = {} };
+Game.prototype.setNextGame        = function (val) { this._nextGame = val; };
+Game.prototype.clearActionsQueue  = function () { this._actionsQueue = {} };
+Game.prototype.setActivePlayer    = function (key, val) { this._activePlayers[key] = val; };
+Game.prototype.setGameState       = function (val) { this._gameState = val; };
+Game.prototype.setOnGame          = function (func) { this._onGame = func; };
+Game.prototype.saveActionsQueue   = function () { this._storedOptions = this._actionsQueue; };
+Game.prototype.setPrisoner        = function (val) { this._prisoner = val; };
+Game.prototype.clearTimer         = function () { if(this._timer) { clearTimeout(this._timer); } };
+Game.prototype.onGame = function (socket, options) { if( this._onGame) {  this._onGame(socket, options); } };
 
 Game.prototype.start                  = start;
 Game.prototype.stop                   = stop;
 Game.prototype.emit                   = emit;
+Game.prototype.addEmits               = addEmits;
 
 Game.prototype.getPlayersID           = getPlayersId;
 Game.prototype.getRandomQuestion      = getRandomQuestion;
 Game.prototype.getPlayerInfo          = getPlayerInfo;
+Game.prototype.getActivePlayers       = getActivePlayers;
+Game.prototype.getActivityRating      = getActivityRating;
 Game.prototype.checkCountPlayers      = checkCountPlayers;
 
 Game.prototype.setActionLimit         = setActionLimit;
 Game.prototype.activateAllPlayers     = activateAllPlayers;
 Game.prototype.startTimer             = startTimer;
-Game.prototype.getNextPlayer          = getNextPlayer;
-Game.prototype.addProfile             = addEmits;
-Game.prototype.getActivityRating      = getActivityRating;
+Game.prototype.selectNextPlayer       = selectNextPlayer;
 Game.prototype.checkPrisoner          = checkPrisoner;
+Game.prototype.addAction              = addAction;
 
 module.exports = Game;

@@ -74,7 +74,11 @@ Room.prototype.isProfile = function (uid) {
 
 // Получить количество человек указанного пола в комнате
 Room.prototype.getCountInRoom = function (sex) {
-  return (sex == constants.GUY)? this._guys_count : this._girls_count;
+  if(sex) {
+    return (sex == constants.GUY)? this._guys_count : this._girls_count;
+  }
+  
+  return (this._guys_count + this._girls_count);
 };
 
 

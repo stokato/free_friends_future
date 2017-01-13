@@ -7,7 +7,7 @@
 
 const Config    = require('./../../../config.json');
 const constants = require('../../constants'),
-      addAction = require('./../lib/common/add_action'),
+      addAction = require('./../lib/add_action'),
       oPool     = require('./../../objects_pool');
 
 const PF = constants.PFIELDS;
@@ -50,9 +50,9 @@ module.exports = function(game) {
             game._prisoner = null;
           }
         }
-        nextPlayerInfo = game.getNextPlayer(true);
+        nextPlayerInfo = game.selectNextPlayer(true);
       } else {
-        nextPlayerInfo = game.getNextPlayer(false);
+        nextPlayerInfo = game.selectNextPlayer(false);
       }
 
       // Очищаем настройки

@@ -128,11 +128,12 @@ module.exports.IO_UNBLOCK_USER        = 'unblock_user';
 module.exports.IO_BLOCK_USER_NOTIFY   = 'banned_user';
 
 module.exports.IO_NEW_RANK            = 'new_rank';
-module.exports.IO_NEW_LEVEL           = 'new_level';
+module.exports.IO_ADD_LEVEL           = 'add_level';
 module.exports.IO_GET_RANKS           = 'get_ranks';
 module.exports.IO_CHANGE_ACTIVE_RANK  = 'change_active_rank';
 module.exports.IO_GET_ACTIVE_RANK     = 'get_active_rank';
 module.exports.IO_ADD_BALLS           = 'add_balls';
+module.exports.IO_NEW_LEVEL           = 'new_level';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -170,6 +171,11 @@ module.exports.G_PRISON           = G_PRISON;
  
 // module.exports.GAMES = [ G_BOTTLE, G_BOTTLE ];
 // module.exports.GAMES_WITHOUT_PRISON = [G_BOTTLE, G_BOTTLE];
+
+// Типы обработчиков
+module.exports.GT_ST = 'start';
+module.exports.GT_ON = 'onpick';
+module.exports.GT_FIN = 'finish';
 
 module.exports.QUESTIONS_COUNT        = 3;
 

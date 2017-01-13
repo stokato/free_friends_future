@@ -8,7 +8,7 @@ const Config        = require('./../../../config.json');
 
 const constants   = require('../../constants'),
     PF          = constants.PFIELDS,
-    addAction   = require('./../lib/common/add_action'),
+    addAction   = require('./../lib/add_action'),
     oPool       = require('./../../objects_pool');
 
 const DEF_TIMEOUT = Number(Config.game.timeouts.default);

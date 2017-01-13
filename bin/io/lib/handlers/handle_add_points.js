@@ -6,6 +6,7 @@
 const async = require('async');
 
 const Config = require('./../../../../config.json');
+const oPool = require('./../../../objects_pool');
 const logger = require('./../../../../lib/log')(module);
 const constants = require('./../../../constants');
 
@@ -94,7 +95,15 @@ module.exports = function (profile, points) {
           [PF.VIP]         : newVIP,
         };
       
-        socket.emit(constants.IO_NEW_LEVEL, res);
+        socket.emit(constants.IO_ADD_LEVEL, res);
+        
+        let room = oPool.roomList[socket.id];
+        socket.broadcast.in(room.getName()).emit(constants.IO_NEW_LEVEL, {
+          [PF.ID] : profile.getID(),
+          [PF.VID] : profile.getVID(),
+          [PF.LEVEL] : profile.getLevel(),
+          [PF.VIP] : profile.isVIP()
+        });
       
         profile.getMoney(function (err, money) {
           if(err) { logger.error('handleAddPoints' + err); }

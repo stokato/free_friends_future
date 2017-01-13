@@ -4,11 +4,11 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 
-const GameError = require('./../lib/common/game_error'),
+const GameError = require('./../lib/game_error'),
   constants = require('../../constants'),
   PF        = constants.PFIELDS,
-  addPoints = require('./../lib/common/add_points'),
-  addAction = require('./../lib/common/add_action'),
+  addPoints = require('./../lib/add_points'),
+  addAction = require('./../lib/add_action'),
   oPool = require('./../../objects_pool'),
   stat  = require('./../../stat_manager');
 

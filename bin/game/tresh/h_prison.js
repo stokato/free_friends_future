@@ -4,7 +4,7 @@
  * @param timer - признак - запущено таймером, socket, options - объект с выбором игрока
  */
 const constants = require('../../constants'),
-      addAction = require('./../lib/common/add_action'),
+      addAction = require('./../lib/add_action'),
       oPool     = require('./../../objects_pool');
 
 module.exports = function(game) {

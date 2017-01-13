@@ -1,6 +1,6 @@
 const constants = require('./../../constants');
 const PF = constants.PFIELDS;
-const addAction = require('./../lib/common/add_action');
+const addAction = require('./../lib/add_action');
 const oPool = require('./../../objects_pool'),
     stat = require('./../../stat_manager');
 

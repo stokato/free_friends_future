@@ -24,6 +24,7 @@ const getActivityRating     = require('./lib/get_activity_rating');
 const checkPrisoner         = require('./lib/check_prisoner');
 const getActivePlayers      = require('./lib/get_active_players');
 const addAction             = require('./lib/add_action');
+const removeProtection      = require('./lib/remove_protection');
 
 const handlers              = require('./handlers/index');
 
@@ -36,6 +37,8 @@ loadGameQuestions(function (err) {
     logger.error(400, "Ошибка при получении вопросов из базы данных");
   }
 });
+
+
 
 function Game(room) {
   
@@ -70,6 +73,17 @@ function Game(room) {
   this._onGame          = null;          // Обработка хода игрока
   
   this._handlers        = handlers;      // Обработчики раундов игры
+  
+  this._prisonProtection  = {};          // Защита от попадания в тюрьму
+  
+  let self = this;
+  this._room.setOnDeleteProfile(function (profile) {
+    let uid = profile.getID();
+    
+    if(self._prisonProtection[uid]) {
+      delete self._prisonProtection[uid];
+    }
+  })
 }
 
 Game.prototype.getGameState       = function () { return this._gameState; };
@@ -103,7 +117,9 @@ Game.prototype.setOnGame          = function (func) { this._onGame = func; };
 Game.prototype.saveActionsQueue   = function () { this._storedOptions = this._actionsQueue; };
 Game.prototype.setPrisoner        = function (val) { this._prisoner = val; };
 Game.prototype.clearTimer         = function () { if(this._timer) { clearTimeout(this._timer); } };
-Game.prototype.onGame = function (socket, options) { if( this._onGame) {  this._onGame(socket, options); } };
+Game.prototype.sendRoomInfo = function (socket, options) { if( this._onGame) {  this._onGame(socket, options); } };
+Game.prototype.setProtection      = function (key, val) { this._prisonProtection[key] = val; };
+Game.prototype.getPrisonProtection = function (key) { return this._prisonProtection[key]; };
 
 Game.prototype.start                  = start;
 Game.prototype.stop                   = stop;
@@ -123,5 +139,6 @@ Game.prototype.startTimer             = startTimer;
 Game.prototype.selectNextPlayer       = selectNextPlayer;
 Game.prototype.checkPrisoner          = checkPrisoner;
 Game.prototype.addAction              = addAction;
+Game.prototype.removeProtection       = removeProtection;
 
 module.exports = Game;

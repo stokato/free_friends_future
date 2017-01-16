@@ -10,7 +10,7 @@ const constants =  require('./../../../constants');
 const oPool     = require('./../../../objects_pool');
 
 const emitRes   = require('./../../../emit_result');
-const sanitize  = require('./../../../sanitizer');
+const sanitize  = require('./../../../sanitize');
 
 module.exports = function (socket, options) {
   if(!constants.PFIELDS.TARGET in options) {

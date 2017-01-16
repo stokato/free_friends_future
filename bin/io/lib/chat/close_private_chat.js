@@ -10,7 +10,7 @@ const oPool         = require('./../../../objects_pool');
 
 const emitRes = require('./../../../emit_result');
 const checkID = require('./../../../check_id');
-const sanitize = require('./../../../sanitizer');
+const sanitize = require('./../../../sanitize');
 
 module.exports = function (socket, options) {
   if(!checkID(options[constants.PFIELDS.ID])) {

@@ -11,7 +11,7 @@ const db            = require('./db_manager');
 const oPool         = require('./objects_pool');
 const stat          = require('./stat_manager');
 
-const sanitize      = require('./sanitizer');
+const sanitize      = require('./sanitize');
 const getUserProfile = require('./io/lib/common/get_user_profile');
 
 const PF            = constants.PFIELDS;

@@ -12,7 +12,7 @@ const validator = require('validator');
 const constants = require('../../constants');
 const oPool     = require('./../../objects_pool');
 
-const sanitize  = require('./../../sanitizer');
+const sanitize  = require('./../../sanitize');
 const emitRes   = require('./../../emit_result');
 
 const PF        = constants.PFIELDS;
@@ -34,6 +34,6 @@ module.exports = function (socket, options) {
     if(game.getActivePlayer(uid) && game.getActionsLimits(uid) > 0) {
     
       // Вызваем обработчик текущей игры
-      game.onGame(socket, options);
+      game.sendRoomInfo(socket, options);
     }
 };

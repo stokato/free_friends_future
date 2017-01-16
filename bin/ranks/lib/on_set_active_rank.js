@@ -6,7 +6,7 @@
 
 const constants = require('./../../constants');
 const oPool     = require('./../../objects_pool');
-const sanitize  = require('./../../sanitizer');
+const sanitize  = require('./../../sanitize');
 const emitRes   = require('./emit_result');
 
 const PF   = constants.PFIELDS;

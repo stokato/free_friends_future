@@ -13,7 +13,7 @@ const oPool           = require('./../../../objects_pool');
 const getUserProfile  = require('./../common/get_user_profile');
 const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
-const sanitize        = require('./../../../sanitizer');
+const sanitize        = require('./../../../sanitize');
 
 const  PF             = constants.PFIELDS;
 

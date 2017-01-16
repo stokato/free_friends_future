@@ -38,10 +38,8 @@ module.exports = function (game) {
   
   let result = {
     [PF.NEXTGAME] : constants.G_BOTTLE,
-    [PF.PLAYERS] : []
+    [PF.PLAYERS] : game.getPlayersID()
   };
-  
-  result.players = game.getPlayersID();
   
   game.checkPrisoner(result);
   

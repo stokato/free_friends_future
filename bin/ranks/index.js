@@ -15,6 +15,7 @@ const addProfile        = require('./lib/add_profile'),
     takeBonus           = require('./lib/take_bonus'),
     emitAddBall         = require('./lib/emit_add_ball'),
     onPopularBonus      = require('./lib/on_popular_bonus'),
+    onReleaserBonus     = require('./lib/on_releaser_bonus'),
     onNewRank           = require('./lib/on_new_rank'),
     onGetActiveRank     = require('./lib/on_get_active_rank'),
     onSetActiveRank     = require('./lib/on_set_active_rank'),
@@ -41,7 +42,8 @@ function RanksManager() {
   
   // Обработчики для начисления бонусов по каждому званию
   this._onRankBonus = {
-    [constants.RANKS.POPULAR] : onPopularBonus
+    [constants.RANKS.POPULAR] : onPopularBonus,
+    [constants.RANKS.RELEASER] : onReleaserBonus
   };
 
 }

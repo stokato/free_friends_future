@@ -12,7 +12,7 @@ const ProfileJS = require('./../../../profile/index');
 
 const checkID   = require('./../../../check_id');
 const emitRes   = require('./../../../emit_result');
-const sanitize  = require('./../../../sanitizer');
+const sanitize  = require('./../../../sanitize');
 
 const PF           = constants.PFIELDS;
 const LIKE_TIMEOUT = Config.user.settings.like_timeout;

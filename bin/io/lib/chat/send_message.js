@@ -12,7 +12,7 @@ const oPool           = require('./../../../objects_pool');
 
 const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
-const sanitize        = require('./../../../sanitizer');
+const sanitize        = require('./../../../sanitize');
 const openPrivateChat = require('./open_private_chat');
 const getUserProfile  = require('./../common/get_user_profile');
 const sendInRoom      = require('./../common/send_in_room');

@@ -44,6 +44,8 @@ module.exports = function (profile) {
   }
   
   if(! this._game.isActive()) {
-    this.onGame();
+    this.sendRoomInfo();
   }
+  
+  this._onDeleteProfile(profile);
 };

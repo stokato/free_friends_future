@@ -15,7 +15,7 @@ const genDateHistory    = require('./../common/gen_date_history');
 const sendOne           = require('./../common/send_one');
 const emitRes           = require('./../../../emit_result');
 const checkID           = require('./../../../check_id');
-const sanitize          = require('./../../../sanitizer');
+const sanitize          = require('./../../../sanitize');
 
 const   PF                = constants.PFIELDS;
 

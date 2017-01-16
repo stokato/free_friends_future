@@ -62,6 +62,7 @@ module.exports.errors = {
   NO_PARAMS           : { message: "Не заданы необходимые параметры",                                     code : 491 },
   NO_AUTH             : { message: "Ошибка авторизации",                                                  code : 490 },
   NO_SUCH_RUNK        : { message: "Пользователь не обладает таким званием",                              code : 411 },
+  NO_SUCH_BONUS       : { message: "Этот бонус недоступен",                                               code : 412 },
   OTHER               : { message: "Неизвестная ошибка",                                                  code : 400 }
 };
 
@@ -134,6 +135,9 @@ module.exports.IO_CHANGE_ACTIVE_RANK  = 'change_active_rank';
 module.exports.IO_GET_ACTIVE_RANK     = 'get_active_rank';
 module.exports.IO_ADD_BALLS           = 'add_balls';
 module.exports.IO_NEW_LEVEL           = 'new_level';
+
+module.exports.IO_NEW_RELEASER_BONUS  = 'new_releaser_bonus';
+module.exports.IO_PRISON_PROTECT      = 'prison_protect';
 
 module.exports.VIEWED_TYPE            = {
   'FRIENDS' : 'friends',
@@ -312,7 +316,9 @@ module.exports.PFIELDS = {
   GROUP_TITLE     : 'group_title',
   CONTENT         : 'content',
   PRICE_COINS     : 'price_coins',
-  PRICE_VK        : 'price_vk'
+  PRICE_VK        : 'price_vk',
+  COUNT           : 'count',
+  PROTECTED       : 'is_protected'
 };
 
 module.exports.SFIELDS = {

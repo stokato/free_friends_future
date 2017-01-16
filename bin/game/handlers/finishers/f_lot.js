@@ -18,7 +18,10 @@ module.exports = function(game) {
   // Определяем следующую игру, если игроков слишком мало - то без тюрьмы
   let rand, games;
   
+  let playerInfo = game.getActivePlayers()[0];
+  
   if(game.getPrisonerInfo() !== null ||
+      game.getPrisonProtection(playerInfo.id) ||
       game.getRoom().getCountInRoom(constants.GIRL) <= 2 ||
       game.getRoom().getCountInRoom(constants.GUY) <= 2) {
     
@@ -30,6 +33,8 @@ module.exports = function(game) {
   do {
     rand = Math.floor(Math.random() * games.length);
   } while(rand == game.getStoredRand());
+  
+  game.removeProtection();
   
   game.setStoredRand(rand);
   

@@ -13,7 +13,7 @@ const PF          = constants.PFIELDS;
 
 module.exports = function (game) {
   return function (socket, options) {
-    if(!validator.isBoolean(options[PF.PICK])) {
+    if(!validator.isBoolean(options[PF.PICK] + "")) {
       return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
     }
   
@@ -24,7 +24,7 @@ module.exports = function (game) {
     // Статистика
     if(options[PF.PICK] == true) {
       let players = game.getActivePlayers();
-      for(let i = 0; i < players.length(); i++) {
+      for(let i = 0; i < players.length; i++) {
         if(players[i].id != uid) {
           stat.setUserStat(players[i].id, players[i].vid, constants.SFIELDS.BOTTLE_KISSED, 1);
         }
@@ -40,7 +40,7 @@ module.exports = function (game) {
       [PF.PICK] : options[PF.PICK]
     };
   
-    game.emit(result);
+    game.sendData(result);
   
     let state = game.getGameState();
     

@@ -30,9 +30,9 @@ module.exports = function (game) {
     [PF.PLAYERS]  : game.getPlayersID()
   };
   
-  game.checkPrisoner(game, result);
+  game.checkPrisoner(result);
   
-  game.emit(result);
+  game.sendData(result);
   game.setGameState(result);
   
   // Устанавливаем таймаут

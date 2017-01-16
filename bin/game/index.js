@@ -10,7 +10,7 @@
 // Методы
 const start                 = require('./lib/start_game');
 const stop                  = require('./lib/stop_game');
-const emit                  = require('./lib/emit');
+const sendData              = require('./lib/send_data');
 const setActionLimit        = require('./lib/set_action_limits');
 const activateAllPlayers    = require('./lib/activate_all_players');
 const getPlayersId          = require('./lib/get_players_id');
@@ -79,7 +79,7 @@ Game.prototype.getNextGame        = function () { return this._nextGame; };
 Game.prototype.getHandler         = function (round, type) { return this._handlers[round][type] };
 Game.prototype.getRoom            = function () { return this._room; };
 Game.prototype.getStoredRand      = function () { return this._storedRand; };
-Game.prototype.getActionsLimits   = function () { return this._actionsLimits; };
+Game.prototype.getActionsLimits   = function (uid) { return this._actionsLimits[uid]; };
 Game.prototype.getActionsCount    = function () { return this._actionsCount; };
 Game.prototype.getActionsMain     = function () { return this._actionsMain; };
 Game.prototype.getCountUsers      = function () { return this._currCountInRoom; };
@@ -107,7 +107,7 @@ Game.prototype.onGame = function (socket, options) { if( this._onGame) {  this._
 
 Game.prototype.start                  = start;
 Game.prototype.stop                   = stop;
-Game.prototype.emit                   = emit;
+Game.prototype.sendData               = sendData;
 Game.prototype.addEmits               = addEmits;
 
 Game.prototype.getPlayersID           = getPlayersId;

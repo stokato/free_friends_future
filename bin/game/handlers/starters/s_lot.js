@@ -48,7 +48,7 @@ module.exports = function(game) {
   
   game.checkPrisoner(result);
   
-  game.emit(result);
+  game.sendData(result);
   game.setGameState(result);
   
   // Устанавливаем таймаут

@@ -26,7 +26,7 @@ module.exports = function (game) {
     
     let theBest = { id: null, count : 0 };
     
-    for (let i = 0; i < players.length(); i++) {
+    for (let i = 0; i < players.length; i++) {
       let actions = game.getAction(players[i].id);
       
       if(actions && actions[0] && bests[actions[0][PF.PICK]]) {

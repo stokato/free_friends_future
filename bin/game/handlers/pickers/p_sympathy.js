@@ -31,10 +31,18 @@ module.exports = function (game) {
   
     // Нельзя выбрать несколько раз одного и того же игрока
     let actions = game.getAction(uid);
-    for( let i = 0; i < actions.length; i++) {
-      if(actions[i][PF.PICK] == options[PF.PICK]) {
-        return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
+    if(actions) {
+      for( let i = 0; i < actions.length; i++) {
+        if(actions[i][PF.PICK] == options[PF.PICK]) {
+          return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
+        }
       }
+    }
+    
+    // Нельзя выбрать игрока своего пола
+    let playerInfo = game.getActivePlayer(options[PF.PICK]);
+    if(playerInfo && selfProfile.getSex() == playerInfo.sex) {
+      return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
     }
   
     game.addAction(uid, options);

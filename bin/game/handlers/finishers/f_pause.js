@@ -4,7 +4,7 @@
 
 const constants = require('./../../../constants');
 
-module.exports = function (timer, game) {
+module.exports = function (game) {
   
   game.clearTimer();
   

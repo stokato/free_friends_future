@@ -19,12 +19,14 @@ const PF        = constants.PFIELDS;
 
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, options) {
-    if(!PF.PICK in options || !validator.isBoolean(options[PF.PICK])) {
+    if(!PF.PICK in options) {
       return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
     }
   
-    options[PF.PICK] = sanitize(options[PF.PICK]);
-    
+    if(!validator.isBoolean(options[PF.PICK] + "")) {
+      options[PF.PICK] = sanitize(options[PF.PICK]);
+    }
+        
     let selfProfile = oPool.userList[socket.id];
     let uid = selfProfile.getID();
     let game = selfProfile.getGame();

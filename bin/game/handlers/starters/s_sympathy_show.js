@@ -32,7 +32,7 @@ module.exports = function (game) {
   
   game.checkPrisoner(result);
   
-  game.emit(result);
+  game.sendData(result);
   
   // Сохраняем состояние игры
   game.setGameState(result);

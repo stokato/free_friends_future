@@ -20,18 +20,18 @@ module.exports = function (game) {
   
   let players = game.getActivePlayers();
   let mutuals = [];
-  for(let i = 0; i < players.length(); i++) {
+  for(let i = 0; i < players.length; i++) {
     let actions = game.getAction(players[i].id);
     
     // Первый игрок ходил
     if(actions) {
-      for(let a = 0; a < actions.length(); a++) {
+      for(let a = 0; a < actions.length; a++) {
         let selfPick = actions[a][PF.PICK];
         
         let otherActions = game.getAction(selfPick);
         // Другой тоже ходил
         if(otherActions) {
-          for(let o = 0; o < otherActions.length(); o++) {
+          for(let o = 0; o < otherActions.length; o++) {
             let otherPick = otherActions[o][PF.PICK];
             
             // Они выбрали друг друга
@@ -64,7 +64,7 @@ module.exports = function (game) {
     
       count++;
       if (count < mutuals.length) {
-        addPoints(players[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutuals, count));
+        addPoints(mutuals[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutuals, count));
       }
     }
   }

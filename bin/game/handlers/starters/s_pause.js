@@ -24,7 +24,7 @@ module.exports = function (game, result, istimeout) { result = result || {}; ist
   
   game.checkPrisoner(result);
   
-  game.emit(result);
+  game.sendData(result);
   game.setGameState(result);
   
   // Устанавливаем таймаут

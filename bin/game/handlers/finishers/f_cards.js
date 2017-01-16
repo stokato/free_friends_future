@@ -34,7 +34,7 @@ module.exports = function (game) {
   };
   
   let players = game.getActivePlayers();
-  for(let i = 0; i < players.length(); i++) {
+  for(let i = 0; i < players.length; i++) {
     
     let actions = game.getAction(players[i].id);
   

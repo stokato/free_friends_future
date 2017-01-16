@@ -20,9 +20,9 @@ module.exports = function (game) {
   
   let allKissed = true;
   let players = game.getActivePlayers();
-  for(let i = 0; i < players.length(); i++) {
+  for(let i = 0; i < players.length; i++) {
     let actions = game.getAction(players[i].id);
-    if(!actions || actions[0][PF.PICK] == false) {
+    if(!actions || Boolean(actions[0][PF.PICK]) == false) {
       allKissed = false;
     }
   }
@@ -32,6 +32,8 @@ module.exports = function (game) {
     for(let i = 0; i < players.length; i++) {
       addPoints(players[i].id, KISS_POINTS, onComplete(i))
     }
+  } else {
+    game.getHandler(constants.G_START, constants.GT_ST)(game, null, true);
   }
   
   //-----------------------------

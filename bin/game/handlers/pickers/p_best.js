@@ -42,7 +42,7 @@ module.exports = function (game) {
     // Оповещаем о ходе всех в комнате
     let playerInfo = game.getActivePlayer(uid);
     
-    game.emit({
+    game.sendData({
       [PF.PICK]: {
         [PF.ID]: uid,
         [PF.VID]: playerInfo.vid,

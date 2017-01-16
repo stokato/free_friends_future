@@ -36,9 +36,11 @@ module.exports = function (game) {
     
     // Нельзя выбрать несколько раз одного и того же игрока
     let actions = game.getAction(uid);
-    for( let i = 0; i < actions.length; i++) {
-      if(actions[i][PF.PICK] == options[PF.PICK]) {
-        return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
+    if(actions) {
+      for( let i = 0; i < actions.length; i++) {
+        if(actions[i][PF.PICK] == options[PF.PICK]) {
+          return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
+        }
       }
     }
   
@@ -63,37 +65,38 @@ module.exports = function (game) {
         let result = { [PF.PICKS] : [] };
   
         // Получаем все ходы, о котором хочет узнать игрок и отправляем
-        let actions = game.getAction(options[PF.PICK]);
-        if(actions.length() > 0) {
+        let storedActions = game.getStoredOptions()[options[PF.PICK]];
+        if(storedActions && storedActions.length > 0) {
     
-          for(let i = 0; i < actions.length; i ++) {
-            let pickedId = actions[i][PF.PICK];
+          for(let i = 0; i < storedActions.length; i ++) {
+            let pickedId = storedActions[i][PF.PICK];
       
             let playerInfo = game.getActivePlayer(options[PF.PICK]);
       
-            let pick = {
-              [PF.ID]   : playerInfo.id,
-              [PF.VID]  : playerInfo.vid,
-              [PF.PICK] : {
-                [PF.ID]   : pickedId,
-                [PF.VID]  : game.getActivePlayer(pickedId).vid
-              }
-            };
-      
-            result[PF.PICKS].push(pick);
+            if(playerInfo) {
+              result[PF.PICKS].push({
+                [PF.ID]   : playerInfo.id,
+                [PF.VID]  : playerInfo.vid,
+                [PF.PICK] : {
+                  [PF.ID]   : pickedId,
+                  [PF.VID]  : game.getActivePlayer(pickedId).vid
+                }
+              });
+            }
           }
         } else {
-          let pick = {
-            [PF.ID]   : options[PF.PICK],
-            [PF.VID]  : game.getActivePlayer(options[PF.PICK]).vid,
-            [PF.PICK] : null
-          };
-    
-          result[PF.PICKS].push(pick);
+          let playerInfo = game.getActivePlayer(options[PF.PICK]);
+          if(playerInfo) {
+            result[PF.PICKS].push({
+              [PF.ID]   : options[PF.PICK],
+              [PF.VID]  : game.getActivePlayer(options[PF.PICK]).vid,
+              [PF.PICK] : null
+            });
+          }
         }
   
         let socket = game.getActivePlayer(uid).player.getSocket();
-        game.emit(result, socket);
+        game.sendData(result, socket);
         
         cb(null, null);
       } //-------------------------------------------------------------

@@ -112,25 +112,24 @@ module.exports = function(options, callback) { options    = options || {};
         return user2[DBF.POINTS_c_desc] - user1[DBF.POINTS_c_desc];
       });
       
+      let pointsList = [];
       for(let i = 1; i < result.rows.length; i++) {
-        let points = result.rows[i][DBF.POINTS_c_desc];
-        let userid = result.rows[i][DBF.USERID_uuid];
-        
-        let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc, DBF.USERID_uuid];
-        let constValues = [1, 1, 1];
-        
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
-        
-        let paramsF = ["max", points, userid];
-        
-        cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
-          if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
-          
-          //cb(null, params);
-        });
+        pointsList.push(result.rows[i][DBF.POINTS_c_desc]);
       }
+  
+      let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc];
+      let constValues = [1, pointsList.length];
+  
+      let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
+  
+      let paramsF = ["max", pointsList];
+  
+      cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
+        if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
+  
+        cb(null, null);
+      });
       
-      cb(null, null);
     });
   }
   

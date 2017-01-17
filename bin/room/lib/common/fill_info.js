@@ -4,7 +4,11 @@
  * Заополнить сведения о пользователе 
  */
 
-const IOF = require('./../../../constants').PFIELDS;
+const Config = require('./../../../../config.json');
+const constants = require('./../../../constants');
+
+const IOF = constants.PFIELDS;
+const GIFT_TYPES = Config.gifts.types;
 
 module.exports = function (profile) {
 
@@ -20,24 +24,29 @@ module.exports = function (profile) {
   info[IOF.INDEX]     = profile.getGameIndex();
   info[IOF.LEVEL]     = profile.getLevel();
   
-  let gift = profile.getGift1();
+  info[IOF.GIFTS]     = {};
   
-  if(gift) {
-    let result = {};
-    result[IOF.FID]       = profile.getID();
-    result[IOF.FVID]      = profile.getVID();
-    result[IOF.ID]        = profile.getID();
-    result[IOF.VID]       = profile.getVID();
-    result[IOF.GIFTID]    = gift.giftid;
-    result[IOF.SRC]       = gift.src;
-    result[IOF.TYPE]      = gift.type;
-    result[IOF.TITLE]     = gift.title;
-    result[IOF.DATE]      = gift.date;
-    result[IOF.UGIFTID]   = gift.gid;
+  for(let item in GIFT_TYPES) if(GIFT_TYPES.hasOwnProperty(item)) {
+  
+    let gift = profile.getGiftByType(GIFT_TYPES[item]);
     
-    info[IOF.GIFT1]       = result;
-  } else {
-    info[IOF.GIFT1]       = null;
+    if(gift) {
+      info[IOF.GIFTS][GIFT_TYPES[item]] = {
+        [IOF.FID]     : profile.getID(),
+        [IOF.FVID]    : profile.getVID(),
+        [IOF.ID]      : profile.getID(),
+        [IOF.VID]     : profile.getVID(),
+        [IOF.GIFTID]  : gift[IOF.GIFTID],
+        [IOF.SRC]     : gift[IOF.SRC],
+        [IOF.TYPE]    : gift[IOF.TYPE],
+        [IOF.TITLE]   : gift[IOF.TITLE],
+        [IOF.DATE]    : gift[IOF.DATE],
+        [IOF.UGIFTID] : gift[IOF.UGIFTID],
+        [IOF.PARAMS]  : gift[IOF.PARAMS]
+      };
+    } else {
+      info[IOF.GIFTS][GIFT_TYPES[item]]  = null;
+    }
   }
   
   return info;

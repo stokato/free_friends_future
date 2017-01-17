@@ -10,7 +10,7 @@ const SYMPATHY_TIMEOUT  = Number(Config.game.timeouts.sympathy_show);
 
 module.exports = function (game) {
   
-  game.setNextGame(constants.G_SYMPATHY_SHOW);
+  game.setNextGame(game.CONST.G_SYMPATHY_SHOW);
   
   // Очищаем настройки
   game.clearActionsQueue();
@@ -25,7 +25,7 @@ module.exports = function (game) {
   
   // Отправляем результаты
   let result = {
-    [PF.NEXTGAME] : constants.G_SYMPATHY_SHOW,
+    [PF.NEXTGAME] : game.CONST.G_SYMPATHY_SHOW,
     [PF.PLAYERS]  : game.getPlayersID(),
     [PF.PRISON]   : null
   };
@@ -38,7 +38,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймер
-  game.startTimer(game.getHandler(constants.G_SYMPATHY_SHOW, constants.GT_FIN), SYMPATHY_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_FIN), SYMPATHY_TIMEOUT, game);
 
- game.setOnGame(game.getHandler(constants.G_SYMPATHY_SHOW, constants.GT_ON)(game));
+ game.setOnGame(game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_ON)(game));
 };

@@ -20,11 +20,11 @@ module.exports = function(callback) {
     [IOF.MONEY]    : self._pMoney
   };
   
-  if(self._pGift1) {
-    options[IOF.GIFT1]    = self._pGift1.gid;
-  } else {
+  // if(self._pGift1) {
+  //   options[IOF.GIFT1]    = self._pGift1.gid;
+  // } else {
     options[IOF.GIFT1]    = null;
-  }
+  // }
   
   db.updateUser(options, function(err, id) {
     if (err) { return callback(err, null); }

@@ -28,5 +28,5 @@ module.exports = function (game) {
   
   stat.setMainStat(constants.SFIELDS.QUESTION_ACITVITY, game.getActivityRating());
   
-  game.getHandler(constants.G_START, constants.GT_ST)(game, result, true);
+  game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
 };

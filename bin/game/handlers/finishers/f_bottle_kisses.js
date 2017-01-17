@@ -33,14 +33,14 @@ module.exports = function (game) {
       addPoints(players[i].id, KISS_POINTS, onComplete(i))
     }
   } else {
-    game.getHandler(constants.G_START, constants.GT_ST)(game, null, true);
+    game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, true);
   }
   
   //-----------------------------
   function onComplete(count) {
     return function(err) {
       if(err) {
-        logger.error(constants.G_BOTTLE_KISSES + ' ' + constants.GT_FIN);
+        logger.error(game.CONST.G_BOTTLE_KISSES + ' ' + game.CONST.GT_FIN);
         logger.error(err);
       }
   
@@ -48,7 +48,7 @@ module.exports = function (game) {
       if(count < players.length) {
         addPoints(players[count].id, KISS_POINTS, onComplete(count));
       } else {
-        game.getHandler(constants.G_START, constants.GT_ST)(game, null, true);
+        game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, true);
       }
     }
   }

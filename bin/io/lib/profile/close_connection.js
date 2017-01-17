@@ -71,6 +71,8 @@ module.exports = function (socket) {
                 // Статистика
                 let msInGame = new Date() - selfProfile.getInitTime();
                 stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GAME_TIME, msInGame);
+              
+                selfProfile.close();
               }
               cb(null, room);
             },//----------------------------------------------------------------

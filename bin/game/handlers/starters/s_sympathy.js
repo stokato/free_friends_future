@@ -10,7 +10,7 @@ const PF             = constants.PFIELDS;
 
 module.exports = function (game) {
   
-  game.setNextGame(constants.G_SYMPATHY);
+  game.setNextGame(game.CONST.G_SYMPATHY);
   
   game.clearActionsQueue();
   
@@ -24,7 +24,7 @@ module.exports = function (game) {
   game.getActionsMain(game.getActionsCount());
   
   let result = {
-    [PF.NEXTGAME] : constants.G_SYMPATHY,
+    [PF.NEXTGAME] : game.CONST.G_SYMPATHY,
     [PF.PLAYERS]  : game.getPlayersID()
   };
   
@@ -34,7 +34,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_SYMPATHY, constants.GT_FIN), DEF_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_SYMPATHY, game.CONST.GT_FIN), DEF_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_SYMPATHY, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_SYMPATHY, game.CONST.GT_ON)(game));
 };

@@ -9,22 +9,24 @@ const oPool     = require('./../../objects_pool');
 const logger    = require('./../../../lib/log')(module);
 const Config    = require('./../../../config.json');
 
-module.exports = function (err, uid) {
-  if(err) { return logger.error('handlePopularBonus:' + err) }
-  
-  let  profile = oPool.profiles[uid];
-  
-  if(!profile) {
-    return logger.error('handlePopularBonus: no profile with such uid');
-  }
-  
-  let  profit = Number(Config.moneys.popular_bonus);
-  
-  profile.earn(profit, function (err, money) {
-    if(err) { return logger.error('handlePopularBonus' + err); }
+module.exports = function(ranks) {
+  return function (err, uid) {
+    if(err) { return logger.error('handlePopularBonus:' + err) }
     
-    let  socket = profile.getSocket();
-    socket.emit(constants.IO_GET_MONEY, { [constants.PFIELDS.MONEY] : money });
-  });
-  
+    let  profile = oPool.profiles[uid];
+    
+    if(!profile) {
+      return logger.error('handlePopularBonus: no profile with such uid');
+    }
+    
+    let  profit = Number(Config.moneys.popular_bonus);
+    
+    profile.earn(profit, function (err, money) {
+      if(err) { return logger.error('handlePopularBonus' + err); }
+      
+      let  socket = profile.getSocket();
+      socket.emit(constants.IO_GET_MONEY, { [constants.PFIELDS.MONEY] : money });
+    });
+    
+  }
 };

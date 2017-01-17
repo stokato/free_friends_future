@@ -32,7 +32,7 @@ module.exports = function (socket, options) {
   
   let game = selfProfile.getGame();
   
-  let players = game.getAllPlayers();
+  let players = game.getRoom().getAllPlayers();
   
   // Себя защитить нельзя
   if(selfProfile.getID() == options[PF.ID]) {
@@ -40,7 +40,7 @@ module.exports = function (socket, options) {
   }
   
   if(!ranksM.takeBonus(constants.RANKS.RELEASER, selfProfile.getID())) {
-    return emitRes(constants.errors.NO_SUCH_BONUS, socket, constants.IO_PRISON_PROTECT)
+    // return emitRes(constants.errors.NO_SUCH_BONUS, socket, constants.IO_PRISON_PROTECT);
   }
   
   async.waterfall([

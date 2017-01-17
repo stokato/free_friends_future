@@ -34,10 +34,10 @@ module.exports = function (game) {
   
   game.setStoredOptions(playersInfo);
   
-  game.setNextGame(constants.G_BOTTLE);
+  game.setNextGame(game.CONST.G_BOTTLE);
   
   let result = {
-    [PF.NEXTGAME] : constants.G_BOTTLE,
+    [PF.NEXTGAME] : game.CONST.G_BOTTLE,
     [PF.PLAYERS] : game.getPlayersID()
   };
   
@@ -47,7 +47,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_BOTTLE, constants.GT_FIN), BOTTLE_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_BOTTLE, game.CONST.GT_FIN), BOTTLE_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_BOTTLE, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_BOTTLE, game.CONST.GT_ON)(game));
 };

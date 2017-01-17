@@ -10,12 +10,12 @@ const PF             = constants.PFIELDS;
   
 module.exports = function (game) {
   
-  game.setNextGame(constants.G_PRISON);
+  game.setNextGame(game.CONST.G_PRISON);
   
   game.clearActionsQueue();
   
   let result = {
-    [PF.NEXTGAME] : constants.G_PRISON,
+    [PF.NEXTGAME] : game.CONST.G_PRISON,
     [PF.PLAYERS] : []
   };
   
@@ -26,7 +26,7 @@ module.exports = function (game) {
   game.sendData(result);
   game.setGameState(result);
   
-  game.startTimer(game.getHandler(constants.G_PRISON, constants.GT_FIN), PRISON_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_PRISON, game.CONST.GT_FIN), PRISON_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_PRISON, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_PRISON, game.CONST.GT_ON)(game));
 };

@@ -8,21 +8,23 @@ const constants = require('./../../constants');
 const oPool     = require('./../../objects_pool');
 const logger    = require('./../../../lib/log')(module);
 
-module.exports = function (err, uid) {
-  if(err) { return logger.error('handlePopularBonus:' + err) }
-  
-  let  profile = oPool.profiles[uid];
-  
-  if(!profile) {
-    return logger.error('handleReleaserBonus: no profile with such uid');
+module.exports = function(ranks) {
+  return function (err, uid) {
+    if(err) { return logger.error('handlePopularBonus:' + err) }
+    
+    let  profile = oPool.profiles[uid];
+    
+    if(!profile) {
+      return logger.error('handleReleaserBonus: no profile with such uid');
+    }
+    
+    let socket = profile.getSocket();
+    if(socket) {
+      socket.emit(constants.IO_NEW_RELEASER_BONUS, {
+        [constants.PFIELDS.COUNT] : ranks._rBonuses[constants.RANKS.RELEASER]
+      });
+    }
+    
   }
-  
-  let socket = profile.getSocket();
-  if(socket) {
-    socket.emit(constants.IO_NEW_RELEASER_BONUS, {
-      [constants.PFIELDS.COUNT] : this._rBonuses[constants.RANKS.RELEASER]
-    });
-  }
-  
 };
 

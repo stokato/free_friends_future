@@ -64,10 +64,10 @@ module.exports = function (game) {
   game.setActionsCount(game.getCountUsers() - countPrisoners - 2);
   game.setActionsMain(game.getActionsCount());
   
-  game.setNextGame(constants.G_BEST);
+  game.setNextGame(game.CONST.G_BEST);
   
   let result = {
-    [PF.NEXTGAME] : constants.G_BEST,
+    [PF.NEXTGAME] : game.CONST.G_BEST,
     [PF.PLAYERS] : []
   };
   
@@ -81,7 +81,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_BEST, constants.GT_FIN), DEF_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_BEST, game.CONST.GT_FIN), DEF_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_BEST, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_BEST, game.CONST.GT_ON)(game));
 };

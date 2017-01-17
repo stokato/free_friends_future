@@ -4,7 +4,7 @@
  *  Обработчики рауднов игры
  */
 
-const constants = require('./../../constants');
+const constants = require('./../constants');
 
 const finishBest          = require('./finishers/f_best');
 const finishBottle        = require('./finishers/f_bottle');
@@ -41,23 +41,53 @@ const onSympathyShowPick  = require('./pickers/p_sympathy_show');
 
 module.exports = {
   [constants.G_BEST]          :
-    { start : startBest,          onpick : onBestPick,          finish : finishBest },
+    { [constants.GT_ST]  : startBest,
+      [constants.GT_ON]  : onBestPick,
+      [constants.GT_FIN] : finishBest
+    },
   [constants.G_BOTTLE]        :
-    { start : startBottle,        onpick : onBottlePick,        finish : finishBottle },
+    { [constants.GT_ST]  : startBottle,
+      [constants.GT_ON]  : onBottlePick,
+      [constants.GT_FIN] : finishBottle
+    },
   [constants.G_BOTTLE_KISSES] :
-    { start : startBottleKisses,  onpick : onBottleKissesPick,  finish : finishBottleKisses },
+    { [constants.GT_ST]  : startBottleKisses,
+      [constants.GT_ON]  : onBottleKissesPick,
+      [constants.GT_FIN] : finishBottleKisses
+    },
   [constants.G_CARDS]         :
-    { start : startCards,         onpick : onCardPick,          finish : finishCards },
+    { [constants.GT_ST]  : startCards,
+      [constants.GT_ON]  : onCardPick,
+      [constants.GT_FIN] : finishCards },
+  
   [constants.G_LOT]           :
-    { start : startLot,           onpick : onLotPick,           finish : finishLot },
+    { [constants.GT_ST]  : startLot,
+      [constants.GT_ON]  : onLotPick,
+      [constants.GT_FIN] : finishLot
+    },
   [constants.G_START]         :
-    { start : startPause,         onpick : onPausePick,         finish : finishPause },
+    { [constants.GT_ST]  : startPause,
+      [constants.GT_ON]  : onPausePick,
+      [constants.GT_FIN] : finishPause
+    },
   [constants.G_PRISON]        :
-    { start : startPrison,        onpick : onPrisonPick,        finish : finishPrison },
+    { [constants.GT_ST]  : startPrison,
+      [constants.GT_ON]  : onPrisonPick,
+      [constants.GT_FIN] : finishPrison
+    },
   [constants.G_QUESTIONS]     :
-    { start : startQuestions,     onpick : onQuestionPick,      finish : finishQuestions },
+    { [constants.GT_ST]  : startQuestions,
+      [constants.GT_ON]  : onQuestionPick,
+      [constants.GT_FIN] : finishQuestions
+    },
   [constants.G_SYMPATHY]      :
-    { start : startSympathy,      onpick : onSympathyPick,      finish : finishSympathy },
+    { [constants.GT_ST]  : startSympathy,
+      [constants.GT_ON]  : onSympathyPick,
+      [constants.GT_FIN] : finishSympathy
+    },
   [constants.G_SYMPATHY_SHOW] :
-    { start : startSympathyShow,  onpick : onSympathyShowPick,  finish : finishSympathyShow }
+    { [constants.GT_ST]  : startSympathyShow,
+      [constants.GT_ON]  : onSympathyShowPick,
+      [constants.GT_FIN] : finishSympathyShow
+    }
 };

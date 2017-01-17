@@ -56,11 +56,11 @@ module.exports = function (socket, options) {
     
         // Разрешаем пользователю играть в текущем раунде
         let nextGame = game.getNextGame();
-        if(nextGame == constants.G_SYMPATHY ||
-          nextGame == constants.G_SYMPATHY_SHOW ||
-          nextGame == constants.G_BEST ||
-          nextGame == constants.G_QUESTIONS ||
-          nextGame == constants.G_CARDS) {
+        if(nextGame == game.CONST.G_SYMPATHY ||
+          nextGame == game.CONST.G_SYMPATHY_SHOW ||
+          nextGame == game.CONST.G_BEST ||
+          nextGame == game.CONST.G_QUESTIONS ||
+          nextGame == game.CONST.G_CARDS) {
       
           game.setActivePlayer(prisonerInfo.id, prisonerInfo)
         }

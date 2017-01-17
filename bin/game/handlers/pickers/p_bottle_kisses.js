@@ -51,7 +51,7 @@ module.exports = function (game) {
     state[PF.PICKS].push(result);
   
     if(game.getActionsCount() == 0) {
-      game.getHandler(constants.G_BOTTLE_KISSES, constants.GT_FIN)(game);
+      game.getHandler(game.CONST.G_BOTTLE_KISSES, game.CONST.GT_FIN)(game);
     }
   }
 };

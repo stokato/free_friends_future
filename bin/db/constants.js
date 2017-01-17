@@ -252,7 +252,10 @@ module.exports = {
       SRC_varchar         : 'src',
       TYPE_varchar_i      : 'type',
       GROUP_varchar       : 'group_name',
-      GROUP_TITLE_varchar : 'group_title'
+      GROUP_TITLE_varchar : 'group_title',
+      GIFT_TYPE_varchar   : 'gift_type',
+      GIFT_RANK_varchar   : 'gift_rank',
+      GIFT_LEVEL_varchar  : 'gift_level'
     }
   },
   

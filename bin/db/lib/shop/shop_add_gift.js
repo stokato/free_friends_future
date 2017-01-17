@@ -21,7 +21,10 @@ let type = Config.good_types.gift;
     !options[PF.PRICE] ||
     !options[PF.SRC] ||
     !options[PF.GROUP] ||
-    !options[PF.GROUP_TITLE]) {
+    !options[PF.GROUP_TITLE] ||
+    !options[PF.TYPE] ||
+    !PF.LEVEL in options ||
+    !PF.RANK in options) {
     return callback(new Error("Не указаны необходимые поля подарка"), null);
   }
   
@@ -34,7 +37,10 @@ let type = Config.good_types.gift;
     DBF.SRC_varchar,
     DBF.TYPE_varchar_i,
     DBF.GROUP_varchar,
-    DBF.GROUP_TITLE_varchar
+    DBF.GROUP_TITLE_varchar,
+    DBF.GIFT_TYPE_varchar,
+    DBF.GIFT_RANK_varchar,
+    DBF.GIFT_LEVEL_varchar
   ];
   
   let params = [
@@ -44,7 +50,10 @@ let type = Config.good_types.gift;
     options[PF.SRC],
     type,
     options[PF.GROUP],
-    options[PF.GROUP_TITLE]
+    options[PF.GROUP_TITLE],
+    options[PF.TYPE],
+    options[PF.RANK],
+    options[PF.LEVEL]
   ];
   
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.SHOP.name);

@@ -22,7 +22,10 @@ module.exports = function(type, callback) {
     DBF.PRICE_VK_int,
     DBF.SRC_varchar,
     DBF.GROUP_varchar,
-    DBF.GROUP_TITLE_varchar
+    DBF.GROUP_TITLE_varchar,
+    DBF.GIFT_TYPE_varchar,
+    DBF.GIFT_RANK_varchar,
+    DBF.GIFT_LEVEL_varchar
   ];
   
   let constFields = [DBF.TYPE_varchar_i];
@@ -43,12 +46,15 @@ module.exports = function(type, callback) {
       good = {
         [PF.ID]           : row[DBF.ID_varchar_p],
         [PF.TITLE]        : row[DBF.TITLE_varchar],
-        [PF.TYPE]         : row[DBF.TYPE_varchar_i],
+        [PF.GOODTYPE]         : row[DBF.TYPE_varchar_i],
         [PF.PRICE]        : row[DBF.PRICE_COINS_int],
         [PF.PRICE2]       : row[DBF.PRICE_VK_int],
         [PF.SRC]          : row[DBF.SRC_varchar],
         [PF.GROUP]        : row[DBF.GROUP_varchar],
-        [PF.GROUP_TITLE]  : row[DBF.GROUP_TITLE_varchar]
+        [PF.GROUP_TITLE]  : row[DBF.GROUP_TITLE_varchar],
+        [PF.TYPE]         : row[DBF.GIFT_TYPE_varchar],
+        [PF.RANK]         : row[DBF.GIFT_RANK_varchar],
+        [PF.LEVEL]        : row[DBF.GIFT_LEVEL_varchar]
       };
 
       goods.push(good);

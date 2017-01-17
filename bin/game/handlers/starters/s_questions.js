@@ -10,7 +10,7 @@ const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
 
 module.exports = function (game) {
   
-  game.setNextGame(constants.G_QUESTIONS);
+  game.setNextGame(game.CONST.G_QUESTIONS);
   
   game.clearActionsQueue();
   
@@ -25,7 +25,7 @@ module.exports = function (game) {
   game.setActionsMain(game.getActionsCount());
   
   let result = {
-    [PF.NEXTGAME] : constants.G_QUESTIONS,
+    [PF.NEXTGAME] : game.CONST.G_QUESTIONS,
     [PF.QUESTION] :  game.getRandomQuestion(),
     [PF.PLAYERS]  : game.getPlayersID()
   };
@@ -36,7 +36,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_QUESTIONS, constants.GT_FIN), DEF_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_QUESTIONS, game.CONST.GT_FIN), DEF_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_QUESTIONS, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_QUESTIONS, game.CONST.GT_ON)(game));
 };

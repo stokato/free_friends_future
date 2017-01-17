@@ -298,6 +298,9 @@ CREATE TABLE IF NOT EXISTS shop (
   type varchar,
   group_name varchar,
   group_title varchar,
+  gift_type varchar,
+  gift_rank varchar,
+  gift_level varchar,
   PRIMARY KEY (id)
 );
 

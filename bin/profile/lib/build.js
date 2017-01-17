@@ -58,17 +58,17 @@ module.exports = function(id, callback) {
    };
 
 
-   if(foundUser[IOF.GIFT1]) {
-     db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
-       if (err) { return  callback(err, null); }
-
-       self._pGift1 = gift || null;
-       info[IOF.GIFT1] = self._pGift1;
-
-       callback(null, self._pID);
-     });
-   } else {
+   // if(foundUser[IOF.GIFT1]) {
+   //   db.findGift(foundUser[IOF.GIFT1], function(err, gift) {
+   //     if (err) { return  callback(err, null); }
+   //
+   //     self._pGift1 = gift || null;
+   //     info[IOF.GIFT1] = self._pGift1;
+   //
+   //     callback(null, self._pID);
+   //   });
+   // } else {
      callback(null, self._pID);
-   }
+   // }
  });
 };

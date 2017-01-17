@@ -36,7 +36,7 @@ module.exports = function(ids, callback) {
       params.push(ids[i]);
     }
   } else {
-    limit = constants.QUESTIONS_COUNT;
+    limit = 100;
   }
     
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues, null, null, null, limit);

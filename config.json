@@ -28,7 +28,7 @@
     "settings" : {
       "start_money" : "50",
       "top_size" : "100",
-      "gift_timeout" : "120000",
+      "gift_timeout" : "60000",
       "like_timeout" : "86400000",
       "room_change_timeout" : "15000",
       "user_block_timeout"  : "86400000"
@@ -38,6 +38,31 @@
         "male" : "2",
         "female" : "1"
       }
+    }
+  },
+  "gifts" : {
+    "types" : {
+      "simple" : "simple",
+      "hat" : "hat",
+      "small" : "small",
+      "masks" : "masks"
+    },
+    "timeouts" : {
+      "simple" : "0",
+      "hat" : "0",
+      "small" : "60000",
+      "masks" : "60000"
+    },
+    "lots" : {
+      "1" : "1",
+      "10" : "10",
+      "30" : "30",
+      "50" : "50"
+    },
+    "destination" : {
+      "alone" : "alone",
+      "guys"  : "guys",
+      "girls" : "girls"
     }
   },
   "moneys" : {
@@ -82,6 +107,7 @@
   },
   "game" : {
     "card_count" : "7",
+    "questions_count" : "3",
     "players_min" : "2",
     "show_sympathy_limit" : "2",
     "questions_timeout" : "86400000",

@@ -45,20 +45,8 @@ function Room(name, title)  {
   // Сообщения в общем чате
   this._messages = [];
   
-  // Игра и позиции игроков на столе
-  this._game = new GameJS(this);
-  let self = this;
-  this._game.setOnStart(function () {
-    self.sendRoomInfo();
-  });
   this._girls_indexes = [];
   this._guys_indexes  = [];
-  
-  // Плеер
-  this._mplayer = new MusicPlayer();
-  
-  // Звания
-  this._ranks = new RankManager();
   
   for(let i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
     this._girls_indexes.push(i);
@@ -66,6 +54,19 @@ function Room(name, title)  {
   }
 
   this._onDeleteProfile = null;
+  
+  // Игра и позиции игроков на столе
+  this._game = new GameJS(this);
+  let self = this;
+  this._game.setOnStart(function () {
+    self.sendRoomInfo();
+  });
+  
+  // Плеер
+  this._mplayer = new MusicPlayer();
+  
+  // Звания
+  this._ranks = new RankManager();
 }
 
 // Есть ли прфофиль с таким ИД

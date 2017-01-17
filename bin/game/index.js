@@ -27,6 +27,7 @@ const addAction             = require('./lib/add_action');
 const removeProtection      = require('./lib/remove_protection');
 
 const handlers              = require('./handlers/index');
+const gameConstants         = require('./constants');
 
 // Загружаем вопросы из базы при старте
 const  logger               = require('./../../lib/log')(module);
@@ -38,9 +39,9 @@ loadGameQuestions(function (err) {
   }
 });
 
-
-
 function Game(room) {
+  
+  this.CONST = gameConstants;
   
   this._isActive = false;                // Флаг - игра запущена или нет
 

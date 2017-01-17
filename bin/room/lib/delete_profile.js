@@ -12,8 +12,6 @@ const constants = require('./../../constants'),
 module.exports = function (profile) {
   
   this._ranks.deleteProfile(profile);
-  // this._ranks.deleteEmits(profile.getSocket());
-  // this._mplayer.deleteEmits(profile.getSocket());
   
   let sex = profile.getSex();
   if(sex == constants.GUY) {
@@ -47,5 +45,8 @@ module.exports = function (profile) {
     this.sendRoomInfo();
   }
   
-  this._onDeleteProfile(profile);
+  if(this._onDeleteProfile) {
+    this._onDeleteProfile(profile);
+  }
+  
 };

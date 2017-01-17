@@ -25,9 +25,9 @@ module.exports = function(game) {
       game.getRoom().getCountInRoom(constants.GIRL) <= 2 ||
       game.getRoom().getCountInRoom(constants.GUY) <= 2) {
     
-    games = constants.GAMES_WITHOUT_PRISON;
+    games = game.CONST.GAMES_WITHOUT_PRISON;
   } else {
-    games = constants.GAMES;
+    games = game.CONST.GAMES;
   }
   
   do {
@@ -38,5 +38,5 @@ module.exports = function(game) {
   
   game.setStoredRand(rand);
   
-  game.getHandler(games[rand], constants.GT_ST)(game);
+  game.getHandler(games[rand], game.CONST.GT_ST)(game);
 };

@@ -46,7 +46,6 @@ const  init                            = require('./lib/init'),
     isFriend                        = require('./lib/is_friend'),
     setInMenu                       = require('./lib/set_in_menu'),
     delFromFriends                  = require('./lib/del_from_friends'),
-    clearGiftInfo                   = require('./lib/clear_gift_info'),
     view                            = require('./lib/view'),
     addToBlackList                  = require('./lib/add_to_black_list'),
     deleteFromBlackList             = require('./lib/delete_from_black_list'),
@@ -56,7 +55,8 @@ const  init                            = require('./lib/init'),
     setLevel                        = require('./lib/set_level'),
     setFreeGifts                    = require('./lib/set_free_gifts'),
     setFreeMusic                    = require('./lib/set_free_music'),
-    setVIP                          = require('./lib/set_vip');
+    setVIP                          = require('./lib/set_vip'),
+    close                           = require('./lib/close');
 
 function Profile() {
   
@@ -77,13 +77,9 @@ function Profile() {
   this._pIsPrivateChats = [];   // Сприсок открытых приватных чатов
 
   this._pIsExitTimeout  = 0;
-
-  this._pGift1        = null;   // На игрвом столе на аватарах игроков весят подарки
-  this._pGift1Time    = null;
-  this._pGift1Timeout = null;
+  
   this._onGiftTimeout = null;
-
-  this._pGift2        = null;
+  this._pGifts        = {};     //  type : { gift, timeout }
 
   this._pGame         = null;
   this._pGameIndex    = 0;
@@ -123,7 +119,7 @@ Profile.prototype.getCountry        = function () { return this._pCountry; };
 Profile.prototype.getGame           = function () { return this._pGame; };
 Profile.prototype.isInMenu          = function () { return this._pIsInMenu; };
 Profile.prototype.getGameIndex      = function () { return this._pGameIndex; };
-Profile.prototype.getGift1          = function () { return this._pGift1; };
+Profile.prototype.getGiftByType     = function (type) { return (this._pGifts[type])? this._pGifts[type].gift : null; };
 Profile.prototype.getBDate          = function () { return this._pBDate; };
 Profile.prototype.getInitTime       = function () { return this._pInitTime; };
 Profile.prototype.setGameIndex      = function (val)     { this._pGameIndex = val; };
@@ -135,8 +131,8 @@ Profile.prototype.getLevel          = function () { return this._pLevel; };
 Profile.prototype.getFreeGifts      = function () { return this._pFreeGifts; };
 Profile.prototype.getFreeMusic      = function () { return this._pFreeMusic; };
 Profile.prototype.isVIP             = function () { return this._pVIP; };
-Profile.prototype.onSetActiveRank     = function (rank) { this._pActiveRank = rank; };
-Profile.prototype.onGetActiveRank     = function () { return this._pActiveRank; };
+Profile.prototype.onSetActiveRank   = function (rank) { this._pActiveRank = rank; };
+Profile.prototype.onGetActiveRank   = function () { return this._pActiveRank; };
 
 Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
 Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };
@@ -169,7 +165,6 @@ Profile.prototype.getPrivateChatsWithHistory = getPrivateChatsWithHistory;
 Profile.prototype.isFriend          = isFriend;
 Profile.prototype.setInMenu         = setInMenu;
 Profile.prototype.delFromFriends    = delFromFriends;
-Profile.prototype.clearGiftInfo     = clearGiftInfo;
 Profile.prototype.pay               = pay;
 Profile.prototype.earn              = earn;
 Profile.prototype.view              = view;
@@ -182,5 +177,6 @@ Profile.prototype.setLevel          = setLevel;
 Profile.prototype.setFreeGifts      = setFreeGifts;
 Profile.prototype.setFreeMusic      = setFreeMusic;
 Profile.prototype.setVIP            = setVIP;
+Profile.prototype.close             = close;
 
 module.exports = Profile;

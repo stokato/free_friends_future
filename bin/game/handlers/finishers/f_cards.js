@@ -52,7 +52,7 @@ module.exports = function (game) {
   }
 
   if(winners.length == 0) {
-    return game.getHandler(constants.G_START, constants.GT_ST)(game, result, true);
+    return game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
   }
   
   // Определяем, кому начислить бонус
@@ -121,7 +121,7 @@ module.exports = function (game) {
       } //----------------------------------------------------------
     ], function(err, player, money, isOnline) { // Оповещаем об изменениях
       if(err) {
-        logger.error(constants.G_CARDS + ' ' + count.GT_FIN);
+        logger.error(game.CONST.G_CARDS + ' ' + count.GT_FIN);
         logger.error(err);
         return;
       }
@@ -136,7 +136,7 @@ module.exports = function (game) {
       if(count < winners.length) {
         addMoney();
       } else {
-        game.getHandler(constants.G_START, constants.GT_ST)(game, result, true);
+        game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
       }
     });//-------------------------------------------------------
   } // addMoney

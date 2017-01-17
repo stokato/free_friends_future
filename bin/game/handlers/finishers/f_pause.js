@@ -17,5 +17,5 @@ module.exports = function (game) {
     game._onStart();
   }
   
-  game.getHandler(constants.G_LOT, constants.GT_ST)(game);
+  game.getHandler(game.CONST.G_LOT, game.CONST.GT_ST)(game);
 };

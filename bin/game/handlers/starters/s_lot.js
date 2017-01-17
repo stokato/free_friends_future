@@ -14,7 +14,7 @@ module.exports = function(game) {
   let nextPlayerInfo;
   
   // Проверка - чтобы не убирать из тюрьмы сразу после попадания в нее
-  if(game.getNextGame() != constants.G_PRISON) {
+  if(game.getNextGame() != game.CONST.G_PRISON) {
     if(game.getPrisonerInfo()) {
       
       // Если игрок, попавший за решетку, вышел из комнаты, очищаем тюрьму
@@ -37,11 +37,11 @@ module.exports = function(game) {
   game.setActionsCount(1);
   
   // Следующий этап - волчек
-  game.setNextGame(constants.G_LOT);
+  game.setNextGame(game.CONST.G_LOT);
   
   // Отправляем результат
   let result = {
-    [PF.NEXTGAME] : constants.G_LOT,
+    [PF.NEXTGAME] : game.CONST.G_LOT,
     [PF.PLAYERS]  : game.getPlayersID(),
     [PF.PRISON]   : null
   };
@@ -52,8 +52,8 @@ module.exports = function(game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_LOT, constants.GT_FIN), LOT_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_LOT, game.CONST.GT_FIN), LOT_TIMEOUT, game);
   
   // Обработчик выбора игрока
-  game.setOnGame(game.getHandler(constants.G_LOT, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_LOT, game.CONST.GT_ON)(game));
 };

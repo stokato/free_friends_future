@@ -6,10 +6,12 @@ const ioc        = require('./../../io_controller');
 
 const turnGame       = require('./../io/turn_game');
 const releasePlayer  = require('./../io/release_player');
+const protectPlayer  = require('./../io/protect_player');
 
 // Назначаем эмиты
 module.exports = function(socket) {
   
   ioc.setEmit(socket, constants.IO_RELEASE_PLAYER, releasePlayer);
   ioc.setEmit(socket, constants.IO_GAME, turnGame);
+  ioc.setEmit(socket, constants.IO_PRISON_PROTECT, protectPlayer);
 };

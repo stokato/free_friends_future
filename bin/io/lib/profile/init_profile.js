@@ -84,21 +84,21 @@ module.exports = function (socket, options) {
   
       info[PF.ROOM] = room.getPersonalInfo(selfProfile.getID());
   
-      if(info[PF.GIFT1]) {
-        let currDate = new Date();
-        let giftDate = new Date(info[PF.GIFT1][PF.DATE]);
-        if(currDate >= giftDate) {
-          selfProfile.clearGiftInfo(function() {
-            info[PF.GIFT1] = null;
-        
-            cb(null, info, room);
-          });
-        } else {
-          cb(null, info, room);
-        }
-      } else {
+      // if(info[PF.GIFT1]) {
+      //   let currDate = new Date();
+      //   let giftDate = new Date(info[PF.GIFT1][PF.DATE]);
+      //   if(currDate >= giftDate) {
+      //     selfProfile.clearGiftInfo(function() {
+      //       info[PF.GIFT1] = null;
+      //
+      //       cb(null, info, room);
+      //     });
+      //   } else {
+      //     cb(null, info, room);
+      //   }
+      // } else {
         cb(null, info, room, selfProfile);
-      }
+      // }
     },//------------------------------------------------------------
     function(info, room, selfProfile, cb) { // Временно - устанавливаем уровень TODO: убрать
       let levelStart = Number(Config.levels.start);

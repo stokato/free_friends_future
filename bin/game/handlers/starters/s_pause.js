@@ -11,14 +11,14 @@ const  PF              = constants.PFIELDS;
 module.exports = function (game, result, istimeout) { result = result || {}; istimeout = istimeout || false;
   
   // Переход к показу результатов игры
-  game.setNextGame(constants.G_START);
+  game.setNextGame(game.CONST.G_START);
   
   // Очищаем настройки прошлой игры
   game.clearActivePlayers();
   game.clearActionsQueue();
   
   // Отправляем результаты игрокам
-  result[PF.NEXTGAME] = constants.G_START;
+  result[PF.NEXTGAME] = game.CONST.G_START;
   result[PF.PLAYERS]  = game.getPlayersID();
   result[PF.PRISON]   = null;
   
@@ -29,7 +29,7 @@ module.exports = function (game, result, istimeout) { result = result || {}; ist
   
   // Устанавливаем таймаут
   let  timeout = (istimeout)? RESULTS_TIMEOUT : 0;
-  game.startTimer(game.getHandler(constants.G_START, constants.GT_FIN), timeout, game);
+  game.startTimer(game.getHandler(game.CONST.G_START, game.CONST.GT_FIN), timeout, game);
   
-  game.setOnGame(game.getHandler(constants.G_START, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_START, game.CONST.GT_ON)(game));
 };

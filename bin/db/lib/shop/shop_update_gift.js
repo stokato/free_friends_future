@@ -29,6 +29,9 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.SRC in options)         { fields.push(DBF.SRC_varchar);         params.push(options[PF.SRC]); }
   if (PF.GROUP in options)       { fields.push(DBF.GROUP);               params.push(options[PF.GROUP]); }
   if (PF.GROUP_TITLE in options) { fields.push(DBF.GROUP_TITLE_varchar); params.push(options[PF.GROUP_TITLE]);}
+  if (PF.TYPE in options)        { fields.push(DBF.GIFT_TYPE_varchar);   params.push(options[PF.TYPE]);}
+  if (PF.RANK in options)        { fields.push(DBF.GIFT_RANK_varchar);   params.push(options[PF.RANK]);}
+  if (PF.LEVEL in options)       { fields.push(DBF.GIFT_LEVEL_varchar);  params.push(options[PF.LEVEL]);}
   
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
   

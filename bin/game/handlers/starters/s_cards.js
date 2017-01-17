@@ -22,10 +22,10 @@ module.exports = function (game) {
   game.setActionsCount(game.getCountUsers() - countPrisoners);
   game.setActionsMain(game.getActionsCount());
   
-  game.setNextGame(constants.G_CARDS);
+  game.setNextGame(game.CONST.G_CARDS);
   
   let result = {
-    [PF.NEXTGAME] : constants.G_CARDS,
+    [PF.NEXTGAME] : game.CONST.G_CARDS,
     [PF.PLAYERS] : []
   };
   
@@ -37,7 +37,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_CARDS, constants.GT_FIN), DEF_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_CARDS, game.CONST.GT_FIN), DEF_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_CARDS, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_CARDS, game.CONST.GT_ON)(game));
 };

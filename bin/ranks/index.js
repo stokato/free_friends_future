@@ -42,8 +42,8 @@ function RanksManager() {
   
   // Обработчики для начисления бонусов по каждому званию
   this._onRankBonus = {
-    [constants.RANKS.POPULAR] : onPopularBonus,
-    [constants.RANKS.RELEASER] : onReleaserBonus
+    [constants.RANKS.POPULAR] : onPopularBonus(this),
+    [constants.RANKS.RELEASER] : onReleaserBonus(this)
   };
 
 }

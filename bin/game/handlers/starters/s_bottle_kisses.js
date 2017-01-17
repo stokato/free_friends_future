@@ -10,7 +10,7 @@ const PF          = constants.PFIELDS;
 
 module.exports = function (game) {
   
-  game.setNextGame(constants.G_BOTTLE_KISSES);
+  game.setNextGame(game.CONST.G_BOTTLE_KISSES);
   
   let players = game.getStoredOptions();
   let rand = Math.floor(Math.random() * players.length);
@@ -28,7 +28,7 @@ module.exports = function (game) {
   // Отправляем результаты
   let result = {
     [PF.PLAYERS]  : game.getPlayersID(),
-    [PF.NEXTGAME] : constants.G_BOTTLE_KISSES,
+    [PF.NEXTGAME] : game.CONST.G_BOTTLE_KISSES,
     [PF.PRISON]   : null
   };
   
@@ -38,7 +38,7 @@ module.exports = function (game) {
   game.setGameState(result);
   
   // Устанавливаем таймаут
-  game.startTimer(game.getHandler(constants.G_BOTTLE_KISSES, constants.GT_FIN), DEF_TIMEOUT, game);
+  game.startTimer(game.getHandler(game.CONST.G_BOTTLE_KISSES, game.CONST.GT_FIN), DEF_TIMEOUT, game);
   
-  game.setOnGame(game.getHandler(constants.G_BOTTLE_KISSES, constants.GT_ON)(game));
+  game.setOnGame(game.getHandler(game.CONST.G_BOTTLE_KISSES, game.CONST.GT_ON)(game));
 };

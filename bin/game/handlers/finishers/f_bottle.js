@@ -8,6 +8,6 @@ module.exports = function(game) {
   
   game.clearTimer();
   
-  game.getHandler(constants.G_BOTTLE_KISSES, constants.GT_ST)(game);
+  game.getHandler(game.CONST.G_BOTTLE_KISSES, game.CONST.GT_ST)(game);
 };
 

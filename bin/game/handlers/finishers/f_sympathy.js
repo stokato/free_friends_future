@@ -52,13 +52,13 @@ module.exports = function (game) {
   // Сохраняем выбор игроков
   game.saveActionsQueue();
   
-  game.getHandler(constants.G_SYMPATHY_SHOW, constants.GT_ST)(game);
+  game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_ST)(game);
   
   //-------------------------------------
   function onComplete (mutuals, count) {
     return function (err) {
       if (err) {
-        logger.error(constants.G_SYMPATHY + ' ' + constants.GT_FIN);
+        logger.error(game.CONST.G_SYMPATHY + ' ' + game.CONST.GT_FIN);
         logger.error(err);
       }
     

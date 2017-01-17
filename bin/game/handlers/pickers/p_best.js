@@ -27,18 +27,6 @@ module.exports = function (game) {
   
     game.addAction(uid, options);
     
-    // // Статистика
-    // for (let item in bests) if (bests.hasOwnProperty(item)) {
-    //   let pInfo = bests[item];
-    //   if (options[PF.PICK] == pInfo.id) {
-    //     if (!pInfo.picks) {
-    //       pInfo.picks = 1;
-    //     } else {
-    //       pInfo.picks++;
-    //     }
-    //   }
-    // }
-    
     // Оповещаем о ходе всех в комнате
     let playerInfo = game.getActivePlayer(uid);
     
@@ -58,7 +46,7 @@ module.exports = function (game) {
     state[PF.PICKS].push(options[PF.PICK]);
     
     if (game.getActionsCount() == 0) {
-      game.getHandler(constants.G_BEST, constants.GT_FIN)(game);
+      game.getHandler(game.CONST.G_BEST, game.CONST.GT_FIN)(game);
     }
   }
 };

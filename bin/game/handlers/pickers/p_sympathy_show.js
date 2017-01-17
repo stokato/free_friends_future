@@ -106,7 +106,7 @@ module.exports = function (game) {
       }
   
       if(game.getActionsCount() == 0) {
-        game.getHandler(constants.G_SYMPATHY_SHOW, constants.GT_FIN)(game);
+        game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_FIN)(game);
       }
     });
   };

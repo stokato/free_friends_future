@@ -2,8 +2,6 @@
  * Created by s.t.o.k.a.t.o on 12.01.2017.
  */
 
-const constants = require('./../../../constants');
-
 module.exports = function (game) {
   
   game.clearTimer();
@@ -13,5 +11,5 @@ module.exports = function (game) {
   
   game.setActionsCount(0);
   
-  game.getHandler(constants.G_START, constants.GT_FIN)(game);
+  game.getHandler(game.CONST.G_START, game.CONST.GT_FIN)(game);
 };

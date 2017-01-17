@@ -48,7 +48,7 @@ module.exports = function (game) {
     game.addAction(uid, options);
   
     if(game.getActionsCount() == 0) {
-      game.getHandler(constants.G_SYMPATHY, constants.GT_FIN)(game);
+      game.getHandler(game.CONST.G_SYMPATHY, game.CONST.GT_FIN)(game);
     }
   }
 };

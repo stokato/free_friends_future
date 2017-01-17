@@ -20,24 +20,11 @@ module.exports.NEW_ROOM         = "new_room";
 module.exports.GT_GIFT          = "gift";
 module.exports.GT_MONEY         = "money";
 
-// Порция вопросов пользователей
-module.exports.QUESTIONS_COUNT = 100;
-
 // статусы операций
 module.exports.RS_GOODSTATUS    = "success";
 module.exports.RS_BADSTATUS     = "fail";
 
 module.exports.LIKE_BONUS_POINTS = "1";
-
-module.exports.RANKS = {
-  GENEROUS  : 'generous',
-  POPULAR   : 'popular',
-  DJ        : 'dj',
-  LUCKY     : 'lucky',
-  RELEASER  : 'releaser'
-};
-
-module.exports.ALMIGHTY = 'almighty';
 
 // ошибки
 module.exports.errors = {
@@ -139,59 +126,38 @@ module.exports.IO_NEW_LEVEL           = 'new_level';
 module.exports.IO_NEW_RELEASER_BONUS  = 'new_releaser_bonus';
 module.exports.IO_PRISON_PROTECT      = 'prison_protect';
 
-module.exports.VIEWED_TYPE            = {
+module.exports.RANKS = {
+  GENEROUS  : 'generous',
+  POPULAR   : 'popular',
+  DJ        : 'dj',
+  LUCKY     : 'lucky',
+  RELEASER  : 'releaser'
+};
+
+module.exports.ALMIGHTY = 'almighty';
+
+module.exports.VIEWED_TYPE = {
   'FRIENDS' : 'friends',
   'GUESTS'  : 'guests',
   'GIFTS'   : 'gifts',
   'MESSAGES': 'messages'
 };
 
-// Игры
-const G_START         = 'results',
-      G_LOT           = 'lot',
-      G_BOTTLE        = 'bottle',
-      G_BOTTLE_KISSES = 'bottle_kisses',
-      G_QUESTIONS     = 'questions',
-      G_CARDS         = 'cards',
-      G_BEST          = 'best',
-      G_SYMPATHY      = 'sympathy',
-      G_SYMPATHY_SHOW = 'sympathy_show',
-      G_PRISON        = 'prison';
-
-module.exports.G_START            = G_START;
-module.exports.G_LOT              = G_LOT;
-module.exports.G_BOTTLE           = G_BOTTLE;
-module.exports.G_BOTTLE_KISSES    = G_BOTTLE_KISSES;
-module.exports.G_QUESTIONS        = G_QUESTIONS;
-module.exports.G_CARDS            = G_CARDS;
-module.exports.G_BEST             = G_BEST;
-module.exports.G_SYMPATHY         = G_SYMPATHY;
-module.exports.G_SYMPATHY_SHOW    = G_SYMPATHY_SHOW;
-module.exports.G_PRISON           = G_PRISON;
-
-// Игры с тюрьмой и без
- module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON ];
- module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
- 
-// module.exports.GAMES = [ G_BOTTLE, G_BOTTLE ];
-// module.exports.GAMES_WITHOUT_PRISON = [G_BOTTLE, G_BOTTLE];
-
-// Типы обработчиков
-module.exports.GT_ST = 'start';
-module.exports.GT_ON = 'onpick';
-module.exports.GT_FIN = 'finish';
-
-module.exports.QUESTIONS_COUNT        = 3;
+module.exports.GIFT_GROUPS = {
+  LOVES       : 'loves',
+  BREATH      : 'breath',
+  FLOWERS     : 'flowers',
+  DRINKS      : 'drinks',
+  COMMON      : 'common',
+  FLIRTATION  : 'flirtation',
+  MERRY       : 'merry'
+};
 
 module.exports.GIFT_TYPES = {
-  LOVES       : 'Любовь',
-  BREATH      : 'Отдых',
-  FLOWERS     : 'Цветы',
-  DRINKS      : 'Напитки',
-  COMMON      : 'Обычные',
-  FLIRTATION  : 'Флирт',
-  MERRY       : 'Веселье',
-  MERRY2      : 'merry'
+  SIMPLE      : 'simple',
+  HAT         : 'hat',
+  SMALL       : 'small',
+  MOUSTACHE   : 'moustache'
 };
 
 module.exports.MONEY_LOTS = {
@@ -308,7 +274,7 @@ module.exports.PFIELDS = {
   ACTIVE_RANK     : 'active_rank',
   IS_ACTIVE       : 'is_active',
   ALL_POINTS      : 'all_points',
-  NEW_LEVEL_POINTS    : 'new_level_points',
+  NEW_LEVEL_POINTS  : 'new_level_points',
   CURR_LEVEL_POINTS : 'curr_level_points',
   PROGRESS        : 'progress',
   ACTIVITY        : 'activity',
@@ -318,7 +284,14 @@ module.exports.PFIELDS = {
   PRICE_COINS     : 'price_coins',
   PRICE_VK        : 'price_vk',
   COUNT           : 'count',
-  PROTECTED       : 'is_protected'
+  PROTECTED       : 'is_protected',
+  COORDS          : 'coords',
+  SIZE            : 'size',
+  HEIGHT          : 'height',
+  WIDTH           : 'width',
+  SCALE           : 'scale',
+  PARAMS          : 'params',
+  LOCKED          : 'is_locked'
 };
 
 module.exports.SFIELDS = {

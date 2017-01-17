@@ -46,18 +46,6 @@ module.exports = function (game) {
       
     }
     
-    // for(let bestID in game._storedOptions) if (game._storedOptions.hasOwnProperty(bestID)) {
-    //   let profInfo = game._storedOptions[bestID];
-    //   if(profInfo.picks > bestPlayer.picks) {
-    //     bestPlayer.id = bestID;
-    //     bestPlayer.vid = profInfo.vid;
-    //     bestPlayer.picks = profInfo.picks;
-    //   } else if(profInfo.picks == bestPlayer.picks) {
-    //     bestPlayer.id = null;
-    //     bestPlayer.vid = null;
-    //   }
-    // }
-    
     // Если есть победитель - начисляем ему очки
     if(theBest.id) {
       stat.setUserStat(theBest.id, theBest.vid, constants.SFIELDS.BEST_SELECTED, 1);
@@ -69,9 +57,8 @@ module.exports = function (game) {
         }
       });
     }
-  
-    game.getHandler(constants.G_START, constants.GT_ST)(game, null, true);
+    game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, true);
   } else {
-    game.getHandler(constants.G_START, constants.GT_ST)(game, null, false);
+    game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, false);
   }
 };

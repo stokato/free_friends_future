@@ -1,13 +1,15 @@
 const async     = require('async');
+
 const logger    = require('./../../../../lib/log')(module);
+const cdb       = require('./../common/cassandra_db');
+const dbConst   = require('./../../constants');
+
+const Config    = require('./../../../../config.json');
 const constants = require('./../../../constants');
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
 const DBF     = dbConst.POINTS.fields;
 const PF      = constants.PFIELDS;
-
-
+const GIRL    = Config.user.constants.sex.female;
 
 /*
  Добавить очки игрока в БД: объект с ид, вид и количеством очков
@@ -75,7 +77,7 @@ module.exports = function(options, callback) { options    = options || {};
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
-      let db = (options[PF.SEX] == constants.GIRL)?
+      let db = (options[PF.SEX] == GIRL)?
                         dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
 
@@ -86,7 +88,7 @@ module.exports = function(options, callback) { options    = options || {};
       });
     }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Удаляем старые записи
-      let db = (options[PF.SEX] == constants.GIRL)?
+      let db = (options[PF.SEX] == GIRL)?
                         dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
 
       delOldPoints(fields, db, function () {
@@ -112,21 +114,21 @@ module.exports = function(options, callback) { options    = options || {};
         return user2[DBF.POINTS_c_desc] - user1[DBF.POINTS_c_desc];
       });
       
-      let pointsList = [];
+      let paramsF = ["max"];
       for(let i = 1; i < result.rows.length; i++) {
-        pointsList.push(result.rows[i][DBF.POINTS_c_desc]);
+        paramsF.push(result.rows[i][DBF.POINTS_c_desc]);
       }
   
       let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc];
-      let constValues = [1, pointsList.length];
+      let constValues = [1, paramsF.length-1];
   
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
   
-      let paramsF = ["max", pointsList];
+      
   
       cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
         if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
-  
+        
         cb(null, null);
       });
       

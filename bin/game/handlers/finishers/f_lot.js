@@ -2,7 +2,10 @@
  * Created by s.t.o.k.a.t.o on 12.01.2017.
  */
 
-const constants = require('./../../../constants');
+const Config    = require('./../../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 module.exports = function(game) {
   
@@ -22,8 +25,8 @@ module.exports = function(game) {
   
   if(game.getPrisonerInfo() !== null ||
       game.getPrisonProtection(playerInfo.id) ||
-      game.getRoom().getCountInRoom(constants.GIRL) <= 2 ||
-      game.getRoom().getCountInRoom(constants.GUY) <= 2) {
+      game.getRoom().getCountInRoom(GIRL) <= 2 ||
+      game.getRoom().getCountInRoom(GUY) <= 2) {
     
     games = game.CONST.GAMES_WITHOUT_PRISON;
   } else {

@@ -5,6 +5,8 @@ const dbConst   = require('./../../constants');
 
 const DBF = dbConst.POINTS.fields;
 const PF  = constants.PFIELDS;
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 /*
  Найти 100 пользователей по набранным очкам
@@ -23,9 +25,9 @@ module.exports = function(sex, callback) {
 
   // Определяем - к какой таблице обращаться
   let db = dbConst.POINTS.name;
-  if(sex == constants.GIRL) {
+  if(sex == GIRL) {
     db = dbConst.POINTS_GIRLS.name;
-  } else if(sex == constants.GUY) {
+  } else if(sex == GUY) {
     db = dbConst.POINTS_GUYS.name;
   }
   

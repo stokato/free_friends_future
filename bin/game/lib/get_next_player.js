@@ -1,4 +1,8 @@
 const constants     = require('../../constants');
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 // Выбибираем следующего игрока определенного пола
 module.exports = function (prisonerResuming) {
@@ -6,11 +10,11 @@ module.exports = function (prisonerResuming) {
 
   // Определяем - из кого выбирать - из мальчиков или из девочек
   let players, currIndex;
-  if(this._currentSex == constants.GIRL) {
-    players = this._room.getAllPlayers(constants.GUY);
+  if(this._currentSex == GIRL) {
+    players = this._room.getAllPlayers(GUY);
     currIndex = this._guysIndex;
   } else {
-    players = this._room.getAllPlayers(constants.GIRL);
+    players = this._room.getAllPlayers(GIRL);
     currIndex = this._girlsIndex;
   }
 
@@ -59,7 +63,7 @@ module.exports = function (prisonerResuming) {
   //----------------------
   function onComplete(nextPlayer) {
     // Устанавливаем новые текуще индекс и пол
-    if(self._currentSex == constants.GIRL) {
+    if(self._currentSex == GIRL) {
       self._guysIndex = nextPlayer.getGameIndex();
     } else {
       self._girlsIndex = nextPlayer.getGameIndex();

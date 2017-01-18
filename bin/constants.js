@@ -1,30 +1,3 @@
-const Config = require('./../config.json');
-
-// Макс. количество игроков одного пола в комнате
-module.exports.ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
-
-// Пол игрока
-module.exports.GUY              = Config.user.constants.sex.male;
-module.exports.GIRL             = Config.user.constants.sex.female;
-
-// Размер истории комнаты
-module.exports.LEN_ROOM_HISTORY = Config.io.len_room_history;
-
-// Таймаут ожидания запроса от клиента перед отключением ???
-module.exports.REQUEST_TIMEOUT  = 3600000;
-
-// Идентификатор для создания новой комнаты
-module.exports.NEW_ROOM         = "new_room";
-
-// Типы товаров
-module.exports.GT_GIFT          = "gift";
-module.exports.GT_MONEY         = "money";
-
-// статусы операций
-module.exports.RS_GOODSTATUS    = "success";
-module.exports.RS_BADSTATUS     = "fail";
-
-module.exports.LIKE_BONUS_POINTS = "1";
 
 // ошибки
 module.exports.errors = {

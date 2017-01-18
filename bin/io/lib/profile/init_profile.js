@@ -23,13 +23,16 @@ const addProfileHandlers  = require('./../handlers/add_pofile_hanlers');
 const emitRes             = require('./../../../emit_result');
 const calcNeedPoints      = require('./../common/calc_need_points');
 
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 const PF                  = constants.PFIELDS;
 
 module.exports = function (socket, options) {
   if(!validator.isInt(options[PF.COUNTRY] + "") ||
       !validator.isInt(options[PF.CITY] + "") ||
       !validator.isDate(options[PF.BDATE] + "") ||
-      !(options[PF.SEX] + "" == constants.GUY || options[PF.SEX] + "" == constants.GIRL)) {
+      !(options[PF.SEX] + "" == GUY || options[PF.SEX] + "" == GIRL)) {
     return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_INIT);
   }
   

@@ -8,11 +8,13 @@
 
 const async     =  require('async');
 
+const Config = require('./../../../../config.json');
 const constants = require('./../../../constants');
 const oPool     = require('../../../objects_pool');
 const emitRes   = require('./../../../emit_result');
 
 const PF        = constants.PFIELDS;
+const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 
 module.exports = function (socket, options) {
   
@@ -26,7 +28,7 @@ module.exports = function (socket, options) {
       let  item;
       
       for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)
-        && oPool.rooms[item].getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM &&
+        && oPool.rooms[item].getCountInRoom(sex) < ONE_SEX_IN_ROOM &&
         oPool.roomList[socket.id].getName() != oPool.rooms[item].getName()) {
         
         freeRooms.push(oPool.rooms[item]);
@@ -60,7 +62,7 @@ module.exports = function (socket, options) {
         if (currFriend) {
           let  friendSocket = currFriend.getSocket();
           let  friendsRoom = oPool.roomList[friendSocket.id];
-          if (friendsRoom.getCountInRoom(sex) < constants.ONE_SEX_IN_ROOM) {
+          if (friendsRoom.getCountInRoom(sex) < ONE_SEX_IN_ROOM) {
   
             let  currInfo = {
               [PF.ID]       : currFriend.getID(),

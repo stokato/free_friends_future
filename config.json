@@ -92,6 +92,9 @@
       "mutual_kiss" : 10,
       "mutual_sympathy" : 10,
       "best" : 10
+    },
+    "fixed" : {
+      "like_profile" : 1
     }
   },
   "levels" : {
@@ -124,7 +127,12 @@
   "io" : {
     "len_room_history" : "5",
     "one_sex_in_room"  : "6",
-    "exit_timeout"  : "30000"
+    "exit_timeout"  : "30000",
+    "new_room" : "new_room",
+    "operation_statuses" : {
+      "good" : "success",
+      "bad"  : "fail"
+    }
   },
   "good_types" : {
     "gift" : "gift",

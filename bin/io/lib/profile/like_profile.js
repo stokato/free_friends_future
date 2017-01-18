@@ -16,6 +16,7 @@ const sanitize  = require('./../../../sanitize');
 
 const PF           = constants.PFIELDS;
 const LIKE_TIMEOUT = Config.user.settings.like_timeout;
+const LIKE_BONUS  = Config.points.fixed.like_profile;
 
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
@@ -41,13 +42,13 @@ module.exports = function (socket, options) {
   
   // Добавляе мочки
   if(friendProfile) {
-    friendProfile.addPoints(constants.LIKE_BONUS_POINTS, onPoints(friendProfile));
+    friendProfile.addPoints(LIKE_BONUS, onPoints(friendProfile));
   } else {
     friendProfile = new ProfileJS();
     friendProfile.build(options[PF.ID], function (err) {
       if(err) { return emitRes(err, socket, constants.IO_LIKE_PROFILE); }
       
-      friendProfile.addPoints(constants.LIKE_BONUS_POINTS, onPoints(friendProfile));
+      friendProfile.addPoints(LIKE_BONUS, onPoints(friendProfile));
     });
   }
   

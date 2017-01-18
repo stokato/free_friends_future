@@ -1,9 +1,11 @@
 const async = require('async');
 
+const Config    = require('./../../../../config.json');
 const constants = require('./../../../constants');
 const cdb       = require('./../common/cassandra_db');
 const dbConst   = require('./../../constants');
 
+const GIRL = Config.user.constants.sex.female;
 const DBF = dbConst.POINTS.fields;
 const PF  = constants.PFIELDS;
 
@@ -35,7 +37,7 @@ module.exports = function(options, callback) { options = options || {};
       });
     }, //----------------------------------------------------------------
     function(params, constFields, constValues, cb) { // Удаляем записи из таблицы его пола
-      let db = (options[PF.SEX] == constants.GIRL)? dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
+      let db = (options[PF.SEX] == GIRL)? dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
 
       let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
       cdb.client.execute(query, params, {prepare: true }, function(err) {

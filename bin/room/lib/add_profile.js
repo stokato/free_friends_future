@@ -11,6 +11,10 @@ const constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
 const PF = constants.PFIELDS;
 
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+
 module.exports = function (profile, callback) {
   
   this._ranks.addProfile(profile);
@@ -18,7 +22,7 @@ module.exports = function (profile, callback) {
   // this._mplayer.addEmits(profile.getSocket());
   
   let sex = profile.getSex();
-  if(sex == constants.GUY) {
+  if(sex == GUY) {
     this._guys[profile.getID()]  = profile;
     this._guys_count++;
   } else {
@@ -33,7 +37,7 @@ module.exports = function (profile, callback) {
     logger.error("Room_add_profile : Не удалось получить сокет профиля");
   }
   
-  let arr = (sex == constants.GUY)? this._guys_indexes : this._girls_indexes;
+  let arr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
   arr.sort(function (i1, i2) { return i1 - i2; });
   
   let index = arr[0];

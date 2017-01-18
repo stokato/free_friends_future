@@ -17,15 +17,19 @@ const createRoom      = require('./../common/create_room');
 const getLastMessages = require('./../common/get_last_messages');
 // const sendUsersInRoom = require('./../common/get_users_in_room');
 
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 const  PF                   = constants.PFIELDS;
 const  ROOM_CHANGE_TIMEOUT  = Number(Config.user.settings.room_change_timeout);
+const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
+const NEW_ROOM = Config.io.new_room;
 
 module.exports = function (socket, options) {
   
   options[PF.ROOM] = sanitize(options[PF.ROOM]);
   
   // Ошибка, если нет комнаты с таким идентификатором
-  if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != constants.NEW_ROOM) {
+  if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != NEW_ROOM) {
     return emitRes(constants.errors.NO_SUCH_ROOM, socket ,constants.IO_CHANGE_ROOM);
   }
   
@@ -46,7 +50,7 @@ module.exports = function (socket, options) {
   let  userSex = selfProfile.getSex();
   
   //TODO: Эту возможность следует потом убрать
-  if (options.room == constants.NEW_ROOM) { // Либо создаем новую комнату
+  if (options.room == NEW_ROOM) { // Либо создаем новую комнату
     newRoom = createRoom(socket, oPool.userList);
     oPool.rooms[newRoom.getName()] = newRoom;
     
@@ -54,7 +58,7 @@ module.exports = function (socket, options) {
     let  item;
     for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
       if (oPool.rooms[item].getName() == options[PF.ROOM]) {
-        if (oPool.rooms[item].getCountInRoom(userSex) >= constants.ONE_SEX_IN_ROOM) {
+        if (oPool.rooms[item].getCountInRoom(userSex) >= ONE_SEX_IN_ROOM) {
           return emitRes(constants.errors.ROOM_IS_FULL, socket, constants.IO_CHANGE_ROOM);
         }
         newRoom = oPool.rooms[item];
@@ -73,7 +77,7 @@ module.exports = function (socket, options) {
   
   // Удаляем комнату, если она опустела
   let  isCurrRoom = true;
-  if (currRoom.getCountInRoom(constants.GUY) == 0 && currRoom.getCountInRoom(constants.GIRL) == 0) {
+  if (currRoom.getCountInRoom(GUY) == 0 && currRoom.getCountInRoom(GIRL) == 0) {
     delete oPool.rooms[currRoom.getName()];
     isCurrRoom = false;
   } else {

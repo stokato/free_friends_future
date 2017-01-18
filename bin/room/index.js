@@ -9,7 +9,8 @@
  * Пердоставляет инструменты для доступа к ним и получения сведений
  */
 
-const constants = require('./../constants'),
+const Config = require('./../../config.json'),
+  constants = require('./../constants'),
     MusicPlayer = require('./../mplayer/index'),
     GameJS = require('./../game/index'),
     RankManager = require('./../ranks/index');
@@ -26,6 +27,8 @@ const addProfile      = require('./lib/add_profile'),
     getCountInRoom  = require('./lib/get_count_in_room'),
     setFriendInfo   = require('./lib/set_friend_info');
 
+
+const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 /*
     Класс комнаты
  */
@@ -48,7 +51,7 @@ function Room(name, title)  {
   this._girls_indexes = [];
   this._guys_indexes  = [];
   
-  for(let i = 1; i <= constants.ONE_SEX_IN_ROOM; i++) {
+  for(let i = 1; i <= ONE_SEX_IN_ROOM; i++) {
     this._girls_indexes.push(i);
     this._guys_indexes.push(i);
   }

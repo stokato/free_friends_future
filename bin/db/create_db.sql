@@ -279,7 +279,7 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
 --   );
 --  CREATE INDEX IF NOT EXISTS shop_goodtype ON shop(goodtype);
 
--- Таблица магазин подарков (исправленный)
+-- Таблица магазин подарков
 -- ИД: (ключевое поле)
 -- Название товара
 -- Цена в монетах
@@ -290,7 +290,7 @@ CREATE INDEX IF NOT EXISTS user_new_guests_userid ON user_new_guests (userid);
 -- Наименование группы
 
 CREATE TABLE IF NOT EXISTS shop (
-  id varchar,
+  id uuid,
   good_title varchar,
   price_coins int,
   price_vk int,
@@ -300,11 +300,27 @@ CREATE TABLE IF NOT EXISTS shop (
   group_title varchar,
   gift_type varchar,
   gift_rank varchar,
-  gift_level varchar,
+  gift_level int,
   PRIMARY KEY (id)
 );
 
 CREATE INDEX IF NOT EXISTS shop_type ON shop(type);
+
+-- Таблица монет (пополнение счета)
+-- ИД: (ключевое поле)
+-- Название товара
+-- Цена в монетах
+-- Цена ВК
+-- Ссылка
+
+CREATE TABLE IF NOT EXISTS coins (
+  id varchar,
+  title varchar,
+  price_coins int,
+  price_vk int,
+  src varchar,
+  PRIMARY KEY (id)
+);
 
 -- Таблица заказов:
 -- ИД: генерируется (ключевое поле),
@@ -434,17 +450,17 @@ CREATE TABLE IF NOT EXISTS user_blocked (
 --  сколько человек провел времени в игре
 
 CREATE TABLE IF NOT EXISTS users_stat (
-                    id uuid,
-                    vid VARCHAR,
-                    count_gifts_given counter,
-                    count_gifts_taken counter,
-                    count_coins_given counter,
-                    count_coins_earned counter,
-                    count_coins_spent counter,
-                    count_bottle_kissed counter,
-                    count_best_selected counter,
-                    count_rank_given counter,
-                    count_game_time_ms counter,
+  id uuid,
+  vid VARCHAR,
+  count_gifts_given counter,
+  count_gifts_taken counter,
+  count_coins_given counter,
+  count_coins_earned counter,
+  count_coins_spent counter,
+  count_bottle_kissed counter,
+  count_best_selected counter,
+  count_rank_given counter,
+  count_game_time_ms counter,
   PRIMARY KEY ((id, vid))
 );
 

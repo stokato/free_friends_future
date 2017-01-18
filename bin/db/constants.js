@@ -245,7 +245,7 @@ module.exports = {
   SHOP : {
     name    : 'shop',
     fields  : {
-      ID_varchar_p        : 'id',
+      ID_uuid_p           : 'id',
       TITLE_varchar       : 'good_title',
       PRICE_COINS_int     : 'price_coins',
       PRICE_VK_int        : 'price_vk',
@@ -255,23 +255,29 @@ module.exports = {
       GROUP_TITLE_varchar : 'group_title',
       GIFT_TYPE_varchar   : 'gift_type',
       GIFT_RANK_varchar   : 'gift_rank',
-      GIFT_LEVEL_varchar  : 'gift_level'
+      GIFT_LEVEL_int      : 'gift_level'
     }
   },
   
+  /*
+   Таблица монет:
+   ИД: генерируется (ключевое поле),
+   Название подарка,
+   Цена,
+   Путь к файлу,
+   Тип подарка
+   */
   
-  // SHOP : {
-  //   name    : 'shop',
-  //   fields  : {
-  //     ID_varchar_p        : 'id',
-  //     TITLE_varchar       : 'title',
-  //     PRICE_int           : 'price',
-  //     PRICE2_int          : 'price2',
-  //     SRC_varchar         : 'src',
-  //     TYPE_varchar        : 'type',
-  //     GOODTYPE_varchar_i  : 'goodtype'
-  //   }
-  // },
+  COINS : {
+    name    : 'coins',
+    fields  : {
+      ID_varchar_p        : 'id',
+      TITLE_varchar       : 'title',
+      PRICE_COINS_int     : 'price_coins',
+      PRICE_VK_int        : 'price_vk',
+      SRC_varchar         : 'src'
+    }
+  },
   
   /*
    Таблица заказов:

@@ -4,12 +4,16 @@
  * Обрабатываем результат
  */
 
+const Config  = require('./../config.json');
 const constants  = require('./constants');
 const logger = require('./../lib/log')(module);
 
+const GOOD_STATUS = Config.io.operation_statuses.good;
+const BAD_STATUS  = Config.io.operation_statuses.bad;
+
 module.exports = function (err, socket, emit, res, noemit) { res = res || {}; noemit = noemit || false;
   if(err) {
-    res.operation_status = constants.RS_BADSTATUS;
+    res.operation_status = BAD_STATUS;
     res.operation_error = err.code || constants.errors.OTHER.code;
   
     // Логируем
@@ -17,7 +21,7 @@ module.exports = function (err, socket, emit, res, noemit) { res = res || {}; no
     logger.error(err);
     // logger.error(err.stack);
   } else {
-    res.operation_status = constants.RS_GOODSTATUS;
+    res.operation_status = GOOD_STATUS;
   }
   
   if(!noemit) {

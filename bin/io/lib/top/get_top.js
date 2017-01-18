@@ -8,6 +8,10 @@
 const constants  = require('./../../../constants');
 const db         = require('./../../../db_manager');
 const emitRes    = require('./../../../emit_result');
+const Config    = require('./../../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 module.exports = function (socket, options) {
   
@@ -16,11 +20,11 @@ module.exports = function (socket, options) {
     if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
     res[constants.PFIELDS.ALL] = users;
     
-    db.findPoints(constants.GIRL, function (err, users) {
+    db.findPoints(GIRL, function (err, users) {
       if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
       res[constants.PFIELDS.GIRLS] = users;
       
-      db.findPoints(constants.GUY, function (err, users) {
+      db.findPoints(GUY, function (err, users) {
         if (err) { return emitRes(err, socket, constants.IO_GET_TOP); }
         
         res[constants.PFIELDS.GUYS] = users;

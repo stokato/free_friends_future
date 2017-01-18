@@ -4,13 +4,15 @@
  * Получаем сведения о пользователях одного пола в комнате
  */
 
-const constants = require('./../../../constants'),
-    fillInfo  = require('./fill_info');
+
+const Config    = require('./../../../../config.json');
+const fillInfo  = require('./fill_info');
+const GUY = Config.user.constants.sex.male;
 
 module.exports = function (sex) {
   let item, info = [], gInfo;
   
-  let arr = (sex == constants.GUY)? this._guys : this._girls;
+  let arr = (sex == GUY)? this._guys : this._girls;
   
   for (item in arr) if (arr.hasOwnProperty(item)){
     gInfo = fillInfo(arr[item]);

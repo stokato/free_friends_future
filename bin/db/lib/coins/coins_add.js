@@ -3,7 +3,7 @@ const dbConst = require('./../../constants');
 const constants = require('./../../../constants');
 const Config = require('./../../../../config.json');
 
-const DBF = dbConst.SHOP.fields;
+const DBF = dbConst.COINS.fields;
 const PF  = constants.PFIELDS;
 /*
  Добавить товар в БД: ИД, объект с данными
@@ -13,15 +13,13 @@ const PF  = constants.PFIELDS;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-
-let type = Config.good_types.money;
   
-  if ( !options[PF.ID] ||
+  if (!options[PF.ID] ||
     !options[PF.TITLE] ||
     !options[PF.PRICE] ||
-    !options[PF.PRICE2] ||
+    !options[PF.PRICE_VK] ||
     !options[PF.SRC]) {
-    return callback(new Error("Не указаны необходимые поля подарка"), null);
+    return callback(new Error("Не указаны необходимые поля лота"), null);
   }
   
   // let id = cdb.uuid.random();
@@ -31,20 +29,18 @@ let type = Config.good_types.money;
     DBF.TITLE_varchar,
     DBF.PRICE_COINS_int,
     DBF.PRICE_VK_int,
-    DBF.SRC_varchar,
-    DBF.TYPE_varchar_i
+    DBF.SRC_varchar
   ];
   
   let params = [
-    options[PF.ID],
+    options[PF.ID], //id,
     options[PF.TITLE],
     options[PF.PRICE],
-    options[PF.PRICE2],
-    options[PF.SRC],
-    type
+    options[PF.PRICE_VK],
+    options[PF.SRC]
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.SHOP.name);
+  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.COINS.name);
   
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }

@@ -15,13 +15,19 @@ const addUser         = require('./lib/users/users_add'),
   addGuest            = require('./lib/guests/guests_add'),
   findGuests          = require('./lib/guests/guests_find'),
   deleteGuests        = require('./lib/guests/guests_delete'),
+  
   findGood            = require('./lib/shop/shop_find'),
   findAllGoods        = require('./lib/shop/shop_find_all'),
   deleteGood          = require('./lib/shop/shop_delete'),
-  addCoinToShop       = require('./lib/shop/shop_add_coin'),
-  addGiftToShop       = require('./lib/shop/shop_add_gift'),
-  updateCoinInShop    = require('./lib/shop/shop_update_coin'),
-  updateGiftInShop    = require('./lib/shop/shop_update_gift'),
+  addGood       = require('./lib/shop/shop_add'),
+  updateGood    = require('./lib/shop/shop_update'),
+  
+  findCoins           = require('./lib/coins/coins_find'),
+  findAllCoins        = require('./lib/coins/coins_find_all'),
+  deleteCoins         = require('./lib/coins/coins_delete'),
+  addCoins            = require('./lib/coins/coins_add'),
+  updateCoins         = require('./lib/coins/coins_update'),
+  
   findChats           = require('./lib/chats/chats_find'),
   addOrder            = require('./lib/orders/orders_add'),
   findOrders          = require('./lib/orders/orders_find'),
@@ -90,13 +96,19 @@ DBManager.prototype.deleteFriends     = deleteFriends;
 DBManager.prototype.addGuest          = addGuest;
 DBManager.prototype.findGuests        = findGuests;
 DBManager.prototype.deleteGuests      = deleteGuests;
+
 DBManager.prototype.findGood          = findGood;
 DBManager.prototype.findAllGoods      = findAllGoods;
 DBManager.prototype.deleteGood        = deleteGood;
-DBManager.prototype.addCoinToShop     = addCoinToShop;
-DBManager.prototype.addGiftToShop     = addGiftToShop;
-DBManager.prototype.updateCoinInShop  = updateCoinInShop;
-DBManager.prototype.updateGiftInShop  = updateCoinInShop;
+DBManager.prototype.addGood           = addGood;
+DBManager.prototype.updateGood        = updateGood;
+
+DBManager.prototype.findCoins         = findCoins;
+DBManager.prototype.findAllCoins      = findAllCoins;
+DBManager.prototype.deleteCoins       = deleteCoins;
+DBManager.prototype.addCoins          = addCoins;
+DBManager.prototype.updateCoins       = updateCoins;
+
 DBManager.prototype.findChats         = findChats;
 DBManager.prototype.addOrder          = addOrder;
 DBManager.prototype.findOrders        = findOrders;
@@ -106,7 +118,7 @@ DBManager.prototype.deletePoints      = deletePoints;
 DBManager.prototype.findAllQuestions  = findAllQuestions;
 DBManager.prototype.findGift          = findGift;
 DBManager.prototype.addQuestion       = addQuestion;
-DBManager.prototype.deleteQuestions    = deleteQuestions;
+DBManager.prototype.deleteQuestions   = deleteQuestions;
 DBManager.prototype.deleteAllQuestions = deleteAllQuestions;
 DBManager.prototype.openFriends       = openFriends;
 DBManager.prototype.openGuests        = openGuests;
@@ -122,7 +134,7 @@ DBManager.prototype.findMainStat      = mainStatFind;
 DBManager.prototype.addUserQuestion   = addUserQuestion;
 DBManager.prototype.findUserQuestions  = findUserQuestions;
 DBManager.prototype.deleteUserQuestions = deleteUserQuestions;
-DBManager.prototype.updateQuestion  = updateQuestion;
+DBManager.prototype.updateQuestion    = updateQuestion;
 DBManager.prototype.findQuestionsActivity = findQuestionsActivity;
 
 DBManager.prototype.addAuthUser       = addAuthUser;

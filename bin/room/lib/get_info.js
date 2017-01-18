@@ -6,14 +6,17 @@
  * @return roomInfo
  */
 
-const constants = require('./../../constants');
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 module.exports = function () {
   return {
     name : this.getName(),
     title: this._title,
-    guys : this.getUsersInfo(constants.GUY),
-    girls : this.getUsersInfo(constants.GIRL),
+    guys : this.getUsersInfo(GUY),
+    girls : this.getUsersInfo(GIRL),
     track_list : this._mplayer.getTrackList()
   };
 };

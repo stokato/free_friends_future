@@ -16,6 +16,7 @@ const getUserProfile = require('./io/lib/common/get_user_profile');
 
 const PF            = constants.PFIELDS;
 const REFILL_POINTS = Number(Config.points.refill);
+const MONEY_TYPE = Config.good_types.money;
 
 function VK () {}
 
@@ -77,7 +78,7 @@ function getItem(request, callback) {
   let goodId = sanitize(payInfo[0]); // наименование товара
 
   let response = {};
-  db.findGood(goodId, function (err, goodInfo) {
+  db.findCoins(goodId, function (err, goodInfo) {
     if(err) {
       response["error"] = {
         "error_code" : err.code,
@@ -95,7 +96,7 @@ function getItem(request, callback) {
         "item_id"   : goodInfo[PF.ID],
         "title"     : goodInfo[PF.TITLE],
         "photo_url" : goodInfo[PF.DATE],
-        "price"     : goodInfo[PF.PRICE2]
+        "price"     : goodInfo[PF.PRICE_VK]
       };
     }
 
@@ -122,11 +123,11 @@ function changeOrderStatus(request, callback) {
     
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
-        db.findGood(options[PF.GOODID], function (err, goodInfo) {
+        db.findCoins(options[PF.GOODID], function (err, goodInfo) {
           if (err) { return cb(err, null) }
 
           if (goodInfo) {
-            if(goodInfo[PF.PRICE2] != options[PF.PRICE])
+            if(goodInfo[PF.PRICE_VK] != options[PF.PRICE])
               cb(new Error("Неверно указана цена товара"), null);
             else
               cb(null, goodInfo);
@@ -149,7 +150,7 @@ function changeOrderStatus(request, callback) {
       function(goodInfo, info, profile, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
         let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
-        if(newMoney < 0 && goodInfo[PF.GOODTYPE] != constants.GT_MONEY) {
+        if(newMoney < 0 && goodInfo[PF.GOODTYPE] != MONEY_TYPE) {
           return cb(new Error("Недостаточно средств на счете"), null);
         }
 
@@ -158,7 +159,7 @@ function changeOrderStatus(request, callback) {
           [PF.GOODID]   : goodInfo[PF.ID],
           [PF.ID]       : info[PF.ID],
           [PF.VID]      : info[PF.VID],
-          [PF.SUM]      : goodInfo[PF.PRICE2],
+          [PF.SUM]      : goodInfo[PF.PRICE_VK],
           [PF.DATE]     : new Date()
         };
 

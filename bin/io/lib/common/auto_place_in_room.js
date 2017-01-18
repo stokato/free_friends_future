@@ -9,10 +9,16 @@ const constants = require('./../../../constants'),
     createRoom  = require('./create_room'),
     oPool       = require('./../../../objects_pool');
 
+const Config    = require('./../../../../config.json');
+const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
+
 module.exports = function (socket,  callback) {
   let  selfProfile = oPool.userList[socket.id];
   let  newRoom = null;
-  let  count = constants.ONE_SEX_IN_ROOM;
+  let  count = ONE_SEX_IN_ROOM;
 
   let  sex = selfProfile.getSex();
 
@@ -26,7 +32,7 @@ module.exports = function (socket,  callback) {
   let  item;
   for(item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
     if(item != selfRoomName) {
-      let  need = constants.ONE_SEX_IN_ROOM - oPool.rooms[item].getCountInRoom(sex);
+      let  need = ONE_SEX_IN_ROOM - oPool.rooms[item].getCountInRoom(sex);
 
       if(need > 0 && need <= count) {
         count = need;
@@ -45,8 +51,8 @@ module.exports = function (socket,  callback) {
   if(oldRoom) {
     oldRoom.deleteProfile(selfProfile);
     
-    if(oldRoom.getCountInRoom(constants.GUY) == 0 &&
-      oldRoom.getCountInRoom(constants.GIRL) == 0)  {
+    if(oldRoom.getCountInRoom(GUY) == 0 &&
+      oldRoom.getCountInRoom(GIRL) == 0)  {
       delete oPool.rooms[oldRoom.getName()];
     }
   }

@@ -6,7 +6,7 @@ const cdb     = require('./../common/cassandra_db');
 const dbConst = require('./../../constants');
 const constants = require('./../../../constants');
 
-const DBF = dbConst.SHOP.fields;
+const DBF = dbConst.COINS.fields;
 const PF  = constants.PFIELDS;
 
 /*
@@ -21,13 +21,13 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [];
   let constFields = [DBF.ID_varchar_p];
   let constValues = [1];
-  let dbName = dbConst.SHOP.name;
+  let dbName = dbConst.COINS.name;
   
   let params = [];
-  if (PF.TITLE in options)       { fields.push(DBF.TITLE_varchar);       params.push(options[PF.TITLE]); }
-  if (PF.PRICE in options)       { fields.push(DBF.PRICE_COINS_int);     params.push(options[PF.PRICE]); }
-  if (PF.PRICE2 in options)      { fields.push(DBF.PRICE_VK_int);        params.push(options[PF.PRICE2]); }
-  if (PF.SRC in options)         { fields.push(DBF.SRC_varchar);         params.push(options[PF.SRC]); }
+  if (PF.TITLE in options)       { fields.push(DBF.TITLE_varchar);    params.push(options[PF.TITLE]); }
+  if (PF.PRICE in options)       { fields.push(DBF.PRICE_COINS_int);  params.push(options[PF.PRICE]); }
+  if (PF.PRICE_VK in options)    { fields.push(DBF.PRICE_VK_int);     params.push(options[PF.PRICE_VK]); }
+  if (PF.SRC in options)         { fields.push(DBF.SRC_varchar);      params.push(options[PF.SRC]); }
   
   let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
   

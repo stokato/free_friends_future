@@ -3,6 +3,10 @@
  */
 
 const constants = require('./../../constants');
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 const PF = constants.PFIELDS;
 
 module.exports = function (uid) {
@@ -11,8 +15,8 @@ module.exports = function (uid) {
   let info = {
     name : this.getName(),
     title: this._title,
-    guys : this.getUsersInfo(constants.GUY),
-    girls : this.getUsersInfo(constants.GIRL),
+    guys : this.getUsersInfo(GUY),
+    girls : this.getUsersInfo(GIRL),
     track_list : this._mplayer.getTrackList()
   };
 

@@ -9,12 +9,16 @@
 const constants = require('./../../constants'),
     logger    = require('./../../../lib/log')(module);
 
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+
 module.exports = function (profile) {
   
   this._ranks.deleteProfile(profile);
   
   let sex = profile.getSex();
-  if(sex == constants.GUY) {
+  if(sex == GUY) {
     delete  this._guys[profile.getID()];
     this._guys_count--;
   } else {
@@ -29,7 +33,7 @@ module.exports = function (profile) {
     logger.error("Room_delete_profile : Не удалось получить сокет профиля");
   }
   
-  let arr = (sex == constants.GUY)? this._guys_indexes : this._girls_indexes;
+  let arr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
   
   arr.push(profile.getGameIndex());
 

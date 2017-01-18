@@ -16,8 +16,8 @@ module.exports = function(options, callback) { options    = options || {};
 
 let type = Config.good_types.gift;
   
-  if ( !options[PF.ID] ||
-    !options[PF.TITLE] ||
+  if ( //!options[PF.ID] ||
+    !PF.TITLE in options ||
     !options[PF.PRICE] ||
     !options[PF.SRC] ||
     !options[PF.GROUP] ||
@@ -28,10 +28,10 @@ let type = Config.good_types.gift;
     return callback(new Error("Не указаны необходимые поля подарка"), null);
   }
   
-  // let id = cdb.uuid.random();
+  let id = cdb.uuid.random();
   
   let fields = [
-    DBF.ID_varchar_p,
+    DBF.ID_uuid_p,
     DBF.TITLE_varchar,
     DBF.PRICE_COINS_int,
     DBF.SRC_varchar,
@@ -40,11 +40,11 @@ let type = Config.good_types.gift;
     DBF.GROUP_TITLE_varchar,
     DBF.GIFT_TYPE_varchar,
     DBF.GIFT_RANK_varchar,
-    DBF.GIFT_LEVEL_varchar
+    DBF.GIFT_LEVEL_int
   ];
   
   let params = [
-    options[PF.ID],
+    id,
     options[PF.TITLE],
     options[PF.PRICE],
     options[PF.SRC],
@@ -61,7 +61,7 @@ let type = Config.good_types.gift;
   cdb.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
     
-    // options[PF.ID] = id;
+    options[PF.ID] = id;
     
     callback(null, options);
   });

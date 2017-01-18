@@ -7,17 +7,20 @@
  *  @return players - список пользователей
  */
 
-const constants = require('./../../constants');
+const Config    = require('./../../../config.json');
+
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
 
 module.exports = function (sex = null) {// sex = sex || null;
   let players = [], index;
   
-  if(!sex || sex == constants.GUY) {
+  if(!sex || sex == GUY) {
     for(index in this._guys) if(this._guys.hasOwnProperty(index)){
       players.push(this._guys[index]);
     }
   }
-  if(!sex || sex == constants.GIRL) {
+  if(!sex || sex == GIRL) {
     for(index in this._girls) if(this._girls.hasOwnProperty(index)) {
       players.push(this._girls[index]);
     }

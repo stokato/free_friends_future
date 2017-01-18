@@ -2,8 +2,11 @@
  * Отправляем сообщение всем в комнате
  */
 
+const Config = require('./../../../../config.json');
 const  constants = require('./../../../constants');
 const  oPool = require('./../../../objects_pool');
+
+const LEN_ROOM_HISTORY = Config.io.len_room_history;
 
 module.exports = function (socket, room, message) {
   //socket.broadcast.in(room.getName()).emit(constants.IO_MESSAGE, message);
@@ -25,7 +28,7 @@ module.exports = function (socket, room, message) {
   
   messages.push(message);
 
-  if (messages.length >= constants.LEN_ROOM_HISTORY) {
+  if (messages.length >= LEN_ROOM_HISTORY) {
     messages.shift();
   }
 };

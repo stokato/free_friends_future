@@ -8,6 +8,9 @@ const constants = require('./../../../constants');
 const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
 const PF             = constants.PFIELDS;
 
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
+
 module.exports = function (game) {
   
   game.clearActionsQueue();
@@ -16,7 +19,7 @@ module.exports = function (game) {
   
   let pInfo = game.getActivePlayers()[0];
   
-  let sex = (pInfo.sex == constants.GUY)? constants.GIRL : constants.GUY;
+  let sex = (pInfo.sex == GUY)? GIRL : GUY;
   
   let players = game.getRoom().getAllPlayers(sex);
   let playersInfo = [];

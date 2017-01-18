@@ -12,6 +12,9 @@ const constants       = require('./../../../constants');
 const oPool           = require('./../../../objects_pool');
 const stat            = require('./../../../stat_manager');
 
+const GUY = Config.user.constants.sex.male;
+const GIRL = Config.user.constants.sex.female;
+
 const emitAllRooms    = require('../common/emit_all_rooms');
 // const sendUsersInRoom = require('./../common/get_users_in_room');
 
@@ -61,7 +64,7 @@ module.exports = function (socket) {
                 delete oPool.roomList[socket.id];
                 delete oPool.profiles[selfProfile.getID()];
           
-                if (room.getCountInRoom(constants.GUY) == 0 && room.getCountInRoom(constants.GIRL) == 0) {
+                if (room.getCountInRoom(GUY) == 0 && room.getCountInRoom(GIRL) == 0) {
                   delete oPool.rooms[room.getName()];
                   room = null;
                 } else {

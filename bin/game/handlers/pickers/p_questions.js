@@ -5,12 +5,11 @@
 const validator = require('validator');
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
 const oPool       = require('./../../../objects_pool');
 
 const emitRes         = require('./../../../emit_result');
 
-const PF = constants.PFIELDS;
+const PF = require('./../../../const_fields');
 const QUESTIONS_COUNT = Number(Config.game.questions_count);
 
 module.exports = function (game) {
@@ -18,7 +17,7 @@ module.exports = function (game) {
     if(!validator.isInt(options[PF.PICK] + "") ||
         options[PF.PICK] > QUESTIONS_COUNT ||
         options[PF.PICK] < 1) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GAME_ERROR);
     }
     
     let selfProfile = oPool.userList[socket.id];

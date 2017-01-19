@@ -3,14 +3,13 @@
  */
 
 const Config = require('./../../../../config.json');
-const  constants = require('./../../../constants');
 const  oPool = require('./../../../objects_pool');
 
 const LEN_ROOM_HISTORY = Config.io.len_room_history;
 
 module.exports = function (socket, room, message) {
-  //socket.broadcast.in(room.getName()).emit(constants.IO_MESSAGE, message);
-  socket.emit(constants.IO_MESSAGE, message);
+  //socket.broadcast.in(room.getName()).emit(cFields.IO_MESSAGE, message);
+  socket.emit(Config.io.emits.IO_MESSAGE, message);
 
   let  selfId = oPool.userList[socket.id].getID();
   
@@ -20,7 +19,7 @@ module.exports = function (socket, room, message) {
   let  users = room.getAllPlayers();
   users.forEach(function (item, i, arr) {
     if(item.getID() != selfId && !item.isInBlackList(selfId)) {
-      item.getSocket().emit(constants.IO_MESSAGE, message);
+      item.getSocket().emit(Config.io.emits.IO_MESSAGE, message);
     }
   });
   

@@ -10,7 +10,6 @@
  */
 
 const Config = require('./../../config.json'),
-  constants = require('./../constants'),
     MusicPlayer = require('./../mplayer/index'),
     GameJS = require('./../game/index'),
     RankManager = require('./../ranks/index');

@@ -22,8 +22,8 @@ const addTrack              = require('./lib/add_track'),
       onGetLikersDislikers  = require('./lib/on_get_likers_dislikers'),
       onGetTrackList        = require('./lib/on_get_track_list'),
       onLikeTrack           = require('./lib/on_like_track'),
-      addEmits            = require('./lib/add_emits'),
-      deleteEmits         = require('./lib/delete_emits');
+      addEmits              = require('./lib/add_emits'),
+      deleteEmits           = require('./lib/delete_emits');
 
 function MusicPlayer() {
   

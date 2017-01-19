@@ -6,23 +6,22 @@
 const async = require('async');
 
 const Config      = require('./../../../config.json');
-const constants   = require('../../constants');
 const oPool       = require('./../../objects_pool');
 
 const checkID     = require('./../../check_id');
 const emitRes     = require('./../../emit_result');
 const sanitize    = require('./../../sanitize');
 
-const PF            = constants.PFIELDS;
-const WASTE_POINTS  = Number(Config.points.waste);
-const RANSOM_PRICE  = Number(Config.moneys.sympathy_price);
+const PF            = require('../../const_fields');
+const RELEASER_RANK = Config.ranks.releaser.name;
+const IO_PRISON_PROTECT = Config.io.emits.IO_PRISON_PROTECT;
 
 const COUNT_PROTECTED_ROUNDS = Config.game.count_protected_rounds;
 
 // Освободить игрока из темницы
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_PRISON_PROTECT);
+    return emitRes(Config.errors.NO_PARAMS, socket, IO_PRISON_PROTECT);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -36,11 +35,11 @@ module.exports = function (socket, options) {
   
   // Себя защитить нельзя
   if(selfProfile.getID() == options[PF.ID]) {
-    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_PRISON_PROTECT);
+    return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_PRISON_PROTECT);
   }
   
-  if(!ranksM.takeBonus(constants.RANKS.RELEASER, selfProfile.getID())) {
-    // return emitRes(constants.errors.NO_SUCH_BONUS, socket, constants.IO_PRISON_PROTECT);
+  if(!ranksM.takeBonus(RELEASER_RANK, selfProfile.getID())) {
+    // return emitRes(cFields.errors.NO_SUCH_BONUS, socket, cFields.IO_PRISON_PROTECT);
   }
   
   async.waterfall([
@@ -49,7 +48,7 @@ module.exports = function (socket, options) {
         if(players[i].getID() == options[PF.ID]) {
           
           if(game.getPrisonerInfo() && game.getPrisonerInfo().id == options[PF.ID]) {
-            return cb(constants.errors.NO_THAT_PLAYER);
+            return cb(Config.errors.NO_THAT_PLAYER);
           }
           
           game.setProtection(options[PF.ID], {
@@ -62,10 +61,10 @@ module.exports = function (socket, options) {
         }
       }
       
-      cb(constants.errors.NO_THAT_PLAYER);
+      cb(Config.errors.NO_THAT_PLAYER);
     }
   ], function (err, proProfile) {
-    if(err) { return emitRes(err, socket, constants.IO_PRISON_PROTECT); }
+    if(err) { return emitRes(err, socket, IO_PRISON_PROTECT); }
   
     // Оповещаем игроков в комнате
     let result = {
@@ -75,8 +74,8 @@ module.exports = function (socket, options) {
       [PF.FVID] : selfProfile.getVID()
     };
   
-    socket.broadcast.in(game._room.getName()).emit(constants.IO_PRISON_PROTECT, result);
-    emitRes(null, socket, constants.IO_PRISON_PROTECT, result);
+    socket.broadcast.in(game._room.getName()).emit(IO_PRISON_PROTECT, result);
+    emitRes(null, socket, IO_PRISON_PROTECT, result);
   });
   
 };

@@ -4,10 +4,9 @@
  * Сообщяем о полученном опыте
  */
 
-const constants       = require('./../../../constants');
 const Config          = require('./../../../../config.json');
 const calcNeedPoints  = require('./calc_need_points');
-const PF              = constants.PFIELDS;
+const PF              = require('./../../../const_fields');
 
 module.exports =  function emitPoitns(profile, points) {
   let levelStart = Number(Config.levels.start);
@@ -42,6 +41,6 @@ module.exports =  function emitPoitns(profile, points) {
       [PF.VIP]               : newVIP
     };
     
-    socket.emit(constants.IO_ADD_POINTS, res);
+    socket.emit(Config.io.emits.IO_ADD_POINTS, res);
   }
 };

@@ -8,7 +8,6 @@
 const  async          = require('async');
 
 const Config          = require('./../../../../config.json');
-const constants       = require('./../../../constants');
 const oPool           = require('./../../../objects_pool');
 
 const emitRes         = require('./../../../emit_result');
@@ -19,10 +18,11 @@ const getLastMessages = require('./../common/get_last_messages');
 
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;
-const  PF                   = constants.PFIELDS;
+const  PF                   = require('./../../../const_fields');
 const  ROOM_CHANGE_TIMEOUT  = Number(Config.user.settings.room_change_timeout);
 const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 const NEW_ROOM = Config.io.new_room;
+const IO_CHANGE_ROOM = Config.io.emits.IO_CHANGE_ROOM;
 
 module.exports = function (socket, options) {
   
@@ -30,19 +30,19 @@ module.exports = function (socket, options) {
   
   // Ошибка, если нет комнаты с таким идентификатором
   if(!oPool.rooms[options[PF.ROOM]] && options[PF.ROOM] != NEW_ROOM) {
-    return emitRes(constants.errors.NO_SUCH_ROOM, socket ,constants.IO_CHANGE_ROOM);
+    return emitRes(Config.errors.NO_SUCH_ROOM, socket ,IO_CHANGE_ROOM);
   }
   
   // Если уже в этой комнате - ничего не делаем
   if(oPool.roomList[socket.id].getName() == options[PF.ROOM]){
-    return emitRes(null, socket, constants.IO_CHANGE_ROOM);
+    return emitRes(null, socket, IO_CHANGE_ROOM);
   }
   
   let  selfProfile = oPool.userList[socket.id];
   
   // Ошибка - если таймаут на смену комнаты еще не истек
   if(oPool.roomChangeLocks[selfProfile.getID()]) {
-    return emitRes(constants.errors.ACTON_TIMEOUT, socket, constants.IO_CHANGE_ROOM);
+    return emitRes(Config.errors.ACTON_TIMEOUT, socket, IO_CHANGE_ROOM);
   }
   
   let  newRoom = null;
@@ -59,7 +59,7 @@ module.exports = function (socket, options) {
     for (item in oPool.rooms) if (oPool.rooms.hasOwnProperty(item)) {
       if (oPool.rooms[item].getName() == options[PF.ROOM]) {
         if (oPool.rooms[item].getCountInRoom(userSex) >= ONE_SEX_IN_ROOM) {
-          return emitRes(constants.errors.ROOM_IS_FULL, socket, constants.IO_CHANGE_ROOM);
+          return emitRes(Config.errors.ROOM_IS_FULL, socket, IO_CHANGE_ROOM);
         }
         newRoom = oPool.rooms[item];
       }
@@ -67,7 +67,7 @@ module.exports = function (socket, options) {
   }
   
   if (!newRoom) {
-    return emitRes(constants.errors.NO_SUCH_ROOM, socket, constants.IO_CHANGE_ROOM);
+    return emitRes(Config.errors.NO_SUCH_ROOM, socket, IO_CHANGE_ROOM);
   }
   
   currRoom.getRanks().deleteEmits(socket);
@@ -112,14 +112,14 @@ module.exports = function (socket, options) {
     }//-----------------------------------------------------------------------
   ], function (err) {
     if(err) {
-      return emitRes(err, socket, constants.IO_CHANGE_ROOM);
+      return emitRes(err, socket, IO_CHANGE_ROOM);
     }
     
-    emitRes(null, socket, constants.IO_CHANGE_ROOM);
+    emitRes(null, socket, IO_CHANGE_ROOM);
     
     let info = newRoom.getPersonalInfo(selfProfile.getID());
     
-    socket.emit(constants.IO_ROOM_USERS, info);
+    socket.emit(Config.io.emits.IO_ROOM_USERS, info);
   
     newRoom.getGame().start(socket);
   

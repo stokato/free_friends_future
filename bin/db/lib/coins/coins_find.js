@@ -1,9 +1,6 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF = dbConst.COINS.fields;
-const PF  = constants.PFIELDS;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 /*
  Найти товар: ИД
@@ -12,35 +9,46 @@ const PF  = constants.PFIELDS;
  - Возвращаем данные по товару (Если не нашли ничего - NULL)
  */
 module.exports = function(goodid, callback) {
-  if(!goodid) { return callback(new Error("Не задан ИД товара"), null); }
-
-  const fields = [
+  
+  const DBF = DB_CONST.COINS.fields;
+  const DBN = DB_CONST.COINS.name;
+  
+  if(!goodid) {
+    return callback(new Error("Не задан ИД товара"), null);
+  }
+  
+  let fieldsArr = [
     DBF.TITLE_varchar,
     DBF.PRICE_COINS_int,
     DBF.PRICE_VK_int,
     DBF.SRC_varchar
   ];
   
-  const constFields = [DBF.ID_varchar_p];
-  const constValues = [1];
+  let condFieldsArr = [DBF.ID_varchar_p];
+  let condValuesArr = [1];
+  let paramsArr     = [goodid];
+  
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
 
-  const query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.COINS.name, constFields, constValues);
+  dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err, result) => {
+    if (err) {
+      return callback(err, null);
+    }
 
-  cdb.client.execute(query,[goodid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
+    if(result.rows.length == 0) {
+      return callback(null, null);
+    }
 
-    if(result.rows.length == 0) { return callback(null, null); }
-
-    const row = result.rows[0];
+    let rowObj = result.rows[0];
     
-    const good = {
-      [PF.ID]           : goodid,
-      [PF.TITLE]        : row[DBF.TITLE_varchar],
-      [PF.PRICE]        : row[DBF.PRICE_COINS_int],
-      [PF.PRICE_VK]     : row[DBF.PRICE_VK_int],
-      [PF.SRC]          : row[DBF.SRC_varchar]
+    let resObj = {
+      [PF.ID]        : goodid,
+      [PF.TITLE]     : rowObj[DBF.TITLE_varchar],
+      [PF.PRICE]     : rowObj[DBF.PRICE_COINS_int],
+      [PF.PRICE_VK]  : rowObj[DBF.PRICE_VK_int],
+      [PF.SRC]       : rowObj[DBF.SRC_varchar]
     };
     
-    callback(null, good);
+    callback(null, resObj);
   });
 };

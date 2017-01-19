@@ -8,7 +8,7 @@ const async  =  require('async');
 
 const logger          = require('./../../../../lib/log')(module);
 const Config          = require('./../../../../config.json');
-const constants       = require('./../../../constants');
+const PF         = require('./../../../const_fields');
 const oPool           = require('./../../../objects_pool');
 const stat            = require('./../../../stat_manager');
 
@@ -18,11 +18,10 @@ const GIRL = Config.user.constants.sex.female;
 const emitAllRooms    = require('../common/emit_all_rooms');
 // const sendUsersInRoom = require('./../common/get_users_in_room');
 
-const PF              = constants.PFIELDS;
 const EXIT_TIMEOUT    = Number(Config.io.exit_timeout);
 
 module.exports = function (socket) {
-  socket.on(constants.IO_DISCONNECT, function() {
+  socket.on(Config.io.emits.IO_DISCONNECT, function() {
     let selfProfile = oPool.userList[socket.id];
     if(!selfProfile) { return socket.disconnect(); }
     
@@ -40,7 +39,7 @@ module.exports = function (socket) {
                 [PF.VID]  : selfProfile.getVID()
               };
   
-              emitAllRooms(socket, constants.IO_OFFLINE, params);
+              emitAllRooms(socket, Config.io.emits.IO_OFFLINE, params);
         
               cb(null, null);
             }, //----------------------------------------------------------------
@@ -73,7 +72,7 @@ module.exports = function (socket) {
           
                 // Статистика
                 let msInGame = new Date() - selfProfile.getInitTime();
-                stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.GAME_TIME, msInGame);
+                stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.GAME_TIME, msInGame);
               
                 selfProfile.close();
               }
@@ -90,13 +89,13 @@ module.exports = function (socket) {
               //     [PF.VID]  : selfProfile.getVID()
               //   };
               //
-              //   emitAllRooms(socket, constants.IO_OFFLINE, params);
+              //   emitAllRooms(socket, cFields.IO_OFFLINE, params);
               // }
               
               cb(null, null);
             }//----------------------------------------------------------------
           ], function (err) {
-            if (err) { logger.error(constants.IO_DISCONNECT + err);  }
+            if (err) { logger.error(Config.io.emits.IO_DISCONNECT + err);  }
       
             socket.disconnect(); // отключаемся
           });

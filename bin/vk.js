@@ -6,7 +6,7 @@ const async = require('async');
 const md5   = require('md5');
 
 const Config        = require('./../config.json');
-const constants     = require('./constants');
+const PF     = require('./const_fields');
 const db            = require('./db_manager');
 const oPool         = require('./objects_pool');
 const stat          = require('./stat_manager');
@@ -14,9 +14,10 @@ const stat          = require('./stat_manager');
 const sanitize      = require('./sanitize');
 const getUserProfile = require('./io/lib/common/get_user_profile');
 
-const PF            = constants.PFIELDS;
 const REFILL_POINTS = Number(Config.points.refill);
 const MONEY_TYPE = Config.good_types.money;
+const COINS = Config.moneys.money_lots;
+const IO_GIVE_MONEY = Config.io.emits.IO_GIVE_MONEY;
 
 function VK () {}
 
@@ -187,26 +188,28 @@ function changeOrderStatus(request, callback) {
                   
                   let friendSocket = friendProfile.getSocket();
                   if(friendSocket) {
-                    friendSocket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money })
+                    friendSocket.emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money })
                   }
   
                   options[PF.ID] = friendProfile.getID();
                   options[PF.VID] = friendProfile.getVID();
                   options[PF.MONEY] = goodInfo[PF.PRICE];
   
-                  stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], constants.SFIELDS.COINS_GIVEN, options[PF.MONEY]);
-  
-                  let field = getField(payInfo[0], false);
-                  stat.setMainStat(field, 1);
+                  stat.setUserStat(selfInfo[PF.ID], selfInfo[PF.VID], PF.COINS_GIVEN, options[PF.MONEY]);
+                  
+                  if(COINS[payInfo[0]]) {
+                    stat.setMainStat(COINS[payInfo[0]].stat_give, 1);
+                  }
+                  
   
                   let socket = profile.getSocket();
                   if(socket) {
-                    socket.emit(constants.IO_GIVE_MONEY, options);
+                    socket.emit(IO_GIVE_MONEY, options);
   
                     let roomList = oPool.roomList;
                     let room = roomList[socket.id];
                     if(room) {
-                      socket.broadcast.in(room.getName()).emit(constants.IO_GIVE_MONEY, options);
+                      socket.broadcast.in(room.getName()).emit(IO_GIVE_MONEY, options);
                     }
                   }
                   
@@ -233,7 +236,7 @@ function changeOrderStatus(request, callback) {
             
             let socket = profile.getSocket();
             if(socket) {
-              socket.emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
+              socket.emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
             }
             
             let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
@@ -244,11 +247,12 @@ function changeOrderStatus(request, callback) {
               options[PF.MONEY] = goodInfo[PF.PRICE];
   
               if(oPool.profiles[options.id]) {
-                oPool.profiles[options.id].getSocket().emit(constants.IO_GIVE_MONEY, options);
+                oPool.profiles[options.id].getSocket().emit(IO_GIVE_MONEY, options);
               }
   
-              let field = getField(payInfo[0], true);
-              stat.setMainStat(field, 1);
+              if(COINS[payInfo[0]]) {
+                stat.setMainStat(COINS[payInfo[0]].stat_take, 1);
+              }
   
               let result = {};
               result.orderid = orderid;
@@ -289,23 +293,6 @@ function changeOrderStatus(request, callback) {
 }
 
 //-------------------------------------
-function getField (goodID, isSelf) {
-  let SF = constants.SFIELDS;
-  let LOTS = constants.MONEY_LOTS;
-  let field;
-  
-  switch (goodID) {
-    case LOTS.COIN_1    : (isSelf)? field = SF.MONEY_1_TAKEN    : field = SF.MONEY_1_GIVEN;     break;
-    case LOTS.COIN_3    : (isSelf)? field = SF.MONEY_3_TAKEN    : field = SF.MONEY_3_GIVEN;     break;
-    case LOTS.COIN_10   : (isSelf)? field = SF.MONEY_10_TAKEN   : field = SF.MONEY_10_GIVEN;    break;
-    case LOTS.COIN_20   : (isSelf)? field = SF.MONEY_20_TAKEN   : field = SF.MONEY_20_GIVEN;    break;
-    case LOTS.COIN_60   : (isSelf)? field = SF.MONEY_60_TAKEN   : field = SF.MONEY_60_GIVEN;    break;
-    case LOTS.COIN_200  : (isSelf)? field = SF.MONEY_200_TAKEN  : field = SF.MONEY_200_GIVEN;   break;
-  }
-  
-  return field;
-}
-
 function sendError(callback) {
   let response = {};
   response["error"] = {

@@ -1,14 +1,9 @@
 const async = require('async');
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 const bdayToAge = require('./../common/bdayToAge');
-const constants = require('./../../../constants');
-
-const DBF     = dbConst.USER_MESSAGES.fields;
-const DBFN    = dbConst.USER_NEW_MESSAGES.fields;
-const DBFCN   = dbConst.USER_NEW_CHATS.fields;
-const PF      = constants.PFIELDS;
 
 /*
  Найти сохраненные сообщения пользователя, связаныне с заданным собеседником: ИД игрока
@@ -17,134 +12,159 @@ const PF      = constants.PFIELDS;
  - Возвращаем массив с сообщениями (если ничего нет - NULL)
  */
 module.exports = function(uid, options, callback) { options = options || {};
-  let companions = options[PF.ID_LIST] || [];
-  let firstDate =  options[PF.DATE_FROM];
-  let secondDate = options[PF.DATE_TO];
   
-  if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null); }
-  if (!companions[0]) { return callback(new Error("Задан пустой Id собеседника"), null); }
+  const DBF   = DB_CONST.USER_MESSAGES.fields;
+  const DBN   = DB_CONST.USER_MESSAGES.name;
   
-  let fields = "";
-  let params = [uid];
+  const DBFN  = DB_CONST.USER_NEW_MESSAGES.fields;
+  const DBNN  = DB_CONST.USER_NEW_MESSAGES.name;
   
-  for(let i = 0; i < companions.length; i++) {
-    if (fields == "") { fields = fields + "?"; }
-    else { fields = fields + ", " + "?"; }
-    
-    params.push(companions[i]);
+  const DBFCN = DB_CONST.USER_NEW_CHATS.fields;
+  const DBNCN = DB_CONST.USER_NEW_CHATS.name;
+  
+  let companionsArr = options[PF.ID_LIST] || [];
+  let firstDate     = options[PF.DATE_FROM];
+  let secondDate    = options[PF.DATE_TO];
+  
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"), null);
   }
+  
+  if (!companionsArr[0]) {
+    return callback(new Error("Задан пустой Id собеседника"), null);
+  }
+  
+  let paramsArr = [uid];
+  
+  let companionsCount = companionsArr.length;
+  for(let i = 0; i < companionsCount; i++) {
+    paramsArr.push(companionsArr[i]);
+  }
+  
   async.waterfall([//-----------------------------------------------------------
       function (cb) {
-        let fields = [DBFN.COMPANIONID_uuid_pc2i];
-        let dbName = dbConst.USER_NEW_MESSAGES.name;
-        let constFields = [DBFN.USERID_uuid_pci];
-        let constValues = [1];
+        let fieldsArr = [DBFN.COMPANIONID_uuid_pc2i];
+
+        let condFieldsArr = [DBFN.USERID_uuid_pci];
+        let condValuesArr = [1];
         
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBNN, condFieldsArr, condValuesArr);
         
-        cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-          if (err) { return cb(err, null); }
-          
-          let newIds = [];
-          
-          for(let i = 0; i < result.rows.length; i++) {
-            newIds.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2i].toString());
+        dbCtrlr.client.execute(query,[uid], {prepare: true }, (err, result) => {
+          if (err) {
+            return cb(err, null);
           }
           
-          cb(null, newIds);
+          let newIDArr = [];
+          
+          let rowsLen = result.rows.length;
+          for(let i = 0; i < rowsLen; i++) {
+            newIDArr.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2i].toString());
+          }
+          
+          cb(null, newIDArr);
         });
       },//-----------------------------------------------------------
-      function(newIDs, cb) { // Получаем историю сообщений за указанный период (прочитанных)
-        //let query = "select * FROM user_messages where userid = ? and companionid in (" + fields + ")";
-        let const_more, const_less;
-        let params2 = params.slice(0);
+      function(newIDArr, cb) { // Получаем историю сообщений за указанный период (прочитанных)
+        
+        let condMore, condLess;
+        let paramsArr = paramsArr.slice(0);
+        
         if (firstDate) {
-          const_more = const_less = "id";
-          params2.push(cdb.timeUuid.fromDate(firstDate));
-          params2.push(cdb.timeUuid.fromDate(secondDate));
+          condMore = condLess = "id";
+          paramsArr.push(dbCtrlr.timeUuid.fromDate(firstDate));
+          paramsArr.push(dbCtrlr.timeUuid.fromDate(secondDate));
         }
         
-        let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i];
-        let constValues = [1, companions.length];
-        let dbName = dbConst.USER_MESSAGES.name;
+        let fieldsArr = [dbCtrlr.qBuilder.ALL_FIELDS];
+        let condFeildsArr = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i];
+        let condValuesArr = [1, companionsArr.length];
         
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, [cdb.qBuilder.ALL_FIELDS],
-          dbName, constFields, constValues, const_more, const_less);
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFeildsArr,
+                                                                      condValuesArr, condMore, condLess);
         
-        cdb.client.execute(query, params2, {prepare: true }, function(err, result) {
-          if (err) { return cb(err, null); }
-          let messages = [], message, row;
+        dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
+          if (err) {
+            return cb(err, null);
+          }
+          
+          let messagesArr = [];
           
           for(let i = 0; i < result.rows.length; i++) {
-            row = result.rows[i];
+            let rowObj = result.rows[i];
             
-            message = {};
-            message[PF.CHATID]   = row[DBF.COMPANIONID_uuid_pc2i].toString();
-            message[PF.CHATVID] = row[DBF.COMPANIONVID_varchar];
-            message[PF.DATE]    = row[DBF.DATE_timestamp];
-            message[PF.TEXT]    = row[DBF.TEXT_text];
-            message[PF.MESSAGEID] = row[DBF.ID_timeuuid_c].toString();
+            let messageObj = {
+              [PF.CHATID]     : rowObj[DBF.COMPANIONID_uuid_pc2i].toString(),
+              [PF.CHATVID]    : rowObj[DBF.COMPANIONVID_varchar],
+              [PF.DATE]       : rowObj[DBF.DATE_timestamp],
+              [PF.TEXT]       : rowObj[DBF.TEXT_text],
+              [PF.MESSAGEID]  : rowObj[DBF.ID_timeuuid_c].toString()
+            };
+
             
-            if(row[DBF.INCOMING_boolean] == true) {
-              message[PF.ID] = row[DBF.COMPANIONID_uuid_pc2i].toString();
-              message[PF.VID] = row[DBF.COMPANIONVID_varchar];
-              message[PF.SEX] = row[DBF.COMPANIONSEX_int];
-              message[PF.AGE] = bdayToAge(row[DBF.COMPANIONBDATE_timestamp]);
+            if(rowObj[DBF.INCOMING_boolean] == true) {
+              messageObj[PF.ID]  = rowObj[DBF.COMPANIONID_uuid_pc2i].toString();
+              messageObj[PF.VID] = rowObj[DBF.COMPANIONVID_varchar];
+              messageObj[PF.SEX] = rowObj[DBF.COMPANIONSEX_int];
+              messageObj[PF.AGE] = bdayToAge(rowObj[DBF.COMPANIONBDATE_timestamp]);
             } else {
-              message[PF.ID] = row[DBF.USERID_uuid_pci].toString();
-              message[PF.VID] = row[DBF.USERVID_varchar];
-              message[PF.SEX] = row[DBF.USERSEX_int];
-              message[PF.AGE] = bdayToAge(row[DBF.USERBDATE_timestamp]);
+              messageObj[PF.ID]  = rowObj[DBF.USERID_uuid_pci].toString();
+              messageObj[PF.VID] = rowObj[DBF.USERVID_varchar];
+              messageObj[PF.SEX] = rowObj[DBF.USERSEX_int];
+              messageObj[PF.AGE] = bdayToAge(rowObj[DBF.USERBDATE_timestamp]);
             }
             
-            message[PF.ISNEW] = false;
+            messageObj[PF.ISNEW] = false;
             
-            for(let nid = 0; nid < newIDs.length; nid++) {
-              if(message[PF.ID] == newIDs[nid]) {
-                message[PF.ISNEW] = true;
-              }
+            for(let nid = 0; nid < newIDArr.length; nid++) if(messageObj[PF.ID] == newIDArr[nid]) {
+                messageObj[PF.ISNEW] = true;
             }
             
-            messages.push(message);
+            messagesArr.push(messageObj);
           }
-          cb(null, messages);
+          cb(null, messagesArr);
         });
       },//-----------------------------------------------------------
       function(messages, cb) { // Удаляем сообщения из таблицы новых
-        let constFields = [DBFN.USERID_uuid_pci, DBFN.COMPANIONID_uuid_pc2i];
-        let constValues = [1, companions.length];
-        let dbName = dbConst.USER_NEW_MESSAGES.name;
+        let condFieldsArr = [DBFN.USERID_uuid_pci, DBFN.COMPANIONID_uuid_pc2i];
+        let condValuesArr = [1, companionsArr.length];
         
-        //let query = "DELETE FROM user_new_messages WHERE userid = ? and companionid in ( " + fields + " )";
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBNN, condFieldsArr, condValuesArr);
         
-        cdb.client.execute(query, params, {prepare: true }, function(err) {
-          if (err) {  return cb(err, null); }
+        dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+          if (err) {
+            return cb(err, null);
+          }
           
           cb(null, messages);
         });
       },//-----------------------------------------------------------
       function(messages, cb) {
         
-        let params = [uid];
-        let constFields = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
-        let constValues = [ 1, companions.length ];
-        let dbName = dbConst.USER_NEW_CHATS.name;
+        let paramsArr = [uid];
+        let condFieldsArr = [DBFCN.USERID_uuid_pc1i, DBFCN.COMPANIONID_uuid_pc2];
+        let condValuesArr = [ 1, companionsArr.length ];
         
-        for (let i = 0; i < companions.length; i ++) {
-          params.push(companions[i]);
+        let companionsLen = companionsArr.length;
+        for (let i = 0; i < companionsLen; i ++) {
+          paramsArr.push(companionsArr[i]);
         }
         
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
-        cdb.client.execute(query, params, { prepare: true }, function(err) {
-          if (err) { return cb(err); }
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBNCN, condFieldsArr, condValuesArr);
+        
+        dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+          if (err) {
+            return cb(err);
+          }
           
           cb(null, messages);
         });
       }
     ], //-----------------------------------------------------------
     function(err, messages) {
-      if(err) return callback(err, null);
+      if(err)  {
+        return callback(err, null);
+      }
       
       callback(null, messages);
     })

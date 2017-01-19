@@ -1,9 +1,8 @@
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USER_MESSAGES.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.USER_MESSAGES.fields;
 
 /*
  Изменить сообщение в БД: Свойства сообщения
@@ -19,14 +18,14 @@ module.exports = function(uid, options, callback) { options = options || {};
   let fields = [DBF.ID_timeuuid_c];
   let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i, DBF.ID_timeuuid_c];
   let constValues = [1, 1, 1];
-  let dbName = dbConst.USER_MESSAGES.name;
+  let dbName = DB_CONST.USER_MESSAGES.name;
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
 
   let params = [uid, options[PF.ID], options[PF.MESSAGEID]];
 
   // Получаем сообщение
-  cdb.client.execute(query, params, {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) { return callback(new Error("Сообщения с таким Id нет в базе данных"), null)}
@@ -40,10 +39,10 @@ module.exports = function(uid, options, callback) { options = options || {};
     let constFields = [DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i, DBF.ID_timeuuid_c];
     let constValues = [1, 1, 1];
 
-    let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+    let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
 
     // Сохраняем изменения
-    cdb.client.execute(query, params, {prepare: true }, function(err) {
+    dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
       if (err) {  return callback(err); }
 
       callback(null, options);

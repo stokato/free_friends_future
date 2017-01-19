@@ -5,8 +5,7 @@
  * @return newRoom
  */
 
-const constants = require('./../../../constants'),
-    createRoom  = require('./create_room'),
+const createRoom  = require('./create_room'),
     oPool       = require('./../../../objects_pool');
 
 const Config    = require('./../../../../config.json');

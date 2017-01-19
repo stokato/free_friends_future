@@ -1,9 +1,7 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
 
-const DBF  = dbConst.USER_MESSAGES.fields;
-const DBFN = dbConst.USER_NEW_MESSAGES.fields;
-const DBFC = dbConst.USER_CHATS.fields;
+const async    = require('async');
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
 
 /*
  Удалить все сообщения игрока: ИД
@@ -14,59 +12,83 @@ const DBFC = dbConst.USER_CHATS.fields;
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
+  
+  const DBF  = DB_CONST.USER_MESSAGES.fields;
+  const DBN = DB_CONST.USER_MESSAGES.name;
 
-  // Отбираем сообщения
-  let fields = [DBFC.COMPANIONID_uuid_c];
-  let constFields =[DBFC.USERID_uuid_p];
-  let constValues = [1];
-  let dbName = dbConst.USER_CHATS.name;
+  const DBFC = DB_CONST.USER_CHATS.fields;
+  const DBNC = DB_CONST.USER_CHATS.name;
+  
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"));
+  }
 
-  //let query = "select companionid FROM user_chats where userid = ?";
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
-
-  cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-
-    let params = [];
-
-    for (let i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2i]);
-    }
-
-    // Удаляем сообщения
-    let constFields = [
-      DBF.USERID_uuid_pci,
-      DBF.COMPANIONID_uuid_pc2i
-    ];
+  //TODO: проверить работу
+  
+  async.waterfall([
+    // Отбираем сообщения
+    function (cb) {
     
-    let constValues = [
-      1,
-      result.rows.length
-    ];
+      let fieldsArr     = [DBFC.COMPANIONID_uuid_c];
+      let condFieldsArr = [DBFC.USERID_uuid_p];
+      let condValuesArr = [1];
+  
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBNC, condFieldsArr, condValuesArr);
+  
+      dbCtrlr.client.execute(query,[uid], {prepare: true }, (err, result) => {
+        if (err) {
+          return cb(err, null);
+        }
     
-    let dbName = dbConst.USER_MESSAGES.name;
-
-    //let query = "DELETE FROM user_messages WHERE userid = ? and companionid in ( " + fields + " )";
-    query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
-
-    cdb.client.execute(query, params, {prepare: true }, function(err) {
-      if (err) {  return callback(err); }
-
-      // Удаляем чат
-      //query = "DELETE FROM user_chats WHERE userid = ?";
-      let constFields = [DBFC.USERID_uuid_p];
-      let constValues = [1];
-      let dbName = dbConst.USER_CHATS.name;
-
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
-
-      cdb.client.execute(query, [uid], {prepare: true }, function(err) {
-        if (err) {  return callback(err); }
-
-        callback(null, uid);
+        cb(null, result);
       });
-    });
+    },
+    // Удаляем сообщения
+    function (result, cb) {
+  
+      let paramsArr = [];
+  
+      let rowsLen = result.rows.length;
+      for (let i = 0; i < rowsLen; i ++) {
+        paramsArr.push(result.rows[i][DBFC.COMPANIONID_uuid_c]);
+      }
+      
+      let condFieldsArr = [ DBF.USERID_uuid_pci, DBF.COMPANIONID_uuid_pc2i ];
+      let condValuesArr = [ 1, result.rows.length ];
+      
+      query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, condFieldsArr, condValuesArr);
+  
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+        if (err) {
+          return cb(err);
+        }
+    
+        cb(null, result);
+      });
+    },
+    function (result, cb) {
+  
+      // Удаляем чат
+      let condFieldsArr = [DBFC.USERID_uuid_p];
+      let condValuesArr = [1];
+  
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBNC, condFieldsArr, condValuesArr);
+  
+      dbCtrlr.client.execute(query, [uid], {prepare: true }, (err) => {
+        if (err) {
+          return cb(err);
+        }
+  
+        cb(null, uid);
+      });
+    }
+  ], function (err, uid) {
+    if (err) {
+      return callback(err);
+    }
+  
+    callback(null, uid);
   });
+  
 
 };

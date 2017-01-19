@@ -5,60 +5,60 @@
  *
  */
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF = dbConst.MAIN_STAT.fields;
-const PF  = constants.PFIELDS;
-const SF  = constants.SFIELDS;
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF       = require('./../../../const_fields');
 
 module.exports = function(options, callback) { options = options || {};
+  
+  const DBF = DB_CONST.MAIN_STAT.fields;
+  const DBN = DB_CONST.MAIN_STAT.name;
   
   if (!options[PF.ID]) {
     return callback(new Error("Задан пустой Id"), null);
   }
   
-  let fields = [];
-  let constFields = [DBF.ID_varchar_p];
-  let constValues = [1];
-  let dbName = dbConst.MAIN_STAT.name;
+  let fieldsArr     = [];
+  let condFieldsArr = [DBF.ID_varchar_p];
+  let condValuesArr = [1];
+  let paramsArr     = [];
   
-  let params = [];
-  if (SF.GIFTS_LOVES in options)        { fields.push(DBF.C_GIFTS_LOVES_counter);       params.push(options[SF.GIFTS_LOVES]); }
-  if (SF.GIFTS_BREATH in options)       { fields.push(DBF.C_GIFTS_BREATH_counter);      params.push(options[SF.GIFTS_BREATH]); }
-  if (SF.GIFTS_FLOWERS in options)      { fields.push(DBF.C_GIFTS_FLOWERS_counter);     params.push(options[SF.GIFTS_FLOWERS]); }
-  if (SF.GIFTS_DRINKS in options)       { fields.push(DBF.C_GIFTS_DRINKS_counter);      params.push(options[SF.GIFTS_DRINKS]); }
-  if (SF.GIFTS_COMMON in options)       { fields.push(DBF.C_GIFTS_COMMON_counter);      params.push(options[SF.GIFTS_COMMON]); }
-  if (SF.GIFTS_FLIRTATION in options)   { fields.push(DBF.C_GIFTS_FLIRTATION_counter);  params.push(options[SF.GIFTS_FLIRTATION]); }
-  if (SF.GIFTS_MERRY in options)        { fields.push(DBF.C_GIFTS_MERRY_counter);       params.push(options[SF.GIFTS_MERRY]); }
-  if (SF.MONEY_1_GIVEN in options)      { fields.push(DBF.C_MONEY_1_GIVEN_counter);     params.push(options[SF.MONEY_1_GIVEN]); }
-  if (SF.MONEY_3_GIVEN in options)      { fields.push(DBF.C_MONEY_3_GIVEN_counter);     params.push(options[SF.MONEY_3_GIVEN]); }
-  if (SF.MONEY_10_GIVEN in options)     { fields.push(DBF.C_MONEY_10_GIVEN_counter);    params.push(options[SF.MONEY_10_GIVEN]); }
-  if (SF.MONEY_20_GIVEN in options)     { fields.push(DBF.C_MONEY_20_GIVEN_counter);    params.push(options[SF.MONEY_20_GIVEN]); }
-  if (SF.MONEY_60_GIVEN in options)     { fields.push(DBF.C_MONEY_60_GIVEN_counter);    params.push(options[SF.MONEY_60_GIVEN]); }
-  if (SF.MONEY_200_GIVEN in options)    { fields.push(DBF.C_MONEY_200_GIVEN_counter);   params.push(options[SF.MONEY_200_GIVEN]); }
-  if (SF.MONEY_1_TAKEN in options)      { fields.push(DBF.C_MONEY_1_TAKEN_counter);     params.push(options[SF.MONEY_1_TAKEN]); }
-  if (SF.MONEY_3_TAKEN in options)      { fields.push(DBF.C_MONEY_3_TAKEN_counter);     params.push(options[SF.MONEY_3_TAKEN]); }
-  if (SF.MONEY_10_TAKEN in options)     { fields.push(DBF.C_MONEY_10_TAKEN_counter);    params.push(options[SF.MONEY_10_TAKEN]); }
-  if (SF.MONEY_20_TAKEN in options)     { fields.push(DBF.C_MONEY_20_TAKEN_counter);    params.push(options[SF.MONEY_20_TAKEN]); }
-  if (SF.MONEY_60_TAKEN in options)     { fields.push(DBF.C_MONEY_60_TAKEN_counter);    params.push(options[SF.MONEY_60_TAKEN]); }
-  if (SF.MONEY_200_TAKEN in options)    { fields.push(DBF.C_MONEY_200_TAKEN_counter);   params.push(options[SF.MONEY_200_TAKEN]); }
-  if (SF.MENU_APPEND in options)        { fields.push(DBF.C_MENU_APPEND_counter);       params.push(options[SF.MENU_APPEND]); }
-  if (SF.BEST_ACTIVITY in options)      { fields.push(DBF.C_BEST_ACTIVITY_counter);     params.push(options[SF.BEST_ACTIVITY]); }
-  if (SF.BOTTLE_ACTIVITY in options)    { fields.push(DBF.C_BOTTLE_ACTIVITY_counter);   params.push(options[SF.BOTTLE_ACTIVITY]); }
-  if (SF.CARDS_ACTIVITY in options)     { fields.push(DBF.C_CARDS_ACTIVITY_counter);    params.push(options[SF.CARDS_ACTIVITY]); }
-  if (SF.QUESTION_ACITVITY in options)  { fields.push(DBF.C_QUESTION_ACITVITY_counter); params.push(options[SF.QUESTION_ACITVITY]); }
-  if (SF.SYMPATHY_ACITVITY in options)  { fields.push(DBF.C_SYMPATHY_ACITVITY_counter); params.push(options[SF.SYMPATHY_ACITVITY]); }
-  if (SF.COINS_EARNED in options)       { fields.push(DBF.C_COINS_EARNED_counter);      params.push(options[SF.COINS_EARNED]); }
-  if (SF.COINS_SPENT in options)        { fields.push(DBF.C_COUNS_SPENT_counter);       params.push(options[SF.COINS_SPENT]); }
-    
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
+  if (PF.GIFTS_LOVES in options)        { fieldsArr.push(DBF.C_GIFTS_LOVES_counter);       paramsArr.push(options[PF.GIFTS_LOVES]); }
+  if (PF.GIFTS_BREATH in options)       { fieldsArr.push(DBF.C_GIFTS_BREATH_counter);      paramsArr.push(options[PF.GIFTS_BREATH]); }
+  if (PF.GIFTS_FLOWERS in options)      { fieldsArr.push(DBF.C_GIFTS_FLOWERS_counter);     paramsArr.push(options[PF.GIFTS_FLOWERS]); }
+  if (PF.GIFTS_DRINKS in options)       { fieldsArr.push(DBF.C_GIFTS_DRINKS_counter);      paramsArr.push(options[PF.GIFTS_DRINKS]); }
+  if (PF.GIFTS_COMMON in options)       { fieldsArr.push(DBF.C_GIFTS_COMMON_counter);      paramsArr.push(options[PF.GIFTS_COMMON]); }
+  if (PF.GIFTS_FLIRTATION in options)   { fieldsArr.push(DBF.C_GIFTS_FLIRTATION_counter);  paramsArr.push(options[PF.GIFTS_FLIRTATION]); }
+  if (PF.GIFTS_MERRY in options)        { fieldsArr.push(DBF.C_GIFTS_MERRY_counter);       paramsArr.push(options[PF.GIFTS_MERRY]); }
+  if (PF.MONEY_1_GIVEN in options)      { fieldsArr.push(DBF.C_MONEY_1_GIVEN_counter);     paramsArr.push(options[PF.MONEY_1_GIVEN]); }
+  if (PF.MONEY_3_GIVEN in options)      { fieldsArr.push(DBF.C_MONEY_3_GIVEN_counter);     paramsArr.push(options[PF.MONEY_3_GIVEN]); }
+  if (PF.MONEY_10_GIVEN in options)     { fieldsArr.push(DBF.C_MONEY_10_GIVEN_counter);    paramsArr.push(options[PF.MONEY_10_GIVEN]); }
+  if (PF.MONEY_20_GIVEN in options)     { fieldsArr.push(DBF.C_MONEY_20_GIVEN_counter);    paramsArr.push(options[PF.MONEY_20_GIVEN]); }
+  if (PF.MONEY_60_GIVEN in options)     { fieldsArr.push(DBF.C_MONEY_60_GIVEN_counter);    paramsArr.push(options[PF.MONEY_60_GIVEN]); }
+  if (PF.MONEY_200_GIVEN in options)    { fieldsArr.push(DBF.C_MONEY_200_GIVEN_counter);   paramsArr.push(options[PF.MONEY_200_GIVEN]); }
+  if (PF.MONEY_1_TAKEN in options)      { fieldsArr.push(DBF.C_MONEY_1_TAKEN_counter);     paramsArr.push(options[PF.MONEY_1_TAKEN]); }
+  if (PF.MONEY_3_TAKEN in options)      { fieldsArr.push(DBF.C_MONEY_3_TAKEN_counter);     paramsArr.push(options[PF.MONEY_3_TAKEN]); }
+  if (PF.MONEY_10_TAKEN in options)     { fieldsArr.push(DBF.C_MONEY_10_TAKEN_counter);    paramsArr.push(options[PF.MONEY_10_TAKEN]); }
+  if (PF.MONEY_20_TAKEN in options)     { fieldsArr.push(DBF.C_MONEY_20_TAKEN_counter);    paramsArr.push(options[PF.MONEY_20_TAKEN]); }
+  if (PF.MONEY_60_TAKEN in options)     { fieldsArr.push(DBF.C_MONEY_60_TAKEN_counter);    paramsArr.push(options[PF.MONEY_60_TAKEN]); }
+  if (PF.MONEY_200_TAKEN in options)    { fieldsArr.push(DBF.C_MONEY_200_TAKEN_counter);   paramsArr.push(options[PF.MONEY_200_TAKEN]); }
+  if (PF.MENU_APPEND in options)        { fieldsArr.push(DBF.C_MENU_APPEND_counter);       paramsArr.push(options[PF.MENU_APPEND]); }
+  if (PF.BEST_ACTIVITY in options)      { fieldsArr.push(DBF.C_BEST_ACTIVITY_counter);     paramsArr.push(options[PF.BEST_ACTIVITY]); }
+  if (PF.BOTTLE_ACTIVITY in options)    { fieldsArr.push(DBF.C_BOTTLE_ACTIVITY_counter);   paramsArr.push(options[PF.BOTTLE_ACTIVITY]); }
+  if (PF.CARDS_ACTIVITY in options)     { fieldsArr.push(DBF.C_CARDS_ACTIVITY_counter);    paramsArr.push(options[PF.CARDS_ACTIVITY]); }
+  if (PF.QUESTION_ACITVITY in options)  { fieldsArr.push(DBF.C_QUESTION_ACITVITY_counter); paramsArr.push(options[PF.QUESTION_ACITVITY]); }
+  if (PF.SYMPATHY_ACITVITY in options)  { fieldsArr.push(DBF.C_SYMPATHY_ACITVITY_counter); paramsArr.push(options[PF.SYMPATHY_ACITVITY]); }
+  if (PF.COINS_EARNED in options)       { fieldsArr.push(DBF.C_COINS_EARNED_counter);      paramsArr.push(options[PF.COINS_EARNED]); }
+  if (PF.COINS_SPENT in options)        { fieldsArr.push(DBF.C_COUNS_SPENT_counter);       paramsArr.push(options[PF.COINS_SPENT]); }
   
-  params.push(options[PF.ID]);
+  paramsArr.push(options[PF.ID]);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE_COUNTER, fieldsArr, DBN, condFieldsArr, condValuesArr);
+  
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, options);
   });

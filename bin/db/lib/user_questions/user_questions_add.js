@@ -5,12 +5,11 @@
  *
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USER_QUESTIONS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.USER_QUESTIONS.fields;
 
 module.exports = function (uid, options, callback) { options = options || {};
   
@@ -18,7 +17,7 @@ module.exports = function (uid, options, callback) { options = options || {};
     return callback(new Error("Не задан текст сообщения или изображение"), null);
   }
   
-  let id = cdb.uuid.random();
+  let id = dbCtrlr.uuid.random();
   
   let fields = [
     DBF.ID_uuid_p,
@@ -40,9 +39,9 @@ module.exports = function (uid, options, callback) { options = options || {};
     options[PF.FVID]
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_QUESTIONS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.USER_QUESTIONS.name);
   
-  cdb.client.execute(query, params, {prepare: true },  function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
     
     options[PF.ID] = id;

@@ -1,17 +1,20 @@
-const cdb = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF = dbConst.USER_GIFTS.fields;
-const PF = constants.PFIELDS;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 /*
  Найти подарок пользователя по его id
  */
 module.exports = function(id, callback) {
-  if (!id) { return callback(new Error("Задан пустой Id пользователя"), null);}
+  
+  const DBF = DB_CONST.USER_GIFTS.fields;
+  const DBN = DB_CONST.USER_GIFTS.name;
+  
+  if (!id) {
+    return callback(new Error("Задан пустой Id пользователя"), null);
+  }
 
-  let fields = [
+  let fieldsArr = [
     DBF.GIFTID_varchar,
     DBF.TYPE_varchar,
     DBF.SRC_varhar,
@@ -21,30 +24,32 @@ module.exports = function(id, callback) {
     DBF.FROMVID_varchar
   ];
   
-  let constFields = [DBF.ID_uuid_p];
-  let constValues = [1];
-  let dbName = dbConst.USER_GIFTS.name;
+  let condFieldsArr = [DBF.ID_uuid_p];
+  let condValuesArr = [1];
+  let paramsArr     = [id];
+  
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
-
-  cdb.client.execute(query,[id], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
+    if (err) {
+      return callback(err, null);
+    }
 
     if(result.rows.length > 0) {
-      let row = result.rows[0];
+      let rowObj = result.rows[0];
 
-      let gift = {
+      let giftObj = {
         [PF.UGIFTID] : id,
-        [PF.GIFTID]  : row[DBF.GIFTID_varchar],
-        [PF.TYPE]    : row[DBF.TYPE_varchar],
-        [PF.SRC]     : row[DBF.SRC_varhar],
-        [PF.DATE]    : row[DBF.DATE_timestamp],
-        [PF.TITLE]   : row[DBF.TITLE_varchar],
-        [PF.FID]     : row[DBF.FROMID_uuid].toString(),
-        [PF.FVID]    : row[DBF.FROMVID_varchar]
+        [PF.GIFTID]  : rowObj[DBF.GIFTID_varchar],
+        [PF.TYPE]    : rowObj[DBF.TYPE_varchar],
+        [PF.SRC]     : rowObj[DBF.SRC_varhar],
+        [PF.DATE]    : rowObj[DBF.DATE_timestamp],
+        [PF.TITLE]   : rowObj[DBF.TITLE_varchar],
+        [PF.FID]     : rowObj[DBF.FROMID_uuid].toString(),
+        [PF.FVID]    : rowObj[DBF.FROMVID_varchar]
       };
 
-      callback(null, gift);
+      callback(null, giftObj);
     } else {
       callback(null, null);
     }

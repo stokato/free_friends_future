@@ -6,7 +6,7 @@
  */
 
 const logger        = require('./../../../../lib/log')(module);
-const constants     = require('./../../../constants');
+const Config       = require('./../../../../config.json');
 const oPool           = require('./../../../objects_pool');
 const genDateHistory  = require('./gen_date_history');
 
@@ -20,7 +20,7 @@ module.exports = function (socket) { // Получаем данные по пр�
     if(err) { return logger('sendPrivateChats' + err); }
     
     for(let  i = 0; i < history.length; i++) {
-      socket.emit(constants.IO_MESSAGE, history[i]);
+      socket.emit(Config.io.emits.IO_MESSAGE, history[i]);
     }
     
   });

@@ -6,22 +6,24 @@
  * @param target - флаг, кого отментить просмотренным
  * @return target
  */
-const  constants = require('./../../constants');
+
+const Config = require('./../../../config.json');
 const  db = require('./../../db_manager');
+const VT = Config.user.constants.viewed_types;
 
 module.exports = function (target, callback) {
   
   switch (target) {
-    case constants.VIEWED_TYPE.FRIENDS :
+    case VT.FRIENDS :
       db.openFriends(this._pID, onComplete);
       break;
-    case constants.VIEWED_TYPE.GUESTS :
+    case VT.GUESTS :
       db.openGuests(this._pID, onComplete);
       break;
-    case constants.VIEWED_TYPE.GIFTS :
+    case VT.GIFTS :
       db.openGifts(this._pID, onComplete);
       break;
-    case constants.VIEWED_TYPE.MESSAGES :
+    case VT.MESSAGES :
       onComplete(null); // Новые сообщения обнуляем при открытии чата
       break;
     default :

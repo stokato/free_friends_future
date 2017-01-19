@@ -4,7 +4,7 @@
  * Обработчик получения бонуса для звания Популярный
  */
 
-const constants = require('./../../constants');
+const PF = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 const logger    = require('./../../../lib/log')(module);
 const Config    = require('./../../../config.json');
@@ -25,7 +25,7 @@ module.exports = function(ranks) {
       if(err) { return logger.error('handlePopularBonus' + err); }
       
       let  socket = profile.getSocket();
-      socket.emit(constants.IO_GET_MONEY, { [constants.PFIELDS.MONEY] : money });
+      socket.emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
     });
     
   }

@@ -5,7 +5,7 @@
 
 const  oPool    = require('./../../../objects_pool');
 const  sendOne  = require('./send_one');
-const  PF       = require('./../../../constants').PFIELDS;
+const  PF       = require('./../../../const_fields');
 
 module.exports = function (socket, room) {
   let  messages = room.getMessages();

@@ -6,7 +6,7 @@
  */
 
 const  db = require('./../../db_manager');
-const  IOF = require('./../../constants').PFIELDS;
+const  IOF = require('./../../const_fields');
 
 module.exports = function(num, callback) {
   if (!isNumeric(num)) {

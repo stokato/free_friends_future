@@ -1,6 +1,6 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const DBF     = dbConst.QUESTIONS.fields;
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const DBF     = DB_CONST.QUESTIONS.fields;
 
 /*
  Удаляем вопрос из бд
@@ -11,15 +11,15 @@ module.exports = function(idList, callback) {
   let constFields = [DBF.ID_uuid_p];
   let constValues = [idList.length];
   let params = [];
-  let dbName = dbConst.QUESTIONS.name;
+  let dbName = DB_CONST.QUESTIONS.name;
   
   for(let i = 0; i < idList.length; i++) {
     params.push(idList[i]);
   }
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
     
     callback(null, null);

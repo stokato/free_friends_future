@@ -4,27 +4,23 @@
  * Удаляем профиль
  */
 
-const constants = require('./../../constants');
-// const ioc = require('./../../io_controller');
+const Config = require('./../../../config.json');
+const RANKS = Config.ranks;
+const ALMIGHTY = Config.almighty;
 
 module.exports = function (profile) {
   let uid = profile.getID();
-  let socket = profile.getSocket();
-  
-  // ioc.removeEmit(socket, constants.IO_GET_ACTIVE_RANK);
-  // ioc.removeEmit(socket, constants.IO_GET_RANKS);
-  // ioc.removeEmit(socket, constants.IO_CHANGE_ACTIVE_RANK);
   
   delete this._rProfiles[uid];
   
-  for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    if(this._rRankOwners[constants.RANKS[item]] == uid) {
-      this._rRankOwners[constants.RANKS[item]] = null;
-      this._rBonuses[constants.RANKS[item]] = 0;
+  for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
+    if(this._rRankOwners[RANKS[item].name] == uid) {
+      this._rRankOwners[RANKS[item].name] = null;
+      this._rBonuses[RANKS[item].name] = 0;
     }
   }
 
-  if(this._rRankOwners[constants.ALMIGHTY] == uid) {
-    this._rRankOwners[constants.ALMIGHTY] = null;
+  if(this._rRankOwners[ALMIGHTY] == uid) {
+    this._rRankOwners[ALMIGHTY] = null;
   }
 };

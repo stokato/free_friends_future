@@ -7,7 +7,7 @@
 const async             = require('async');
 const validator         = require('validator');
 
-const constants         = require('./../../../constants');
+const Config            = require('./../../../../config.json');
 const oPool             = require('./../../../objects_pool');
 
 const  getUserProfile   = require('./../common/get_user_profile');
@@ -16,14 +16,14 @@ const emitRes           = require('./../../../emit_result');
 const checkID           = require('./../../../check_id');
 const sanitize          = require('./../../../sanitize');
 
-const PF = constants.PFIELDS;
+const PF = require('./../../../const_fields');
 
 
 module.exports = function(socket, options) {
   if(!checkID(options[PF.ID]) ||
       !validator.isDate(options[PF.DATE_FROM] + "") ||
       !validator.isDate(options[PF.DATE_TO] + "")) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_CHAT_HISTORY);
+    return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GET_CHAT_HISTORY);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -32,21 +32,21 @@ module.exports = function(socket, options) {
   async.waterfall([ //-----------------------------------------------------
     function(cb) { // Получаем профиль
       
-      getUserProfile(options[constants.PFIELDS.ID], cb);
+      getUserProfile(options[PF.ID], cb);
       
     }, //------------------------------------------------------------------
     function(friendProfile, cb) { // Получаем историю и отправляем отдельными сообщениями
       let selfProfile = oPool.userList[socket.id];
       
-      if(selfProfile.getID() == options[constants.PFIELDS.ID]) {
-        return cb(constants.errors.SELF_ILLEGAL);
+      if(selfProfile.getID() == options[PF.ID]) {
+        return cb(Config.errors.SELF_ILLEGAL);
       }
       
       if(selfProfile.isPrivateChat(friendProfile.getID())) {
         
-        let id        = options[constants.PFIELDS.ID],
-            dateFrom  = options[constants.PFIELDS.DATE_FROM],
-            dateTo    = options[constants.PFIELDS.DATE_TO];
+        let id        = options[PF.ID],
+            dateFrom  = options[PF.DATE_FROM],
+            dateTo    = options[PF.DATE_TO];
         
         selfProfile.getHistory(id, dateFrom, dateTo, function(err, history) {
           if(err) { return cb(err, null); }
@@ -59,13 +59,13 @@ module.exports = function(socket, options) {
         });
         cb(null, null);
       } else {
-        return cb(new Error(constants.errors.NO_SUCH_CHAT));
+        return cb(new Error(Config.errors.NO_SUCH_CHAT));
       }
     } //------------------------------------------------------------------------
   ], function(err, res) {
-    if (err) { return  emitRes(err, socket, constants.IO_GET_CHAT_HISTORY); }
+    if (err) { return  emitRes(err, socket, Config.io.emits.IO_GET_CHAT_HISTORY); }
     
-    emitRes(null, socket, constants.IO_GET_CHAT_HISTORY, null);
+    emitRes(null, socket, Config.io.emits.IO_GET_CHAT_HISTORY, null);
   });
   
 };

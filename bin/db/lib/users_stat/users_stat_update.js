@@ -4,13 +4,11 @@
  * Добавляем / редактируем  данные статистики по пользователю
  */
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USERS_STAT.fields;
-const PF  = constants.PFIELDS;
-const SF  = constants.SFIELDS;
+const DBF = DB_CONST.USERS_STAT.fields;
 
 module.exports = function(options, callback) { options = options || {};
   
@@ -21,25 +19,25 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [];
   let constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   let constValues = [1, 1];
-  let dbName = dbConst.USERS_STAT.name;
+  let dbName = DB_CONST.USERS_STAT.name;
   
   let params = [];
-  if (SF.GIFTS_GIVEN in options)   { fields.push(DBF.C_GIFTS_GIVEN_counter);   params.push(options[SF.GIFTS_GIVEN]); }
-  if (SF.GIFTS_TAKEN in options)   { fields.push(DBF.C_GIFTS_TAKEN_counter);   params.push(options[SF.GIFTS_TAKEN]); }
-  if (SF.COINS_GIVEN in options)   { fields.push(DBF.C_COINS_GIVEN_counter);   params.push(options[SF.COINS_GIVEN]); }
-  if (SF.COINS_EARNED in options)  { fields.push(DBF.C_COINS_EARNED_counter);  params.push(options[SF.COINS_EARNED]); }
-  if (SF.COINS_SPENT in options)   { fields.push(DBF.C_COINS_SPENT_counter);   params.push(options[SF.COINS_SPENT]); }
-  if (SF.BOTTLE_KISSED in options) { fields.push(DBF.C_BOTTLE_KISSED_counter); params.push(options[SF.BOTTLE_KISSED]); }
-  if (SF.BEST_SELECTED in options) { fields.push(DBF.C_BEST_SELECTED_counter); params.push(options[SF.BEST_SELECTED]); }
-  if (SF.RANK_GIVEN in options)    { fields.push(DBF.C_RANK_GIVEN_counter);    params.push(options[SF.RANK_GIVEN]); }
-  if (SF.GAME_TIME in options)     { fields.push(DBF.C_GAME_TIME_MS_counter);  params.push(options[SF.GAME_TIME]); }
+  if (PF.GIFTS_GIVEN in options)   { fields.push(DBF.C_GIFTS_GIVEN_counter);   params.push(options[PF.GIFTS_GIVEN]); }
+  if (PF.GIFTS_TAKEN in options)   { fields.push(DBF.C_GIFTS_TAKEN_counter);   params.push(options[PF.GIFTS_TAKEN]); }
+  if (PF.COINS_GIVEN in options)   { fields.push(DBF.C_COINS_GIVEN_counter);   params.push(options[PF.COINS_GIVEN]); }
+  if (PF.COINS_EARNED in options)  { fields.push(DBF.C_COINS_EARNED_counter);  params.push(options[PF.COINS_EARNED]); }
+  if (PF.COINS_SPENT in options)   { fields.push(DBF.C_COINS_SPENT_counter);   params.push(options[PF.COINS_SPENT]); }
+  if (PF.BOTTLE_KISSED in options) { fields.push(DBF.C_BOTTLE_KISSED_counter); params.push(options[PF.BOTTLE_KISSED]); }
+  if (PF.BEST_SELECTED in options) { fields.push(DBF.C_BEST_SELECTED_counter); params.push(options[PF.BEST_SELECTED]); }
+  if (PF.RANK_GIVEN in options)    { fields.push(DBF.C_RANK_GIVEN_counter);    params.push(options[PF.RANK_GIVEN]); }
+  if (PF.GAME_TIME in options)     { fields.push(DBF.C_GAME_TIME_MS_counter);  params.push(options[PF.GAME_TIME]); }
     
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE_COUNTER, fields, dbName, constFields, constValues);
   
   params.push(options[PF.ID]);
   params.push(options[PF.VID]);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
     
     callback(null, options);

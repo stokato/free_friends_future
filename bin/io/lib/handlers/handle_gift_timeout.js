@@ -8,10 +8,10 @@
  * @param id - ид пользователя
  */
 
-const constants = require('./../../../constants');
+const Config    = require('./../../../../config.json');
 const oPool  = require('./../../../objects_pool');
 
-const PF = constants.PFIELDS;
+const PF = require('./../../../const_fields');
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
 module.exports = function (profile, type) {
@@ -26,8 +26,8 @@ module.exports = function (profile, type) {
         [PF.TYPE] : type
       };
   
-      socket.broadcast.in(room.getName()).emit(constants.IO_HIDE_GIFT, res);
-      socket.emit(constants.IO_HIDE_GIFT, res);
+      socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_HIDE_GIFT, res);
+      socket.emit(Config.io.emits.IO_HIDE_GIFT, res);
     }
   }
 

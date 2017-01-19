@@ -6,8 +6,7 @@
  * @param sex - пол пользователя, @profile - его профиль
  */
 
-const constants = require('./../../constants'),
-    logger    = require('./../../../lib/log')(module);
+const logger    = require('./../../../lib/log')(module);
 
 const Config    = require('./../../../config.json');
 

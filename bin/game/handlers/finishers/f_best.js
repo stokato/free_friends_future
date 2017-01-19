@@ -3,19 +3,18 @@
  */
 
 const Config       = require('./../../../../config.json');
-const constants    = require('./../../../constants');
+const PF    = require('./../../../const_fields');
 const stat         = require('./../../../stat_manager');
 
 const  addPoints   = require('./../../lib/add_points');
 const  emitRes     = require('./../../../emit_result');
 
 const BEST_POINTS  = Number(Config.points.game.best);
-const PF           = constants.PFIELDS;
 
 module.exports = function (game) {
   game.clearTimer();
   
-  stat.setMainStat(constants.SFIELDS.BEST_ACTIVITY, game.getActivityRating());
+  stat.setMainStat(PF.BEST_ACTIVITY, game.getActivityRating());
   
   // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
   if(game.getActionsCount() != game.getActionsMain()) {
@@ -48,12 +47,12 @@ module.exports = function (game) {
     
     // Если есть победитель - начисляем ему очки
     if(theBest.id) {
-      stat.setUserStat(theBest.id, theBest.vid, constants.SFIELDS.BEST_SELECTED, 1);
+      stat.setUserStat(theBest.id, theBest.vid, PF.BEST_SELECTED, 1);
       
       addPoints(theBest.id, BEST_POINTS, function (err) {
         if(err) {
           let socket = game.getRoom().getAnySocket();
-          return emitRes(err, socket, constants.IO_GAME_ERROR);
+          return emitRes(err, socket, Config.io.emits.IO_GAME_ERROR);
         }
       });
     }

@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USERS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.USERS.fields;
 
 /*
  Изменяем данные пользователя: объек с данными
@@ -20,7 +19,7 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [DBF.VID_varchar_i];
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.USERS.name;
+  let dbName = DB_CONST.USERS.name;
 
   let params = [];
   params.push(options[PF.VID]);
@@ -38,11 +37,11 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.FREE_TRACKS in options)   { fields.push(DBF.FREE_TRACKS);       params.push(options[PF.FREE_TRACKS]); }
   if (PF.VIP in options)           { fields.push(DBF.VIP_boolean);       params.push(options[PF.VIP]); }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
 
   params.push(options[PF.ID]);
 
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, options);

@@ -6,8 +6,7 @@
  */
 const async     =  require('async');
 
-
-const constants       = require('./../../../constants');
+const Config          = require('./../../../../config.json');
 const oPool           = require('./../../../objects_pool');
 
 const checkID         = require('./../../../check_id');
@@ -15,11 +14,12 @@ const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitize');
 const getUserProfile  = require('./../common/get_user_profile');
 
-const PF              = constants.PFIELDS;
+const PF              = require('./../../../const_fields');
+const IO_DEL_FROM_FRIENDS = Config.io.emits.IO_DEL_FROM_FRIENDS;
 
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_DEL_FROM_FRIENDS);
+    return emitRes(Config.errors.NO_PARAMS, socket, IO_DEL_FROM_FRIENDS);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -27,7 +27,7 @@ module.exports = function (socket, options) {
     let selfProfile = oPool.userList[socket.id];
 
     if (selfProfile.getID() == options[PF.ID]) {
-      return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_DEL_FROM_FRIENDS);
+      return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_DEL_FROM_FRIENDS);
     }
 
     let date = new Date();
@@ -57,7 +57,7 @@ module.exports = function (socket, options) {
 
       }], //--------------------------------------------------------
       function (err, friendProfile) { // Отправляем сведения о бывшем друге
-        if (err) { return emitRes(err, socket, constants.IO_DEL_FROM_FRIENDS);}
+        if (err) { return emitRes(err, socket, IO_DEL_FROM_FRIENDS);}
 
         let friendInfo = fillInfo(friendProfile, date);
 
@@ -65,7 +65,7 @@ module.exports = function (socket, options) {
           let selfInfo = fillInfo(selfProfile, date);
           let friendSocket = friendProfile.getSocket();
 
-          friendSocket.emit(constants.IO_NO_FRIEND, selfInfo);
+          friendSocket.emit(Config.io.emits.IO_NO_FRIEND, selfInfo);
 
           let selfRoom = oPool.roomList[socket.id];
           let friendRoom = oPool.roomList[friendSocket.id];
@@ -74,7 +74,7 @@ module.exports = function (socket, options) {
           }
         }
   
-        emitRes(null, socket, constants.IO_DEL_FROM_FRIENDS, friendInfo);
+        emitRes(null, socket, IO_DEL_FROM_FRIENDS, friendInfo);
     }); // waterfall
 
 

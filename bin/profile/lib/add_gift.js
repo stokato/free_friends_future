@@ -6,9 +6,8 @@
 
 const Config    = require('./../../../config.json');
 const db        = require('./../../db_manager');
-const constants = require('./../../constants');
 
-const IOF           = constants.PFIELDS;
+const IOF           = require('./../../const_fields');
 const GIFT_TIMEOUTS  = Config.gifts.timeouts;
 
 module.exports = function(giftMaker, date, gift, params, callback) {

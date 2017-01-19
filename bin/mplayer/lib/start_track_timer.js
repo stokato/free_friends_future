@@ -4,8 +4,8 @@
  * Запускаем трек и таймер на переход к следующему
  */
 
-const constants  = require('./../../constants');
-const PF         = constants.PFIELDS;
+const Config = require('../../../config.json');
+const PF         = require('./../../const_fields');
 
 module.exports = function startTrack(socket, room, track, timerID) { timerID = timerID || null;
   let  self = this;
@@ -30,14 +30,14 @@ module.exports = function startTrack(socket, room, track, timerID) { timerID = t
   
   let  res = { [PF.TRACKLIST] : trackList };
   
-  socket.emit(constants.IO_GET_TRACK_LIST, res );
-  socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
+  socket.emit(Config.io.emits.IO_GET_TRACK_LIST, res );
+  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, res);
   
   res = {
     [PF.TRACK]       : track,
     [PF.PASSED_TIME] : 0
   };
   
-  socket.emit(constants.IO_START_TRACK, res);
-  socket.broadcast.in(room.getName()).emit(constants.IO_START_TRACK, res);
+  socket.emit(Config.io.emits.IO_START_TRACK, res);
+  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_START_TRACK, res);
 };

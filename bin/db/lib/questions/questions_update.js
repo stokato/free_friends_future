@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.QUESTIONS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.QUESTIONS.fields;
 
 /*
  Изменяем данные вопроса
@@ -17,7 +16,7 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [];
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.QUESTIONS.name;
+  let dbName = DB_CONST.QUESTIONS.name;
   
   let params = [];
   if (PF.TEXT in options)      { fields.push(DBF.TEXT_varchar);     params.push(options[PF.TEXT]); }
@@ -26,11 +25,11 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.IMAGE_3 in options)   { fields.push(DBF.IMAGE3_varchar);   params.push(options[PF.IMAGE_3]); }
   if (PF.ACTIVITY in options)  { fields.push(DBF.ACTIVITY_boolean); params.push(!!options[PF.ACTIVITY]); }
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
   
   params.push(options[PF.ID]);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
     
     callback(null, options);

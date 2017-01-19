@@ -5,20 +5,20 @@
 const async = require('async');
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
 const oPool       = require('./../../../objects_pool');
 
 const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
 
-const PF                = constants.PFIELDS;
+const PF                = require('./../../../const_fields');
 const SYMPATHY_PRICE    = Number(Config.moneys.sympathy_price);
 const WASTE_POINTS      = Number(Config.points.waste);
+const IO_GAME_ERROR     = Config.io.emits.IO_GAME_ERROR;
 
 module.exports = function (game) {
   return function (socket, options) {
     if(!checkID(options[PF.PICK])) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, IO_GAME_ERROR);
     }
   
     let selfProfile = oPool.userList[socket.id];
@@ -26,12 +26,12 @@ module.exports = function (game) {
   
     // Нельзя выбрать себя
     if(uid == options[PF.PICK]) {
-      return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_GAME_ERROR);
     }
     
     // Проверка - такого игрока нет
     if(!game.getActivePlayer(options[PF.PICK])) {
-      return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_GAME_ERROR);
     }
     
     // Нельзя выбрать несколько раз одного и того же игрока
@@ -39,7 +39,7 @@ module.exports = function (game) {
     if(actions) {
       for( let i = 0; i < actions.length; i++) {
         if(actions[i][PF.PICK] == options[PF.PICK]) {
-          return emitRes(constants.errors.FORBIDDEN_CHOICE, socket, constants.IO_GAME_ERROR);
+          return emitRes(Config.errors.FORBIDDEN_CHOICE, socket, IO_GAME_ERROR);
         }
       }
     }
@@ -102,7 +102,7 @@ module.exports = function (game) {
       } //-------------------------------------------------------------
     ], function (err) {
       if(err) {
-        return emitRes(err, socket, constants.IO_GAME_ERROR);
+        return emitRes(err, socket, Config.io.emits.IO_GAME_ERROR);
       }
   
       if(game.getActionsCount() == 0) {

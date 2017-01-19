@@ -4,19 +4,18 @@
 const logger = require('./../../../../lib/log')(module);
 
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
+const PF = require('./../../../const_fields');
 const stat      = require('./../../../stat_manager');
 
 const addPoints = require('./../../lib/add_points');
 
-const PF          = constants.PFIELDS;
 const KISS_POINTS = Number(Config.points.game.mutual_kiss);
 
 module.exports = function (game) {
   
   game.clearTimer();
   
-  stat.setMainStat(constants.SFIELDS.BOTTLE_ACTIVITY, game.getActivityRating());
+  stat.setMainStat(PF.BOTTLE_ACTIVITY, game.getActivityRating());
   
   let allKissed = true;
   let players = game.getActivePlayers();

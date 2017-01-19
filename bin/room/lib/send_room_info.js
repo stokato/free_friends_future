@@ -5,7 +5,7 @@
  * @return info
  */
 
-const constants = require('./../../constants');
+const Config = require('./../../../config.json');
 
 module.exports = function(excludeID = null) {
   
@@ -17,7 +17,7 @@ module.exports = function(excludeID = null) {
   
       let socket = usersInRoom[i].getSocket();
       if(socket) {
-        socket.emit(constants.IO_ROOM_USERS, pInfo);
+        socket.emit(Config.io.emits.IO_ROOM_USERS, pInfo);
       }
     }
   }

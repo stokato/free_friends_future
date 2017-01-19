@@ -13,7 +13,7 @@
 
 const async  =  require('async');
 
-const constants       = require('./../../../constants');
+const Config          = require('./../../../../config.json');
 const oPool           = require('./../../../objects_pool');
 
 const getUserProfile  = require('./../common/get_user_profile');
@@ -21,11 +21,12 @@ const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitize');
 
-const PF              = constants.PFIELDS;
+const PF              = require('./../../../const_fields');
+const IO_GET_PROFILE = Config.io.emits.IO_GET_PROFILE;
 
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_PROFILE);
+    return emitRes(Config.errors.NO_PARAMS, socket, IO_GET_PROFILE);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -94,9 +95,9 @@ module.exports = function (socket, options) {
         });
       }//----------------------------------------------------------------------
     ], function(err) { // Отправляем сведения
-      if (err) { return emitRes(err, socket, constants.IO_GET_PROFILE); }
+      if (err) { return emitRes(err, socket, IO_GET_PROFILE); }
       
-      emitRes(null, socket, constants.IO_GET_PROFILE, selfInfo);
+      emitRes(null, socket, IO_GET_PROFILE, selfInfo);
     });
     
   } else {
@@ -172,16 +173,16 @@ module.exports = function (socket, options) {
         });
       }//----------------------------------------------------------------------
     ], function (err, friendProfile, friendInfo) { // Отправляем сведения
-      if (err) { return emitRes(err, socket, constants.IO_GET_PROFILE); }
+      if (err) { return emitRes(err, socket, IO_GET_PROFILE); }
       
       if (oPool.isProfile(friendProfile.getID())) { // Если тот, кого просматирваем, онлайн, сообщаем о госте
         
         let friendSocket = friendProfile.getSocket();
         
-        friendSocket.emit(constants.IO_ADD_GUEST, selfInfo);
+        friendSocket.emit(Config.io.emits.IO_ADD_GUEST, selfInfo);
       }
   
-      emitRes(null, socket, constants.IO_GET_PROFILE, friendInfo);
+      emitRes(null, socket, IO_GET_PROFILE, friendInfo);
     }); // waterfall
   }
   

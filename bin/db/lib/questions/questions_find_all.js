@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.QUESTIONS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.QUESTIONS.fields;
 
 /*
  Найти все вопосы для игры questions
@@ -21,9 +20,9 @@ module.exports = function(callback) {
     DBF.ACTIVITY_boolean
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.QUESTIONS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, DB_CONST.QUESTIONS.name);
 
-  cdb.client.execute(query,[], {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, null);

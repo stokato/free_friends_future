@@ -1,7 +1,7 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
 
-const DBF     = dbConst.SHOP.fields;
+const DBF     = DB_CONST.SHOP.fields;
 
 /*
  Удалить товар из БД: ИД
@@ -15,9 +15,9 @@ module.exports = function(goodid, callback) {
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.SHOP.name, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DB_CONST.SHOP.name, constFields, constValues);
 
-  cdb.client.execute(query, [goodid], {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, [goodid], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
 
     callback(null, goodid);

@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.ORDERS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.ORDERS.fields;
 
 /*
  Добавляем заказ в БД
@@ -16,7 +15,7 @@ module.exports = function(options, callback) { options   = options || {};
     return callback(new Error("Не задан один из параметров заказа"), null);
   }
 
-  let id = cdb.uuid.random();
+  let id = dbCtrlr.uuid.random();
 
   let fields = [
     DBF.ID_uuid_p,
@@ -36,9 +35,9 @@ module.exports = function(options, callback) { options   = options || {};
     date
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.ORDERS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.ORDERS.name);
 
-  cdb.client.execute(query, params, {prepare: true },  function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     callback(null, id);

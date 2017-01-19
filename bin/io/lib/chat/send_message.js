@@ -7,7 +7,7 @@
 
 const async           = require('async');
 
-const constants       = require('./../../../constants');
+const Config          = require('./../../../../config.json');
 const oPool           = require('./../../../objects_pool');
 
 const checkID         = require('./../../../check_id');
@@ -17,13 +17,13 @@ const openPrivateChat = require('./open_private_chat');
 const getUserProfile  = require('./../common/get_user_profile');
 const sendInRoom      = require('./../common/send_in_room');
 const sendOne         = require('./../common/send_one');
-const cdb             = require('./../../../db/lib/common/cassandra_db');
+const dbCtrlr             = require('./../../../db/lib/common/cassandra_db');
 
-const PF              = constants.PFIELDS;
+const PF              = require('./../../../const_fields');
 
 module.exports = function (socket, options) {
   if((PF.ID in options) && !checkID(options[PF.ID])) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_MESSAGE, null, true);
+    return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_MESSAGE, null, true);
   }
   if(PF.ID in options) {
     options[PF.ID] = sanitize(options[PF.ID]);
@@ -34,7 +34,7 @@ module.exports = function (socket, options) {
   let selfProfile = oPool.userList[socket.id];
   
   if (selfProfile.getID() == options[PF.ID]) {
-    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_MESSAGE, null, true);
+    return emitRes(Config.errors.SELF_ILLEGAL, socket, Config.io.emits.IO_MESSAGE, null, true);
   }
   
   let isPrivate = options[PF.ID] || false;
@@ -56,11 +56,11 @@ module.exports = function (socket, options) {
   if(!isPrivate) {
     let currRoom = oPool.roomList[socket.id];
     
-    info[PF.MESSAGEID] = cdb.timeUuid.fromDate(date);
+    info[PF.MESSAGEID] = dbCtrlr.timeUuid.fromDate(date);
     
     sendInRoom(socket, currRoom, info);
     
-    return emitRes(null, socket, constants.IO_MESSAGE, null, true);
+    return emitRes(null, socket, Config.io.emits.IO_MESSAGE, null, true);
   }
     
   async.waterfall([//--------------------------------------------------------------------------
@@ -76,7 +76,7 @@ module.exports = function (socket, options) {
         params[PF.ID] = friendProfile.getID();
         params[PF.VID] = friendProfile.getVID();
         
-        socket.emit(constants.IO_BLOCK_USER_NOTIFY, params);
+        socket.emit(Config.io.emits.IO_BLOCK_USER_NOTIFY, params);
         
         cb(null, true, friendProfile);
       } else cb(null, false, friendProfile);
@@ -154,9 +154,9 @@ module.exports = function (socket, options) {
       });
     }//--------------------------------------------------------------------------
   ], function (err) { // Вызывается последней или в случае ошибки
-    if (err) { return emitRes(err, socket, constants.IO_MESSAGE, null, true); }
+    if (err) { return emitRes(err, socket, Config.io.emits.IO_MESSAGE, null, true); }
     
-    // emitRes(null, socket, constants.IO_MESSAGE);
+    // emitRes(null, socket, cFields.IO_MESSAGE);
   });
 };
 

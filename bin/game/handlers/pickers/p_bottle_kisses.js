@@ -3,18 +3,17 @@
  */
 const validator = require('validator');
 
-const constants   = require('./../../../constants');
+const Config      = require('./../../../../config.json');
+const PF   = require('./../../../const_fields');
 const oPool       = require('./../../../objects_pool');
 const stat        = require('./../../../stat_manager');
 
 const emitRes     = require('./../../../emit_result');
 
-const PF          = constants.PFIELDS;
-
 module.exports = function (game) {
   return function (socket, options) {
     if(!validator.isBoolean(options[PF.PICK] + "")) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GAME_ERROR);
     }
   
     let uid = oPool.userList[socket.id].getID();
@@ -26,7 +25,7 @@ module.exports = function (game) {
       let players = game.getActivePlayers();
       for(let i = 0; i < players.length; i++) {
         if(players[i].id != uid) {
-          stat.setUserStat(players[i].id, players[i].vid, constants.SFIELDS.BOTTLE_KISSED, 1);
+          stat.setUserStat(players[i].id, players[i].vid, PF.BOTTLE_KISSED, 1);
         }
       }
     }

@@ -4,12 +4,11 @@
  * Получаем вопросы пользователей по списку ид, либо просто порцию
  */
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USER_QUESTIONS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.USER_QUESTIONS.fields;
 
 module.exports = function(ids, callback) {
   
@@ -25,7 +24,7 @@ module.exports = function(ids, callback) {
   let constFields = null;
   let constValues = null;
   let limit = null;
-  let dbName = dbConst.USER_QUESTIONS.name;
+  let dbName = DB_CONST.USER_QUESTIONS.name;
   let params = [];
   
   if(ids) {
@@ -39,9 +38,9 @@ module.exports = function(ids, callback) {
     limit = 100;
   }
     
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues, null, null, null, limit);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, dbName, constFields, constValues, null, null, null, limit);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     if(result.rows.length == 0) return callback(null, null);

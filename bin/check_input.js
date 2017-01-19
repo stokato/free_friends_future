@@ -5,30 +5,30 @@
  * @return socket, options - проверенные и санитаризированные опции
  */
 
-const constants = require('./constants');
+const Config = require('./../config.json');
 const oPool     = require('./objects_pool');
 
 module.exports = function (em, socket, options, callback) {
   
   // Попытка повторного подключения
-  if(em == constants.IO_INIT && oPool.userList[socket.id] ) {
-    return callback(constants.errors.NO_AUTH);
+  if(em == Config.io.emits.IO_INIT && oPool.userList[socket.id] ) {
+    return callback(Config.errors.NO_AUTH);
   }
   
   // Такого пользователя нет
-  if(em != constants.IO_INIT && !oPool.userList[socket.id] ) {
-    return callback(constants.errors.NO_AUTH);
+  if(em != Config.io.emits.IO_INIT && !oPool.userList[socket.id] ) {
+    return callback(Config.errors.NO_AUTH);
   }
   
   // Не переданы опции
   if(!checkOptionsType(options)) {
-    return callback(constants.errors.NO_PARAMS);
+    return callback(Config.errors.NO_PARAMS);
   }
   
   // Проверка подписи
   /*
   if(!checkAuth(em, socket, options)) {
-        return callback(constants.errors.NO_AUTH);
+        return callback(cFields.errors.NO_AUTH);
    }
   */
   

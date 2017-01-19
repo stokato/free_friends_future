@@ -7,8 +7,7 @@
  * @return id
  */
 
-const  constants = require('../../constants'),
-    IOF       = constants.PFIELDS,
+const  IOF       = require('../../const_fields'),
     db        = require('./../../db_manager');
 
 module.exports = function(id, callback) {

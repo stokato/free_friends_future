@@ -5,21 +5,21 @@
  *
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
 
-const DBF = dbConst.USERS_STAT.fields;
+const DBF = DB_CONST.USERS_STAT.fields;
 
 module.exports = function(id, vid, callback) {
   if (!id) { callback(new Error("Задан пустой ID или VID")); }
   
-  let dbName      = dbConst.USERS_STAT.name;
+  let dbName      = DB_CONST.USERS_STAT.name;
   let constFields = [DBF.ID_uuid_pc1i, DBF.VID_varchar_pc2i];
   let constValues = [1, 1];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
   
-  cdb.client.execute(query, [id], {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, [id], {prepare: true }, function(err) {
     if (err) {  return callback(err); }
     
     callback(null, id);

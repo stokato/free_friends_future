@@ -6,6 +6,7 @@
  */
 
 const Config = require('./../../../config.json');
+const ALMIGHTY_RANK = Config.almighty;
 
 module.exports = function (rank, uid) {
   if(!this._rProfiles[uid]) {
@@ -35,8 +36,8 @@ module.exports = function (rank, uid) {
       this.onNewRank(null, rank, uid, currOwnerID);
       this.awardProfile(rank, uid);
 
-      if(this._rRankOwners[constants.ALMIGHTY == currOwnerID]) {
-        this._rRankOwners[constants.ALMIGHTY] = null;
+      if(this._rRankOwners[ALMIGHTY_RANK == currOwnerID]) {
+        this._rRankOwners[ALMIGHTY_RANK] = null;
       }
     }
   }

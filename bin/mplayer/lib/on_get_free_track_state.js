@@ -4,10 +4,10 @@
  * Проверяем - можно ли добавить бесплатный трек
  */
 
+const Config    = require('./../../../config.json');
 const oPool     = require('./../../objects_pool');
-const constants = require('./../../constants');
 const emitRes   = require('./../../emit_result');
-const PF        = constants.PFIELDS;
+const PF        = require('./../../const_fields');
 
 module.exports = function () {
   let  self = this;
@@ -24,6 +24,6 @@ module.exports = function () {
       }
     }
     
-    emitRes(null, socket, constants.IO_GET_FREE_TRACK_STATE, { [PF.IS_ACTIVE] : isActive });
+    emitRes(null, socket, Config.io.emits.IO_GET_FREE_TRACK_STATE, { [PF.IS_ACTIVE] : isActive });
   }
 };

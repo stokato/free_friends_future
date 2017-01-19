@@ -60,8 +60,6 @@ const addAuthUser       = require('./lib/auth_users/auth_users_add'),
    findAuthUser       = require('./lib/auth_users/auth_users_find'),
    deleteAuthUser     = require('./lib/auth_users/auth_users_delete');
 
-const dbConstants       = require('./constants').PFIELDS;
-
 
 /**
  * Класс, обеспечивающий работу с БД Кассандра
@@ -75,9 +73,7 @@ const dbConstants       = require('./constants').PFIELDS;
  *                 - добавить, найти, удалить гостей
  *                 - добавить, найти, удалить товар (магазин)
  */
-let DBManager = function() {
-  this.CONST = dbConstants;
-};
+let DBManager = function() {};
 
 DBManager.prototype.addUser           = addUser;
 DBManager.prototype.findUser          = findUser;

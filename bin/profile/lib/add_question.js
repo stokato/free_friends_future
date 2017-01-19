@@ -6,7 +6,7 @@
  */
 
 const  db      = require('./../../db_manager');
-const  IOF     = require('./../../constants').PFIELDS;
+const  IOF     = require('./../../const_fields');
 
 module.exports = function (text, image1, image2, image3, callback) {
   

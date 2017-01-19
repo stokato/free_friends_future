@@ -3,10 +3,9 @@
  */
 
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
 
 const  RESULTS_TIMEOUT = Number(Config.game.timeouts.results);
-const  PF              = constants.PFIELDS;
+const  PF              = require('./../../../const_fields');
 
 module.exports = function (game, result, istimeout) { result = result || {}; istimeout = istimeout || false;
   

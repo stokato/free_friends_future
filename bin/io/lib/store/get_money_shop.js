@@ -5,16 +5,17 @@
  *  @return {Object} - объект со списом лотов
  */
 
-const constants   = require('./../../../constants');
+const Config      = require('./../../../../config.json');
+const PF   = require('./../../../const_fields');
 const db          = require('./../../../db_manager');
 const emitRes     = require('./../../../emit_result');
 
 module.exports = function (socket, options) {
 
   db.findAllCoins(function (err, goods) {
-    if (err) {  return emitRes(err, socket, constants.IO_GET_MONEY_SHOP); }
+    if (err) {  return emitRes(err, socket, Config.io.emits.IO_GET_MONEY_SHOP); }
     
-    emitRes(null, socket, constants.IO_GET_MONEY_SHOP, { [constants.PFIELDS.LOTS] : goods });
+    emitRes(null, socket, Config.io.emits.IO_GET_MONEY_SHOP, { [PF.LOTS] : goods });
   });
 
 };

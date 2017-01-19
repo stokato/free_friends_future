@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USERS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.USERS.fields;
 
 /*
  Добавляем пользователя в БД: объект с данными пользователя из соц. сетей
@@ -16,7 +15,7 @@ const PF  = constants.PFIELDS;
 module.exports = function(options, callback) { options = options || {};
   if (!options[PF.VID]) { return callback(new Error("Не задан ИД пользователя ВКонтакте"), null); }
 
-  let id = cdb.uuid.random();
+  let id = dbCtrlr.uuid.random();
 
   let fields = [DBF.ID_uuid_p, DBF.VID_varchar_i];
   let params = [id, options[PF.VID]];
@@ -34,9 +33,9 @@ module.exports = function(options, callback) { options = options || {};
   if (options[PF.FREE_TRACKS])  { fields.push(DBF.FREE_MUSIC_int);   params.push(options[PF.FREE_TRACKS]); }
   if (options[PF.VID])          { fields.push(DBF.VIP_boolean);      params.push(options[PF.VIP]); }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USERS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.USERS.name);
 
-  cdb.client.execute(query, params, {prepare: true },  function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
     if (err) {  return callback(err); }
 
     options[PF.ID] = id.toString();

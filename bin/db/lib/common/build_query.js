@@ -23,13 +23,14 @@ module.exports.ALL_FIELDS = "*";
 //"INSERT INTO user_friends (" + fields + ") VALUES (" + values + ")";
 //"DELETE FROM user_friends WHERE userid = ?";
 //"update user_messages set " + fields + where userid = ? and companionid = ? and id = ?";
+
 module.exports.build = function(type, fields, table,
                                 const_fields, const_values, const_more, const_less,
                                 order_by, desc_limit) {
   let query = type, i;
 
   switch (type) {
-    case Q_SELECT : /////////////////////////////////////////////////////////////////////
+    case Q_SELECT : //-------------------------------------------------------------------
       query += " ";
       for (i = 0; i < fields.length; i++) {
         query += (i < fields.length - 1) ? fields[i] + ", " : fields[i];
@@ -37,7 +38,7 @@ module.exports.build = function(type, fields, table,
 
       query += " from " + table;
       break;
-    case Q_INSERT : /////////////////////////////////////////////////////////////////////
+    case Q_INSERT : //-------------------------------------------------------------------
       query += " into " + table + " (";
       let params = "";
 
@@ -53,14 +54,14 @@ module.exports.build = function(type, fields, table,
 
       query += ") values (" + params + ")";
       break;
-    case Q_UPDATE : /////////////////////////////////////////////////////////////////////
+    case Q_UPDATE : //-------------------------------------------------------------------
       query += " " + table + " set ";
 
       for (i = 0; i < fields.length; i++) {
         query += (i < fields.length - 1) ? fields[i] + " = ?, " : fields[i] + " = ?";
       }
       break;
-    case Q_UPDATE_COUNTER : //////////////////////////////////////////////////////////////
+    case Q_UPDATE_COUNTER : //-------------------------------------------------------------------
       query = Q_UPDATE;
       query += " " + table + " set ";
     
@@ -70,7 +71,7 @@ module.exports.build = function(type, fields, table,
                   fields[i] + " = " + fields[i] + " + ?";
       }
       break;
-    case Q_DELETE : /////////////////////////////////////////////////////////////////////
+    case Q_DELETE : //-------------------------------------------------------------------
       query += " from " + table;
       break;
   }

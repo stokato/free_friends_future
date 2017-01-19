@@ -8,7 +8,7 @@
  */
 
 const db = require('./../../db_manager');
-const IOF = require('./../../constants').PFIELDS;
+const IOF = require('./../../const_fields');
 
 module.exports = function(usersID, callback) {
   let self = this;

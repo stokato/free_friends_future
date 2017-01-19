@@ -1,7 +1,6 @@
 // Собрать в массив информацию всех играков в списке
-const constants = require('./../../constants');
 
-const PF = constants.PFIELDS;
+const PF = require('./../../const_fields');
 
 module.exports = function () {
   let arr = [], item, player;

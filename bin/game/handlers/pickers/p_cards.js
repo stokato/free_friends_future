@@ -4,20 +4,19 @@
 const validator = require('validator');
 
 const Config = require('./../../../../config.json');
-const constants    = require('./../../../constants');
 const oPool       = require('./../../../objects_pool');
 
 const emitRes   = require('./../../../emit_result');
 
 const CARD_COUNT = Number(Config.game.card_count);
-const PF = constants.PFIELDS;
+const PF = require('./../../../const_fields');
 
 module.exports = function (game) {
   return function (socket, options) {
     if(!validator.isInt(options[PF.PICK] + "") ||
         options[PF.PICK] > CARD_COUNT-1 ||
         options[PF.PICK] < 0) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GAME_ERROR);
     }
   
     let selfProfile = oPool.userList[socket.id];

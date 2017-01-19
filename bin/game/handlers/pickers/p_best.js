@@ -2,24 +2,24 @@
  * Created by s.t.o.k.a.t.o on 13.01.2017.
  */
 
+const Config      = require('./../../../../config.json');
 const oPool       = require('./../../../objects_pool');
-const constants   = require('./../../../constants');
 
 const checkID     = require('./../../../check_id');
 const emitRes     = require('./../../../emit_result');
 
-const PF          = constants.PFIELDS;
+const PF          = require('./../../../const_fields');
 
 module.exports = function (game) {
   return function (socket, options) {
     if(!checkID(options[PF.PICK])) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GAME_ERROR);
     }
     
     // Ошибка - если выбранного пользоателя нет среди кандидатов
     let bests = game.getStoredOptions();
     if (!bests[options[PF.PICK]]) {
-      return emitRes(constants.errors.NO_THAT_PLAYER, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_THAT_PLAYER, socket, Config.io.emits.IO_GAME_ERROR);
     }
     
     // Сохраняем ход игрока

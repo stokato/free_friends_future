@@ -4,33 +4,34 @@
  * Получаем список блокированных пользователей для данного
  */
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF       = dbConst.BLOCKED.fields;
-const PF        = constants.PFIELDS;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 module.exports = function(uid, callback) {
+  
+  const DBF       = DB_CONST.BLOCKED.fields;
+  const DBNAME    = DB_CONST.BLOCKED.name;
+  
   if (!uid) {
     return callback(new Error("Задан пустой Id"), null);
   }
 
-  let fields = [
+  let sFieldsArr = [
     DBF.BLOCKEDID_uuid_ci,
     DBF.BLOCKEDVID_varchar,
     DBF.DATE_timestamp
   ];
 
-  let constFields = [DBF.USERID_uuid_p];
-  let constCount = [1];
-  let dbName = dbConst.BLOCKED.name;
-  let params = [uid];
+  let condFieldsArr = [DBF.USERID_uuid_p];
+  let condValuesArr = [1];
+  
+  let paramsArr = [uid];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constCount);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, sFieldsArr, DBNAME, condFieldsArr, condValuesArr);
 
   // Отбираем всех заблокированных
-  cdb.client.execute(query, params, {prepare: true}, function (err, result) {
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true}, function (err, result) {
     if (err) {
       return callback(err, null);
     }

@@ -5,14 +5,15 @@
  *
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF = dbConst.AUTH_USERS.fields;
-const PF  = constants.PFIELDS;
+const dbCtrlr = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF      = require('./../../../const_fields');
 
 module.exports = function(id, login, callback) {
+  
+  const DBF    = DB_CONST.AUTH_USERS.fields;
+  const DBNAME = DB_CONST.AUTH_USERS.name;
+  
   if (!login && !id) {
     return callback(new Error("Ошибка при поиске пользователя: Не задан ID или логин"), null);
   }
@@ -28,11 +29,13 @@ module.exports = function(id, login, callback) {
     param.push(login);
   }
   
-  let fields = [DBF.ID_uuid_p, DBF.LOGIN_varchar_i, DBF.PASSWORD_varchar];
+  let fieldsArr = [DBF.ID_uuid_p, DBF.LOGIN_varchar_i, DBF.PASSWORD_varchar];
+  let condFieldsArr = [constraint];
+  let condValuesArr = [1];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.AUTH_USERS.name, [constraint], [1]);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBNAME, condFieldsArr, condValuesArr);
   
-  cdb.client.execute(query, param, {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     if(result.rows.length > 0) {

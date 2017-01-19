@@ -7,7 +7,7 @@
 
 const logError  = require('./stat_error');
 const db        = require('./../../db_manager');
-const PF        = require('./../../constants').PFIELDS;
+const PF        = require('./../../const_fields');
 
 module.exports = function (field, val) {
   

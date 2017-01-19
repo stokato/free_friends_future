@@ -5,10 +5,10 @@
  *
  */
 
-const constants = require('./../../constants');
+const Config    = require('./../../../config.json');
 const sanitize  = require('./../../sanitize');
 const emitRes   = require('./../../emit_result');
-const PF        = constants.PFIELDS;
+const PF        = require('./../../const_fields');
 
 module.exports = function () {
   let  self = this;
@@ -16,7 +16,7 @@ module.exports = function () {
   return function(socket, options) {
     
     if(!PF.TRACKID in options) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GET_LIKES_AND_DISLAKES);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GET_LIKES_AND_DISLAKES);
     }
 
     options[PF.TRACKID] = sanitize(options[PF.TRACKID]);
@@ -26,6 +26,6 @@ module.exports = function () {
       [PF.DISLIKES] : self.getDislikes(options[PF.TRACKID])
     };
     
-    emitRes(null, socket, constants.IO_GET_LIKES_AND_DISLAKES, res);
+    emitRes(null, socket, Config.io.emits.IO_GET_LIKES_AND_DISLAKES, res);
   }
 };

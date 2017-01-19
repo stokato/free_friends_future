@@ -1,10 +1,9 @@
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const PF = require('./../../../const_fields');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
 
-const DBF = dbConst.POINTS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.POINTS.fields;
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;
 
@@ -24,19 +23,19 @@ module.exports = function(sex, callback) {
   ];
 
   // Определяем - к какой таблице обращаться
-  let db = dbConst.POINTS.name;
+  let db = DB_CONST.POINTS.name;
   if(sex == GIRL) {
-    db = dbConst.POINTS_GIRLS.name;
+    db = DB_CONST.POINTS_GIRLS.name;
   } else if(sex == GUY) {
-    db = dbConst.POINTS_GUYS.name;
+    db = DB_CONST.POINTS_GUYS.name;
   }
   
   let topSize = Number(Config.user.settings.top_size);
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, topSize);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, topSize);
 
   // Получаем все пользователей, отсортированных по количеству очков
-  cdb.client.execute(query, [], {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query, [], {prepare: true }, function(err, result) {
     if (err) { return cb(err, null); }
 
     let user, row;

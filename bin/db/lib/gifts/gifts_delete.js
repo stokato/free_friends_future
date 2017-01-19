@@ -1,9 +1,7 @@
 
-
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-
-const DBF = dbConst.USER_GIFTS.fields;
+const async = require('async');
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
 
 /*
  Удалить все подарки игрока: ИД
@@ -13,34 +11,59 @@ const DBF = dbConst.USER_GIFTS.fields;
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-
-  if (!uid) { return callback(new Error("Задан пустой Id пользователя")); }
   
-  // Отбираем все подарки
-  let fields = [DBF.ID_uuid_p, DBF.USERID_uuid_i];
-  let constFields = [DBF.USERID_uuid_i];
-  let constValues = [1];
-  let dbName = dbConst.USER_GIFTS.name;
+  const DBF = DB_CONST.USER_GIFTS.fields;
+  const DBN = DB_CONST.USER_GIFTS.name;
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"));
+  }
   
-  cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-    
-    // Удаляем их
-    let params = [];
-    let constFields = [DBF.ID_uuid_p];
-    let constValues = [result.rows.length];
-    
-    for (let i = 0; i < result.rows.length; i ++) {
-      params.push(result.rows[i][DBF.ID_uuid_p]);
-    }
-    
-    let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
-    cdb.client.execute(query, params, { prepare: true }, function(err) {
-      if (err) {  return callback(err); }
+  async.waterfall([
+    // Отбираем все подарки
+    function (cb) {
       
-      callback(null, uid);
-    });
+      let fieldsArr = [DBF.ID_uuid_p, DBF.USERID_uuid_i];
+      let condFieldsArr = [DBF.USERID_uuid_i];
+      let condValuesArr = [1];
+      let paramsArr     = [uid];
+  
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
+  
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
+        if (err) { return cb(err, null); }
+    
+        cb(null, result);
+      });
+    },
+    // Удаляем их
+    function (result, cb) {
+    
+      let paramsArr = [];
+      let constFields = [DBF.ID_uuid_p];
+      let constValues = [result.rows.length];
+  
+      let rowsLen = result.rows.length;
+      for (let i = 0; i < rowsLen; i ++) {
+        paramsArr.push(result.rows[i][DBF.ID_uuid_p]);
+      }
+  
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, constFields, constValues);
+      
+      dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+        if (err) {
+          return cb(err);
+        }
+  
+        cb(null, uid);
+      });
+    }
+  ], function (err, uid) {
+    if (err) {
+      return callback(err, null);
+    }
+  
+    callback(null, uid);
   });
+
 };

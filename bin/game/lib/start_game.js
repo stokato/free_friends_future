@@ -1,8 +1,6 @@
 /**
  * Начинаем игру если достаточно игроков
  */
-
-const constants = require('./../../constants');
  
 module.exports = function() {
   if(this.checkCountPlayers()) {

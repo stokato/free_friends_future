@@ -2,10 +2,9 @@
  * Created by s.t.o.k.a.t.o on 12.01.2017.
  */
 
-const constants = require('./../../../constants');
+const PF = require('./../../../const_fields');
 const stat      = require('./../../../stat_manager');
 
-const PF = constants.PFIELDS;
 
 module.exports = function (game) {
   
@@ -26,7 +25,7 @@ module.exports = function (game) {
     }
   }
   
-  stat.setMainStat(constants.SFIELDS.QUESTION_ACITVITY, game.getActivityRating());
+  stat.setMainStat(PF.QUESTION_ACITVITY, game.getActivityRating());
   
   game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
 };

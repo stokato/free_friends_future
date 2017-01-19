@@ -1,14 +1,10 @@
 const async = require('async');
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF       = require('./../../../const_fields');
+
 const bdayToAge = require('./../common/bdayToAge');
-const constants = require('./../../../constants');
-
-const DBF   = dbConst.USER_GIFTS.fields;
-const DBFN  = dbConst.USER_NEW_GIFTS.fields;
-const PF    = constants.PFIELDS;
-
 
 /*
  Найти все подарки игрока: ИД игрока
@@ -17,35 +13,46 @@ const PF    = constants.PFIELDS;
  - Возвращаем массив с подарками (если ничего нет NULL)
  */
 module.exports = function(uid, isSelf, callback) {
-  if (!uid) { return callback(new Error("Задан пустой Id пользователя"), null);}
+  
+  const DBF  = DB_CONST.USER_GIFTS.fields;
+  const DBN  = DB_CONST.USER_GIFTS.name;
+  
+  const DBFN = DB_CONST.USER_NEW_GIFTS.fields;
+  const DBNN = DB_CONST.USER_NEW_GIFTS.name;
+  
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"), null);
+  }
 
   async.waterfall([ // Отбираем сведения по новым подаркам
     function (cb) {
       if(isSelf) {
-        let fields = [DBFN.ID_uuid_p];
-        let dbName = dbConst.USER_NEW_GIFTS.name;
-        let constFields = [DBFN.USERID_uuid_i];
-        let constValues = [1];
+        let fieldsArr = [DBFN.ID_uuid_p];
         
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+        let condFieldsArr = [DBFN.USERID_uuid_i];
+        let constFieldsArr = [1];
+        
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBNN, condFieldsArr, constFieldsArr);
   
-        cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-          if (err) { return cb(err, null); }
-    
-          let newIds = [];
-    
-          for(let i = 0; i < result.rows.length; i++) {
-            newIds.push(result.rows[i][DBFN.ID_uuid_p]);
+        dbCtrlr.client.execute(query,[uid], { prepare: true }, (err, result) => {
+          if (err) {
+            return cb(err, null);
           }
     
-          cb(null, newIds);
+          let newIDArr = [];
     
+          let rowsLen = result.rows.length;
+          for(let i = 0; i < rowsLen; i++) {
+            newIDArr.push(result.rows[i][DBFN.ID_uuid_p]);
+          }
+    
+          cb(null, newIDArr);
         });
       } else { cb(null, []); }
       
     }, //-------------------------------------------------------------------------------
-    function (newIds, cb) {
-      let fields = [
+    function (newIDArr, cb) {
+      let fieldsArr = [
         DBF.ID_uuid_p,
         DBF.GIFTID_varchar,
         DBF.TYPE_varchar,
@@ -57,68 +64,85 @@ module.exports = function(uid, isSelf, callback) {
         DBF.FROMSEX_int,
         DBF.FROMBDATE_timestamp
       ];
-      let constFields = [DBF.USERID_uuid_i];
-      let constValues = [1];
-      let dbName = dbConst.USER_GIFTS.name;
+      
+      let condFieldsArr = [DBF.USERID_uuid_i];
+      let condValuesArr = [1];
   
       // Отбираем все подарки пользователя
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
   
-      cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-        if (err) { return cb(err, null); }
+      dbCtrlr.client.execute(query,[uid], {prepare: true }, function(err, result) {
+        if (err) {
+          return cb(err, null);
+        }
   
-        let users = {}, arrUsers = [], user, gift, row;
+        let usersObj = {};
+        let usersArr = [];
+        let userObj;
+        let giftObj;
+        let rowObj;
         
-        for(let i = 0; i < result.rows.length; i++) {
-          row = result.rows[i];
+        let rowsLen = result.rows.length;
+        for(let i = 0; i < rowsLen; i++) {
+          rowObj = result.rows[i];
           
-          gift = {
-            [PF.ID]     : row[DBF.ID_uuid_p].toString(),
-            [PF.GIFTID] : row[DBF.GIFTID_varchar],
-            [PF.FID]    : row[DBF.FROMID_uuid].toString(),
-            [PF.FVID]   : row[DBF.FROMVID_varchar],
-            [PF.TYPE]   : row[DBF.TYPE_varchar],
-            [PF.SRC]    : row[DBF.SRC_varhar],
-            [PF.DATE]   : row[DBF.DATE_timestamp],
-            [PF.TITLE]  : row[DBF.TITLE_varchar]
+          giftObj = {
+            [PF.ID]     : rowObj[DBF.ID_uuid_p].toString(),
+            [PF.GIFTID] : rowObj[DBF.GIFTID_varchar],
+            [PF.FID]    : rowObj[DBF.FROMID_uuid].toString(),
+            [PF.FVID]   : rowObj[DBF.FROMVID_varchar],
+            [PF.TYPE]   : rowObj[DBF.TYPE_varchar],
+            [PF.SRC]    : rowObj[DBF.SRC_varhar],
+            [PF.DATE]   : rowObj[DBF.DATE_timestamp],
+            [PF.TITLE]  : rowObj[DBF.TITLE_varchar]
           };
   
           if(isSelf) {
-            gift[PF.ISNEW]   = false;
+            giftObj[PF.ISNEW]   = false;
     
-            for(let nid = 0; nid < newIds.length; nid++) {
-              if(gift[PF.ID] == newIds[nid]) {
-                gift[PF.ISNEW] = true;
+            let newIDLen = newIDArr.length;
+            for(let nid = 0; nid < newIDLen; nid++) {
+              if(giftObj[PF.ID] == newIDArr[nid]) {
+                giftObj[PF.ISNEW] = true;
               }
             }
           }
           
-          if(!users[gift[PF.FID]]) {
-            user = {
-              [PF.ID]     : gift[PF.FID],
-              [PF.VID]    : gift[PF.FVID],
-              [PF.AGE]    : bdayToAge(row[DBF.FROMBDATE_timestamp]),
-              [PF.SEX]    : row[DBF.FROMSEX_int],
+          if(!usersObj[giftObj[PF.FID]]) {
+            
+            let age = bdayToAge(rowObj[DBF.FROMBDATE_timestamp]);
+            
+            userObj = {
+              [PF.ID]     : giftObj[PF.FID],
+              [PF.VID]    : giftObj[PF.FVID],
+              [PF.AGE]    : age,
+              [PF.SEX]    : rowObj[DBF.FROMSEX_int],
               [PF.GIFTS]  : []
             };
             
-            users[user[PF.ID]] = user;
+            usersObj[userObj[PF.ID]] = userObj;
           }
   
-          users[user[PF.ID]][PF.GIFTS].push(gift);
-    
+          usersObj[userObj[PF.ID]][PF.GIFTS].push(giftObj);
         }
         
-        for(let index in users) if(users.hasOwnProperty(index)) {
-          arrUsers.push(users[index]);
+        for(let item in usersObj) if(usersObj.hasOwnProperty(item)) {
+          usersArr.push(usersObj[item]);
         }
   
-        cb(null, { gifts : arrUsers, new_gifts : newIds.length });
+        let res = {
+          gifts     : usersArr,
+          new_gifts : newIDArr.length
+        };
+                
+        cb(null, res);
         
       });
     }], //-----------------------------------------------------------------------
   function (err, res) {
-    if(err) { return callback(err, null); }
+    if(err) {
+      return callback(err, null);
+    }
     
     callback(null, res);
   });

@@ -6,23 +6,26 @@
  * @param socket, options - объект с флагом, указывающим что помечать, callback
  */
 
-const constants =  require('./../../../constants');
+const Config    = require('./../../../../config.json');
 const oPool     = require('./../../../objects_pool');
 
 const emitRes   = require('./../../../emit_result');
 const sanitize  = require('./../../../sanitize');
 
+const IO_SET_VIEWED = Config.io.emits.IO_SET_VIEWED;
+const PF = require('./../../../const_fields');
+
 module.exports = function (socket, options) {
-  if(!constants.PFIELDS.TARGET in options) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_SET_VIEWED);
+  if(!PF.TARGET in options) {
+    return emitRes(Config.errors.NO_PARAMS, socket, IO_SET_VIEWED);
   }
   
-  options[constants.PFIELDS.TARGET] = sanitize(options[constants.PFIELDS.TARGET]);
+  options[PF.TARGET] = sanitize(options[PF.TARGET]);
   
-  oPool.userList[socket.id].view(options[constants.PFIELDS.TARGET], function (err) {
-    if (err) {  return emitRes(err, socket, constants.IO_SET_VIEWED); }
+  oPool.userList[socket.id].view(options[PF.TARGET], function (err) {
+    if (err) {  return emitRes(err, socket, IO_SET_VIEWED); }
     
-    emitRes(null, socket, constants.IO_SET_VIEWED);
+    emitRes(null, socket, IO_SET_VIEWED);
   });
   
 };

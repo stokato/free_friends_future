@@ -1,9 +1,8 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.SHOP.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.SHOP.fields;
 
 /*
  Найти все товары: ИД
@@ -30,9 +29,9 @@ module.exports = function(type, callback) {
   let constFields = [DBF.TYPE_varchar_i];
   let constValues = [1];
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.SHOP.name, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, DB_CONST.SHOP.name, constFields, constValues);
 
-  cdb.client.execute(query,[type], {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query,[type], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
 
     if(result.rows.length == 0) return callback(null, []);

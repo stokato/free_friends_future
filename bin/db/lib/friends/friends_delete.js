@@ -5,28 +5,34 @@
  * @return uid - ид пользователя
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-
-const DBF     = dbConst.USER_FRIENDS.fields;
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
 
 module.exports = function(uid, fid, callback) {
-  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
-
-  let fields        = [DBF.USERID_uuid_pi];
-  let constValues   = [1];
-  let params        = [uid];
-
-  if(fid) {
-    fields.push([DBF.FRIENDID_uuid_c]);
-    constValues.push(1);
-    params.push(fid);
+  
+  const DBF     = DB_CONST.USER_FRIENDS.fields;
+  const DBN     = DB_CONST.USER_FRIENDS.name;
+  
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"));
   }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbConst.USER_FRIENDS.name, fields, constValues);
+  let condFieldsArr  = [DBF.USERID_uuid_pi];
+  let condValuesArr  = [1];
+  let paramsArr      = [uid];
+
+  if(fid) {
+    condFieldsArr.push([DBF.FRIENDID_uuid_c]);
+    condValuesArr.push(1);
+    paramsArr.push(fid);
+  }
+
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, condFieldsArr, condValuesArr);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
 
     callback(null, uid);
   });

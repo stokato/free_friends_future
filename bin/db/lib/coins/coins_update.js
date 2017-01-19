@@ -1,40 +1,41 @@
 /**
  * Created by s.t.o.k.a.t.o on 10.01.2017.
+ *
+ *  Изменяем данные подарка
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
-const DBF = dbConst.COINS.fields;
-const PF  = constants.PFIELDS;
-
-/*
- Изменяем данные подарка
- */
 module.exports = function(options, callback) { options = options || {};
+
+  const DBF = DB_CONST.COINS.fields;
+  const DBN = DB_CONST.COINS.name;
   
   if (!options[PF.ID]) {
     return callback(new Error("Задан пустй Id подарка"), null);
   }
   
-  let fields = [];
-  let constFields = [DBF.ID_varchar_p];
-  let constValues = [1];
-  let dbName = dbConst.COINS.name;
+  let fieldsArr = [];
+  let condFieldsArr = [DBF.ID_varchar_p];
+  let condValuesArr = [1];
+
   
-  let params = [];
-  if (PF.TITLE in options)       { fields.push(DBF.TITLE_varchar);    params.push(options[PF.TITLE]); }
-  if (PF.PRICE in options)       { fields.push(DBF.PRICE_COINS_int);  params.push(options[PF.PRICE]); }
-  if (PF.PRICE_VK in options)    { fields.push(DBF.PRICE_VK_int);     params.push(options[PF.PRICE_VK]); }
-  if (PF.SRC in options)         { fields.push(DBF.SRC_varchar);      params.push(options[PF.SRC]); }
+  let paramsArr = [];
+  if (PF.TITLE in options)     { fieldsArr.push(DBF.TITLE_varchar);    paramsArr.push(options[PF.TITLE]); }
+  if (PF.PRICE in options)     { fieldsArr.push(DBF.PRICE_COINS_int);  paramsArr.push(options[PF.PRICE]); }
+  if (PF.PRICE_VK in options)  { fieldsArr.push(DBF.PRICE_VK_int);     paramsArr.push(options[PF.PRICE_VK]); }
+  if (PF.SRC in options)       { fieldsArr.push(DBF.SRC_varchar);      paramsArr.push(options[PF.SRC]); }
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE, fieldsArr, DBN, condFieldsArr, condValuesArr);
   
-  params.push(options[PF.ID]);
+  paramsArr.push(options[PF.ID]);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, options);
   });

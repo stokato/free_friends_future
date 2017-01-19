@@ -4,14 +4,14 @@
  * @param room, socket
  * @return {Object} - с треком временем и количеством секунд со старта
  */
-const constants = require('./../../constants');
-const PF        = constants.PFIELDS;
+const Config = require('./../../../config.json');
+const PF        = require('./../../const_fields');
 
 module.exports = function (socket) {
   
   if(this._mTrackList.length > 0) {
   
-    socket.emit(constants.IO_GET_TRACK_LIST, { [PF.TRACKLIST] : this._mTrackList });
+    socket.emit(Config.io.emits.IO_GET_TRACK_LIST, { [PF.TRACKLIST] : this._mTrackList });
     
     let  passedTime = Math.round((new Date() - this.getTrackTime()) * 0.001);
     
@@ -20,6 +20,6 @@ module.exports = function (socket) {
       [PF.PASSED_TIME]  : passedTime
     };
     
-    socket.emit(constants.IO_START_TRACK, info);
+    socket.emit(Config.io.emits.IO_START_TRACK, info);
   }
 };

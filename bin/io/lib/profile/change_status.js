@@ -4,23 +4,24 @@
  * @param socket, options - объект со статусом, callback
  * @return {Object} - с новым статусом
  */
-const constants = require('./../../../constants');
+const Config = require('./../../../../config.json');
 const oPool     = require('./../../../objects_pool');
 
 const emitRes = require('./../../../emit_result');
 const sanitize = require('./../../../sanitize');
+const PF = require('./../../../const_fields');
 
 module.exports = function (socket, options) {
   
-  options[constants.PFIELDS.STATUS] = sanitize(options[constants.PFIELDS.STATUS]);
+  options[PF.STATUS] = sanitize(options[PF.STATUS]);
   
   let selfProfile = oPool.userList[socket.id];
-  selfProfile.setStatus(options[constants.PFIELDS.STATUS], function (err, status) {
-    if (err) { return emitRes(err, socket, constants.IO_CHANGE_STATUS); }
+  selfProfile.setStatus(options[PF.STATUS], function (err, status) {
+    if (err) { return emitRes(err, socket, Config.io.emits.IO_CHANGE_STATUS); }
     
-    let res = { [constants.PFIELDS.STATUS] : status };
+    let res = { [PF.STATUS] : status };
     
-    emitRes(null, socket, constants.IO_CHANGE_STATUS, res);
+    emitRes(null, socket, Config.io.emits.IO_CHANGE_STATUS, res);
   });
   
 };

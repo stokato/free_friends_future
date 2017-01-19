@@ -3,10 +3,9 @@
  */
 
 const Config        = require('./../../../../config.json');
-const constants = require('./../../../constants');
 
 const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
-const PF             = constants.PFIELDS;
+const PF             = require('./../../../const_fields');
 
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;

@@ -5,21 +5,22 @@
  *
  */
 
-const constants  = require('./../../constants');
+const Config = require('./../../../config.json');
 const oPool      = require('./../../objects_pool');
   
 const emitRes = require('./../../emit_result');
 const sanitize = require('./../../sanitize');
 
-const PF   = constants.PFIELDS;
-const EMIT = constants.IO_ADD_TRECK_FREE;
+const PF   = require('./../../const_fields');
+const EMIT = Config.io.emits.IO_ADD_TRECK_FREE;
+const DJ_RANK = Config.ranks.dj.name;
 
 module.exports = function () {
   let  self  = this;
   
   return function(socket, options) {
     if(!PF.TRACKID in options || !PF.DURATION in options) {
-      return emitRes(constants.errors.NO_PARAMS, socket, EMIT);
+      return emitRes(Config.errors.NO_PARAMS, socket, EMIT);
     }
   
     options[PF.TRACKID] = sanitize(options[PF.TRACKID]);
@@ -31,14 +32,14 @@ module.exports = function () {
     // Проверяем - есть ли такой трек в очереди
     for (let  i = 0; i < self._mTrackList.length; i++) {
       if (self._mTrackList[i][PF.TRACKID] == options[PF.TRACKID]) {
-        return emitRes(constants.errors.ALREADY_IS_TRACK, socket, EMIT);
+        return emitRes(Config.errors.ALREADY_IS_TRACK, socket, EMIT);
       }
     }
   
     // Проверяем - есть ли наш трек в очереди
     for (i = 0; i < self._mTrackList.length; i++) {
       if (self._mTrackList[i][PF.ID] == selfProfile.getID()) {
-        return emitRes(constants.errors.BLOCK_FREE_TRACK, socket, EMIT);
+        return emitRes(Config.errors.BLOCK_FREE_TRACK, socket, EMIT);
       }
     }
   
@@ -60,12 +61,12 @@ module.exports = function () {
     self.addTrack(track);
   
     let  ranks = oPool.roomList[socket.id].getRanks();
-    ranks.addRankBall(constants.RANKS.DJ, selfProfile.getID());
+    ranks.addRankBall(DJ_RANK, selfProfile.getID());
   
     res = { [PF.TRACKLIST] : self._mTrackList };
   
-    socket.broadcast.in(room.getName()).emit(constants.IO_GET_TRACK_LIST, res);
-    socket.emit(constants.IO_GET_TRACK_LIST, res);
+    socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, res);
+    socket.emit(Config.io.emits.IO_GET_TRACK_LIST, res);
     
     emitRes(null, socket, EMIT);
   

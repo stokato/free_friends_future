@@ -4,13 +4,13 @@
  * Устанавливаем активность звания
  */
 
-const constants = require('./../../constants');
+const Config    = require('./../../../config.json');
+const PF = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 const sanitize  = require('./../../sanitize');
 const emitRes   = require('./emit_result');
 
-const PF   = constants.PFIELDS;
-const EMIT = constants.IO_CHANGE_ACTIVE_RANK;
+const EMIT = Config.io.emits.IO_CHANGE_ACTIVE_RANK;
 
 module.exports = function () {
   let self = this;
@@ -18,19 +18,19 @@ module.exports = function () {
   return function (socket, options) {
   
     if(!PF.RANK in options) {
-      return emitRes(constants.errors.NO_PARAMS, socket, EMIT);
+      return emitRes(Config.errors.NO_PARAMS, socket, EMIT);
     }
   
     options[PF.RANK] = sanitize(options[PF.RANK]);
   
     let selfProfile = oPool.userList[socket.id];
-    let rankOwnerID = self.getRankOwner(options[constants.PFIELDS.RANK]);
+    let rankOwnerID = self.getRankOwner(options[PF.RANK]);
   
     if(rankOwnerID != selfProfile.getID()) {
-      return emitRes(constants.errors.NO_SUCH_RUNK, socket, EMIT);
+      return emitRes(Config.errors.NO_SUCH_RUNK, socket, EMIT);
     }
   
-    selfProfile.onSetActiveRank(options[constants.PFIELDS.RANK]);
+    selfProfile.onSetActiveRank(options[PF.RANK]);
   
     emitRes(null, socket, EMIT);
   }

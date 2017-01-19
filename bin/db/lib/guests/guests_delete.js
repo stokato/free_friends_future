@@ -1,6 +1,5 @@
-const cdb = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const DBF = dbConst.USER_GUESTS.fields;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
 
 /*
  Удалить всех гостей игрока: ИД
@@ -9,17 +8,24 @@ const DBF = dbConst.USER_GUESTS.fields;
  - Возвращаем ИД игрока
  */
 module.exports = function(uid, callback) {
-  if (!uid) { callback(new Error("Задан пустой Id пользователя")); }
+  
+  const DBF = DB_CONST.USER_GUESTS.fields;
+  const DBN = DB_CONST.USER_GUESTS.name;
+  
+  if (!uid) {
+    return callback(new Error("Задан пустой Id пользователя"));
+  }
 
-  //let query = "DELETE FROM user_guests where user = ?";
-  let constFields = [DBF.USERID_uuid_p];
-  let constValues = [1];
-  let dbName = dbConst.USER_GUESTS.name;
+  let condFieldsArr = [DBF.USERID_uuid_p];
+  let condValuesArr = [1];
+  
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, condFieldsArr, condValuesArr);
 
-  cdb.client.execute(query, [uid], {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, [uid], {prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
 
     callback(null, uid);
   });

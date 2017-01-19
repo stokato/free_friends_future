@@ -4,8 +4,9 @@
  * Получаем активное звание пользователя
  */
 
+const Config = require('./../../../config.json');
 const oPool = require('./../../objects_pool');
-const constants = require('./../../constants');
+const PF = require('./../../const_fields');
 const emitRes = require('./emit_result');
 
 module.exports = function () {
@@ -15,8 +16,8 @@ module.exports = function () {
   
     let activeRank = oPool.userList[socket.id].onGetActiveRank();
     
-    let res = { [constants.PFIELDS.RANK] : activeRank || null };
+    let res = { [PF.RANK] : activeRank || null };
   
-    emitRes(null, socket, constants.IO_GET_ACTIVE_RANK, res);
+    emitRes(null, socket, Config.io.emits.IO_GET_ACTIVE_RANK, res);
   }
 };

@@ -4,7 +4,7 @@
  * Начисляем деньги
  */
 
-const constants = require('../../constants'),
+const PF = require('../../const_fields'),
   stat          = require('./../../stat_manager');
 
 module.exports = function (profit, callback) {
@@ -19,8 +19,8 @@ module.exports = function (profit, callback) {
     self.setMoney(newMoney, function(err, money) {
       if(err) { return callback(err); }
       
-      stat.setUserStat(self._pID, self._pVID, constants.SFIELDS.COINS_EARNED, profit);
-      stat.setMainStat(constants.SFIELDS.COINS_EARNED, profit);
+      stat.setUserStat(self._pID, self._pVID, PF.COINS_EARNED, profit);
+      stat.setMainStat(PF.COINS_EARNED, profit);
       
       callback(null, money);
     });

@@ -37,6 +37,12 @@
       "sex" : {
         "male" : "2",
         "female" : "1"
+      },
+      "viewed_types" : {
+        "FRIENDS" : "friends",
+        "GUESTS"  : "guests",
+        "GIFTS"   : "gifts",
+        "MESSAGES": "messages"
       }
     }
   },
@@ -63,6 +69,19 @@
       "alone" : "alone",
       "guys"  : "guys",
       "girls" : "girls"
+    },
+    "groups" : {
+      "LOVES"       : { "name" : "loves",       "stat" : "gifts_loves" },
+      "BREATH"      : { "name" : "breath",      "stat" : "gifts_breath" },
+      "FLOWERS"     : { "name" : "flowers",     "stat" : "gifts_flowers" },
+      "DRINKS"      : { "name" : "drinks",      "stat" : "gifts_drinks" },
+      "COMMON"      : { "name" : "common",      "stat" : "gifts_common" },
+      "FLIRTATION"  : { "name" : "flirtation",  "stat" : "gifts_flirtation" },
+      "MERRY"       : { "name" : "merry",       "stat" : "gifts_merry" },
+      "HATS"        : { "name" : "hats",        "stat" : "gifts_hats" },
+      "RANKS"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
+      "TO_AVATAR"   : { "name" : "to_avatar",   "stat" : "gifts_avatar" },
+      "TEXT"        : { "name" : "with_text",   "stat" : "gifts_text" }
     }
   },
   "moneys" : {
@@ -73,15 +92,24 @@
     "card_bonus"      : "100",
     "ransom_price"    : "10",
     "sympathy_price"  : "1",
-    "popular_bonus"   : "5"
+    "popular_bonus"   : "5",
+    "money_lots" : {
+      "COIN_1"   : { "name" : "payCoin1",   "stat_take" : "money_1_taken",   "stat_give" : "money_1_given" },
+      "COIN_3"   : { "name" : "payCOin3",   "stat_take" : "money_3_taken",   "stat_give" : "money_3_given" },
+      "COIN_10"  : { "name" : "payCoin10",  "stat_take" : "money_10_taken",  "stat_give" : "money_10_given" },
+      "COIN_20"  : { "name" : "payCoin20",  "stat_take" : "money_20_taken",  "stat_give" : "money_20_given" },
+      "COIN_60"  : { "name" : "payCoin60",  "stat_take" : "money_60_taken",  "stat_give" : "money_60_given"},
+      "COIN_200" : { "name" : "payCoin200", "stat_take" : "money_200_taken", "stat_give" : "money_200_given" }
+    }
   },
   "ranks" : {
-    "generous"  : { "start" : 20, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 60000 },
-    "popular"   : { "start" : 20, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 300000 },
-    "dj"        : { "start" : 10, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 600000 },
-    "lucky"     : { "start" : 2,  "step" : 1, "bonus_limit" : 30, "bonus_timeout" : 30000 },
-    "releaser"  : { "start" : 3,  "step" : 1, "bonus_limit" : 30, "bouns_timeout" : 600000 }
+    "generous"  : { "name" : "generous",  "start" : 20, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 60000 },
+    "popular"   : { "name" : "popular",  "start" : 20, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 300000 },
+    "dj"        : { "name" : "dj",  "start" : 10, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 600000 },
+    "lucky"     : { "name" : "lucky",  "start" : 2,  "step" : 1, "bonus_limit" : 30, "bonus_timeout" : 30000 },
+    "releaser"  : { "name" : "releaser",  "start" : 3,  "step" : 1, "bonus_limit" : 30, "bouns_timeout" : 600000 }
   },
+  "almighty" : "almighty",
   "points" : {
     "waste" : 1,
     "refill" : 1,
@@ -122,16 +150,12 @@
       "prison" : "4000",
       "sympathy_show" : "15000",
       "default" : "18000"
-    }
-  },
-  "io" : {
-    "len_room_history" : "5",
-    "one_sex_in_room"  : "6",
-    "exit_timeout"  : "30000",
-    "new_room" : "new_room",
-    "operation_statuses" : {
-      "good" : "success",
-      "bad"  : "fail"
+    },
+    "activity_ratings" : {
+      "ALL"         : 3,
+      "HALF_MORE"   : 2,
+      "HALF_LESS"   : 1,
+      "NONE"        : 0
     }
   },
   "good_types" : {
@@ -141,5 +165,104 @@
   "static" : "public",
   "logs" : {
     "log" : "log/server.log"
+  },
+  "io" : {
+    "len_room_history" : "5",
+    "one_sex_in_room"  : "6",
+    "exit_timeout"  : "30000",
+    "new_room" : "new_room",
+    "operation_statuses" : {
+      "good" : "success",
+      "bad"  : "fail"
+    },
+    "emits" : {
+      "IO_INIT"                   : "init",
+      "IO_MESSAGE"                : "message",
+      "IO_GET_ROOMS"              : "get_rooms",
+      "IO_GET_CHAT_HISTORY"       : "get_chat_history",
+      "IO_GET_GIFT_SHOP"          : "get_gift_shop",
+      "IO_GET_MONEY_SHOP"         : "get_money_shop",
+      "IO_GET_MONEY"              : "get_money",
+      "IO_GET_PROFILE"            : "get_profile",
+      "IO_GET_TOP"                : "get_top",
+      "IO_ADD_FRIEND"             : "add_friend",
+      "IO_NEW_FRIEND"             : "new_friend",
+      "IO_CHANGE_ROOM"            : "change_room",
+      "IO_CHANGE_STATUS"          : "change_status",
+      "IO_CHOOSE_ROOM"            : "choose_room",
+      "IO_MAKE_GIFT"              : "make_gift",
+      "IO_OPEN_PRIVATE_CHAT"      : "open_private_chat",
+      "IO_CLOSE_PRIVATE_CHAT"     : "close_private_chat",
+      "IO_DISCONNECT"             : "disconnect",
+      "IO_ONLINE"                 : "online",
+      "IO_OFFLINE"                : "offline",
+      "IO_ADD_GUEST"              : "add_guest",
+      "IO_ADD_POINTS"             : "add_points",
+      "IO_GAME"                   : "game",
+      "IO_RELEASE_PLAYER"         : "release",
+
+      "IO_ROOM_USERS"             : "room_users",
+      "IO_ADD_TO_MENU"            : "add_to_menu",
+      "IO_DEL_FROM_FRIENDS"       : "del_friend",
+      "IO_NO_FRIEND"              : "no_friend",
+      "IO_GIVE_MONEY"             : "give_money",
+
+      "IO_NEW_GIFT"               : "new_gift",
+      "IO_HIDE_GIFT"              : "hide_gift",
+
+      "IO_ADD_TRECK"              : "add_track",
+      "IO_GET_TRACK_LIST"         : "get_track_list",
+      "IO_LIKE_TRACK"             : "like_track",
+      "IO_DISLIKE_TRACK"          : "dislike_track",
+      "IO_START_TRACK"            : "start_track",
+      "IO_STOP_TRACK"             : "stop_track",
+      "IO_GET_LIKES_AND_DISLAKES" : "get_likes_and_dislikes",
+      "IO_ADD_TRECK_FREE"         : "add_track_free",
+      "IO_GET_FREE_TRACK_STATE"   : "free_track_state",
+
+      "IO_ADD_QUESTION"           : "add_question",
+      "IO_GAME_ERROR"             : "game_error",
+      "IO_LIKE_PROFILE"           : "like",
+      "IO_SET_VIEWED"             : "viewed",
+      "IO_BLOCK_USER"             : "block_user",
+      "IO_UNBLOCK_USER"           : "unblock_user",
+      "IO_BLOCK_USER_NOTIFY"      : "banned_user",
+
+      "IO_NEW_RANK"               : "new_rank",
+      "IO_ADD_LEVEL"              : "add_level",
+      "IO_GET_RANKS"              : "get_ranks",
+      "IO_CHANGE_ACTIVE_RANK"     : "change_active_rank",
+      "IO_GET_ACTIVE_RANK"        : "get_active_rank",
+      "IO_ADD_BALLS"              : "add_balls",
+      "IO_NEW_LEVEL"              : "new_level",
+
+      "IO_NEW_RELEASER_BONUS"     : "new_releaser_bonus",
+      "IO_PRISON_PROTECT"         : "prison_protect"
+    }
+  },
+  "errors" : {
+    "NO_SUCH_GOOD"        : { "code" : 401, "message" : "Нет такого товара" },
+    "SELF_ILLEGAL"        : { "code" : 410, "message" : "Нельзя выполнить это действие в свой адрес" },
+    "TOO_LITTLE_MONEY"    : { "code" : 405, "message" : "Недостаточно монет" },
+    "ONLY_FRIEND"         : { "code" : 406, "message" : "Подарок можно сделать только другу (монеты)" },
+    "ACTON_TIMEOUT"       : { "code" : 407, "message" : "Таймаут на это действие еще не истек" },
+    "ALREADY_IS_MENU"     : { "code" : 415, "message" : "Добавить в меню - этот пользователь уже добавил приложение в меню" },
+    "NO_SUCH_ROOM"        : { "code" : 420, "message" : "Нет комнаты с таким идентификатором" },
+    "ALREADY_IN_ROOM"     : { "code" : 421, "message" : "Пользователь уже в этой комнате" },
+    "ROOM_IS_FULL"        : { "code" : 422, "message" : "Попытка перейти в комнату, в которой нет свободных мест" },
+    "NO_SUCH_CHAT"        : { "code" : 430, "message" : "Чат с этим пользователем не существует" },
+    "IN_BLACK_LIST"       : { "code" : 431, "message" : "Этот пользователь в черном списке" },
+    "NO_THAT_PLAYER"      : { "code" : 440, "message" : "Нельзя выбрать этого игрока" },
+    "NOT_IN_PRISON"       : { "code" : 441, "message" : "Этот игрок не находится в тюрьме" },
+    "IS_ALREADY_SELECTED" : { "code" : 442, "message" : "В игре Симпатии нельзя выбрать несколько раз одного и того же игрока" },
+    "FORBIDDEN_CHOICE"    : { "code" : 443, "message" : "В игре Симпатии нельзя выбрать того, кого нет среди игроков" },
+    "ALREADY_IS_TRACK"    : { "code" : 451, "message" : "Трек с таким ид уже есть в плей-листе" },
+    "NO_SUCH_TRACK"       : { "code" : 452, "message" : "В плей-листе нет трека с таким ид" },
+    "BLOCK_FREE_TRACK"    : { "code" : 453, "message" : "Сейчас нельзя добавить бесплатный трек" },
+    "NO_PARAMS"           : { "code" : 491, "message" : "Не заданы необходимые параметры" },
+    "NO_AUTH"             : { "code" : 490, "message" : "Ошибка авторизации" },
+    "NO_SUCH_RUNK"        : { "code" : 411, "message" : "Пользователь не обладает таким званием" },
+    "NO_SUCH_BONUS"       : { "code" : 412, "message" : "Этот бонус недоступен" },
+    "OTHER"               : { "code" : 400, "message" : "Неизвестная ошибка" }
   }
 }

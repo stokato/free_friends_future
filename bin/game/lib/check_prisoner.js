@@ -2,7 +2,7 @@
  * Created by s.t.o.k.a.t.o on 12.01.2017.
  */
 
-const PF  = require('../../constants').PFIELDS;
+const PF  = require('../../const_fields');
   
 module.exports = function (result = {}) {
   if(this._prisoner !== null) {

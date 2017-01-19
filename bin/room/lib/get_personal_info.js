@@ -2,12 +2,11 @@
  * Created by Durov on 03.01.2017.
  */
 
-const constants = require('./../../constants');
 const Config    = require('./../../../config.json');
 
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;
-const PF = constants.PFIELDS;
+const PF = require('./../../const_fields');
 
 module.exports = function (uid) {
   let self = this;

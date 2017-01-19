@@ -1,14 +1,13 @@
 const async     = require('async');
 
 const logger    = require('./../../../../lib/log')(module);
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
 
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF     = dbConst.POINTS.fields;
-const PF      = constants.PFIELDS;
+const DBF     = DB_CONST.POINTS.fields;
 const GIRL    = Config.user.constants.sex.female;
 
 /*
@@ -62,26 +61,26 @@ module.exports = function(options, callback) { options    = options || {};
         options[PF.ID]
       ];
         
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.POINTS.name);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.POINTS.name);
       
-      cdb.client.execute(query, params, {prepare: true },  function(err) {
+      dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
 
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Отбираем все записи для этого пользователя
-      delOldPoints(fields, dbConst.POINTS.name, function () {
+      delOldPoints(fields, DB_CONST.POINTS.name, function () {
         cb(null, fields, params);
       });
     }, //////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
 
       let db = (options[PF.SEX] == GIRL)?
-                        dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, db);
+                        DB_CONST.POINTS_GIRLS.name : DB_CONST.POINTS_GUYS.name;
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, db);
 
-      cdb.client.execute(query, params, {prepare: true },  function(err) {
+      dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
         if (err) {  return cb(err); }
 
         cb(null, fields, params);
@@ -89,7 +88,7 @@ module.exports = function(options, callback) { options    = options || {};
     }, //////////////////////////////////////////////////////////////////////////////////
     function(fields, params, cb) { // Удаляем старые записи
       let db = (options[PF.SEX] == GIRL)?
-                        dbConst.POINTS_GIRLS.name : dbConst.POINTS_GUYS.name;
+                        DB_CONST.POINTS_GIRLS.name : DB_CONST.POINTS_GUYS.name;
 
       delOldPoints(fields, db, function () {
         cb(null, null);
@@ -103,11 +102,11 @@ module.exports = function(options, callback) { options    = options || {};
   
   function delOldPoints(fields, db, cb) { // Удаляем старые записи
     
-    let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, db, [DBF.UID_uuid_i], [1]);
+    let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, db, [DBF.UID_uuid_i], [1]);
     
     let paramsF = [options[PF.ID]];
     
-    cdb.client.execute(query, paramsF, {prepare: true },  function(err, result) {
+    dbCtrlr.client.execute(query, paramsF, {prepare: true },  function(err, result) {
       if (err) {  return cb(err); }
       
       result.rows.sort(function (user1, user2) {
@@ -122,11 +121,11 @@ module.exports = function(options, callback) { options    = options || {};
       let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc];
       let constValues = [1, paramsF.length-1];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_DELETE, [], db, constFields, constValues);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], db, constFields, constValues);
   
       
   
-      cdb.client.execute(query, paramsF, {prepare: true }, function(err) {
+      dbCtrlr.client.execute(query, paramsF, {prepare: true }, function(err) {
         if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
         
         cb(null, null);

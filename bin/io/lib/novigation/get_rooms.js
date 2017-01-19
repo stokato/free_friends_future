@@ -6,7 +6,7 @@
  */
 
 const Config = require('./../../../../config.json');
-const constants  = require('./../../../constants');
+const PF  = require('./../../../const_fields');
 const oPool = require('./../../../objects_pool');
 
 const emitRes = require('./../../../emit_result');
@@ -30,7 +30,7 @@ module.exports = function (socket, options) {
     }
   }
   
-  let res = { [constants.PFIELDS.ROOMS] : resRooms };
+  let res = { [PF.ROOMS] : resRooms };
   
-  emitRes(null, socket, constants.IO_GET_ROOMS, res);
+  emitRes(null, socket, Config.io.emits.IO_GET_ROOMS, res);
 };

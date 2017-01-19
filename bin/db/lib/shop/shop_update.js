@@ -2,12 +2,11 @@
  * Created by s.t.o.k.a.t.o on 10.01.2017.
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.SHOP.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.SHOP.fields;
 
 /*
  Изменяем данные подарка
@@ -21,7 +20,7 @@ module.exports = function(options, callback) { options = options || {};
   let fields = [];
   let constFields = [DBF.ID_uuid_p];
   let constValues = [1];
-  let dbName = dbConst.SHOP.name;
+  let dbName = DB_CONST.SHOP.name;
   
   let params = [];
   if (PF.TITLE in options)       { fields.push(DBF.TITLE_varchar);       params.push(options[PF.TITLE]); }
@@ -33,11 +32,11 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.RANK in options)        { fields.push(DBF.GIFT_RANK_varchar);   params.push(options[PF.RANK]);}
   if (PF.LEVEL in options)       { fields.push(DBF.GIFT_LEVEL_int);  params.push(options[PF.LEVEL]);}
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_UPDATE, fields, dbName, constFields, constValues);
   
   params.push(options[PF.ID]);
   
-  cdb.client.execute(query, params, {prepare: true }, function(err) {
+  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
     if (err) {  return callback(err); }
     
     callback(null, options);

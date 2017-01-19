@@ -1,4 +1,4 @@
-const constants     = require('../../constants');
+
 const Config    = require('./../../../config.json');
 
 const GUY = Config.user.constants.sex.male;

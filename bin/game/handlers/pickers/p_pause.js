@@ -2,7 +2,6 @@
  * Created by s.t.o.k.a.t.o on 13.01.2017.
  */
 
-const constants = require('./../../../constants');
 const oPool     = require('./../../../objects_pool');
 
 module.exports = function (game) {

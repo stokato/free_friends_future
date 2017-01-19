@@ -9,17 +9,18 @@
 
 const async = require('async');
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
 const bdayToAge = require('./../common/bdayToAge');
-const constants = require('./../../../constants');
-
-const DBF   = dbConst.USER_CHATS.fields;
-const DBFN  = dbConst.USER_NEW_CHATS.fields;
-const PF    = constants.PFIELDS;
-
+const PF        = require('./../../../const_fields');
 
 module.exports = function(uid, callback) {
+  
+  const DBF       = DB_CONST.USER_CHATS.fields;
+  const DB_NAME   = DB_CONST.USER_CHATS.name;
+  
+  const DBFN      = DB_CONST.USER_NEW_CHATS.fields;
+  const DB_NAME_N = DB_CONST.USER_NEW_CHATS.name;
   
   if (!uid) {
     return callback(new Error("Задан пустой Id пользователя"), null);
@@ -27,31 +28,33 @@ module.exports = function(uid, callback) {
   
   async.waterfall([ //-----------------------------------------------------------------
     function (cb) {
-      let params = [uid];
-      let fields = [DBFN.COMPANIONID_uuid_pc2];
+      let paramsArr = [uid];
+      let fieldsArr = [DBFN.COMPANIONID_uuid_pc2];
       
-      let constFields = [DBFN.USERID_uuid_pc1i];
-      let constValues = [1];
-      let dbName = dbConst.USER_NEW_CHATS.name;
+      let condFieldsArr = [DBFN.USERID_uuid_pc1i];
+      let condValuesArr = [1];
+
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DB_NAME_N, condFieldsArr, condValuesArr);
       
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
-      
-      cdb.client.execute(query, params, {prepare : true}, function (err, result) {
-        if(err) { return cb(err, null); }
-        
-        let newIds = [];
-        
-        for(let i = 0; i < result.rows.length; i++) {
-          newIds.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2]);
+      dbCtrlr.client.execute(query, paramsArr, {prepare : true}, function (err, result) {
+        if(err) {
+          return cb(err, null);
         }
         
-        cb(null, newIds);
+        let newIDArr = [];
+        
+        let rowsLen = result.rows.length;
+        for(let i = 0; i < rowsLen; i++) {
+          newIDArr.push(result.rows[i][DBFN.COMPANIONID_uuid_pc2]);
+        }
+        
+        cb(null, newIDArr);
       })
     }, //-----------------------------------------------------------------
-    function (newIds, cb) {
-      let params = [uid];
+    function (newIDArr, cb) {
+      let paramsArr = [uid];
   
-      let fields = [
+      let fieldsArr = [
         DBF.COMPANIONID_uuid_c,
         DBF.ISNEW_boolean,
         DBF.COMPANIONBDATE_timestamp,
@@ -59,49 +62,58 @@ module.exports = function(uid, callback) {
         DBF.COMPANIONVID_varchar
       ];
   
-      let const_fields = [DBF.USERID_uuid_p];
-      let const_values = [1];
-      let dbName        = dbConst.USER_CHATS.name;
+      let condFieldsArr = [DBF.USERID_uuid_p];
+      let condValuesArr = [1];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, const_fields, const_values);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DB_NAME, condFieldsArr, condValuesArr);
   
-      cdb.client.execute(query, params, {prepare: true}, function (err, result) {
-        if (err) { return cb(err, null); }
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true}, function (err, result) {
+        if (err) {
+          return cb(err, null);
+        }
     
-        let row, user, users = [];
-    
-        for (let i = 0; i < result.rows.length; i++) {
-          row = result.rows[i];
+        let rowObj;
+        let userObj;
+        let usersArr = [];
+        let rowsLen = result.rows.length;
+        let age;
+        
+        for (let i = 0; i < rowsLen; i++) {
+          rowObj = result.rows[i];
       
-          user = {
-            [PF.ID]  : row[DBF.COMPANIONID_uuid_c].toString(),
-            [PF.VID] : row[DBF.COMPANIONVID_varchar],
-            [PF.AGE] : bdayToAge(row[DBF.COMPANIONBDATE_timestamp]),
-            [PF.SEX] : row[DBF.COMPANIONSEX_int]
+          age = bdayToAge(rowObj[DBF.COMPANIONBDATE_timestamp]);
+          
+          userObj = {
+            [PF.ID]  : rowObj[DBF.COMPANIONID_uuid_c].toString(),
+            [PF.VID] : rowObj[DBF.COMPANIONVID_varchar],
+            [PF.AGE] : age,
+            [PF.SEX] : rowObj[DBF.COMPANIONSEX_int]
           };
           
-          user[PF.ISNEW]  = false;
+          userObj[PF.ISNEW]  = false;
       
-          for (let n = 0; i < newIds.length; i++) {
-            if(user[PF.ID] == newIds[n][PF.ID]) {
-              user[PF.ISNEW] = true;
+          let newIdsLen = newIDArr.length;
+          for (let n = 0; i < newIdsLen; i++) {
+            if(userObj[PF.ID] == newIDArr[n][PF.ID]) {
+              userObj[PF.ISNEW] = true;
             }
           }
   
-          users.push(user);
- 
+          usersArr.push(userObj);
         }
     
-        let res = {
-          [PF.CHATS]     : users,
-          [PF.NEWCHATS]  : newIds.length
+        let resObj = {
+          [PF.CHATS]     : usersArr,
+          [PF.NEWCHATS]  : newIDArr.length
         };
     
-        cb(null, res);
+        cb(null, resObj);
       });
     }], //--------------------------------------------------------------------------
   function (err, chats) {
-    if(err) { return callback(err); }
+    if(err) {
+      return callback(err);
+    }
     
     callback(null, chats);
   });

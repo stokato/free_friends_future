@@ -9,7 +9,7 @@
  * @return profiles - коллекция профилей для модуля vk
  */
 
-const  logger = require('./../../lib/log')(module);
+const Config    = require('./../../config.json');
 const socketio  = require('socket.io');
 const ios       = require('socket.io-express-session');
 const ioClient  = require('socket.io-client');
@@ -19,7 +19,6 @@ const session   = require('./../../lib/session');
 
 const oPool     = require('./../objects_pool');
 const stat      = require('./../stat_manager');
-const constants = require('./../constants');
 const ioc = require('./../io_controller');
 
 // let io = null;                                      // Сокет
@@ -39,7 +38,7 @@ module.exports.listen = function(server, callback) {
 
   io.sockets.on('connection', function (socket) {
     
-    ioc.setEmit(socket, constants.IO_INIT, initProfile);
+    ioc.setEmit(socket, Config.io.emits.IO_INIT, initProfile);
     
   });
   

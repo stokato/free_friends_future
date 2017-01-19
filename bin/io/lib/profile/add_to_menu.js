@@ -7,21 +7,21 @@
 const async       = require('async');
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
 const oPool       = require('./../../../objects_pool');
 const stat        = require('./../../../stat_manager');
 
 const emitRes     = require('./../../../emit_result');
 
 const MENU_BONUS  = Number(Config.moneys.menu_bonus);
-const PF          = constants.PFIELDS;
+const PF          = require('./../../../const_fields');
+const IO_ADD_TO_MENU = Config.io.emits.IO_ADD_TO_MENU;
 
 module.exports = function(socket, options) {
   
   let selfProfile = oPool.userList[socket.id];
   
   if(selfProfile.isInMenu()) {
-    return emitRes(constants.errors.ALREADY_IS_MENU, socket, constants.IO_ADD_TO_MENU);
+    return emitRes(Config.errors.ALREADY_IS_MENU, socket, IO_ADD_TO_MENU);
   }
   
   async.waterfall([ //-------------------------------------------------------------
@@ -31,7 +31,7 @@ module.exports = function(socket, options) {
         if(err) { return cb(err, null); }
         
         //Статистика
-        stat.setMainStat(constants.SFIELDS.MENU_APPEND, 1);
+        stat.setMainStat(PF.MENU_APPEND, 1);
         
         cb(null, null);
       });
@@ -53,21 +53,21 @@ module.exports = function(socket, options) {
         if (err) { return cb(err, null); }
         
         // Статистика
-        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), constants.SFIELDS.COINS_EARNED, MENU_BONUS);
-        stat.setMainStat(constants.SFIELDS.COINS_EARNED, MENU_BONUS);
+        stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.COINS_EARNED, MENU_BONUS);
+        stat.setMainStat(PF.COINS_EARNED, MENU_BONUS);
         
         cb(null, money);
       });
       
     }//---------------------------------------------------------------------------
   ], function(err, money) { // Оповещаем об изменениях
-    if(err) {  return emitRes(err, socket, constants.IO_ADD_TO_MENU);  }
+    if(err) {  return emitRes(err, socket, IO_ADD_TO_MENU);  }
     
     let res = { [PF.MONEY] : money };
  
-    socket.emit(constants.IO_GET_MONEY, res);
+    socket.emit(Config.io.emits.IO_GET_MONEY, res);
     
-    emitRes(null, socket, constants.IO_ADD_TO_MENU);
+    emitRes(null, socket, IO_ADD_TO_MENU);
   });
 };
 

@@ -4,20 +4,20 @@
  *  Получение статистики пользователя
  */
 const db = require('./../../db_manager');
-const SF = require('./../../constants').SFIELDS;
+const PF = require('./../../const_fields');
 
 module.exports = function (id, vid, callback) {
   
   let  fList = [
-    SF.GIFTS_GIVEN,
-    SF.GIFTS_TAKEN,
-    SF.COINS_GIVEN,
-    SF.COINS_EARNED,
-    SF.COINS_SPENT,
-    SF.BOTTLE_KISSED,
-    SF.BEST_SELECTED,
-    SF.RANK_GIVEN,
-    SF.GAME_TIME
+    PF.GIFTS_GIVEN,
+    PF.GIFTS_TAKEN,
+    PF.COINS_GIVEN,
+    PF.COINS_EARNED,
+    PF.COINS_SPENT,
+    PF.BOTTLE_KISSED,
+    PF.BEST_SELECTED,
+    PF.RANK_GIVEN,
+    PF.GAME_TIME
   ];
   
   db.findUserStat(id, vid, fList, function (err, stat) {

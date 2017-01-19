@@ -1,11 +1,8 @@
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
-// const bdayToAge = require('./../common/bdayToAge');
-const constants = require('./../../../constants');
+const dbCtrlr       = require('./../common/cassandra_db');
+const DB_CONST   = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.USERS.fields;
-const PF  = constants.PFIELDS;
-
+const DBF = DB_CONST.USERS.fields;
 
 /*
  Найти пользователя(по внутреннему или внешнему ИД): ИД, ВИД, список искомых полей
@@ -52,9 +49,9 @@ module.exports = function(id, vid, f_list, callback) {
     }
   }
 
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbConst.USERS.name, [constraint], [1]);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, DB_CONST.USERS.name, [constraint], [1]);
 
-  cdb.client.execute(query, param, {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query, param, {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
         
     if(result.rows.length > 0) {

@@ -7,9 +7,8 @@
  */
 
 const async  = require('async');
-const constants = require('./../../constants'),
-    logger    = require('./../../../lib/log')(module);
-const PF = constants.PFIELDS;
+const logger    = require('./../../../lib/log')(module);
+const PF = require('./../../const_fields');
 
 const Config    = require('./../../../config.json');
 
@@ -56,7 +55,7 @@ module.exports = function (profile, callback) {
     }
   }
 
-  var self = this;
+  let self = this;
 
   profile.isFriend(userList, function (err, res) {
     if(err) { return callback(err); }

@@ -5,9 +5,8 @@
  */
 
 const Config = require('./../../../../config.json');
-const constants = require('./../../../constants');
 
-const IOF = constants.PFIELDS;
+const IOF = require('./../../../const_fields');
 const GIFT_TYPES = Config.gifts.types;
 
 module.exports = function (profile) {

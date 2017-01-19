@@ -5,20 +5,22 @@
  */
 
 const Config    = require('./../../../config.json');
-const constants = require('./../../constants');
 const oPool     = require('./../../objects_pool');
 
-const PF = constants.PFIELDS;
+const RANKS = Config.ranks;
+const ALMIGHTY = Config.almighty;
+
+const PF = require('./../../const_fields');
 
 module.exports = function (uid) {
 
   let ranks = {};
 
-  for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    let rank = constants.RANKS[item];
+  for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
+    let rank = RANKS[item].name;
     
-    let rankStart = Number(Config.ranks[rank].start);
-    let rankStep = Number(Config.ranks[rank].step);
+    let rankStart = Number(RANKS[rank].start);
+    let rankStep = Number(RANKS[rank].step);
     
     let rankInfo = {};
     
@@ -65,7 +67,7 @@ module.exports = function (uid) {
   let profile = oPool.profiles[uid];
   if(profile) {
     let socket = profile.getSocket();
-    socket.emit(constants.IO_ADD_BALLS, ranks[targetRank]);
+    socket.emit(Config.io.emits.IO_ADD_BALLS, ranks[targetRank]);
   }
   
 };

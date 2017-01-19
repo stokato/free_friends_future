@@ -9,11 +9,10 @@
 const async     =  require('async');
 
 const Config = require('./../../../../config.json');
-const constants = require('./../../../constants');
 const oPool     = require('../../../objects_pool');
 const emitRes   = require('./../../../emit_result');
 
-const PF        = constants.PFIELDS;
+const PF        = require('./../../../const_fields');
 const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 
 module.exports = function (socket, options) {
@@ -82,14 +81,14 @@ module.exports = function (socket, options) {
       cb(null, roomInfo, friendList);
     }//--------------------------------------------------
   ], function (err, roomInfo, friendList) { // Обрабатываем ошибки или отравляем результат
-    if (err) { return emitRes(err, socket, constants.IO_CHOOSE_ROOM); }
+    if (err) { return emitRes(err, socket, Config.io.emits.IO_CHOOSE_ROOM); }
     
       let  res = {
         [PF.RANDOM] : roomInfo,
         [PF.FRIENDS] : friendList
       };
     
-      emitRes(null, socket, constants.IO_CHOOSE_ROOM, res);
+      emitRes(null, socket, Config.io.emits.IO_CHOOSE_ROOM, res);
   });
   
 };

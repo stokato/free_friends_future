@@ -6,23 +6,23 @@ const async = require('async');
 const logger = require('./../../../../lib/log')(module);
 
 const Config        = require('./../../../../config.json');
-const constants     = require('./../../../constants');
+const PF     = require('./../../../const_fields');
 const  oPool        = require('./../../../objects_pool');
 const  stat         = require('./../../../stat_manager');
 const  ProfileJS    = require('./../../../profile/index');
 
 const  addPoints    = require('./../../lib/add_points');
 
-const PF            = constants.PFIELDS;
 const CARD_COUNT    = Number(Config.game.card_count);
 const CARD_BONUS    = Number(Config.moneys.card_bonus);
 const CARD_POINTS   = Number(Config.points.game.gold);
+const LUCKY_RANK    = Config.ranks.lucky.name;
 
 module.exports = function (game) {
   
   game.clearTimer();
   
-  stat.setMainStat(constants.SFIELDS.CARDS_ACTIVITY, game.getActivityRating());
+  stat.setMainStat(PF.CARDS_ACTIVITY, game.getActivityRating());
   
   // Готовим сведения о выборе игроков и отбираем победителей
   let gold    = Math.floor(Math.random() * CARD_COUNT);
@@ -74,7 +74,7 @@ module.exports = function (game) {
     }
   
     let ranks = game._room.getRanks();
-    ranks.addRankBall(constants.RANKS.LUCKY, lucky.id);
+    ranks.addRankBall(LUCKY_RANK, lucky.id);
   }
   
   // Если есть победители, делим награду поровну и добавляем всем монеты
@@ -106,8 +106,8 @@ module.exports = function (game) {
           if (err) {  cb(err, null); }
   
           // Статистика
-          stat.setUserStat(player.getID(), player.getVID(), constants.SFIELDS.COINS_EARNED, bonus);
-          stat.setMainStat(constants.SFIELDS.COINS_EARNED, bonus);
+          stat.setUserStat(player.getID(), player.getVID(), PF.COINS_EARNED, bonus);
+          stat.setMainStat(PF.COINS_EARNED, bonus);
           
           cb(null, player, money, isOnline);
         });
@@ -128,7 +128,7 @@ module.exports = function (game) {
       
       // Сообщяем о начислении монет
       if(isOnline) {
-        player.getSocket().emit(constants.IO_GET_MONEY, { [PF.MONEY] : money });
+        player.getSocket().emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
       }
       
       // Повторяем для всех пользователей

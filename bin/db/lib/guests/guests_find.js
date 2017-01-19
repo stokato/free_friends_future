@@ -1,14 +1,10 @@
 const async = require('async');
 
-const cdb       = require('./../common/cassandra_db');
-const dbConst   = require('./../../constants');
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
+
 const bdayToAge = require('./../common/bdayToAge');
-const constants = require('./../../../constants');
-
-const DBF   = dbConst.USER_GUESTS.fields;
-const DBFN  = dbConst.USER_NEW_GUESTS.fields;
-const PF    = constants.PFIELDS;
-
 
 /*
  Найти гостей пользователя: ИД игрока
@@ -18,36 +14,47 @@ const PF    = constants.PFIELDS;
  */
 module.exports = function(uid, isSelf, callback) {
   
-  if (!uid ) { return callback(new Error("Задан пустой Id"), null); }
+  const DBF  = DB_CONST.USER_GUESTS.fields;
+  const DBN  = DB_CONST.USER_GUESTS.name;
+  
+  const DBFN = DB_CONST.USER_NEW_GUESTS.fields;
+  const DBNN = DB_CONST.USER_NEW_GUESTS.name;
+  
+  if (!uid ) {
+    return callback(new Error("Задан пустой Id"), null);
+  }
   
   async.waterfall([ //---------------------------------------------------
       function (cb) {
         if(isSelf) {
-          let fields = [DBFN.GUESTID_uuid_pc2i];
-          let dbName = dbConst.USER_NEW_GUESTS.name;
-          let constFields = [DBFN.USERID_uuid_pc1i];
-          let constValues = [1];
+          let fieldsArr = [DBFN.GUESTID_uuid_pc2i];
           
-          let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+          let condFieldsArr = [DBFN.USERID_uuid_pc1i];
+          let condValuesArr = [1];
           
-          cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-            if (err) { return cb(err, null); }
-            
-            let newIds = [];
-            
-            for(let i = 0; i < result.rows.length; i++) {
-              newIds.push(result.rows[i][DBFN.GUESTID_uuid_pc2i].toString());
+          let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBNN, condFieldsArr, condValuesArr);
+          
+          dbCtrlr.client.execute(query,[uid], {prepare: true }, (err, result) => {
+            if (err) {
+              return cb(err, null);
             }
             
-            cb(null, newIds);
+            let newIDArr = [];
+            
+            let rowsLen = result.rows.length;
+            for(let i = 0; i < rowsLen; i++) {
+              newIDArr.push(result.rows[i][DBFN.GUESTID_uuid_pc2i].toString());
+            }
+            
+            cb(null, newIDArr);
           });
         } else { cb(null, []); }
         
       }, //---------------------------------------------------------------
-      function (newIds, cb) {
+      function (newIDArr, cb) {
         
         // Отбираем всех гостей
-        let fields = [
+        let fieldsArr = [
           DBF.GUESTID_uuid_ci,
           DBF.GUESTVID_varchar,
           DBF.DATE_timestamp,
@@ -55,51 +62,63 @@ module.exports = function(uid, isSelf, callback) {
           DBF.GUESTSEX_int
         ];
         
-        let constFields = [DBF.USERID_uuid_p];
-        let constValues = [1];
-        let dbName = dbConst.USER_GUESTS.name;
+        let condFieldsArr = [DBF.USERID_uuid_p];
+        let condValuesArr = [1];
         
-        //let query = "select guestid, guestvid, date FROM user_guests where userid = ?";
-        let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
         
-        cdb.client.execute(query,[uid], {prepare: true }, function(err, result) {
-          if (err) { return cb(err, null); }
+        dbCtrlr.client.execute(query,[uid], {prepare: true }, (err, result) => {
+          if (err) {
+            return cb(err, null);
+          }
           
-          let guests = [];
+          let guestsArr = [];
           
-            let row;
-            for(let i = 0; i < result.rows.length; i++) {
-              row = result.rows[i];
+          let rowsLen = result.rows.length;
+          for(let i = 0; i < rowsLen; i++) {
+            let rowObj = result.rows[i];
+            
+            let age = bdayToAge(rowObj[DBF.GUESTBDATE_timestamp]);
+            
+            let guestObj = {
+              [PF.ID]   : rowObj[DBF.GUESTID_uuid_ci].toString(),
+              [PF.VID]  : rowObj[DBF.GUESTVID_varchar],
+              [PF.DATE] : rowObj[DBF.DATE_timestamp],
+              [PF.AGE]  : age,
+              [PF.SEX]  : rowObj[DBF.GUESTSEX_int]
+            };
+            
+            if(isSelf) {
+              guestObj[PF.ISNEW] = false;
               
-              let guest = {
-                [PF.ID]   : row[DBF.GUESTID_uuid_ci].toString(),
-                [PF.VID]  : row[DBF.GUESTVID_varchar],
-                [PF.DATE] : row[DBF.DATE_timestamp],
-                [PF.AGE]  : bdayToAge(row[DBF.GUESTBDATE_timestamp]),
-                [PF.SEX]  : row[DBF.GUESTSEX_int]
-              };
-              
-              if(isSelf) {
-                guest[PF.ISNEW] = false;
+              let newIDLen = newIDArr.length;
+              for(let nid = 0; nid < newIDLen; nid++) {
                 
-                for(let nid = 0; nid < newIds.length; nid++) {
-                  if(guest[PF.ID] == newIds[nid]) {
-                    guest[PF.ISNEW] = true;
-                  }
+                if(guestObj[PF.ID] == newIDArr[nid]) {
+                  guestObj[PF.ISNEW] = true;
                 }
+                
               }
-              
-              guests.push(guest);
             }
-  
-            cb(null, { guests : guests, new_guests : newIds.length });
+            
+            guestsArr.push(guestObj);
+          }
+          
+          let res = {
+            guests : guestsArr,
+            new_guests : newIDArr.length
+          };
+          
+          cb(null, res);
         });
       }
     ], // -------------------------------------------------------------
-    function (err, guests) {
-      if (err) { return callback(err, null); }
+    function (err, res) {
+      if (err) {
+        return callback(err, null);
+      }
       
-      callback(null, guests);
+      callback(null, res);
     });
   
 };

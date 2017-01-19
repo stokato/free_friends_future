@@ -8,12 +8,11 @@ const async = require('async');
 const Config = require('./../../../../config.json');
 const oPool = require('./../../../objects_pool');
 const logger = require('./../../../../lib/log')(module);
-const constants = require('./../../../constants');
 
 const calcNeedPoints = require('./../common/calc_need_points');
 const emitPoints     = require('./../common/emit_points');
 
-const PF = constants.PFIELDS;
+const PF = require('./../../../const_fields');
 
 module.exports = function (profile, points) {
   
@@ -95,10 +94,10 @@ module.exports = function (profile, points) {
           [PF.VIP]         : newVIP,
         };
       
-        socket.emit(constants.IO_ADD_LEVEL, res);
+        socket.emit(Config.io.emits.IO_ADD_LEVEL, res);
         
         let room = oPool.roomList[socket.id];
-        socket.broadcast.in(room.getName()).emit(constants.IO_NEW_LEVEL, {
+        socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_NEW_LEVEL, {
           [PF.ID] : profile.getID(),
           [PF.VID] : profile.getVID(),
           [PF.LEVEL] : profile.getLevel(),
@@ -110,7 +109,7 @@ module.exports = function (profile, points) {
         
           res = { [PF.MONEY] : money };
         
-          socket.emit(constants.IO_GET_MONEY, res);
+          socket.emit(Config.io.emits.IO_GET_MONEY, res);
   
           emitPoints(profile, points);
         });

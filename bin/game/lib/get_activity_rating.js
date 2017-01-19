@@ -5,7 +5,7 @@
  *
  */
 
-const RATINGS = require('./../../constants').ACTIVITY_RATINGS;
+const RATINGS = require('./../../../config.json').game.activity_ratings;
 
 module.exports = function () {
   if(this._actionsCount == 0) {

@@ -6,21 +6,21 @@
 const async = require('async');
 
 const Config      = require('./../../../config.json');
-const constants   = require('../../constants');
 const oPool       = require('./../../objects_pool');
 
 const checkID     = require('./../../check_id');
 const emitRes     = require('./../../emit_result');
 const sanitize    = require('./../../sanitize');
 
-const PF            = constants.PFIELDS;
+const PF            = require('../../const_fields');
 const WASTE_POINTS  = Number(Config.points.waste);
 const RANSOM_PRICE  = Number(Config.moneys.sympathy_price);
+const IO_RELEASE_PLAYER = Config.io.emits.IO_RELEASE_PLAYER;
 
 // Освободить игрока из темницы
 module.exports = function (socket, options) {
   if(!checkID(options[PF.ID])) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_RELEASE_PLAYER);
+    return emitRes(Config.errors.NO_PARAMS, socket, IO_RELEASE_PLAYER);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -31,12 +31,12 @@ module.exports = function (socket, options) {
   
   // Если среди заблокированных игроков такого нет, выдаем ошибку
   if(!prisonerInfo) {
-    return emitRes(constants.errors.NOT_IN_PRISON, socket, constants.IO_RELEASE_PLAYER);
+    return emitRes(Config.errors.NOT_IN_PRISON, socket, IO_RELEASE_PLAYER);
   }
   
   // Себя выкупить нельзя
   if(selfProfile.getID() == prisonerInfo.id) {
-    return emitRes(constants.errors.SELF_ILLEGAL, socket, constants.IO_RELEASE_PLAYER);
+    return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_RELEASE_PLAYER);
   }
   
   async.waterfall([ //--------------------------------------------
@@ -67,13 +67,13 @@ module.exports = function (socket, options) {
     
         // Добавляем баллов
         let ranks = game.getRoom().getRanks();
-        ranks.addRankBall(constants.RANKS.RELEASER, selfProfile.getID());
+        ranks.addRankBall(RELEASER_RANK, selfProfile.getID());
         
         cb(null, null);
       });
     } //--------------------------------------------
   ], function (err) {
-    if(err) { return emitRes(err, socket, constants.IO_RELEASE_PLAYER);}
+    if(err) { return emitRes(err, socket, IO_RELEASE_PLAYER);}
   
     // Оповещаем игроков в комнате
     let result = {
@@ -83,7 +83,7 @@ module.exports = function (socket, options) {
       [PF.FVID] : selfProfile.getVID()
     };
     
-    socket.broadcast.in(game._room.getName()).emit(constants.IO_RELEASE_PLAYER, result);
-    emitRes(null, socket, constants.IO_RELEASE_PLAYER, result);
+    socket.broadcast.in(game._room.getName()).emit(IO_RELEASE_PLAYER, result);
+    emitRes(null, socket, IO_RELEASE_PLAYER, result);
   });
 };

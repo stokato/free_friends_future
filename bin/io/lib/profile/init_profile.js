@@ -9,7 +9,6 @@ const async     = require('async');
 const validator = require('validator');
 
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
 const oPool     = require('./../../../objects_pool');
 const ProfileJS = require('./../../../profile/index');
 
@@ -26,14 +25,14 @@ const calcNeedPoints      = require('./../common/calc_need_points');
 
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;
-const PF                  = constants.PFIELDS;
+const PF                  = require('./../../../const_fields');
 
 module.exports = function (socket, options) {
   if(!validator.isInt(options[PF.COUNTRY] + "") ||
       !validator.isInt(options[PF.CITY] + "") ||
       !validator.isDate(options[PF.BDATE] + "") ||
       !(options[PF.SEX] + "" == GUY || options[PF.SEX] + "" == GIRL)) {
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_INIT);
+    return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_INIT);
   }
   
   async.waterfall([ //---------------------------------------------------------------
@@ -162,7 +161,7 @@ module.exports = function (socket, options) {
     },//------------------------------------------------------------
     function(info, room, cb) {
   
-      emitRes(null, socket, constants.IO_INIT, info);
+      emitRes(null, socket, Config.io.emits.IO_INIT, info);
   
       // Запускаем игру
       let game = room.getGame();
@@ -174,7 +173,7 @@ module.exports = function (socket, options) {
       cb(null, info);
     } //------------------------------------------------------------
   ], function (err, info) { // Обрабатываем ошибки, либо передаем данные клиенту
-    if(err) { emitRes(err, socket, constants.IO_INIT); }
+    if(err) { emitRes(err, socket, Config.io.emits.IO_INIT); }
   
   
     let params = {
@@ -183,7 +182,7 @@ module.exports = function (socket, options) {
     };
   
     // Уведомляем всех о том, что пользователь онлайн
-    emitAllRooms(socket, constants.IO_ONLINE, params);
+    emitAllRooms(socket, Config.io.emits.IO_ONLINE, params);
   
     // Отправляем пользовелю последние сообщеиня из общего чата
     //getLastMessages(socket, oPool.rooms[info[PF.ROOM][PF.ROOMNAME]]);

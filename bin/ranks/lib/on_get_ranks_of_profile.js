@@ -5,11 +5,13 @@
  */
 
 const Config = require('./../../../config.json');
-const constants = require('./../../constants');
 const oPool = require('./../../objects_pool');
 const emitRes = require('./emit_result');
 
-const PF = constants.PFIELDS;
+const RANKS = Config.ranks;
+const ALMIGHTY = Config.almighty;
+
+const PF = require('./../../const_fields');
 
 module.exports = function () {
   let self = this;
@@ -27,11 +29,11 @@ module.exports = function () {
     let rOwner = 0;
     let rCount = 0;
   
-    for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-      let rank = constants.RANKS[item];
+    for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
+      let rank = RANKS[item].name;
     
-      let rankStart = Number(Config.ranks[rank].start);
-      let rankStep = Number(Config.ranks[rank].step);
+      let rankStart = Number(RANKS[rank].start);
+      let rankStep = Number(RANKS[rank].step);
     
       let rankInfo = {};
 
@@ -62,19 +64,19 @@ module.exports = function () {
       ranks[rank] = rankInfo;
     }
   
-    ranks[constants.PFIELDS.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;
+    ranks[PF.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;
 
-    ranks[constants.ALMIGHTY] = {};
+    ranks[ALMIGHTY] = {};
 
     if(rOwner == rCount) {
-      ranks[constants.ALMIGHTY][PF.ISOWNER] = true;
+      ranks[ALMIGHTY][PF.ISOWNER] = true;
     } else {
-      ranks[constants.ALMIGHTY][PF.NEED_BALLS] = rCount;
-      ranks[constants.ALMIGHTY][PF.BALLS] = rOwner;
-      ranks[constants.ALMIGHTY][PF.PROGRESS] = Math.floor(rOwner / rCount * 100);
+      ranks[ALMIGHTY][PF.NEED_BALLS] = rCount;
+      ranks[ALMIGHTY][PF.BALLS] = rOwner;
+      ranks[ALMIGHTY][PF.PROGRESS] = Math.floor(rOwner / rCount * 100);
     }
   
-    emitRes(null, socket, constants.IO_GET_RANKS, ranks);
+    emitRes(null, socket, Config.io.emits.IO_GET_RANKS, ranks);
   }
 };
 

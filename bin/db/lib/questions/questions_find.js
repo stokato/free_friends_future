@@ -5,12 +5,11 @@
  *
  */
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF = require('./../../../const_fields');
 
-const DBF = dbConst.QUESTIONS.fields;
-const PF  = constants.PFIELDS;
+const DBF = DB_CONST.QUESTIONS.fields;
 
 module.exports = function(ids, callback) { ids = ids || [];
   
@@ -25,16 +24,16 @@ module.exports = function(ids, callback) { ids = ids || [];
   
   let constFields = [DBF.ID_uuid_p];
   let constValues = [ids.length];
-  let dbName = dbConst.QUESTIONS.name;
+  let dbName = DB_CONST.QUESTIONS.name;
   let params = [];
   
   for(let i = 0; i < ids.length; i++) {
     params.push(ids[i]);
   }
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, dbName, constFields, constValues);
   
-  cdb.client.execute(query,[], {prepare: true }, function(err, result) {
+  dbCtrlr.client.execute(query,[], {prepare: true }, function(err, result) {
     if (err) { return callback(err, null); }
     
     if(result.rows.length == 0) return callback(null, null);

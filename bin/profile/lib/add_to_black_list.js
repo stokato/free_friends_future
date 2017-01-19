@@ -6,7 +6,7 @@
 
 const  Config = require('./../../../config.json');
 const  db     = require('./../../db_manager');
-const  IOF    = require('./../../constants').PFIELDS;
+const  IOF    = require('./../../const_fields');
 
 const  BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
 

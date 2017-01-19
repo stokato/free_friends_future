@@ -6,13 +6,12 @@
  */
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
 const db          = require('./../../../db_manager');
 const oPool       = require('./../../../objects_pool');
 
 const emitRes     = require('./../../../emit_result');
 
-const PF          = constants.PFIELDS;
+const PF          = require('./../../../const_fields');
 const CONST_TYPE  = Config.good_types.gift;
 
 module.exports = function (socket, options) {
@@ -20,7 +19,7 @@ module.exports = function (socket, options) {
   // Получаем все подраки
   db.findAllGoods(CONST_TYPE, function (err, goods) {
     if (err) {
-      return emitRes(err, socket, constants.IO_GET_GIFT_SHOP);
+      return emitRes(err, socket, Config.io.emits.IO_GET_GIFT_SHOP);
     }
   
     let setfProfile = oPool.userList[socket.id];
@@ -81,7 +80,7 @@ module.exports = function (socket, options) {
       gifts.push(types[i]);
     }
     
-    emitRes(null, socket, constants.IO_GET_GIFT_SHOP, { [PF.GIFTS]: gifts });
+    emitRes(null, socket, Config.io.emits.IO_GET_GIFT_SHOP, { [PF.GIFTS]: gifts });
   
   });
 };

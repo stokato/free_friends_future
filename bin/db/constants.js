@@ -2,8 +2,6 @@
  * Created by s.t.o.k.a.t.o on 21.11.2016.
  */
 
-const constants = require('./../constants');
-
 module.exports = {
   
   /*
@@ -422,6 +420,10 @@ module.exports = {
       C_GIFTS_COMMON_counter        : 'count_gifts_common',
       C_GIFTS_FLIRTATION_counter    : 'count_gifts_flirtation',
       C_GIFTS_MERRY_counter         : 'count_gifts_merry',
+      C_GIFTS_HATS_counter          : 'count_gifts_hats',
+      C_GIFTS_RANKS_counter         : 'count_gifts_ranks',
+      C_GIFTS_TO_AVATAR_counter     : 'count_gifts_to_avatar',
+      C_GIFTS_TEXT_counter          : 'count_gifts_text',
       C_MONEY_1_GIVEN_counter       : 'count_money_1_given',
       C_MONEY_3_GIVEN_counter       : 'count_money_3_given',
       C_MONEY_10_GIVEN_counter      : 'count_money_10_given',

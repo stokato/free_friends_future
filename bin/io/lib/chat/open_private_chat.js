@@ -7,7 +7,7 @@
 
 const async             = require('async');
 
-const constants         = require('./../../../constants');
+const Config            = require('./../../../../config.json');
 const oPool             = require('./../../../objects_pool');
 
 const getUserProfile    = require('./../common/get_user_profile');
@@ -17,14 +17,14 @@ const emitRes           = require('./../../../emit_result');
 const checkID           = require('./../../../check_id');
 const sanitize          = require('./../../../sanitize');
 
-const   PF                = constants.PFIELDS;
+const   PF                = require('./../../../const_fields');
 
 module.exports = function(socket, options, callback) {
   if(!checkID(options[PF.ID])) {
     if(callback) {
-      return callback(constants.errors.NO_PARAMS);
+      return callback(Config.errors.NO_PARAMS);
     }
-    return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_OPEN_PRIVATE_CHAT);
+    return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_OPEN_PRIVATE_CHAT);
   }
   
   options[PF.ID] = sanitize(options[PF.ID]);
@@ -39,7 +39,7 @@ module.exports = function(socket, options, callback) {
       let selfProfile = oPool.userList[socket.id];
       
       if(selfProfile.getID() == options[PF.ID]) {
-        return cb(constants.errors.SELF_ILLEGAL);
+        return cb(Config.errors.SELF_ILLEGAL);
       }
       
       let secondDate = new Date();
@@ -64,13 +64,13 @@ module.exports = function(socket, options, callback) {
       if(callback) {
         return callback(err);
       }
-      return emitRes(err, socket, constants.IO_OPEN_PRIVATE_CHAT);
+      return emitRes(err, socket, Config.io.emits.IO_OPEN_PRIVATE_CHAT);
     }
     
     if(callback) {
       return callback(null, null);
     }
-    emitRes(null, socket, constants.IO_OPEN_PRIVATE_CHAT);
+    emitRes(null, socket, Config.io.emits.IO_OPEN_PRIVATE_CHAT);
   });
   
 };

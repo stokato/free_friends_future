@@ -5,41 +5,39 @@
  */
 
 const db        = require('./../../db_manager');
-const constants = require('./../../constants');
+const PF = require('./../../const_fields');
 
-const SF        = constants.SFIELDS;
-const PF        = constants.PFIELDS;
 
 module.exports = function (callback) {
   
   let  id = 'main';
   let  fList = [
-    SF.GIFTS_LOVES,
-    SF.GIFTS_BREATH,
-    SF.GIFTS_DRINKS,
-    SF.GIFTS_COMMON,
-    SF.GIFTS_FLIRTATION,
-    SF.GIFTS_MERRY,
-    SF.MONEY_1_GIVEN,
-    SF.MONEY_3_GIVEN,
-    SF.MONEY_10_GIVEN,
-    SF.MONEY_20_GIVEN,
-    SF.MONEY_60_GIVEN,
-    SF.MONEY_200_GIVEN,
-    SF.MONEY_1_TAKEN,
-    SF.MONEY_3_TAKEN,
-    SF.MONEY_10_TAKEN,
-    SF.MONEY_20_TAKEN,
-    SF.MONEY_60_TAKEN,
-    SF.MONEY_200_TAKEN,
-    SF.MENU_APPEND,
-    SF.BEST_ACTIVITY,
-    SF.BOTTLE_ACTIVITY,
-    SF.CARDS_ACTIVITY,
-    SF.QUESTION_ACITVITY,
-    SF.SYMPATHY_ACITVITY,
-    SF.COINS_EARNED,
-    SF.COINS_SPENT
+    PF.GIFTS_LOVES,
+    PF.GIFTS_BREATH,
+    PF.GIFTS_DRINKS,
+    PF.GIFTS_COMMON,
+    PF.GIFTS_FLIRTATION,
+    PF.GIFTS_MERRY,
+    PF.MONEY_1_GIVEN,
+    PF.MONEY_3_GIVEN,
+    PF.MONEY_10_GIVEN,
+    PF.MONEY_20_GIVEN,
+    PF.MONEY_60_GIVEN,
+    PF.MONEY_200_GIVEN,
+    PF.MONEY_1_TAKEN,
+    PF.MONEY_3_TAKEN,
+    PF.MONEY_10_TAKEN,
+    PF.MONEY_20_TAKEN,
+    PF.MONEY_60_TAKEN,
+    PF.MONEY_200_TAKEN,
+    PF.MENU_APPEND,
+    PF.BEST_ACTIVITY,
+    PF.BOTTLE_ACTIVITY,
+    PF.CARDS_ACTIVITY,
+    PF.QUESTION_ACITVITY,
+    PF.SYMPATHY_ACITVITY,
+    PF.COINS_EARNED,
+    PF.COINS_SPENT
   ];
   
   db.findMainStat(id, fList, function (err, stat) {

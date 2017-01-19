@@ -4,15 +4,17 @@
  * Удаляем профиль
  */
 
-const constants = require('./../../constants');
+const Config = require('./../../../config.json');
 const ioc = require('./../../io_controller');
 
+const EMITS = Config.io.emits;
+
 module.exports = function (socket) {
-  ioc.removeEmit(socket, constants.IO_ADD_TRECK);
-  ioc.removeEmit(socket, constants.IO_ADD_TRECK_FREE);
-  ioc.removeEmit(socket, constants.IO_GET_FREE_TRACK_STATE);
-  ioc.removeEmit(socket, constants.IO_LIKE_TRACK);
-  ioc.removeEmit(socket, constants.IO_DISLIKE_TRACK);
-  ioc.removeEmit(socket, constants.IO_GET_TRACK_LIST);
-  ioc.removeEmit(socket, constants.IO_GET_LIKES_AND_DISLAKES);
+  ioc.removeEmit(socket, EMITS.IO_ADD_TRECK);
+  ioc.removeEmit(socket, EMITS.IO_ADD_TRECK_FREE);
+  ioc.removeEmit(socket, EMITS.IO_GET_FREE_TRACK_STATE);
+  ioc.removeEmit(socket, EMITS.IO_LIKE_TRACK);
+  ioc.removeEmit(socket, EMITS.IO_DISLIKE_TRACK);
+  ioc.removeEmit(socket, EMITS.IO_GET_TRACK_LIST);
+  ioc.removeEmit(socket, EMITS.IO_GET_LIKES_AND_DISLAKES);
 };

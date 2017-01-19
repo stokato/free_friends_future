@@ -8,13 +8,9 @@
 
 const async = require('async');
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF     = dbConst.USER_FRIENDS.fields;
-const DBFN    = dbConst.USER_NEW_FRIENDS.fields;
-const PF      = constants.PFIELDS;
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF       = require('./../../../const_fields');
 
 /*
  Добавить друга в БД: ИД, объект с данными друга
@@ -24,14 +20,21 @@ const PF      = constants.PFIELDS;
  - Возвращаем объект обратно
  */
 module.exports = function(uid, options, callback) { options = options || {};
-
+  
+  const DBF     = DB_CONST.USER_FRIENDS.fields;
+  const DBN     = DB_CONST.USER_FRIENDS.name;
+  
+  const DBFN    = DB_CONST.USER_NEW_FRIENDS.fields;
+  const DBNN    = DB_CONST.USER_NEW_FRIENDS.name;
+  
   if ( !uid || !options[PF.ID] || !options[PF.VID]) {
     return callback(new Error("Не указан Id пользователя или его друга"), null);
   }
 
   async.waterfall([ //-------------------------------------------------------------
+    // Добавляем запись в основную таблицу друзей
     function (cb) {
-      let fields = [
+      let fieldsArr = [
         DBF.USERID_uuid_pi,
         DBF.FRIENDID_uuid_c,
         DBF.FRIENDVID_varhcar,
@@ -40,7 +43,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FRIENDBDATE_timestamp
       ];
       
-      let params = [
+      let paramsArr = [
         uid,
         options[PF.ID],
         options[PF.VID],
@@ -49,37 +52,44 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.BDATE]
       ];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_FRIENDS.name);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
   
-      cdb.client.execute(query, params, {prepare: true },  function(err) {
-        if (err) {  return cb(err); }
+      dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+        if (err) {
+          return cb(err);
+        }
     
         cb(null, null);
       });
     }, //------------------------------------------------------------------------------
+    // Затем добавляем с таблицу новых
     function (res, cb) {
       
-      let fields = [
+      let fieldsArr = [
         DBFN.USERID_uuid_pc1i,
         DBFN.FRIENDID_uuid_pc2
       ];
       
-      let params = [
+      let paramsArr = [
         uid,
         options[PF.ID]
       ];
   
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_FRIENDS.name);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBNN);
   
-      cdb.client.execute(query, params, {prepare: true },  function(err) {
-        if (err) {  return cb(err); }
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+        if (err) {
+          return cb(err);
+        }
     
         cb(null, null);
       });
     }
   ], //------------------------------------------------------------------------------------
   function (err) {
-    if (err) {  return callback(err); }
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, options);
   });

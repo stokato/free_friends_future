@@ -9,18 +9,18 @@
 
 const validator = require('validator');
 
-const constants = require('../../constants');
+const Config    = require('./../../../config.json');
 const oPool     = require('./../../objects_pool');
 
 const sanitize  = require('./../../sanitize');
 const emitRes   = require('./../../emit_result');
 
-const PF        = constants.PFIELDS;
+const PF        = require('../../const_fields');
 
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, options) {
     if(!PF.PICK in options) {
-      return emitRes(constants.errors.NO_PARAMS, socket, constants.IO_GAME_ERROR);
+      return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_GAME_ERROR);
     }
   
     if(!validator.isBoolean(options[PF.PICK] + "")) {

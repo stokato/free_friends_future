@@ -8,8 +8,7 @@
 const async     = require('async');
 
 const Config    = require('./../../../config.json'),
-    constants = require('../../constants'),
-    IOF       = constants.PFIELDS,
+    IOF       = require('../../const_fields'),
     db        = require('./../../db_manager');
 
 const BLOCK_TIMEOUT = Number(Config.user.settings.user_block_timeout);

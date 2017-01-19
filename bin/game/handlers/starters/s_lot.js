@@ -3,9 +3,8 @@
  */
 
 const Config    = require('./../../../../config.json');
-const constants = require('./../../../constants');
 
-const  PF              = constants.PFIELDS;
+const  PF              = require('./../../../const_fields');
 const LOT_TIMEOUT = Config.game.timeouts.lot;
 
 module.exports = function(game) {

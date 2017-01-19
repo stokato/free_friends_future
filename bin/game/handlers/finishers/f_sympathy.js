@@ -3,20 +3,19 @@
  */
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
+const PF   = require('./../../../const_fields');
 const stat        = require('./../../../stat_manager');
 const logger      = require('./../../../../lib/log')(module);
 
 const addPoints   = require('./../../lib/add_points');
 
-const PF                    = constants.PFIELDS;
 const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
 
 module.exports = function (game) {
   
   game.clearTimer();
   
-  stat.setMainStat(constants.SFIELDS.SYMPATHY_ACITVITY, game.getActivityRating());
+  stat.setMainStat(PF.SYMPATHY_ACITVITY, game.getActivityRating());
   
   let players = game.getActivePlayers();
   let mutuals = [];

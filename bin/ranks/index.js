@@ -5,7 +5,7 @@
  *
  */
 
-const constants = require('./../constants');
+const Config = require('./../../config.json');
 
 const addProfile        = require('./lib/add_profile'),
     deleteProfile       = require('./lib/delete_profile'),
@@ -23,6 +23,11 @@ const addProfile        = require('./lib/add_profile'),
     deleteEmits         = require('./lib/delete_emits'),
     checkAlmgihty       = require('./lib/check_almighty');
 
+const RANKS = Config.ranks;
+const POPULAR_RANK = RANKS.popular.name;
+const RELEASER_RANK = RANKS.releaser.name;
+const ALMIGHTY = Config.almighty;
+
 function RanksManager() {
   // Обладатели званий
   this._rRankOwners = {};
@@ -30,20 +35,21 @@ function RanksManager() {
   // Накопленные бонусы по каждому званию
   this._rBonuses = {};
   
-  for(let item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-    this._rRankOwners[constants.RANKS[item]] = null;
-    this._rBonuses[constants.RANKS[item]] = 0;
+  for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
+    let rank = RANKS[item].name;
+    this._rRankOwners[rank] = null;
+    this._rBonuses[rank] = 0;
   }
 
-  this._rRankOwners[constants.ALMIGHTY] = null;
+  this._rRankOwners[ALMIGHTY] = null;
   
   // Список пользователей со счетчиками званий
   this._rProfiles = {};
   
   // Обработчики для начисления бонусов по каждому званию
   this._onRankBonus = {
-    [constants.RANKS.POPULAR] : onPopularBonus(this),
-    [constants.RANKS.RELEASER] : onReleaserBonus(this)
+    [POPULAR_RANK]  : onPopularBonus(this),
+    [RELEASER_RANK] : onReleaserBonus(this)
   };
 
 }

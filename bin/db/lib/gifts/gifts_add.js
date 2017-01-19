@@ -1,12 +1,8 @@
 const async = require('async');
 
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-
-const DBF   = dbConst.USER_GIFTS.fields;
-const DBFN  = dbConst.USER_NEW_GIFTS.fields;
-const PF    = constants.PFIELDS;
+const dbCtrlr  = require('./../common/cassandra_db');
+const DB_CONST = require('./../../constants');
+const PF       = require('./../../../const_fields');
 
 /*
  Добавить подарок: ИД игрока и объект с данными о подарке
@@ -16,18 +12,31 @@ const PF    = constants.PFIELDS;
  - Возвращаем объект подарка
  */
 module.exports = function(uid, options, callback) { options = options || {};
+  
+  const DBF   = DB_CONST.USER_GIFTS.fields;
+  const DBN   = DB_CONST.USER_GIFTS.name;
+  
+  const DBFN  = DB_CONST.USER_NEW_GIFTS.fields;
+  const DBNN  = DB_CONST.USER_NEW_GIFTS.name;
+  
+  if (!uid) {
+    return callback(new Error("Не указан Id пользователя"), null);
+  }
 
-  if (!uid) { return callback(new Error("Не указан Id пользователя"), null); }
-
-  if (!options[PF.GIFTID] || !options[PF.SRC] || !options[PF.DATE] || !options[PF.ID] || !options[PF.VID]) {
+  if (!options[PF.GIFTID] ||
+      !options[PF.SRC] ||
+      !options[PF.DATE] ||
+      !options[PF.ID] ||
+      !options[PF.VID]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
-  let id = cdb.uuid.random();
+  let id = dbCtrlr.uuid.random();
 
   async.waterfall([ //--------------------------------------------------------------
+    // Добавляем подарок в основную таблицу
     function (cb) {
-      let fields = [
+      let fieldsArr = [
         DBF.ID_uuid_p,
         DBF.USERID_uuid_i,
         DBF.GIFTID_varchar,
@@ -40,10 +49,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FROMSEX_int,
         DBF.FROMBDATE_timestamp
       ];
-      
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_GIFTS.name);
   
-      let params = [
+      let paramsArr = [
         id,
         uid,
         options[PF.GIFTID],
@@ -56,9 +63,10 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.SEX],
         options[PF.BDATE]
       ];
-
-  
-      cdb.client.execute(query, params, { prepare: true },  function(err) {
+      
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
+      
+      dbCtrlr.client.execute(query, paramsArr, { prepare: true },  (err) => {
         if (err) {  return cb(err); }
     
         options[PF.UGIFTID] = id.toString();
@@ -66,25 +74,31 @@ module.exports = function(uid, options, callback) { options = options || {};
         cb(null, null);
       });
     }, //-----------------------------------------------------------
+    // И в таблицу новых товаров
     function (res, cb) {
-      let fields = [
+    
+      let fieldsArr = [
         DBFN.ID_uuid_p,
         DBFN.USERID_uuid_i
       ];
       
-      let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.USER_NEW_GIFTS.name);
-  
-      let params = [id, uid];
-  
-      cdb.client.execute(query, params, { prepare: true },  function(err) {
-        if (err) { return cb(err); }
+      let paramsArr = [id, uid];
+      
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBNN);
+      
+      dbCtrlr.client.execute(query, paramsArr, { prepare: true },  function(err) {
+        if (err) {
+          return cb(err);
+        }
     
         cb(null, null);
       });
     }
   ], //-------------------------------------------------------------------
   function (err) {
-    if (err) {  return callback(err); }
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, options);
   })

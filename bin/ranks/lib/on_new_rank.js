@@ -5,9 +5,11 @@
  */
 
 const logger    = require('./../../../lib/log')(module);
-const constants = require('./../../constants');
 const oPool     = require('./../../objects_pool');
-const PF        = constants.PFIELDS;
+const PF        = require('./../../const_fields');
+
+const Config = require('./../../../config.json');
+const RANKS = Config.ranks;
 
 module.exports = function (err, rank, ownerid, disownerid) {
   if(err) { logger.error('handleRank: ' + err); }
@@ -24,8 +26,8 @@ module.exports = function (err, rank, ownerid, disownerid) {
     [PF.VID]  : ownerProfile.getVID()
   };
   
-  socket.emit(constants.IO_NEW_RANK, rankInfo);
-  socket.broadcast.in(room.getName()).emit(constants.IO_NEW_RANK, rankInfo);
+  socket.emit(Config.io.emits.IO_NEW_RANK, rankInfo);
+  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_NEW_RANK, rankInfo);
   
   if(!disownerid) { return; }
   
@@ -34,8 +36,8 @@ module.exports = function (err, rank, ownerid, disownerid) {
   let  ranks = room.getRanks().onGetRanksOfProfile(disownerid);
   disownerProfile.onSetActiveRank(null);
   if(ranks) {
-    for(let  item in constants.RANKS) if(constants.RANKS.hasOwnProperty(item)) {
-      let  currRank = constants.RANKS[item];
+    for(let  item in RANKS) if(RANKS.hasOwnProperty(item)) {
+      let  currRank = RANKS[item].name;
       if(ranks[currRank] && ranks[currRank][PF.ISOWNER]) {
         disownerProfile.onSetActiveRank(currRank);
         break;

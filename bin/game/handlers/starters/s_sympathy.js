@@ -3,10 +3,9 @@
  */
 
 const Config      = require('./../../../../config.json');
-const constants   = require('./../../../constants');
 
 const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
-const PF             = constants.PFIELDS;
+const PF             = require('./../../../const_fields');
 
 module.exports = function (game) {
   

@@ -1,10 +1,7 @@
-const cdb     = require('./../common/cassandra_db');
-const dbConst = require('./../../constants');
-const constants = require('./../../../constants');
-const Config = require('./../../../../config.json');
+const dbCtrlr     = require('./../common/cassandra_db');
+const DB_CONST    = require('./../../constants');
+const PF          = require('./../../../const_fields');
 
-const DBF = dbConst.COINS.fields;
-const PF  = constants.PFIELDS;
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -13,6 +10,9 @@ const PF  = constants.PFIELDS;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
+
+  const DBF = DB_CONST.COINS.fields;
+  const DBN = DB_CONST.COINS.name;
   
   if (!options[PF.ID] ||
     !options[PF.TITLE] ||
@@ -22,9 +22,9 @@ module.exports = function(options, callback) { options    = options || {};
     return callback(new Error("Не указаны необходимые поля лота"), null);
   }
   
-  // let id = cdb.uuid.random();
+  // let id = dbCtrlr.uuid.random();
   
-  let fields = [
+  let fieldsArr = [
     DBF.ID_varchar_p,
     DBF.TITLE_varchar,
     DBF.PRICE_COINS_int,
@@ -32,7 +32,7 @@ module.exports = function(options, callback) { options    = options || {};
     DBF.SRC_varchar
   ];
   
-  let params = [
+  let paramsArr = [
     options[PF.ID], //id,
     options[PF.TITLE],
     options[PF.PRICE],
@@ -40,10 +40,12 @@ module.exports = function(options, callback) { options    = options || {};
     options[PF.SRC]
   ];
   
-  let query = cdb.qBuilder.build(cdb.qBuilder.Q_INSERT, fields, dbConst.COINS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
   
-  cdb.client.execute(query, params, {prepare: true },  function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true },  (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     // options[PF.ID] = id;
     

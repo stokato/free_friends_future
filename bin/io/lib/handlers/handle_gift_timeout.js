@@ -20,14 +20,14 @@ module.exports = function (profile, type) {
   if(socket) {
     let room = oPool.roomList[socket.id];
     if(room) {
-      let res = {
+      let resObj = {
         [PF.ID]   : profile.getID(),
         [PF.VID]  : profile.getVID(),
         [PF.TYPE] : type
       };
   
-      socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_HIDE_GIFT, res);
-      socket.emit(Config.io.emits.IO_HIDE_GIFT, res);
+      socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_HIDE_GIFT, resObj);
+      socket.emit(Config.io.emits.IO_HIDE_GIFT, resObj);
     }
   }
 

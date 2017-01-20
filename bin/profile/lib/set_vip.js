@@ -4,8 +4,8 @@
  * Меняем статус VIP
  */
 
-const  db = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr = require('./../../db_manager');
+const  PF      = require('./../../const_fields');
 
 module.exports = function(vip, callback) {
   let  self = this;
@@ -13,13 +13,15 @@ module.exports = function(vip, callback) {
   let  isVIP = !!vip;
   
   let  options = {
-    [IOF.ID]  : self._pID,
-    [IOF.VID] : self._pVID,
-    [IOF.VIP] : isVIP
+    [PF.ID]  : self._pID,
+    [PF.VID] : self._pVID,
+    [PF.VIP] : isVIP
   };
   
-  db.updateUser(options, function(err) {
-    if (err) {return callback(err, null); }
+  dbCtrlr.updateUser(options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
   
     self._pVIP = isVIP;
     

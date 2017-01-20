@@ -1,13 +1,22 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Начало раунда Карты
+ * Разрешаем всем игрокам ходить
+ * Отпрвляем настройки игры
+ * Устанавливаем таймаут на автозавершение сдедующего этапа
+ * Устанавливаем обработчик события выбора игрока
+ * Переходим к следующему этапу
  */
 
-const Config        = require('./../../../../config.json');
-
-const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
-const PF             = require('./../../../const_fields');
+const Config  = require('./../../../../config.json');
+const PF      = require('./../../../const_fields');
 
 module.exports = function (game) {
+  
+  const DEF_TIMEOUT    = Number(Config.game.timeouts.default);
   
   game.clearActionsQueue();
   
@@ -23,17 +32,17 @@ module.exports = function (game) {
   
   game.setNextGame(game.CONST.G_CARDS);
   
-  let result = {
+  let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_CARDS,
     [PF.PLAYERS] : []
   };
   
-  result.players = game.getPlayersID();
+  resultObj.players = game.getPlayersID();
   
-  game.checkPrisoner(result);
+  game.checkPrisoner(resultObj);
   
-  game.sendData(result);
-  game.setGameState(result);
+  game.sendData(resultObj);
+  game.setGameState(resultObj);
   
   // Устанавливаем таймаут
   game.startTimer(game.getHandler(game.CONST.G_CARDS, game.CONST.GT_FIN), DEF_TIMEOUT, game);

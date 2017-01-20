@@ -19,8 +19,10 @@ module.exports = function(num, callback) {
     [IOF.LEVEL]   : num
   };
   
-  db.updateUser(options, function(err) {
-    if(err) { return callback(err, null); }
+  db.updateUser(options, (err) => {
+    if(err) {
+      return callback(err, null);
+    }
   
     self._pLevel = num;
     

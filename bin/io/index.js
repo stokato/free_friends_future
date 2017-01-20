@@ -9,20 +9,19 @@
  * @return profiles - коллекция профилей для модуля vk
  */
 
-const Config    = require('./../../config.json');
-const socketio  = require('socket.io');
-const ios       = require('socket.io-express-session');
-const ioClient  = require('socket.io-client');
+const Config      = require('./../../config.json');
+const socketio    = require('socket.io');
+const ios         = require('socket.io-express-session');
+const ioClient    = require('socket.io-client');
 const initProfile = require('./lib/profile/init_profile');
-const session   = require('./../../lib/session');
+const session     = require('./../../lib/session');
 //const checkSession = require('./checkSession');
 
-const oPool     = require('./../objects_pool');
-const stat      = require('./../stat_manager');
+// const oPool     = require('./../objects_pool');
+// const statCtrlr = require('./../stat_manager');
 const ioc = require('./../io_controller');
 
 // let io = null;                                      // Сокет
-
 
 module.exports.listen = function(server, callback) {
   let io = socketio(server);
@@ -324,7 +323,7 @@ module.exports.listen = function(server, callback) {
     ////////////
   });//();
   
-  callback(null, oPool.profiles, stat);
+  callback(null, null);
 };
 
 

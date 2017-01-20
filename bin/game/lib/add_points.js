@@ -1,24 +1,28 @@
-const oPool         = require('./../../objects_pool'),
-      ProfileJS     = require('./../../profile/index');
+/**
+ *  Добавляем пользователю очки
+ *
+ */
 
-/*
-    Добавляем пользователю очки
-  */
+const oPool         = require('./../../objects_pool');
+const ProfileJS     = require('./../../profile/index');
+
 module.exports = function (uid, count, callback) {
   
-  // Если пользователь оналайн, берем из пула
-  let player = oPool.profiles[uid];
+  // Если пользователь оналайн, берем профиль из пула
+  let playerProfile = oPool.profiles[uid];
   
-  if(player) {
-    player.addPoints(count, callback);
+  if(playerProfile) {
+    playerProfile.addPoints(count, callback);
     
     // Либо создаем
   } else {
-    player = new ProfileJS();
-    player.build(uid, function (err) {
-      if(err) { return callback(err);  }
+    playerProfile = new ProfileJS();
+    playerProfile.build(uid, (err) => {
+      if(err) {
+        return callback(err);
+      }
       
-      player.addPoints(count, callback);
+      playerProfile.addPoints(count, callback);
     });
   }
 

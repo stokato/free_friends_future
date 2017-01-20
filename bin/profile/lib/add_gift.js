@@ -5,38 +5,41 @@
  */
 
 const Config    = require('./../../../config.json');
-const db        = require('./../../db_manager');
-
-const IOF           = require('./../../const_fields');
-const GIFT_TIMEOUTS  = Config.gifts.timeouts;
+const dbCtrlr   = require('./../../db_manager');
+const PF        = require('./../../const_fields');
 
 module.exports = function(giftMaker, date, gift, params, callback) {
+  
+  const GIFT_TIMEOUTS  = Config.gifts.timeouts;
+  
   let  self = this;
  
   let  options = {
-    [IOF.ID]      : giftMaker.getID(),
-    [IOF.VID]     : giftMaker.getVID(),
-    [IOF.SEX]     : giftMaker.getSex(),
-    [IOF.BDATE]   : giftMaker.getBDate(),
-    [IOF.DATE]    : date,
-    [IOF.SRC]     : gift[IOF.SRC],
-    [IOF.GIFTID]  : gift[IOF.ID],
-    [IOF.TYPE]    : gift[IOF.TYPE],
-    [IOF.TITLE]   : gift[IOF.TITLE],
-    [IOF.GROUP]   : gift[IOF.GROUP]
+    [PF.ID]      : giftMaker.getID(),
+    [PF.VID]     : giftMaker.getVID(),
+    [PF.SEX]     : giftMaker.getSex(),
+    [PF.BDATE]   : giftMaker.getBDate(),
+    [PF.DATE]    : date,
+    [PF.SRC]     : gift[PF.SRC],
+    [PF.GIFTID]  : gift[PF.ID],
+    [PF.TYPE]    : gift[PF.TYPE],
+    [PF.TITLE]   : gift[PF.TITLE],
+    [PF.GROUP]   : gift[PF.GROUP]
   };
 
-  db.addGift(self._pID, options, (err, result) => {
-    if (err) { return callback(err, null); }
+  dbCtrlr.addGift(self._pID, options, (err, result) => {
+    if (err) {
+      return callback(err, null);
+    }
     
-    let type = gift[IOF.TYPE];
+    let type = gift[PF.TYPE];
     
     if(!self._pGifts[type]) {
       self._pGifts[type] = {};
     }
     
     self._pGifts[type].gift = result;
-    self._pGifts[type].gift[IOF.PARAMS] = params;
+    self._pGifts[type].gift[PF.PARAMS] = params;
     
     let timeout = Number(GIFT_TIMEOUTS[type]);
     

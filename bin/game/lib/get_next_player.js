@@ -1,25 +1,29 @@
+/**
+ * @param isFree - призак - можно ли освободить игрока из темницы
+ *
+ * Выбиираем следующего игрока определенного пола
+ */
 
 const Config    = require('./../../../config.json');
 
 const GUY = Config.user.constants.sex.male;
 const GIRL = Config.user.constants.sex.female;
 
-// Выбибираем следующего игрока определенного пола
-module.exports = function (prisonerResuming) {
+module.exports = function (isFree) {
   let self = this;
 
   // Определяем - из кого выбирать - из мальчиков или из девочек
-  let players, currIndex;
+  let playersArr, currIndex;
   if(this._currentSex == GIRL) {
-    players = this._room.getAllPlayers(GUY);
+    playersArr = this._room.getAllPlayers(GUY);
     currIndex = this._guysIndex;
   } else {
-    players = this._room.getAllPlayers(GIRL);
+    playersArr = this._room.getAllPlayers(GIRL);
     currIndex = this._girlsIndex;
   }
 
   // Сортируем по индексу
-  players.sort(function (player1, player2) {
+  playersArr.sort((player1, player2) => {
     return player1.getGameIndex() - player2.getGameIndex();
   });
 
@@ -30,35 +34,35 @@ module.exports = function (prisonerResuming) {
   }
 
   // Получаем игрока с индексом больше текущего
-  for(let i = 0; i < players.length; i++) {
+  for(let i = 0; i < playersArr.length; i++) {
 
-    if(players[i].getGameIndex() > currIndex) {
-      let nextPlayer = players[i];
+    if(playersArr[i].getGameIndex() > currIndex) {
+      let nextPlayerProfile = playersArr[i];
 
       // Если он в темнице и его можно освободить, очищаем ее и возвращаем следующего игрока
-      if(nextPlayer.getID() == prisonerId) {
-        if(prisonerResuming) {
+      if(nextPlayerProfile.getID() == prisonerId) {
+        if(isFree) {
           this._prisoner = null;
         }
 
         // если нет - возвращаем его
       } else {
-        return onComplete(nextPlayer);
+        return onComplete(nextPlayerProfile);
       }
     }
 
   }
 
   // Если текущий последний, берем с начала
-  if(players[0].getID() == prisonerId) {
-    if(prisonerResuming) {
+  if(playersArr[0].getID() == prisonerId) {
+    if(isFree) {
       this._prisoner = null;
     }
 
-    return onComplete(players[1]);
+    return onComplete(playersArr[1]);
   }
 
-  return onComplete(players[0]);
+  return onComplete(playersArr[0]);
 
   //----------------------
   function onComplete(nextPlayer) {

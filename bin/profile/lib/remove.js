@@ -23,7 +23,7 @@ module.exports = function(callback) {
   self._pSex      = null;
   self._pMoney    = null;
 
-  self._pIsPrivateChats = null;
+  self._pPrivateChats = null;
 
   db.deleteGifts(this._pID, function(err, id) {  // Удаляем подарки
     if(err) { return callback(err, null); }

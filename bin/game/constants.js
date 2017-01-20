@@ -1,8 +1,10 @@
 /**
  * Created by s.t.o.k.a.t.o on 17.01.2017.
+ *
+ * Константы игры
  */
 
-const G_START     = 'results',
+const G_PAUSE     = 'results',
   G_LOT           = 'lot',
   G_BOTTLE        = 'bottle',
   G_BOTTLE_KISSES = 'bottle_kisses',
@@ -13,7 +15,7 @@ const G_START     = 'results',
   G_SYMPATHY_SHOW = 'sympathy_show',
   G_PRISON        = 'prison';
 
-module.exports.G_START            = G_START;
+module.exports.G_PAUSE            = G_PAUSE;
 module.exports.G_LOT              = G_LOT;
 module.exports.G_BOTTLE           = G_BOTTLE;
 module.exports.G_BOTTLE_KISSES    = G_BOTTLE_KISSES;

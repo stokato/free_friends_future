@@ -7,12 +7,11 @@
  */
 
 const logger    = require('./../../../lib/log')(module);
-
 const Config    = require('./../../../config.json');
 
-const GUY = Config.user.constants.sex.male;
-
 module.exports = function (profile) {
+  
+  const GUY = Config.user.constants.sex.male;
   
   this._ranks.deleteProfile(profile);
   
@@ -27,14 +26,14 @@ module.exports = function (profile) {
   
   let socket = profile.getSocket();
   if(socket) {
-    socket.leave(this._nameOfRoom, function () {});
+    socket.leave(this._nameOfRoom, () => {});
   } else {
     logger.error("Room_delete_profile : Не удалось получить сокет профиля");
   }
   
-  let arr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
+  let indexArr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
   
-  arr.push(profile.getGameIndex());
+  indexArr.push(profile.getGameIndex());
 
   for(let item in this._friends) if(this._friends.hasOwnProperty(item)) {
     if(item == profile.getID()) {

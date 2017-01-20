@@ -1,31 +1,37 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Выдаем результаты выбора игаков
+ * Ставим игру на паузу
  */
 
-const PF = require('./../../../const_fields');
-const stat      = require('./../../../stat_manager');
-
+const PF        = require('./../../../const_fields');
+const statCtrlr = require('./../../../stat_manager');
 
 module.exports = function (game) {
   
   game.clearTimer();
   
-  let result = { [PF.PICKS] : [] };
+  let resultObj = { [PF.PICKS] : [] };
   
-  let players = game.getActivePlayers();
-  for(let i = 0; i < players.length; i++) {
-    let actions = game.getAction(players[i].id);
+  let playersArr = game.getActivePlayers();
+  let playersCount = playersArr.length;
+  
+  for(let i = 0; i < playersCount; i++) {
+    let actionsArr = game.getActions(playersArr[i].id);
     
-    if(actions) {
-      result[PF.PICKS].push({
-        [PF.ID]   : players[i].id,
-        [PF.VID]  : players[i].vid,
-        [PF.PICK] : actions[0][PF.PICK]
+    if(actionsArr) {
+      resultObj[PF.PICKS].push({
+        [PF.ID]   : playersArr[i].id,
+        [PF.VID]  : playersArr[i].vid,
+        [PF.PICK] : actionsArr[0][PF.PICK]
       });
     }
   }
   
-  stat.setMainStat(PF.QUESTION_ACITVITY, game.getActivityRating());
+  statCtrlr.setMainStat(PF.QUESTION_ACITVITY, game.getActivityRating());
   
-  game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
+  game.getHandler(game.CONST.G_PAUSE, game.CONST.GT_ST)(game, resultObj, true);
 };

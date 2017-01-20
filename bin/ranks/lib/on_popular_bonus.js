@@ -4,14 +4,17 @@
  * Обработчик получения бонуса для звания Популярный
  */
 
-const PF = require('./../../const_fields');
+const Config    = require('./../../../config.json');
+const PF        = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 const logger    = require('./../../../lib/log')(module);
-const Config    = require('./../../../config.json');
+
 
 module.exports = function(ranks) {
   return function (err, uid) {
-    if(err) { return logger.error('handlePopularBonus:' + err) }
+    if(err) {
+      return logger.error('handlePopularBonus:' + err)
+    }
     
     let  profile = oPool.profiles[uid];
     
@@ -21,8 +24,10 @@ module.exports = function(ranks) {
     
     let  profit = Number(Config.moneys.popular_bonus);
     
-    profile.earn(profit, function (err, money) {
-      if(err) { return logger.error('handlePopularBonus' + err); }
+    profile.earn(profit, (err, money) => {
+      if(err) {
+        return logger.error('handlePopularBonus' + err);
+      }
       
       let  socket = profile.getSocket();
       socket.emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });

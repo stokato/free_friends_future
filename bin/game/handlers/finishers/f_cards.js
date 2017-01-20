@@ -1,84 +1,94 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Завершаем раунд Карты
+ * Определяем - какая карта выигрешная
+ * Начисляем победителям монеты и очки
+ * Ставим игру на паузу
+ *
  */
 
 const async = require('async');
 const logger = require('./../../../../lib/log')(module);
 
-const Config        = require('./../../../../config.json');
-const PF     = require('./../../../const_fields');
-const  oPool        = require('./../../../objects_pool');
-const  stat         = require('./../../../stat_manager');
-const  ProfileJS    = require('./../../../profile/index');
-
-const  addPoints    = require('./../../lib/add_points');
-
-const CARD_COUNT    = Number(Config.game.card_count);
-const CARD_BONUS    = Number(Config.moneys.card_bonus);
-const CARD_POINTS   = Number(Config.points.game.gold);
-const LUCKY_RANK    = Config.ranks.lucky.name;
+const Config     = require('./../../../../config.json');
+const PF         = require('./../../../const_fields');
+const oPool      = require('./../../../objects_pool');
+const statCtrlr  = require('./../../../stat_manager');
+const ProfileJS  = require('./../../../profile/index');
 
 module.exports = function (game) {
   
+  const CARD_COUNT    = Number(Config.game.card_count);
+  const CARD_BONUS    = Number(Config.moneys.card_bonus);
+  const CARD_POINTS   = Number(Config.points.game.gold);
+  const LUCKY_RANK    = Config.ranks.lucky.name;
+  
   game.clearTimer();
   
-  stat.setMainStat(PF.CARDS_ACTIVITY, game.getActivityRating());
+  statCtrlr.setMainStat(PF.CARDS_ACTIVITY, game.getActivityRating());
   
   // Готовим сведения о выборе игроков и отбираем победителей
-  let gold    = Math.floor(Math.random() * CARD_COUNT);
-  let winners = [];
+  let goldNum    = Math.floor(Math.random() * CARD_COUNT);
+  let winnersArr = [];
   
-  let result = {
+  let resultObj = {
     [PF.PICKS]  : [],
-    [PF.GOLD]   : gold
+    [PF.GOLD]   : goldNum
   };
   
-  let players = game.getActivePlayers();
-  for(let i = 0; i < players.length; i++) {
-    
-    let actions = game.getAction(players[i].id);
+  let playersArr = game.getActivePlayers();
+  let playersLen = playersArr.length;
   
-    if(actions) {
-      result[PF.PICKS].push({
-        [PF.ID]   : players[i].id,
-        [PF.VID]  : players[i].vid,
-        [PF.PICK] : actions[0][PF.PICK]
+  for(let i = 0; i < playersLen; i++) {
+    
+    let actionsArr = game.getActions(playersArr[i].id);
+  
+    if(actionsArr) {
+      resultObj[PF.PICKS].push({
+        [PF.ID]   : playersArr[i].id,
+        [PF.VID]  : playersArr[i].vid,
+        [PF.PICK] : actionsArr[0][PF.PICK]
       });
     
-      if(actions[0][PF.PICK] == gold) {
-        winners.push(players[i]);
+      if(actionsArr[0][PF.PICK] == goldNum) {
+        winnersArr.push(playersArr[i]);
       }
     }
   }
 
-  if(winners.length == 0) {
-    return game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
+  if(winnersArr.length == 0) {
+    return game.getHandler(game.CONST.G_PAUSE, game.CONST.GT_ST)(game, resultObj, true);
   }
   
   // Определяем, кому начислить бонус
-  let lucky;
-  let winnersInRoom = [];
-  for(let i = 0; i < winners.length; i++) {
-    let room = oPool.roomList[winners[i].socketId];
+  let luckyObj;
+  let winnersInRoomArr = [];
+  let winnersCount = winnersArr.length;
+  
+  for(let i = 0; i < winnersCount; i++) {
+    let room = oPool.roomList[winnersArr[i].socketId];
     if(room && game.getRoom().getName() == room.getName()) {
-      winnersInRoom.push(winners[i]);
+      winnersInRoomArr.push(winnersArr[i]);
     }
   }
   
-  if(winnersInRoom.length > 0) {
-    if(winnersInRoom.length > 1) {
-      let rand = Math.floor(Math.random() * winnersInRoom.length);
-      lucky = winnersInRoom[rand];
+  if(winnersInRoomArr.length > 0) {
+    if(winnersInRoomArr.length > 1) {
+      let randWinner = Math.floor(Math.random() * winnersInRoomArr.length);
+      luckyObj = winnersInRoomArr[randWinner];
     } else {
-      lucky = winnersInRoom[0];
+      luckyObj = winnersInRoomArr[0];
     }
   
-    let ranks = game._room.getRanks();
-    ranks.addRankBall(LUCKY_RANK, lucky.id);
+    let ranksCtrlr = game.getRoom().getRanks();
+    ranksCtrlr.addRankBall(LUCKY_RANK, luckyObj.id);
   }
   
   // Если есть победители, делим награду поровну и добавляем всем монеты
-  let bonus = Math.round(CARD_BONUS / winners.length);
+  let bonus = Math.round(CARD_BONUS / winnersArr.length);
   let count   = 0;
   addMoney();
   
@@ -86,40 +96,44 @@ module.exports = function (game) {
   function addMoney() {
     async.waterfall([ //-------------------------------------------------------
       function(cb) { // Получаем профиль пользователя
-        let player = oPool.profiles[winners[count].id];
+        let playerProfile = oPool.profiles[winnersArr[count].id];
         
-        if(player) {
-          cb(null, player, true);
+        if(playerProfile) {
+          cb(null, playerProfile, true);
         } else {
-          player = new ProfileJS();
-          player.build(winners[count].id, function (err) {
+          playerProfile = new ProfileJS();
+          playerProfile.build(winnersArr[count].id, (err) => {
             if(err) {
               return cb(err, null);
             }
             
-            cb(null, player, false);
+            cb(null, playerProfile, false);
           });
         }
       },//-------------------------------------------------------
-      function(player, isOnline, cb) { // Получаем баланс
-        player.earn(bonus, function (err, money) {
-          if (err) {  cb(err, null); }
+      function(playerProfile, isOnline, cb) { // Получаем баланс
+        playerProfile.earn(bonus, (err, money) => {
+          if (err) {
+            cb(err, null);
+          }
   
           // Статистика
-          stat.setUserStat(player.getID(), player.getVID(), PF.COINS_EARNED, bonus);
-          stat.setMainStat(PF.COINS_EARNED, bonus);
+          statCtrlr.setUserStat(playerProfile.getID(), playerProfile.getVID(), PF.COINS_EARNED, bonus);
+          statCtrlr.setMainStat(PF.COINS_EARNED, bonus);
           
-          cb(null, player, money, isOnline);
+          cb(null, playerProfile, money, isOnline);
         });
       },//-------------------------------------------------------
-      function (player, money, isOnline, cb) {
-        addPoints(player.getID(), CARD_POINTS, function (err, points) {
-          if (err) {  cb(err, null); }
+      function (playerProfile, money, isOnline, cb) {
+        game.addPoints(playerProfile.getID(), CARD_POINTS, (err, points) => {
+          if (err) {
+            cb(err, null);
+          }
           
-          cb(null, player, money, isOnline);
+          cb(null, playerProfile, money, isOnline);
         })
       } //----------------------------------------------------------
-    ], function(err, player, money, isOnline) { // Оповещаем об изменениях
+    ], function(err, playerProfile, money, isOnline) { // Оповещаем об изменениях
       if(err) {
         logger.error(game.CONST.G_CARDS + ' ' + count.GT_FIN);
         logger.error(err);
@@ -128,15 +142,15 @@ module.exports = function (game) {
       
       // Сообщяем о начислении монет
       if(isOnline) {
-        player.getSocket().emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
+        playerProfile.getSocket().emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
       }
       
       // Повторяем для всех пользователей
       count++;
-      if(count < winners.length) {
+      if(count < winnersArr.length) {
         addMoney();
       } else {
-        game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, result, true);
+        game.getHandler(game.CONST.G_PAUSE, game.CONST.GT_ST)(game, resultObj, true);
       }
     });//-------------------------------------------------------
   } // addMoney

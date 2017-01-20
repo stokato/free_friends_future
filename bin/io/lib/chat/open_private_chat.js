@@ -8,6 +8,7 @@
 const async             = require('async');
 
 const Config            = require('./../../../../config.json');
+const PF                = require('./../../../const_fields');
 const oPool             = require('./../../../objects_pool');
 
 const getUserProfile    = require('./../common/get_user_profile');
@@ -17,7 +18,7 @@ const emitRes           = require('./../../../emit_result');
 const checkID           = require('./../../../check_id');
 const sanitize          = require('./../../../sanitize');
 
-const   PF                = require('./../../../const_fields');
+
 
 module.exports = function(socket, options, callback) {
   if(!checkID(options[PF.ID])) {
@@ -47,12 +48,15 @@ module.exports = function(socket, options, callback) {
       
       selfProfile.addPrivateChat(friendProfile);
       
-      selfProfile.getHistory(friendProfile.getID(), firstDate, secondDate, function(err, history) {
+      selfProfile.getHistory(friendProfile.getID(), firstDate, secondDate, (err, history) => {
         history = history || [];
         
-        if(err) { return cb(err, null); }
+        if(err) {
+          return cb(err, null);
+        }
         
-        for(let i = 0; i < history.length; i++) {
+        let historyLen = history.length;
+        for(let i = 0; i < historyLen; i++) {
           sendOne(socket, history[i]);
         }
         

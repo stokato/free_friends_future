@@ -8,8 +8,10 @@
 const db = require('./../../db_manager');
 
 module.exports = function(callback) {
- db.findChats(this._pID, function(err, chats) {
-   if (err) { return callback(err, null); }
+ db.findChats(this._pID, (err, chats) => {
+   if (err) {
+     return callback(err, null);
+   }
 
    callback(null, chats);
  });

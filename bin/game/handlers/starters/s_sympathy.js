@@ -1,5 +1,14 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Начало раунда Симпатии - первого этапа
+ * Разрешаем всем игрокам делать выбор - можно выбрать несколько ироков
+ * Отправляем настройки игры
+ * Устанавливаем таймаут на автозавершение сдедующего этапа
+ * Устанавливаем обработчик события выбора игрока
+ * Переходим к следующему этапу
  */
 
 const Config      = require('./../../../../config.json');
@@ -22,15 +31,15 @@ module.exports = function (game) {
   game.setActionsCount((game.getCountUsers() - countPrisoners) * 2);
   game.getActionsMain(game.getActionsCount());
   
-  let result = {
+  let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_SYMPATHY,
     [PF.PLAYERS]  : game.getPlayersID()
   };
   
-  game.checkPrisoner(result);
+  game.checkPrisoner(resultObj);
   
-  game.sendData(result);
-  game.setGameState(result);
+  game.sendData(resultObj);
+  game.setGameState(resultObj);
   
   // Устанавливаем таймаут
   game.startTimer(game.getHandler(game.CONST.G_SYMPATHY, game.CONST.GT_FIN), DEF_TIMEOUT, game);

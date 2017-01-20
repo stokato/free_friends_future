@@ -2,29 +2,31 @@
  * Сохраняем личное сообщение в БД
  */
 
-const  db = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr = require('./../../db_manager');
+const  PF      = require('./../../const_fields');
 
 module.exports = function(companion, incoming, date, text, callback) {
   let  self = this;
   
-  let  message = {
-    [IOF.DATE]      : date,
-    [IOF.FID]       : companion.getID(),
-    [IOF.VID]       : self.getVID(),
-    [IOF.INCOMING]  : incoming,
-    [IOF.TEXT]      : text,
-    [IOF.OPENED]    : self.isPrivateChat(companion.getID()), // Если чат открыт, сообщение уже прочитано
-    [IOF.SEX]       : self.getSex(),
-    [IOF.BDATE]     : self.getBDate(),
-    [IOF.FSEX]      : companion.getSex(),
-    [IOF.FBDATE]    : companion.getBDate(),
-    [IOF.FVID]      : companion.getVID()
+  let  options = {
+    [PF.DATE]      : date,
+    [PF.FID]       : companion.getID(),
+    [PF.VID]       : self.getVID(),
+    [PF.INCOMING]  : incoming,
+    [PF.TEXT]      : text,
+    [PF.OPENED]    : self.isPrivateChat(companion.getID()), // Если чат открыт, сообщение уже прочитано
+    [PF.SEX]       : self.getSex(),
+    [PF.BDATE]     : self.getBDate(),
+    [PF.FSEX]      : companion.getSex(),
+    [PF.FBDATE]    : companion.getBDate(),
+    [PF.FVID]      : companion.getVID()
   };
   
-  db.addMessage(self._pID, message, function(err) {
-    if (err) { return callback(err, null); }
+  dbCtrlr.addMessage(self._pID, options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
     
-    callback(null, message);
+    callback(null, options);
   });
 };

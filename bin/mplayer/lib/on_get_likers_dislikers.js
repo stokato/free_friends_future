@@ -7,8 +7,8 @@
 
 const Config    = require('./../../../config.json');
 const sanitize  = require('./../../sanitize');
-const emitRes   = require('./../../emit_result');
 const PF        = require('./../../const_fields');
+const emitRes   = require('./../../emit_result');
 
 module.exports = function () {
   let  self = this;
@@ -21,11 +21,11 @@ module.exports = function () {
 
     options[PF.TRACKID] = sanitize(options[PF.TRACKID]);
     
-    let  res = {
+    let  resObj = {
       [PF.LIKES]    : self.getLikes(options[PF.TRACKID]),
       [PF.DISLIKES] : self.getDislikes(options[PF.TRACKID])
     };
     
-    emitRes(null, socket, Config.io.emits.IO_GET_LIKES_AND_DISLAKES, res);
+    emitRes(null, socket, Config.io.emits.IO_GET_LIKES_AND_DISLAKES, resObj);
   }
 };

@@ -4,31 +4,29 @@
  * Устанавливаем количество бесплатных подарков
  */
 
-const db = require('./../../db_manager');
-const IOF = require('./../../const_fields');
+const dbCtrlr = require('./../../db_manager');
+const PF      = require('./../../const_fields');
 
 module.exports = function(num, callback) {
-  if (!isNumeric(num)) {
+  if (!Number.isInteger(num)) {
     return callback(new Error("Количество подарков задано некорректно"));
   }
+  
   let self = this;
   
   let options = {
-    [IOF.ID]          : self._pID,
-    [IOF.VID]         : self._pVID,
-    [IOF.FREE_GIFTS]  : num
+    [PF.ID]          : self._pID,
+    [PF.VID]         : self._pVID,
+    [PF.FREE_GIFTS]  : num
   };
   
-  db.updateUser(options, function(err) {
-    if (err) {return callback(err, null); }
+  dbCtrlr.updateUser(options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
     
     self._pFreeGifts = num;
     
     callback(null, self._pFreeGifts);
   });
 };
-
-//----------------------------------------------
-function isNumeric(n) { // Проверка - явлеется ли аргумент числом
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}

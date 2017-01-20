@@ -9,13 +9,15 @@ const Config = require('./../../../config.json');
 
 module.exports = function(excludeID = null) {
   
-  let usersInRoom = this.getAllPlayers();
-  for(let i = 0; i < usersInRoom.length; i++) {
-    
-    if(usersInRoom[i].getID() != excludeID) {
-      let pInfo = this.getPersonalInfo(usersInRoom[i].getID());
+  let usersInRoomArr = this.getAllPlayers();
+  let usersCount = usersInRoomArr.length;
   
-      let socket = usersInRoom[i].getSocket();
+  for(let i = 0; i < usersCount; i++) {
+    
+    if(usersInRoomArr[i].getID() != excludeID) {
+      let pInfo = this.getPersonalInfo(usersInRoomArr[i].getID());
+  
+      let socket = usersInRoomArr[i].getSocket();
       if(socket) {
         socket.emit(Config.io.emits.IO_ROOM_USERS, pInfo);
       }

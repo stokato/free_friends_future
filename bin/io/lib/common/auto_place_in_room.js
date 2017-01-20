@@ -5,20 +5,19 @@
  * @return newRoom
  */
 
-const createRoom  = require('./create_room'),
-    oPool       = require('./../../../objects_pool');
-
-const Config    = require('./../../../../config.json');
-const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
-
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
+const createRoom  = require('./create_room');
+const oPool       = require('./../../../objects_pool');
+const Config      = require('./../../../../config.json');
 
 module.exports = function (socket,  callback) {
+  
+  const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
+  
   let  selfProfile = oPool.userList[socket.id];
   let  newRoom = null;
   let  count = ONE_SEX_IN_ROOM;
-
   let  sex = selfProfile.getSex();
 
   // Получаем название текущей комнаты (если есть такая)
@@ -56,7 +55,7 @@ module.exports = function (socket,  callback) {
     }
   }
 
-  newRoom.addProfile(selfProfile, function (err) {
+  newRoom.addProfile(selfProfile, (err) => {
     if(err) { return callback(err); }
 
     newRoom.getRanks().addEmits(socket);

@@ -7,21 +7,22 @@
  * @return target
  */
 
-const Config = require('./../../../config.json');
-const  db = require('./../../db_manager');
-const VT = Config.user.constants.viewed_types;
+const Config  = require('./../../../config.json');
+const dbCtrlr = require('./../../db_manager');
 
 module.exports = function (target, callback) {
   
+  const VT = Config.user.constants.viewed_types;
+  
   switch (target) {
     case VT.FRIENDS :
-      db.openFriends(this._pID, onComplete);
+      dbCtrlr.openFriends(this._pID, onComplete);
       break;
     case VT.GUESTS :
-      db.openGuests(this._pID, onComplete);
+      dbCtrlr.openGuests(this._pID, onComplete);
       break;
     case VT.GIFTS :
-      db.openGifts(this._pID, onComplete);
+      dbCtrlr.openGifts(this._pID, onComplete);
       break;
     case VT.MESSAGES :
       onComplete(null); // Новые сообщения обнуляем при открытии чата
@@ -32,7 +33,9 @@ module.exports = function (target, callback) {
   
   //-----------------------------------------
   function onComplete(err) {
-    if(err) { return callback(err); }
+    if(err) {
+      return callback(err);
+    }
     
     callback(null, target);
   }

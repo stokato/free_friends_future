@@ -4,27 +4,34 @@
  * Удаляем вопросы по списку ид из таблицы вопросов пользователей
  *
  */
-const dbCtrlr     = require('./../common/cassandra_db');
+
+const dbCtrlr  = require('./../common/cassandra_db');
 const DB_CONST = require('./../../constants');
 
-const DBF = DB_CONST.USER_QUESTIONS.fields;
+module.exports = function(IDArr, callback) {
+  
+  const DBF = DB_CONST.USER_QUESTIONS.fields;
+  const DBN = DB_CONST.USER_QUESTIONS.name;
 
-module.exports = function(ids, callback) {
-  if (!ids) { callback(new Error("Не заданы ид вопросов")); }
-  
-  let constFields = [DBF.ID_uuid_p];
-  let constValues = [ids.length];
-  let params = [];
-  let dbName = DB_CONST.USER_QUESTIONS.name;
-  
-  for(let i = 0; i < ids.length; i++) {
-    params.push(ids[i]);
+  if (!IDArr) {
+    return callback(new Error("Не заданы ид вопросов"));
   }
   
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], dbName, constFields, constValues);
+  let condFieldsArr = [DBF.ID_uuid_p];
+  let condValuesArr = [IDArr.length];
+  let paramsArr     = [];
   
-  dbCtrlr.client.execute(query, params, {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  let IDLen = IDArr.length;
+  for(let i = 0; i < IDLen; i++) {
+    paramsArr.push(IDArr[i]);
+  }
+  
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, condFieldsArr, condValuesArr);
+  
+  dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, null);
   });

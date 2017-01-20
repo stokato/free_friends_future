@@ -1,21 +1,23 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * Поучаем сведения о темнице
  */
 
 const PF  = require('../../const_fields');
   
-module.exports = function (result = {}) {
+module.exports = function (resultObj = {}) {
   if(this._prisoner !== null) {
     
-    result[PF.PRISON] = {
+    resultObj[PF.PRISON] = {
       [PF.ID]  : this._prisoner.id,
       [PF.VID] : this._prisoner.vid,
       [PF.SEX] : this._prisoner.sex
     };
     
   } else {
-    result[PF.PRISON] = null;
+    resultObj[PF.PRISON] = null;
   }
   
-  return result;
+  return resultObj;
 };

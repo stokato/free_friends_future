@@ -6,30 +6,30 @@
  */
 
 const Config      = require('./../../../../config.json');
+const PF          = require('./../../../const_fields');
 const db          = require('./../../../db_manager');
 const oPool       = require('./../../../objects_pool');
 
 const emitRes     = require('./../../../emit_result');
 
-const PF          = require('./../../../const_fields');
-const CONST_TYPE  = Config.good_types.gift;
-
 module.exports = function (socket, options) {
   
+  const CONST_TYPE  = Config.good_types.gift;
+  
   // Получаем все подраки
-  db.findAllGoods(CONST_TYPE, function (err, goods) {
+  db.findAllGoods(CONST_TYPE, (err, goods) => {
     if (err) {
       return emitRes(err, socket, Config.io.emits.IO_GET_GIFT_SHOP);
     }
   
     let setfProfile = oPool.userList[socket.id];
     let room = oPool.roomList[socket.id];
-    let ranksM = room.getRanks();
+    let ranksCtrlr = room.getRanks();
   
     let uid = setfProfile.getID();
   
     // Сортируем по типу
-    goods.sort(function (gift1, gift2) {
+    goods.sort((gift1, gift2) => {
       if (gift1[PF.GROUP] < gift2[PF.GROUP]) return -1;
       if (gift2[PF.GROUP] < gift1[PF.GROUP]) return 1;
       return 0;
@@ -58,7 +58,7 @@ module.exports = function (socket, options) {
       }
   
       if(goods[i][PF.RANK]) {
-        isLocked = (ranksM.getRankOwner(goods[i][PF.RANK]) != uid);
+        isLocked = (ranksCtrlr.getRankOwner(goods[i][PF.RANK]) != uid);
       }
       
       types[group].gifts.push({
@@ -81,7 +81,6 @@ module.exports = function (socket, options) {
     }
     
     emitRes(null, socket, Config.io.emits.IO_GET_GIFT_SHOP, { [PF.GIFTS]: gifts });
-  
   });
 };
 

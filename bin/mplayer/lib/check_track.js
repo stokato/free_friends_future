@@ -5,12 +5,15 @@
  */
 
 const Config = require('../../../config.json');
-const PF        = require('./../../const_fields');
-const IO_STOP_TRACK = Config.io.emits.IO_STOP_TRACK;
+const PF     = require('./../../const_fields');
 
 module.exports = function (room, profile) {
   
-  if(this._mTrackList.length == 0) { return; }
+  const IO_STOP_TRACK = Config.io.emits.IO_STOP_TRACK;
+  
+  if(this._mTrackList.length == 0) {
+    return;
+  }
   
   if(profile.getID() == this._mTrackList[0][PF.ID]) {
   
@@ -19,13 +22,16 @@ module.exports = function (room, profile) {
     clearTimeout(this.getTimer());
     
     let  info = { [PF.TRACK] : this._mTrackList[0] };
+    
     socket.emit(IO_STOP_TRACK, info);
     socket.broadcast.in(room.getName()).emit(IO_STOP_TRACK, info);
+    
     profile.getSocket().emit(IO_STOP_TRACK, info);
     
     this.deleteTrackOfUser(profile.getID());
   
     this._mTrackList = this.getTrackList();
+    
     if(this._mTrackList.length > 0) {
       
       this.startTrackTimer(socket, room, this._mTrackList[0]);

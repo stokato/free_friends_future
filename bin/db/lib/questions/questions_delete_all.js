@@ -1,4 +1,4 @@
-const dbCtrlr = require('./../common/cassandra_db');
+const dbCtrlr  = require('./../common/cassandra_db');
 const DB_CONST = require('./../../constants');
 
 /*
@@ -7,8 +7,10 @@ const DB_CONST = require('./../../constants');
 module.exports = function(callback) {
   let query = "truncate table " + DB_CONST.QUESTIONS.name;
   
-  dbCtrlr.client.execute(query, [], {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, [], {prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     callback(null, null);
   });

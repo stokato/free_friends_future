@@ -2,12 +2,12 @@
  * Created by s.t.o.k.a.t.o on 19.12.2016.
  *
  * Опредяем уровень активности в игре
- *
  */
 
-const RATINGS = require('./../../../config.json').game.activity_ratings;
-
 module.exports = function () {
+  
+  const RATINGS = require('./../../../config.json').game.activity_ratings;
+  
   if(this._actionsCount == 0) {
     return RATINGS.ALL;
   }

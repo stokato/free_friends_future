@@ -5,22 +5,24 @@
  * @return status
  */
 
-const  db = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr  = require('./../../db_manager');
+const  PF       = require('./../../const_fields');
 
 module.exports = function(status, callback) {
   let  self = this;
 
   let  options = {
-    [IOF.ID]     : self._pID,
-    [IOF.VID]    : self._pVID,
-    [IOF.STATUS] : status
+    [PF.ID]     : self._pID,
+    [PF.VID]    : self._pVID,
+    [PF.STATUS] : status
   };
 
   self._pStatus = status;
 
-  db.updateUser(options, function(err) {
-    if (err) {return callback(err, null); }
+  dbCtrlr.updateUser(options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
 
     self._pStatus = status;
     

@@ -2,22 +2,24 @@
  * Добавляем друга пользователю, сохраняем в БД
  */
 
-const  db  = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr  = require('./../../db_manager');
+const  PF       = require('./../../const_fields');
 
 module.exports = function(friendProfile, date, callback) {
   let  self = this;
   
   let  params = {
-    [IOF.ID]     : friendProfile.getID(),
-    [IOF.VID]    : friendProfile.getVID(),
-    [IOF.SEX]    : friendProfile.getSex(),
-    [IOF.BDATE]  : friendProfile.getBDate(),
-    [IOF.DATE]   : date
+    [PF.ID]     : friendProfile.getID(),
+    [PF.VID]    : friendProfile.getVID(),
+    [PF.SEX]    : friendProfile.getSex(),
+    [PF.BDATE]  : friendProfile.getBDate(),
+    [PF.DATE]   : date
   };
   
-  db.addFriend(self._pID, params, function (err) {
-    if (err) { return callback(err, null); }
+  dbCtrlr.addFriend(self._pID, params, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
     
     callback(null, friendProfile.getID());
   });

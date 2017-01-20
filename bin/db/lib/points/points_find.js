@@ -1,11 +1,7 @@
+const dbCtrlr   = require('./../common/cassandra_db');
 const Config    = require('./../../../../config.json');
-const PF = require('./../../../const_fields');
-const dbCtrlr       = require('./../common/cassandra_db');
-const DB_CONST   = require('./../../constants');
-
-const DBF = DB_CONST.POINTS.fields;
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
+const PF        = require('./../../../const_fields');
+const DB_CONST  = require('./../../constants');
 
 /*
  Найти 100 пользователей по набранным очкам
@@ -14,8 +10,19 @@ const GIRL = Config.user.constants.sex.female;
  */
 
 module.exports = function(sex, callback) {
-  let users = [];
-  let fields = [
+  
+  const DBN = DB_CONST.POINTS.name;
+  const DBF = DB_CONST.POINTS.fields;
+  
+  const DBNGIRL = DB_CONST.POINTS_GIRLS.name;
+  const DBNGUY  = DB_CONST.POINTS_GUYS.name;
+  
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
+  
+  let usersArr = [];
+  
+  let fieldsArr = [
     DBF.POINTS_c_desc,
     DBF.USERID_uuid,
     DBF.USERVID_varchar,
@@ -23,38 +30,41 @@ module.exports = function(sex, callback) {
   ];
 
   // Определяем - к какой таблице обращаться
-  let db = DB_CONST.POINTS.name;
+  
+  let dbName = DBN;
+  
   if(sex == GIRL) {
-    db = DB_CONST.POINTS_GIRLS.name;
+    dbName = DBNGIRL;
   } else if(sex == GUY) {
-    db = DB_CONST.POINTS_GUYS.name;
+    dbName = DBNGUY;
   }
   
   let topSize = Number(Config.user.settings.top_size);
 
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, db, null, null, null, null, null, topSize);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, dbName, null, null, null, null, null, topSize);
 
   // Получаем все пользователей, отсортированных по количеству очков
-  dbCtrlr.client.execute(query, [], {prepare: true }, function(err, result) {
-    if (err) { return cb(err, null); }
-
-    let user, row;
+  dbCtrlr.client.execute(query, [], { prepare: true }, (err, result) => {
+    if (err) {
+      return cb(err, null);
+    }
+    
     let counter = 1;
     for(let i = 0; i < result.rows.length; i++) {
-      row = result.rows[i];
+      let rowObj = result.rows[i];
       
-      user = {
-        [PF.ID]      : row[DBF.USERID_uuid].toString(),
-        [PF.VID]     : row[DBF.USERVID_varchar],
-        [PF.POINTS]  : row[DBF.POINTS_c_desc],
-        [PF.SEX]     : row[DBF.SEX_int]
+      let userObj = {
+        [PF.ID]      : rowObj[DBF.USERID_uuid].toString(),
+        [PF.VID]     : rowObj[DBF.USERVID_varchar],
+        [PF.POINTS]  : rowObj[DBF.POINTS_c_desc],
+        [PF.SEX]     : rowObj[DBF.SEX_int]
       };
 
       // Добавляем номер
-      user[PF.NUMBER]  = counter++;
-      users.push(user);
+      userObj[PF.NUMBER]  = counter++;
+      usersArr.push(userObj);
     }
 
-    callback(null, users);
+    callback(null, usersArr);
   });
 };

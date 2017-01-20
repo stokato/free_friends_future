@@ -1,8 +1,6 @@
-const dbCtrlr     = require('./../common/cassandra_db');
-const DB_CONST = require('./../../constants');
-const PF = require('./../../../const_fields');
-
-const DBF = DB_CONST.SHOP.fields;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 /*
  Найти все товары: ИД
@@ -10,10 +8,17 @@ const DBF = DB_CONST.SHOP.fields;
  - Строим запрос (все поля) и выполняем
  - Возвращаем массив объектов с данными (Если не нашли ничего - NULL)
  */
-module.exports = function(type, callback) {
-  if(!type) { return callback(new Error("Не задан тип товаров")); }
 
-  let fields = [
+module.exports = function(type, callback) {
+  
+  const DBF = DB_CONST.SHOP.fields;
+  const DBN = DB_CONST.SHOP.name;
+  
+  if(!type) {
+    return callback(new Error("Не задан тип товаров"));
+  }
+
+  let fieldsArr = [
     DBF.ID_uuid_p,
     DBF.TITLE_varchar,
     DBF.TYPE_varchar_i,
@@ -26,37 +31,42 @@ module.exports = function(type, callback) {
     DBF.GIFT_LEVEL_int
   ];
   
-  let constFields = [DBF.TYPE_varchar_i];
-  let constValues = [1];
+  let condFieldsArr = [DBF.TYPE_varchar_i];
+  let condValuesArr = [1];
 
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, DB_CONST.SHOP.name, constFields, constValues);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
 
-  dbCtrlr.client.execute(query,[type], {prepare: true }, function(err, result) {
-    if (err) { return callback(err, null); }
-
-    if(result.rows.length == 0) return callback(null, []);
-
-    let goods = [], good, row;
-
-    for (let i = 0; i < result.rows.length; i++) {
-      row = result.rows[i];
-      
-      good = {
-        [PF.ID]           : row[DBF.ID_uuid_p],
-        [PF.TITLE]        : row[DBF.TITLE_varchar],
-        [PF.GOODTYPE]     : row[DBF.TYPE_varchar_i],
-        [PF.PRICE]        : row[DBF.PRICE_COINS_int],
-        [PF.SRC]          : row[DBF.SRC_varchar],
-        [PF.GROUP]        : row[DBF.GROUP_varchar],
-        [PF.GROUP_TITLE]  : row[DBF.GROUP_TITLE_varchar],
-        [PF.TYPE]         : row[DBF.GIFT_TYPE_varchar],
-        [PF.RANK]         : row[DBF.GIFT_RANK_varchar],
-        [PF.LEVEL]        : row[DBF.GIFT_LEVEL_int]
-      };
-
-      goods.push(good);
+  dbCtrlr.client.execute(query,[type], { prepare: true }, (err, result) => {
+    if (err) {
+      return callback(err, null);
     }
 
-    callback(null, goods);
+    if(result.rows.length == 0) {
+      return callback(null, []);
+    }
+
+    let goodsArr = [];
+
+    let rowsLen = result.rows.length;
+    for (let i = 0; i < rowsLen; i++) {
+      let rowObj = result.rows[i];
+      
+      let goodObj = {
+        [PF.ID]           : rowObj[DBF.ID_uuid_p],
+        [PF.TITLE]        : rowObj[DBF.TITLE_varchar],
+        [PF.GOODTYPE]     : rowObj[DBF.TYPE_varchar_i],
+        [PF.PRICE]        : rowObj[DBF.PRICE_COINS_int],
+        [PF.SRC]          : rowObj[DBF.SRC_varchar],
+        [PF.GROUP]        : rowObj[DBF.GROUP_varchar],
+        [PF.GROUP_TITLE]  : rowObj[DBF.GROUP_TITLE_varchar],
+        [PF.TYPE]         : rowObj[DBF.GIFT_TYPE_varchar],
+        [PF.RANK]         : rowObj[DBF.GIFT_RANK_varchar],
+        [PF.LEVEL]        : rowObj[DBF.GIFT_LEVEL_int]
+      };
+
+      goodsArr.push(goodObj);
+    }
+
+    callback(null, goodsArr);
   });
 };

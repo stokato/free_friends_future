@@ -7,11 +7,11 @@ module.exports = function(companion) {
   
   let  cid = companion.getID();
   
-  for(let  i = 0; i < this._pIsPrivateChats.length; i++) {
-    if(this._pIsPrivateChats[i] == cid) {
+  for(let  i = 0; i < this._pPrivateChats.length; i++) {
+    if(this._pPrivateChats[i] == cid) {
       return;
     }
   }
   
-  this._pIsPrivateChats.push(cid);
+  this._pPrivateChats.push(cid);
 };

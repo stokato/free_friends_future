@@ -6,27 +6,27 @@
 
 const async  =  require('async');
 
-const logger          = require('./../../../../lib/log')(module);
-const Config          = require('./../../../../config.json');
-const PF         = require('./../../../const_fields');
-const oPool           = require('./../../../objects_pool');
-const stat            = require('./../../../stat_manager');
-
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
+const logger    = require('./../../../../lib/log')(module);
+const Config    = require('./../../../../config.json');
+const PF        = require('./../../../const_fields');
+const oPool     = require('./../../../objects_pool');
+const statCtrlr = require('./../../../stat_manager');
 
 const emitAllRooms    = require('../common/emit_all_rooms');
-// const sendUsersInRoom = require('./../common/get_users_in_room');
-
-const EXIT_TIMEOUT    = Number(Config.io.exit_timeout);
 
 module.exports = function (socket) {
+  
+  const EXIT_TIMEOUT  = Number(Config.io.exit_timeout);
+  const GUY           = Config.user.constants.sex.male;
+  const GIRL          = Config.user.constants.sex.female;
+  
   socket.on(Config.io.emits.IO_DISCONNECT, function() {
     let selfProfile = oPool.userList[socket.id];
-    if(!selfProfile) { return socket.disconnect(); }
+    if(!selfProfile) {
+      return socket.disconnect();
+    }
     
-    selfProfile.setExitTimeout( setTimeout(
-      (function(socket) {
+    selfProfile.setExitTimeout( setTimeout(((socket) => {
         return function() {
     
           let selfProfile = oPool.userList[socket.id];
@@ -34,19 +34,21 @@ module.exports = function (socket) {
           async.waterfall([//----------------------------------------------------------------
             function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
   
-              let params = {
+              let paramsObj = {
                 [PF.ID]   : selfProfile.getID(),
                 [PF.VID]  : selfProfile.getVID()
               };
   
-              emitAllRooms(socket, Config.io.emits.IO_OFFLINE, params);
+              emitAllRooms(socket, Config.io.emits.IO_OFFLINE, paramsObj);
         
               cb(null, null);
             }, //----------------------------------------------------------------
             function (res, cb) { // сохраняем профиль в базу
         
-              selfProfile.save(function (err) {
-                if (err) {  return cb(err, null);  }
+              selfProfile.save((err) => {
+                if (err) {
+                  return cb(err, null);
+                }
           
                 cb(null, null);
               });
@@ -72,30 +74,16 @@ module.exports = function (socket) {
           
                 // Статистика
                 let msInGame = new Date() - selfProfile.getInitTime();
-                stat.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.GAME_TIME, msInGame);
+                statCtrlr.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.GAME_TIME, msInGame);
               
                 selfProfile.close();
               }
               cb(null, room);
-            },//----------------------------------------------------------------
-            function (room, cb) { // Получаем данные по игрокам в комнате (для стола) и рассылаем всем
-             
-              // if(room) {
-              //
-              //   // sendUsersInRoom(room, selfProfile.getID());
-              //
-              //   let params = {
-              //     [PF.ID]   : selfProfile.getID(),
-              //     [PF.VID]  : selfProfile.getVID()
-              //   };
-              //
-              //   emitAllRooms(socket, cFields.IO_OFFLINE, params);
-              // }
-              
-              cb(null, null);
-            }//----------------------------------------------------------------
+            } //----------------------------------------------------------------
           ], function (err) {
-            if (err) { logger.error(Config.io.emits.IO_DISCONNECT + err);  }
+            if (err) {
+              logger.error(Config.io.emits.IO_DISCONNECT + err);
+            }
       
             socket.disconnect(); // отключаемся
           });

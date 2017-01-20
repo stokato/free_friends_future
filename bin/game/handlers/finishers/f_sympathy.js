@@ -1,41 +1,53 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Завершаем первый этап раунда Симпатии
+ * Выбравшим друг друга игрокам начилсяем очки
+ * Сохраняем их выбор
+ * Переходим к следующему этапу
+ *
  */
 
-const Config      = require('./../../../../config.json');
-const PF   = require('./../../../const_fields');
-const stat        = require('./../../../stat_manager');
-const logger      = require('./../../../../lib/log')(module);
-
-const addPoints   = require('./../../lib/add_points');
-
-const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
+const logger    = require('./../../../../lib/log')(module);
+const statCtrlr = require('./../../../stat_manager');
+const Config    = require('./../../../../config.json');
+const PF        = require('./../../../const_fields');
 
 module.exports = function (game) {
   
+  const MUTUAL_SYMPATHY_BONUS = Number(Config.points.game.mutual_sympathy);
+  
   game.clearTimer();
   
-  stat.setMainStat(PF.SYMPATHY_ACITVITY, game.getActivityRating());
+  statCtrlr.setMainStat(PF.SYMPATHY_ACITVITY, game.getActivityRating());
   
-  let players = game.getActivePlayers();
-  let mutuals = [];
-  for(let i = 0; i < players.length; i++) {
-    let actions = game.getAction(players[i].id);
+  let playersArr = game.getActivePlayers();
+  let playersCount = playersArr.length;
+  let mutualsArr = [];
+  
+  for(let i = 0; i < playersCount; i++) {
+    let actionsArr = game.getActions(playersArr[i].id);
     
     // Первый игрок ходил
-    if(actions) {
-      for(let a = 0; a < actions.length; a++) {
-        let selfPick = actions[a][PF.PICK];
+    if(actionsArr) {
+      let actionsCount = actionsArr.length;
+      
+      for(let a = 0; a < actionsCount; a++) {
+        let selfPick = actionsArr[a][PF.PICK];
         
-        let otherActions = game.getAction(selfPick);
+        let otherActionsArr = game.getActions(selfPick);
         // Другой тоже ходил
-        if(otherActions) {
-          for(let o = 0; o < otherActions.length; o++) {
-            let otherPick = otherActions[o][PF.PICK];
+        if(otherActionsArr) {
+          let otherActionsCount = otherActionsArr.length;
+          
+          for(let o = 0; o < otherActionsCount; o++) {
+            let otherPick = otherActionsArr[o][PF.PICK];
             
             // Они выбрали друг друга
-            if(otherPick == players[i].id) {
-              mutuals.push(players[i].id);
+            if(otherPick == playersArr[i].id) {
+              mutualsArr.push(playersArr[i].id);
             }
           }
         }
@@ -43,9 +55,9 @@ module.exports = function (game) {
     }
   }
   
-  if(mutuals.length > 0) {
+  if(mutualsArr.length > 0) {
     let count = 0;
-    addPoints(mutuals[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutuals, count));
+    game.addPoints(mutualsArr[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutualsArr, count));
   }
   
   // Сохраняем выбор игроков
@@ -54,7 +66,7 @@ module.exports = function (game) {
   game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_ST)(game);
   
   //-------------------------------------
-  function onComplete (mutuals, count) {
+  function onComplete (mutualsArr, count) {
     return function (err) {
       if (err) {
         logger.error(game.CONST.G_SYMPATHY + ' ' + game.CONST.GT_FIN);
@@ -62,8 +74,8 @@ module.exports = function (game) {
       }
     
       count++;
-      if (count < mutuals.length) {
-        addPoints(mutuals[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutuals, count));
+      if (count < mutualsArr.length) {
+        game.addPoints(mutualsArr[count], MUTUAL_SYMPATHY_BONUS, onComplete(mutualsArr, count));
       }
     }
   }

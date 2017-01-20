@@ -1,63 +1,71 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Выдаем результаты игры Кто больше нравится,
+ * Проверяем - если кто-то выбран лучшим - начисляем ему очки
+ * Ставим игру на паузу
+ *
  */
 
+const statCtrlr    = require('./../../../stat_manager');
 const Config       = require('./../../../../config.json');
-const PF    = require('./../../../const_fields');
-const stat         = require('./../../../stat_manager');
+const PF           = require('./../../../const_fields');
 
-const  addPoints   = require('./../../lib/add_points');
 const  emitRes     = require('./../../../emit_result');
 
-const BEST_POINTS  = Number(Config.points.game.best);
-
 module.exports = function (game) {
+  
+  const BEST_POINTS  = Number(Config.points.game.best);
+  
   game.clearTimer();
   
-  stat.setMainStat(PF.BEST_ACTIVITY, game.getActivityRating());
+  statCtrlr.setMainStat(PF.BEST_ACTIVITY, game.getActivityRating());
   
   // Если кто-то голосовал - показываем результаты, либо сразу переходим к волчку
   if(game.getActionsCount() != game.getActionsMain()) {
     
     // Проверяем - кто выбран лучшим
-    let bests = game.getStoredOptions();
-    let players = game.getActivePlayers();
+    let bestsObj    = game.getStoredOptions();
+    let playersArr  = game.getActivePlayers();
     
-    let theBest = { id: null, count : 0 };
+    let theBestObj = { id: null, count : 0 };
     
-    for (let i = 0; i < players.length; i++) {
-      let actions = game.getAction(players[i].id);
+    let playersCount = playersArr.length;
+    for (let i = 0; i < playersCount; i++) {
+      let actionsArr = game.getActions(playersArr[i].id);
       
-      if(actions && actions[0] && bests[actions[0][PF.PICK]]) {
-        let best = bests[actions[0][PF.PICK]];
-        best.count = best.count + 1 || 1;
+      if(actionsArr && actionsArr[0] && bestsObj[actionsArr[0][PF.PICK]]) {
+        let bestObj = bestsObj[actionsArr[0][PF.PICK]];
+        bestObj.count = bestObj.count + 1 || 1;
   
-        if(best.count > theBest.count) {
-          theBest.id = best[PF.ID];
-          theBest.vid = best[PF.VID];
-          theBest.count = best.count;
+        if(bestObj.count > theBestObj.count) {
+          theBestObj.id = bestObj[PF.ID];
+          theBestObj.vid = bestObj[PF.VID];
+          theBestObj.count = bestObj.count;
           
-        } else if(best.count == theBest.count) {
-          theBest.id = null;
-          theBest.vid = null;
+        } else if(bestObj.count == theBestObj.count) {
+          theBestObj.id = null;
+          theBestObj.vid = null;
         }
       }
       
     }
     
     // Если есть победитель - начисляем ему очки
-    if(theBest.id) {
-      stat.setUserStat(theBest.id, theBest.vid, PF.BEST_SELECTED, 1);
+    if(theBestObj.id) {
+      statCtrlr.setUserStat(theBestObj.id, theBestObj.vid, PF.BEST_SELECTED, 1);
       
-      addPoints(theBest.id, BEST_POINTS, function (err) {
+      game.addPoints(theBestObj.id, BEST_POINTS, (err) => {
         if(err) {
           let socket = game.getRoom().getAnySocket();
           return emitRes(err, socket, Config.io.emits.IO_GAME_ERROR);
         }
       });
     }
-    game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, true);
+    game.getHandler(game.CONST.G_PAUSE, game.CONST.GT_ST)(game, null, true);
   } else {
-    game.getHandler(game.CONST.G_START, game.CONST.GT_ST)(game, null, false);
+    game.getHandler(game.CONST.G_PAUSE, game.CONST.GT_ST)(game, null, false);
   }
 };

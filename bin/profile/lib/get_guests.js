@@ -9,8 +9,10 @@
 const db = require('./../../db_manager');
 
 module.exports = function(isSelf, callback) {
- db.findGuests(this._pID, isSelf, function(err, guests) {
-   if (err) { return callback(err, null); }
+ db.findGuests(this._pID, isSelf, (err, guests) => {
+   if (err) {
+     return callback(err, null);
+   }
 
    callback(null, guests);
  });

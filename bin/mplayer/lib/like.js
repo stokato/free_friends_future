@@ -10,22 +10,23 @@
  */
 
 module.exports = function (profile, tid) {
-  var tl = this._mTrackList;
-  var uid = profile.getID();
+  let tlArr = this._mTrackList;
+  let uid   = profile.getID();
+  let tlLen = tlArr.length;
   
-  for(var i = 0; i < tl.length; i++) {
+  for(var i = 0; i < tlLen; i++) {
     
-    if(tl[i].track_id == tid) {
+    if(tlArr[i].track_id == tid) {
       if(!this._mLikers[tid][uid]) {
-        tl[i].likes++;
+        tlArr[i].likes++;
         this._mLikers[tid][uid] = { id : uid, vid : profile.getVID() };
       }
       
       if(this._mDislikers[tid][uid]) {
         delete this._mDislikers[tid][uid];
-        tl[i].dislikes--;
-        if(tl[i].dislikes < 0) {
-          tl[i].dislikes = 0;
+        tlArr[i].dislikes--;
+        if(tlArr[i].dislikes < 0) {
+          tlArr[i].dislikes = 0;
         }
       }
       

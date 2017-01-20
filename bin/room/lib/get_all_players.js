@@ -9,22 +9,23 @@
 
 const Config    = require('./../../../config.json');
 
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
-
 module.exports = function (sex = null) {// sex = sex || null;
-  let players = [], index;
+  
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
+  
+  let playersArr = [];
   
   if(!sex || sex == GUY) {
-    for(index in this._guys) if(this._guys.hasOwnProperty(index)){
-      players.push(this._guys[index]);
+    for(let index in this._guys) if(this._guys.hasOwnProperty(index)){
+      playersArr.push(this._guys[index]);
     }
   }
   if(!sex || sex == GIRL) {
-    for(index in this._girls) if(this._girls.hasOwnProperty(index)) {
-      players.push(this._girls[index]);
+    for(let index in this._girls) if(this._girls.hasOwnProperty(index)) {
+      playersArr.push(this._girls[index]);
     }
   }
   
-  return players;
+  return playersArr;
 };

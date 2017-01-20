@@ -5,18 +5,19 @@
  *
  */
 
-const Config = require('./../../../config.json');
-const oPool      = require('./../../objects_pool');
+const Config  = require('./../../../config.json');
+const PF      = require('./../../const_fields');
+const oPool   = require('./../../objects_pool');
   
 const emitRes = require('./../../emit_result');
 const sanitize = require('./../../sanitize');
 
-const PF   = require('./../../const_fields');
-const EMIT = Config.io.emits.IO_ADD_TRECK_FREE;
-const DJ_RANK = Config.ranks.dj.name;
-
 module.exports = function () {
-  let  self  = this;
+  
+  const EMIT    = Config.io.emits.IO_ADD_TRECK_FREE;
+  const DJ_RANK = Config.ranks.dj.name;
+  
+  let self  = this;
   
   return function(socket, options) {
     if(!PF.TRACKID in options || !PF.DURATION in options) {
@@ -37,13 +38,13 @@ module.exports = function () {
     }
   
     // Проверяем - есть ли наш трек в очереди
-    for (i = 0; i < self._mTrackList.length; i++) {
+    for (let i = 0; i < self._mTrackList.length; i++) {
       if (self._mTrackList[i][PF.ID] == selfProfile.getID()) {
         return emitRes(Config.errors.BLOCK_FREE_TRACK, socket, EMIT);
       }
     }
   
-    let  track = {
+    let  trackObj = {
       [PF.TRACKID]  : options[PF.TRACKID],
       [PF.ID]       : selfProfile.getID(),
       [PF.VID]      : selfProfile.getVID(),
@@ -55,13 +56,13 @@ module.exports = function () {
     // Если очередь пустая, запускаем сразу
     if (self._mTrackList.length == 0) {
       self.setTrackTime(new Date());
-      self.startTrackTimer(socket, room, track);
+      self.startTrackTimer(socket, room, trackObj);
     }
     
-    self.addTrack(track);
+    self.addTrack(trackObj);
   
-    let  ranks = oPool.roomList[socket.id].getRanks();
-    ranks.addRankBall(DJ_RANK, selfProfile.getID());
+    let  ranksCtrlr = oPool.roomList[socket.id].getRanks();
+    ranksCtrlr.addRankBall(DJ_RANK, selfProfile.getID());
   
     res = { [PF.TRACKLIST] : self._mTrackList };
   

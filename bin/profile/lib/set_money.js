@@ -5,32 +5,29 @@
  * @return money - новый баланс
  */
 
-const  db = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr = require('./../../db_manager');
+const  PF      = require('./../../const_fields');
 
 module.exports = function(num, callback) {
-  if (!isNumeric(num)) {
+  if (!Number.isInteger(num)) {
     return callback(new Error("Количество монет задано некорректно"));
   }
   let  self = this;
 
   let  options = {
-    [IOF.ID]    : self._pID,
-    [IOF.VID]   : self._pVID,
-    [IOF.MONEY] : num
+    [PF.ID]    : self._pID,
+    [PF.VID]   : self._pVID,
+    [PF.MONEY] : num
   };
 
 
-  db.updateUser(options, function(err) {
-    if (err) {return callback(err, null); }
+  dbCtrlr.updateUser(options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
 
     self._pMoney = num;
     
     callback(null, self._pMoney);
   });
 };
-
-//----------------------------------------------
-function isNumeric(n) { // Проверка - явлеется ли аргумент числом
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}

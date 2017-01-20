@@ -8,10 +8,11 @@
 
 const Config    = require('./../../../config.json');
 
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
-
 module.exports = function () {
+  
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
+  
   return {
     name : this.getName(),
     title: this._title,

@@ -16,8 +16,10 @@ module.exports = function(callback) {
   let self = this;
 
   let fList = [PF.MONEY];
-  db.findUser(self._pID, null, fList, function(err, foundUser) {
-    if (err) { return callback(err); }
+  db.findUser(self._pID, null, fList, (err, foundUser) => {
+    if (err) {
+      return callback(err);
+    }
     
     if (!foundUser) {
       callback(new Error("Нет такого ползователя в базе данных"));

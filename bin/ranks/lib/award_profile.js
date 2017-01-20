@@ -8,12 +8,12 @@
  *
  */
 
-const Config    = require('./../../../config.json');
+const Config = require('./../../../config.json');
 
 module.exports = function (rank, uid) {
   
-  let bonusLimit    = Number(Config.ranks[rank].bonus_limit);
-  let bonusTimeout  = Number(Config.ranks[rank].bonus_timeout);
+  const bonusLimit    = Number(Config.ranks[rank].bonus_limit);
+  const bonusTimeout  = Number(Config.ranks[rank].bonus_timeout);
   
   this._rBonuses[rank] ++;
   
@@ -26,9 +26,11 @@ module.exports = function (rank, uid) {
   
   //------------------------------------------------
   function startTimer(rm, rank, uid, limit, delay) {
-    setTimeout(function () {
+    setTimeout(() => {
       // Если владелец сменился - ничего не делаем
-      if(rm._rRankOwners[rank] != uid) { return; }
+      if(rm._rRankOwners[rank] != uid) {
+        return;
+      }
       
       // Начисляем бонус, если не превышен лимит
       if(rm._rBonuses[rank] < limit) {

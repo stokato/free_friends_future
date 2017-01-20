@@ -5,16 +5,18 @@
  * @return res - объект с ид чата
  */
 
-const Config = require('./../../../../config.json');
-const oPool         = require('./../../../objects_pool');
+const Config    = require('./../../../../config.json');
+const PF        = require('./../../../const_fields');
+const oPool     = require('./../../../objects_pool');
 
-const emitRes = require('./../../../emit_result');
-const checkID = require('./../../../check_id');
-const sanitize = require('./../../../sanitize');
-const IO_CLOSE_PRIVATE_CHAT = Config.io.emits.IO_CLOSE_PRIVATE_CHAT;
-const PF = require('./../../../const_fields');
+const emitRes   = require('./../../../emit_result');
+const checkID   = require('./../../../check_id');
+const sanitize  = require('./../../../sanitize');
 
 module.exports = function (socket, options) {
+  
+  const IO_CLOSE_PRIVATE_CHAT = Config.io.emits.IO_CLOSE_PRIVATE_CHAT;
+  
   if(!checkID(options[PF.ID])) {
     return emitRes(Config.errors.NO_PARAMS, socket, IO_CLOSE_PRIVATE_CHAT);
   }
@@ -29,9 +31,9 @@ module.exports = function (socket, options) {
   
   selfProfile.deletePrivateChat(options[PF.ID]);
   
-  let res = {
+  let resObj = {
     [PF.ID] : options[PF.ID]
   };
   
-  emitRes(null, socket, IO_CLOSE_PRIVATE_CHAT, res);
+  emitRes(null, socket, IO_CLOSE_PRIVATE_CHAT, resObj);
 };

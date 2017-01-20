@@ -4,26 +4,29 @@
  * Сохраняем обновленные данные в БД
  */
 
-const  db        = require('./../../db_manager');
-const  IOF       = require('./../../const_fields');
+const  dbCtrlr  = require('./../../db_manager');
+const  PF       = require('./../../const_fields');
 
 module.exports = function(num, callback) {
-  if (!isNumeric(num)) {
+  if (!Number.isInteger(num)) {
     return callback(new Error("Количество очков задано некорректно"));
   }
+  
   let  self = this;
   
   self._pPoints = self._pPoints || 0;
   
   let  options = {
-    [IOF.ID]      : self._pID,
-    [IOF.VID]     : self._pVID,
-    [IOF.SEX]     : self._pSex,
-    [IOF.POINTS]  : self._pPoints + num
+    [PF.ID]      : self._pID,
+    [PF.VID]     : self._pVID,
+    [PF.SEX]     : self._pSex,
+    [PF.POINTS]  : self._pPoints + num
   };
   
-  db.addPoints(options, function(err) {
-    if(err) { return callback(err, null); }
+  dbCtrlr.addPoints(options, (err) => {
+    if(err) {
+      return callback(err, null);
+    }
     
     self._pPoints += num;
     
@@ -35,8 +38,3 @@ module.exports = function(num, callback) {
   });
   
 };
-
-//-------------------------------
-function isNumeric(n) { // Проверка - явлеется ли аргумент числом
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}

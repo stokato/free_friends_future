@@ -20,43 +20,44 @@
  *         установить признак - посмторено, для новых друзей, гостей или подарков
  */
 
-const  init                            = require('./lib/init'),
-    addGift                         = require('./lib/add_gift'),
-    addMessage                      = require('./lib/add_message'),
-    addPoints                       = require('./lib/add_points'),
-    addToFriends                    = require('./lib/add_to_friends'),
-    addToGuests                     = require('./lib/add_to_guests'),
-    build                           = require('./lib/build'),
-    getFriends                      = require('./lib/get_friends'),
-    getGifts                        = require('./lib/get_gifts'),
-    getGuests                       = require('./lib/get_guests'),
-    getPrivateChats                 = require('./lib/get_private_chats'),
-    getPrivateChatsWithHistory      = require('./lib/get_private_chats_with_history'),
-    getHistory                      = require('./lib/get_history'),
-    getMoney                        = require('./lib/get_money'),
-    remove                          = require('./lib/remove'),
-    save                            = require('./lib/save'),
-    setMoney                        = require('./lib/set_money'),
-    pay                             = require('./lib/pay'),
-    earn                            = require('./lib/earn'),
-    setStatus                       = require('./lib/set_status'),
-    addPrivateChat                  = require('./lib/add_private_chat'),
-    deletePrivateChat               = require('./lib/delete_private_chat'),
-    isPrivateChat                   = require('./lib/is_private_chat'),
-    isFriend                        = require('./lib/is_friend'),
-    setInMenu                       = require('./lib/set_in_menu'),
-    delFromFriends                  = require('./lib/del_from_friends'),
-    view                            = require('./lib/view'),
-    addToBlackList                  = require('./lib/add_to_black_list'),
-    deleteFromBlackList             = require('./lib/delete_from_black_list'),
-    isInBlackList                   = require('./lib/is_in_black_list'),
-    getStat                         = require('./lib/get_stat'),
-    addQuestion                     = require('./lib/add_question'),
-    setLevel                        = require('./lib/set_level'),
-    setFreeGifts                    = require('./lib/set_free_gifts'),
-    setFreeMusic                    = require('./lib/set_free_music'),
-    setVIP                          = require('./lib/set_vip'),
-    close                           = require('./lib/close');
+const init                            = require('./lib/init');
+const addGift                         = require('./lib/add_gift');
+const addMessage                      = require('./lib/add_message');
+const addPoints                       = require('./lib/add_points');
+const addToFriends                    = require('./lib/add_to_friends');
+const addToGuests                     = require('./lib/add_to_guests');
+const build                           = require('./lib/build');
+const getFriends                      = require('./lib/get_friends');
+const getGifts                        = require('./lib/get_gifts');
+const getGuests                       = require('./lib/get_guests');
+const getPrivateChats                 = require('./lib/get_private_chats');
+const getPrivateChatsWithHistory      = require('./lib/get_private_chats_with_history');
+const getHistory                      = require('./lib/get_history');
+const getMoney                        = require('./lib/get_money');
+const remove                          = require('./lib/remove');
+const save                            = require('./lib/save');
+const setMoney                        = require('./lib/set_money');
+const pay                             = require('./lib/pay');
+const earn                            = require('./lib/earn');
+const setStatus                       = require('./lib/set_status');
+const addPrivateChat                  = require('./lib/add_private_chat');
+const deletePrivateChat               = require('./lib/delete_private_chat');
+const isPrivateChat                   = require('./lib/is_private_chat');
+const isFriend                        = require('./lib/is_friend');
+const setInMenu                       = require('./lib/set_in_menu');
+const delFromFriends                  = require('./lib/del_from_friends');
+const view                            = require('./lib/view');
+const addToBlackList                  = require('./lib/add_to_black_list');
+const deleteFromBlackList             = require('./lib/delete_from_black_list');
+const isInBlackList                   = require('./lib/is_in_black_list');
+const getStat                         = require('./lib/get_stat');
+const addQuestion                     = require('./lib/add_question');
+const setLevel                        = require('./lib/set_level');
+const setFreeGifts                    = require('./lib/set_free_gifts');
+const setFreeMusic                    = require('./lib/set_free_music');
+const setVIP                          = require('./lib/set_vip');
+const close                           = require('./lib/close');
+const getAge                          = require('./lib/get_age');
 
 function Profile() {
   
@@ -74,7 +75,7 @@ function Profile() {
   this._pPoints       = 0;      // очки
   this._pMoney        = 0;      // деньги (БД)
 
-  this._pIsPrivateChats = [];   // Сприсок открытых приватных чатов
+  this._pPrivateChats = [];   // Сприсок открытых приватных чатов
 
   this._pIsExitTimeout  = 0;
   
@@ -97,7 +98,7 @@ function Profile() {
   this._pFreeMusic    = 0;
   this._pVIP          = false;
   
-  this._pOnAddPoints   = null;
+  this._pOnAddPoints  = null;
   this._pOnPay        = null;
 }
 
@@ -107,12 +108,6 @@ Profile.prototype.getVID            = function () { return this._pVID; };
 Profile.prototype.getStatus         = function () { return this._pStatus; };
 Profile.prototype.getPoints         = function () { return this._pPoints; };
 Profile.prototype.getSex            = function () { return this._pSex; };
-Profile.prototype.getAge            = function () {
-  if(this._pBDate) {
-    return new Date().getYear() - this._pBDate.getYear();
-  }
-   return null;
-};
   
 Profile.prototype.getCity           = function () { return this._pCity; };
 Profile.prototype.getCountry        = function () { return this._pCountry; };
@@ -178,5 +173,6 @@ Profile.prototype.setFreeGifts      = setFreeGifts;
 Profile.prototype.setFreeMusic      = setFreeMusic;
 Profile.prototype.setVIP            = setVIP;
 Profile.prototype.close             = close;
+Profile.prototype.getAge            = getAge;
 
 module.exports = Profile;

@@ -5,69 +5,67 @@
  */
 
 const Config    = require('./../../../config.json');
+const PF        = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 
-const RANKS = Config.ranks;
-const ALMIGHTY = Config.almighty;
-
-const PF = require('./../../const_fields');
-
 module.exports = function (uid) {
-
-  let ranks = {};
+  
+  const RANKS = Config.ranks;
+  
+  let ranksObj = {};
 
   for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
-    let rank = RANKS[item].name;
+    let rankName = RANKS[item].name;
     
-    let rankStart = Number(RANKS[rank].start);
-    let rankStep = Number(RANKS[rank].step);
+    let rankStart = Number(RANKS[rankName].start);
+    let rankStep = Number(RANKS[rankName].step);
     
-    let rankInfo = {};
+    let rankInfoObj = {};
     
-    rankInfo[PF.RANK] = rank;
+    rankInfoObj[PF.RANK] = rankName;
     
-    if(this._rRankOwners[rank] != uid) {
-      rankInfo[PF.BALLS] = this._rProfiles[uid][rank];
+    if(this._rRankOwners[rankName] != uid) {
+      rankInfoObj[PF.BALLS] = this._rProfiles[uid][rankName];
       
-      if(this._rRankOwners[rank]) {
-        rankInfo[PF.NEED_BALLS] = this._rProfiles[this._rRankOwners[rank]][rank] + rankStep;
+      if(this._rRankOwners[rankName]) {
+        rankInfoObj[PF.NEED_BALLS] = this._rProfiles[this._rRankOwners[rankName]][rankName] + rankStep;
       } else {
         
         let needBalls = rankStart;
-        if(needBalls <= rankInfo[PF.BALLS]) { // Если владевший званием ушел
-          rankInfo[PF.NEED_BALLS] = needBalls + 1;
+        if(needBalls <= rankInfoObj[PF.BALLS]) { // Если владевший званием ушел
+          rankInfoObj[PF.NEED_BALLS] = needBalls + 1;
         } else {    // Если в конмте никто еще не присвоил звание
-          rankInfo[PF.NEED_BALLS] = needBalls;
+          rankInfoObj[PF.NEED_BALLS] = needBalls;
         }
         
       }
-      rankInfo[PF.PROGRESS] = Math.floor(rankInfo[PF.BALLS] / rankInfo[PF.NEED_BALLS] * 100);
+      rankInfoObj[PF.PROGRESS] = Math.floor(rankInfoObj[PF.BALLS] / rankInfoObj[PF.NEED_BALLS] * 100);
     }
     
-    ranks[rank] = rankInfo;
+    ranksObj[rankName] = rankInfoObj;
   }
   
-  let targetRank = null;
+  let targetRankKey = null;
   let maxProgress = 0;
-  let ranksRand = [];
+  let ranksRandArr = [];
   
-  for(let item in ranks) if(ranks.hasOwnProperty(item)) {
-    if(ranks[item][PF.PROGRESS] > maxProgress) {
-      targetRank  = item;
-      maxProgress = ranks[item][PF.PROGRESS];
+  for(let item in ranksObj) if(ranksObj.hasOwnProperty(item)) {
+    if(ranksObj[item][PF.PROGRESS] > maxProgress) {
+      targetRankKey  = item;
+      maxProgress = ranksObj[item][PF.PROGRESS];
     }
-    ranksRand.push(item);
+    ranksRandArr.push(item);
   }
   
-  if(!targetRank) {
-    let rand = Math.floor(Math.random() * ranksRand.length);
-    targetRank = ranksRand[rand];
+  if(!targetRankKey) {
+    let rand = Math.floor(Math.random() * ranksRandArr.length);
+    targetRankKey = ranksRandArr[rand];
   }
   
   let profile = oPool.profiles[uid];
   if(profile) {
     let socket = profile.getSocket();
-    socket.emit(Config.io.emits.IO_ADD_BALLS, ranks[targetRank]);
+    socket.emit(Config.io.emits.IO_ADD_BALLS, ranksObj[targetRankKey]);
   }
   
 };

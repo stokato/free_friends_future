@@ -4,26 +4,26 @@
  * Класс Плеер. Содержит треклист и предосатвляет инструменты для управления очередью треков и их оценки
  */
 
-const addTrack              = require('./lib/add_track'),
-      deleteTrack           = require('./lib/delete_track'),
-      like                  = require('./lib/like'),
-      dislike               = require('./lib/dislike'),
-      getTrackTemp          = require('./lib/get_track_temp'),
-      deleteTrackOfUser     = require('./lib/delete_track_of_user'),
-      getLikes              = require('./lib/get_likes'),
-      getDislikes           = require('./lib/get_dislikes'),
-      checkTrack            = require('./lib/check_track'),
-      startTrack            = require('./lib/start_track'),
-      startTrackTimer       = require('./lib/start_track_timer'),
-      onAddTrack            = require('./lib/on_add_track'),
-      onAddTrackFree        = require('./lib/on_add_track_free'),
-      onDislikeTrack        = require('./lib/on_dislike_track'),
-      onGetFreeTrackState   = require('./lib/on_get_free_track_state'),
-      onGetLikersDislikers  = require('./lib/on_get_likers_dislikers'),
-      onGetTrackList        = require('./lib/on_get_track_list'),
-      onLikeTrack           = require('./lib/on_like_track'),
-      addEmits              = require('./lib/add_emits'),
-      deleteEmits           = require('./lib/delete_emits');
+const addTrack              = require('./lib/add_track');
+const deleteTrack           = require('./lib/delete_track');
+const like                  = require('./lib/like');
+const dislike               = require('./lib/dislike');
+const getTrackTemp          = require('./lib/get_track_temp');
+const deleteTrackOfUser     = require('./lib/delete_track_of_user');
+const getLikes              = require('./lib/get_likes');
+const getDislikes           = require('./lib/get_dislikes');
+const checkTrack            = require('./lib/check_track');
+const startTrack            = require('./lib/start_track');
+const startTrackTimer       = require('./lib/start_track_timer');
+const onAddTrack            = require('./lib/on_add_track');
+const onAddTrackFree        = require('./lib/on_add_track_free');
+const onDislikeTrack        = require('./lib/on_dislike_track');
+const onGetFreeTrackState   = require('./lib/on_get_free_track_state');
+const onGetLikersDislikers  = require('./lib/on_get_likers_dislikers');
+const onGetTrackList        = require('./lib/on_get_track_list');
+const onLikeTrack           = require('./lib/on_like_track');
+const addEmits              = require('./lib/add_emits');
+const deleteEmits           = require('./lib/delete_emits');
 
 function MusicPlayer() {
   

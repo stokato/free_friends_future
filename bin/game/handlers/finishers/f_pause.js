@@ -1,5 +1,12 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Завершаем паузу в игре
+ * Проверяем количество игроков - если мало - останавливаем игру
+ * Переходим к раунду - Волчек
+ *
  */
 
 module.exports = function (game) {
@@ -11,6 +18,7 @@ module.exports = function (game) {
     return game.stop();
   }
   
+  // Выполняем делегиуемый обработчик события завершения раунда
   if(game._onStart) {
     game._onStart();
   }

@@ -5,14 +5,15 @@
  */
 
 const Config    = require('./../../../config.json');
-const PF = require('./../../const_fields');
+const PF        = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 const sanitize  = require('./../../sanitize');
-const emitRes   = require('./emit_result');
-
-const EMIT = Config.io.emits.IO_CHANGE_ACTIVE_RANK;
+const emitRes   = require('./../../emit_result');
 
 module.exports = function () {
+  
+  const EMIT = Config.io.emits.IO_CHANGE_ACTIVE_RANK;
+  
   let self = this;
   
   return function (socket, options) {

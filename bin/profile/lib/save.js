@@ -21,7 +21,7 @@ module.exports = function(callback) {
   };
   
   // if(self._pGift1) {
-  //   options[IOF.GIFT1]    = self._pGift1.gid;
+  //   options[PF.GIFT1]    = self._pGift1.gid;
   // } else {
     options[IOF.GIFT1]    = null;
   // }

@@ -4,15 +4,16 @@
  * @param socket, options - объект с ид трека, callback
  */
 const Config    = require('./../../../config.json');
+const PF        = require('./../../const_fields');
 const oPool     = require('./../../objects_pool');
 
 const emitRes   = require('./../../emit_result');
 const sanitize  = require('./../../sanitize');
 
-const PF        = require('./../../const_fields');
-const IO_DISLIKE_TRACK = Config.io.emits.IO_DISLIKE_TRACK;
-
 module.exports = function () {
+  
+  const IO_DISLIKE_TRACK = Config.io.emits.IO_DISLIKE_TRACK;
+  
   let  self = this;
   
   return function(socket, options) {
@@ -29,19 +30,21 @@ module.exports = function () {
   
     let  isTrack     = self.dislike(selfProfile, trackID);
   
-    if(!isTrack) { return emitRes(Config.errors.NO_SUCH_TRACK, socket, IO_DISLIKE_TRACK)}
+    if(!isTrack) {
+      return emitRes(Config.errors.NO_SUCH_TRACK, socket, IO_DISLIKE_TRACK);
+    }
   
-    let  res = { [PF.TRACKLIST] : self.getTrackList() };
+    let  resObj = { [PF.TRACKLIST] : self.getTrackList() };
   
-    socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, res);
-    socket.emit(Config.io.emits.IO_GET_TRACK_LIST, res);
+    socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, resObj);
+    socket.emit(Config.io.emits.IO_GET_TRACK_LIST, resObj);
   
-    res = {
+    resObj = {
       [PF.ID]  : selfProfile.getID(),
       [PF.VID] : selfProfile.getVID()
     };
     
-    socket.broadcast.in(room.getName()).emit(IO_DISLIKE_TRACK, res);
-    emitRes(null, socket, IO_DISLIKE_TRACK, res);
+    socket.broadcast.in(room.getName()).emit(IO_DISLIKE_TRACK, resObj);
+    emitRes(null, socket, IO_DISLIKE_TRACK, resObj);
   }
 };

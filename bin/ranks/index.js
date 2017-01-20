@@ -7,28 +7,29 @@
 
 const Config = require('./../../config.json');
 
-const addProfile        = require('./lib/add_profile'),
-    deleteProfile       = require('./lib/delete_profile'),
-    addRankBall         = require('./lib/add_rank_ball'),
-    onGetRanksOfProfile = require('./lib/on_get_ranks_of_profile'),
-    awardProfile        = require('./lib/award_profile'),
-    takeBonus           = require('./lib/take_bonus'),
-    emitAddBall         = require('./lib/emit_add_ball'),
-    onPopularBonus      = require('./lib/on_popular_bonus'),
-    onReleaserBonus     = require('./lib/on_releaser_bonus'),
-    onNewRank           = require('./lib/on_new_rank'),
-    onGetActiveRank     = require('./lib/on_get_active_rank'),
-    onSetActiveRank     = require('./lib/on_set_active_rank'),
-    addEmits            = require('./lib/add_emits'),
-    deleteEmits         = require('./lib/delete_emits'),
-    checkAlmgihty       = require('./lib/check_almighty');
-
-const RANKS = Config.ranks;
-const POPULAR_RANK = RANKS.popular.name;
-const RELEASER_RANK = RANKS.releaser.name;
-const ALMIGHTY = Config.almighty;
+const addProfile          = require('./lib/add_profile');
+const deleteProfile       = require('./lib/delete_profile');
+const addRankBall         = require('./lib/add_rank_ball');
+const onGetRanksOfProfile = require('./lib/on_get_ranks_of_profile');
+const awardProfile        = require('./lib/award_profile');
+const takeBonus           = require('./lib/take_bonus');
+const emitAddBall         = require('./lib/emit_add_ball');
+const onPopularBonus      = require('./lib/on_popular_bonus');
+const onReleaserBonus     = require('./lib/on_releaser_bonus');
+const onNewRank           = require('./lib/on_new_rank');
+const onGetActiveRank     = require('./lib/on_get_active_rank');
+const onSetActiveRank     = require('./lib/on_set_active_rank');
+const addEmits            = require('./lib/add_emits');
+const deleteEmits         = require('./lib/delete_emits');
+const checkAlmgihty       = require('./lib/check_almighty');
 
 function RanksManager() {
+  
+  const RANKS         = Config.ranks;
+  const POPULAR_RANK  = RANKS.popular.name;
+  const RELEASER_RANK = RANKS.releaser.name;
+  const ALMIGHTY      = Config.almighty;
+  
   // Обладатели званий
   this._rRankOwners = {};
   

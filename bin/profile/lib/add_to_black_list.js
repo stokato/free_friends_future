@@ -4,25 +4,29 @@
  * Добавляем пользователя в черный список
  */
 
-const  Config = require('./../../../config.json');
-const  db     = require('./../../db_manager');
-const  IOF    = require('./../../const_fields');
-
-const  BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
+const  logger   = require('./../../../lib/log')(module);
+const  Config   = require('./../../../config.json');
+const  dbCtrlr  = require('./../../db_manager');
+const  PF       = require('./../../const_fields');
 
 module.exports = function (blockedProfile, date, callback) {
+  
+  const  BLOCK_TIMEOUT = Config.user.settings.user_block_timeout;
+  
   let  self = this;
   
   let  blockedID = blockedProfile.getID();
   
   let  params = {
-    [IOF.ID]     : blockedID,
-    [IOF.VID]    : blockedProfile.getVID(),
-    [IOF.DATE]   : date
+    [PF.ID]     : blockedID,
+    [PF.VID]    : blockedProfile.getVID(),
+    [PF.DATE]   : date
   };
   
-  db.addBlocked(self._pID, params, function (err) {
-    if (err) { return callback(err, null); }
+  dbCtrlr.addBlocked(self._pID, params, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
     
     if(self._pBlackList[blockedID]) { // Если пользователь уже был ранее заблокирован, удалем таймер
       clearTimeout(self._pBlackList[blockedID].timeout);
@@ -36,15 +40,16 @@ module.exports = function (blockedProfile, date, callback) {
     callback(null, blockedID);
   });
   
-  
+  //------------------------------------------------------
   function setBlockedTimeout(profile, blockedID, delay) {
-    
-    let  timeout = setTimeout(function () {
-      profile.delFromBlackList(blockedID, function (err) {
-        if(err){ console.log("Ошибка при удалении пользователя из черного списка");}
-      })
+  
+    return setTimeout(() => {
+      profile.delFromBlackList(blockedID, (err) => {
+        if(err){
+          logger.error("Ошибка при удалении пользователя из черного списка");
+        }
+      });
     }, delay);
     
-    return timeout;
   }
 };

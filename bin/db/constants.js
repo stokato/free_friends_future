@@ -2,7 +2,8 @@
  * Created by s.t.o.k.a.t.o on 21.11.2016.
  */
 
-module.exports = {
+
+let constants = {
   
   /*
    Таблица пользователей users:
@@ -470,3 +471,6 @@ module.exports = {
   }
 };
 
+Object.freeze(constants);
+
+module.exports = constants;

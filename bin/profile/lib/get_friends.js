@@ -7,9 +7,11 @@
 
 const db = require('./../../db_manager');
 
-module.exports = function(withnew, callback) {
- db.findFriends(this._pID, null, withnew, function(err, friends) {
-   if (err) { return callback(err, null); }
+module.exports = function(isWithNew, callback) {
+ db.findFriends(this._pID, null, isWithNew, (err, friends) => {
+   if (err) {
+     return callback(err, null);
+   }
    
    callback(null, friends);
  });

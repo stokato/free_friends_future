@@ -5,7 +5,7 @@
  */
 
 module.exports = function(id) {
-  let chats = this._pIsPrivateChats;
+  let chats = this._pPrivateChats;
 
   for(let i = 0; i < chats.length; i++) {
     if(chats[i] == id) { return true; }

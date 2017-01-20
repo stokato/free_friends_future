@@ -5,31 +5,34 @@
  * @return messages - осписок сообщений пользователя
  */
 
-const db  = require('./../../db_manager');
-const IOF = require('./../../const_fields');
+const dbCtrlr  = require('./../../db_manager');
+const PF       = require('./../../const_fields');
 
 module.exports = function(fdate, sdate, callback) {
  let self = this;
 
- if(self._pIsPrivateChats[0]) { // Если есть открытые чаты
+ if(self._pPrivateChats[0]) { // Если есть открытые чаты
    let arr = [];
-   for(let i = 0; i < self._pIsPrivateChats.length; i++) { // Готовим массив их ид
-     arr.push(self._pIsPrivateChats[i]);
+   let privateChatsLen = self._pPrivateChats.length;
+   
+   for(let i = 0; i < privateChatsLen; i++) { // Готовим массив их ид
+     arr.push(self._pPrivateChats[i]);
    }
 
    let params = {
-     [IOF.ID_LIST]     : arr,
-     [IOF.DATE_FROM]   : fdate,
-     [IOF.DATE_TO]     : sdate
+     [PF.ID_LIST]     : arr,
+     [PF.DATE_FROM]   : fdate,
+     [PF.DATE_TO]     : sdate
    };
-
-  
+   
    // Получаем историю
-   db.findMessages(self._pID, params, function(err, messages) { messages = messages || [];
-     if (err) { return callback(err, null); }
+   dbCtrlr.findMessages(self._pID, params, (err, messages) => { messages = messages || [];
+     if (err) {
+       return callback(err, null);
+     }
   
-     messages.sort(function (mesA, mesB) {
-       return mesA[IOF.DATE] - mesB[IOF.DATE];
+     messages.sort((mesA, mesB) => {
+       return mesA[PF.DATE] - mesB[PF.DATE];
      });
 
      callback(null, messages);

@@ -4,33 +4,33 @@
  * @param socket
  */
 
-const Config          = require('../../../../config.json');
-const ioc             = require('./../../../io_controller');
+const Config            = require('../../../../config.json');
+const ioc               = require('./../../../io_controller');
 
-const  closeConnection      = require('./../profile/close_connection');
+const  closeConnection  = require('./../profile/close_connection');
 
-const   addTorFriend        = require('../profile/add_to_friends'),
-        delFromFriends      = require('../profile/del_from_friends'),
-        addToMenu           = require('../profile/add_to_menu'),
-        changeRoom          = require('../novigation/change_room'),
-        changeStatus        = require('../profile/change_status'),
-        chooseRoom          = require('../novigation/choose_room'),
-        openPrivateChat     = require('../chat/open_private_chat'),
-        closePrivateChat    = require('../chat/close_private_chat'),
-        getChatHistory      = require('../chat/get_chat_history'),
-        getGiftShop         = require('../store/get_gift_shop'),
-        getMoney            = require('../profile/get_money'),
-        getMoneyShop        = require('../store/get_money_shop'),
-        getProfile          = require('../profile/get_profile'),
-        getRooms            = require('../novigation/get_rooms'),
-        getTop              = require('../top/get_top'),
-        makeGift            = require('../chat/make_gift'),
-        sendMessage         = require('../chat/send_message'),
-        addQuestion         = require('../profile/add_question'),
-        likeProfile         = require('../profile/like_profile'),
-        setViewed           = require('../profile/set_viewed'),
-        blockUser           = require('../profile/block_user'),
-        unblockUser         = require('../profile/unblock_user');
+const  addTorFriend     = require('../profile/add_to_friends');
+const  delFromFriends   = require('../profile/del_from_friends');
+const  addToMenu        = require('../profile/add_to_menu');
+const  changeRoom       = require('../novigation/change_room');
+const  changeStatus     = require('../profile/change_status');
+const  chooseRoom       = require('../novigation/choose_room');
+const  openPrivateChat  = require('../chat/open_private_chat');
+const  closePrivateChat = require('../chat/close_private_chat');
+const  getChatHistory   = require('../chat/get_chat_history');
+const  getGiftShop      = require('../store/get_gift_shop');
+const  getMoney         = require('../profile/get_money');
+const  getMoneyShop     = require('../store/get_money_shop');
+const  getProfile       = require('../profile/get_profile');
+const  getRooms         = require('../novigation/get_rooms');
+const  getTop           = require('../top/get_top');
+const  makeGift         = require('../chat/make_gift');
+const  sendMessage      = require('../chat/send_message');
+const  addQuestion      = require('../profile/add_question');
+const  likeProfile      = require('../profile/like_profile');
+const  setViewed        = require('../profile/set_viewed');
+const  blockUser        = require('../profile/block_user');
+const  unblockUser      = require('../profile/unblock_user');
 
 const EMITS = Config.io.emits;
 

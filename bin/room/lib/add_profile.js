@@ -7,18 +7,16 @@
  */
 
 const async  = require('async');
-const logger    = require('./../../../lib/log')(module);
-const PF = require('./../../const_fields');
 
-const Config    = require('./../../../config.json');
-
-const GUY = Config.user.constants.sex.male;
+const logger  = require('./../../../lib/log')(module);
+const Config  = require('./../../../config.json');
+const PF      = require('./../../const_fields');
 
 module.exports = function (profile, callback) {
   
+  const GUY = Config.user.constants.sex.male;
+  
   this._ranks.addProfile(profile);
-  // this._ranks.addEmits(profile.getSocket());
-  // this._mplayer.addEmits(profile.getSocket());
   
   let sex = profile.getSex();
   if(sex == GUY) {
@@ -36,48 +34,55 @@ module.exports = function (profile, callback) {
     logger.error("Room_add_profile : Не удалось получить сокет профиля");
   }
   
-  let arr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
-  arr.sort(function (i1, i2) { return i1 - i2; });
+  let indexArr = (sex == GUY)? this._guys_indexes : this._girls_indexes;
+  indexArr.sort((i1, i2) => { return i1 - i2; });
   
-  let index = arr[0];
+  let index = indexArr[0];
   
-  arr.splice(0, 1);
+  indexArr.splice(0, 1);
   
   profile.setGameIndex(index);
   
   profile.setGame(this._game);
   
-  let users = this.getAllPlayers();
-  let userList = [];
-  for(let i = 0; i < users.length; i++) {
-    if(users[i].getID() != profile.getID()) {
-      userList.push(users[i].getID());
+  let usersArr = this.getAllPlayers();
+  let userListArr = [];
+  let usersCount = usersArr.length;
+  
+  for(let i = 0; i < usersCount; i++) {
+    if(usersArr[i].getID() != profile.getID()) {
+      
+      userListArr.push(usersArr[i].getID());
     }
   }
 
   let self = this;
 
-  profile.isFriend(userList, function (err, res) {
-    if(err) { return callback(err); }
+  profile.isFriend(userListArr, (err, res) => {
+    if(err) {
+      return callback(err);
+    }
 
-    if(!res) { return callback(null, null); }
+    if(!res) {
+      return callback(null, null);
+    }
 
     for(let i = 0; i < res.length; i++) {
-      let fInfo = res[i];
+      let fInfoObj = res[i];
 
-      if(fInfo[PF.ISFRIEND] == true) {
+      if(fInfoObj[PF.ISFRIEND] == true) {
 
         if(!self._friends[profile.getID()]) {
           self._friends[profile.getID()] = {};
         }
 
-        self._friends[profile.getID()][fInfo[PF.ID]] = true;
+        self._friends[profile.getID()][fInfoObj[PF.ID]] = true;
 
-        if(!self._friends[fInfo[PF.ID]]) {
-          self._friends[fInfo[PF.ID]] = {};
+        if(!self._friends[fInfoObj[PF.ID]]) {
+          self._friends[fInfoObj[PF.ID]] = {};
         }
 
-        self._friends[fInfo[PF.ID]][profile.getID()] = true;
+        self._friends[fInfoObj[PF.ID]][profile.getID()] = true;
       }
     }
     

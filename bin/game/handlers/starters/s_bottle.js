@@ -1,52 +1,64 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Начало раунда Бутылочка
+ * Получаем игрока
+ * Разрешаем ему выбор
+ * Отпрвляем настройки игры
+ * Устанавливаем таймаут на автозавершение сдедующего этапа
+ * Устанавливаем обработчик события выбора игрока
+ * Переходим к следующему этапу
+ *
  */
 
-const Config        = require('./../../../../config.json');
-
-const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
-const PF             = require('./../../../const_fields');
-
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
+const Config = require('./../../../../config.json');
+const PF     = require('./../../../const_fields');
 
 module.exports = function (game) {
+  
+  const BOTTLE_TIMEOUT = Number(Config.game.timeouts.bottle);
+  const GUY            = Config.user.constants.sex.male;
+  const GIRL            = Config.user.constants.sex.female;
   
   game.clearActionsQueue();
   game.setActionsCount(1);
   game.setActionLimit(1);
   
-  let pInfo = game.getActivePlayers()[0];
+  let pInfoObj = game.getActivePlayers()[0];
   
-  let sex = (pInfo.sex == GUY)? GIRL : GUY;
+  let sex = (pInfoObj.sex == GUY)? GIRL : GUY;
   
-  let players = game.getRoom().getAllPlayers(sex);
-  let playersInfo = [];
+  let playersArr = game.getRoom().getAllPlayers(sex);
+  let playersInfoArr = [];
   
   let prisonerID = null;
-  if(game.getPrisonerInfo()) {
-    prisonerID = game.getPrisonerInfo().id;
+  let prisonerInfoObj = game.getPrisonerInfo();
+  
+  if(prisonerInfoObj) {
+    prisonerID = prisonerInfoObj.id;
   }
   
-  for(let i = 0 ; i < players.length; i++) {
-    if(prisonerID != players[i].getID()) {
-      playersInfo.push(game.getPlayerInfo(players[i]));
+  for(let i = 0 ; i < playersArr.length; i++) {
+    if(prisonerID != playersArr[i].getID()) {
+      playersInfoArr.push(game.getPlayerInfo(playersArr[i]));
     }
   }
   
-  game.setStoredOptions(playersInfo);
+  game.setStoredOptions(playersInfoArr);
   
   game.setNextGame(game.CONST.G_BOTTLE);
   
-  let result = {
+  let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_BOTTLE,
     [PF.PLAYERS] : game.getPlayersID()
   };
   
-  game.checkPrisoner(result);
+  game.checkPrisoner(resultObj);
   
-  game.sendData(result);
-  game.setGameState(result);
+  game.sendData(resultObj);
+  game.setGameState(resultObj);
   
   // Устанавливаем таймаут
   game.startTimer(game.getHandler(game.CONST.G_BOTTLE, game.CONST.GT_FIN), BOTTLE_TIMEOUT, game);

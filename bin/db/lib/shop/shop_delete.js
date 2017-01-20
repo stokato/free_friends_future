@@ -1,7 +1,5 @@
-const dbCtrlr     = require('./../common/cassandra_db');
+const dbCtrlr  = require('./../common/cassandra_db');
 const DB_CONST = require('./../../constants');
-
-const DBF     = DB_CONST.SHOP.fields;
 
 /*
  Удалить товар из БД: ИД
@@ -9,16 +7,26 @@ const DBF     = DB_CONST.SHOP.fields;
  - Строим и выполняем запрос на удаление товара
  - Возвращаем ИД товара
  */
+
 module.exports = function(goodid, callback) {
-  if (!goodid) { return callback(new Error("Задан пустой Id товара")); }
 
-  let constFields = [DBF.ID_uuid_p];
-  let constValues = [1];
+  const DBF = DB_CONST.SHOP.fields;
+  const DBN = DB_CONST.SHOP.name;
+  
+  if (!goodid) {
+    return callback(new Error("Задан пустой Id товара"));
+  }
 
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DB_CONST.SHOP.name, constFields, constValues);
+  let condFieldsArr = [DBF.ID_uuid_p];
+  let condValuesArr = [1];
+  let paramsArr     = [goodid];
 
-  dbCtrlr.client.execute(query, [goodid], {prepare: true }, function(err) {
-    if (err) {  return callback(err); }
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], DBN, condFieldsArr, condValuesArr);
+
+  dbCtrlr.client.execute(query, paramsArr, { prepare: true }, (err) => {
+    if (err) {
+      return callback(err);
+    }
 
     callback(null, goodid);
   });

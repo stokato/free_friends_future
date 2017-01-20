@@ -4,16 +4,16 @@
  * Получаем все ранги пользователя по его ИД
  */
 
-const Config = require('./../../../config.json');
-const oPool = require('./../../objects_pool');
-const emitRes = require('./emit_result');
-
-const RANKS = Config.ranks;
-const ALMIGHTY = Config.almighty;
-
-const PF = require('./../../const_fields');
+const Config  = require('./../../../config.json');
+const PF      = require('./../../const_fields');
+const oPool   = require('./../../objects_pool');
+const emitRes = require('./../../emit_result');
 
 module.exports = function () {
+  
+  const RANKS = Config.ranks;
+  const ALMIGHTY = Config.almighty;
+  
   let self = this;
   
   return function (socket, options) {
@@ -25,58 +25,58 @@ module.exports = function () {
       return null;
     }
   
-    let ranks = {};
-    let rOwner = 0;
-    let rCount = 0;
+    let ranksObj = {};
+    let ownBallCount = 0;
+    let neeBallCount = 0;
   
     for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {
       let rank = RANKS[item].name;
     
       let rankStart = Number(RANKS[rank].start);
-      let rankStep = Number(RANKS[rank].step);
+      let rankStep  = Number(RANKS[rank].step);
     
-      let rankInfo = {};
+      let rankInfoObj = {};
 
-      rCount ++;
+      neeBallCount ++;
       if(self._rRankOwners[rank] == uid) {
-        rankInfo[PF.ISOWNER] = true;
-        rOwner++;
+        rankInfoObj[PF.ISOWNER] = true;
+        ownBallCount++;
       }
 
-      if(!rankInfo[PF.ISOWNER]) {
-        rankInfo[PF.BALLS] = self._rProfiles[uid][rank];
+      if(!rankInfoObj[PF.ISOWNER]) {
+        rankInfoObj[PF.BALLS] = self._rProfiles[uid][rank];
       
         if(self._rRankOwners[rank]) {
-          rankInfo[PF.NEED_BALLS] = self._rProfiles[self._rRankOwners[rank]][rank] + rankStep;
+          rankInfoObj[PF.NEED_BALLS] = self._rProfiles[self._rRankOwners[rank]][rank] + rankStep;
         } else {
         
           let needBalls = rankStart;
-          if(needBalls <= rankInfo[PF.BALLS]) { // Если владевший званием ушел
-            rankInfo[PF.NEED_BALLS] = needBalls + 1;
+          if(needBalls <= rankInfoObj[PF.BALLS]) { // Если владевший званием ушел
+            rankInfoObj[PF.NEED_BALLS] = needBalls + 1;
           } else {    // Если в конмте никто еще не присвоил звание
-            rankInfo[PF.NEED_BALLS] = needBalls;
+            rankInfoObj[PF.NEED_BALLS] = needBalls;
           }
         
         }
-        rankInfo[PF.PROGRESS] = Math.floor(rankInfo[PF.BALLS] / rankInfo[PF.NEED_BALLS] * 100);
+        rankInfoObj[PF.PROGRESS] = Math.floor(rankInfoObj[PF.BALLS] / rankInfoObj[PF.NEED_BALLS] * 100);
       }
     
-      ranks[rank] = rankInfo;
+      ranksObj[rank] = rankInfoObj;
     }
   
-    ranks[PF.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;
+    ranksObj[PF.ACTIVE_RANK] = selfProfile.onGetActiveRank() || null;
 
-    ranks[ALMIGHTY] = {};
+    ranksObj[ALMIGHTY] = {};
 
-    if(rOwner == rCount) {
-      ranks[ALMIGHTY][PF.ISOWNER] = true;
+    if(ownBallCount == neeBallCount) {
+      ranksObj[ALMIGHTY][PF.ISOWNER] = true;
     } else {
-      ranks[ALMIGHTY][PF.NEED_BALLS] = rCount;
-      ranks[ALMIGHTY][PF.BALLS] = rOwner;
-      ranks[ALMIGHTY][PF.PROGRESS] = Math.floor(rOwner / rCount * 100);
+      ranksObj[ALMIGHTY][PF.NEED_BALLS] = neeBallCount;
+      ranksObj[ALMIGHTY][PF.BALLS] = ownBallCount;
+      ranksObj[ALMIGHTY][PF.PROGRESS] = Math.floor(ownBallCount / neeBallCount * 100);
     }
   
-    emitRes(null, socket, Config.io.emits.IO_GET_RANKS, ranks);
+    emitRes(null, socket, Config.io.emits.IO_GET_RANKS, ranksObj);
   }
 };
 

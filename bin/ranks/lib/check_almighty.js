@@ -5,10 +5,11 @@
  */
 
 const Config = require('./../../../config.json');
-const RANKS = Config.ranks;
-const ALMIGHTY = Config.almighty;
 
 module.exports = function (uid) {
+  
+  const RANKS = Config.ranks;
+  const ALMIGHTY = Config.almighty;
 
   let isAllRanks = true;
 

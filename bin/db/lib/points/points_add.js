@@ -1,14 +1,10 @@
 const async     = require('async');
 
 const logger    = require('./../../../../lib/log')(module);
-const dbCtrlr       = require('./../common/cassandra_db');
-const DB_CONST   = require('./../../constants');
-
+const dbCtrlr   = require('./../common/cassandra_db');
 const Config    = require('./../../../../config.json');
-const PF = require('./../../../const_fields');
-
-const DBF     = DB_CONST.POINTS.fields;
-const GIRL    = Config.user.constants.sex.female;
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 /*
  Добавить очки игрока в БД: объект с ид, вид и количеством очков
@@ -20,7 +16,23 @@ const GIRL    = Config.user.constants.sex.female;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-  if ( !options[PF.ID] || !options[PF.VID] || !options[PF.POINTS] || !options[PF.SEX]) {
+  
+  const DBF  = DB_CONST.POINTS.fields;
+  const DBN  = DB_CONST.POINTS.name;
+  
+  const DBFGUY = DB_CONST.POINTS_GUYS.fields;
+  const DBNGUY = DB_CONST.POINTS_GUYS.name;
+  
+  const DBFGIRL = DB_CONST.POINTS_GIRLS.fields;
+  const DBNGIRL = DB_CONST.POINTS_GIRLS.name;
+  
+  const POINTS_ID = "max";
+  const GIRL = Config.user.constants.sex.female;
+
+  if ( !options[PF.ID] ||
+      !options[PF.VID] ||
+      !options[PF.POINTS] ||
+      !options[PF.SEX]) {
     return callback(new Error("Не указан ИД, ВИД, пол или количество очков игрока"), null);
   }
   
@@ -29,21 +41,24 @@ module.exports = function(options, callback) { options    = options || {};
   async.waterfall([//------------------------------------------------------------------
     function (cb) { // Обновляем таблицу пользователя
       
-      let params = {
+      let paramsArr = {
         [PF.ID]     : options[PF.ID],
         [PF.VID]    : options[PF.VID],
         [PF.POINTS] : options[PF.POINTS]
       };
 
   
-      self.updateUser(params, function(err) {
-        if (err) {return cb(err, null); }
+      self.updateUser(paramsArr, (err) => {
+        if (err) {
+          return cb(err, null);
+        }
     
         cb(null, null);
       });
     }, //------------------------------------------------------------------------
     function(res, cb) { // Добавляем новую запись в таблицу
-      let fields = [
+      
+      let fieldsArr = [
         DBF.ID_varchar_p,
         DBF.POINTS_c_desc,
         DBF.USERID_uuid,
@@ -52,8 +67,8 @@ module.exports = function(options, callback) { options    = options || {};
         DBF.UID_uuid_i
       ];
   
-      let params = [
-        "max",
+      let paramsArr = [
+        POINTS_ID,
         options[PF.POINTS],
         options[PF.ID],
         options[PF.VID],
@@ -61,74 +76,95 @@ module.exports = function(options, callback) { options    = options || {};
         options[PF.ID]
       ];
         
-      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.POINTS.name);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
       
-      dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
-        if (err) {  return cb(err); }
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true },  (err) => {
+        if (err) {
+          return cb(err);
+        }
 
-        cb(null, fields, params);
+        cb(null, fieldsArr, paramsArr);
       });
-    }, //////////////////////////////////////////////////////////////////
-    function(fields, params, cb) { // Отбираем все записи для этого пользователя
-      delOldPoints(fields, DB_CONST.POINTS.name, function () {
-        cb(null, fields, params);
+    }, //------------------------------------------------------------------
+    function(fieldsArr, paramsArr, cb) { // Удаляем все страные записи с очками
+      delOldPoints(fieldsArr, DBN, (err) => {
+        if(err) {
+          return cb(err, null);
+        }
+        
+        cb(null, fieldsArr, paramsArr);
       });
-    }, //////////////////////////////////////////////////////////////////
-    function(fields, params, cb) { // Повтоярем вставку для таблицы его пола
+    }, //------------------------------------------------------------------
+    function(fieldsArr, paramsArr, cb) { // Повторяем вставку для таблицы его пола
 
-      let db = (options[PF.SEX] == GIRL)?
-                        DB_CONST.POINTS_GIRLS.name : DB_CONST.POINTS_GUYS.name;
-      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, db);
+      let dbName = (options[PF.SEX] == GIRL)? DBNGIRL : DBNGUY;
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, dbName);
 
-      dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
-        if (err) {  return cb(err); }
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true },  (err) => {
+        if (err) {
+          return cb(err);
+        }
 
-        cb(null, fields, params);
+        cb(null, fieldsArr, paramsArr);
       });
-    }, //////////////////////////////////////////////////////////////////////////////////
-    function(fields, params, cb) { // Удаляем старые записи
-      let db = (options[PF.SEX] == GIRL)?
-                        DB_CONST.POINTS_GIRLS.name : DB_CONST.POINTS_GUYS.name;
+    }, //------------------------------------------------------------------
+    function(fieldsArr, paramsArr, cb) { // Удаляем старые записи
+      let db = (options[PF.SEX] == GIRL)? DBNGIRL : DBNGUY;
 
-      delOldPoints(fields, db, function () {
+      delOldPoints(fieldsArr, db, (err) => {
+        if(err) {
+          return cb(err, null);
+        }
+        
         cb(null, null);
       });
-    } ////////////////////////////////////////////////////////////////////////////////
+    } //------------------------------------------------------------------
   ], function(err) {
-    if(err) { callback(err, null); }
+    if(err) {
+      callback(err, null);
+    }
 
     callback(null, options);
   });
   
-  function delOldPoints(fields, db, cb) { // Удаляем старые записи
+  //------------------------------------------------------------------
+  function delOldPoints(fieldsArr, dbName, callback) { // Удаляем старые записи
     
-    let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fields, db, [DBF.UID_uuid_i], [1]);
+    let condFieldsArr = [DBF.UID_uuid_i];
+    let confValuesArr = [1];
     
-    let paramsF = [options[PF.ID]];
+    let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, dbName, condFieldsArr, confValuesArr);
     
-    dbCtrlr.client.execute(query, paramsF, {prepare: true },  function(err, result) {
-      if (err) {  return cb(err); }
+    let paramsArr = [options[PF.ID]];
+    
+    dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
+      if (err) {
+        return callback(err);
+      }
       
-      result.rows.sort(function (user1, user2) {
+      result.rows.sort( (user1, user2) => {
         return user2[DBF.POINTS_c_desc] - user1[DBF.POINTS_c_desc];
       });
       
-      let paramsF = ["max"];
-      for(let i = 1; i < result.rows.length; i++) {
-        paramsF.push(result.rows[i][DBF.POINTS_c_desc]);
+      let paramsArr = [POINTS_ID];
+      
+      let rowsLen = result.rows.length;
+      for(let i = 1; i < rowsLen; i++) {
+        paramsArr.push(result.rows[i][DBF.POINTS_c_desc]);
       }
   
-      let constFields = [DBF.ID_varchar_p, DBF.POINTS_c_desc];
-      let constValues = [1, paramsF.length-1];
+      let condFieldsArr = [DBF.ID_varchar_p, DBF.POINTS_c_desc];
+      let condValuesArr = [1, paramsArr.length-1];
   
-      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], db, constFields, constValues);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_DELETE, [], dbName, condFieldsArr, condValuesArr);
   
-      
-  
-      dbCtrlr.client.execute(query, paramsF, {prepare: true }, function(err) {
-        if (err) {  logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + db); }
+      dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err) => {
+        if (err) {
+          logger.error(400, "Ошибка при удалениии старых очков: " +err.message + " из таблицы " + dbName);
+          return callback(err, null);
+        }
         
-        cb(null, null);
+        callback(null, null);
       });
       
     });

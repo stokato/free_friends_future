@@ -1,18 +1,20 @@
-// Собрать в массив информацию всех играков в списке
+/**
+ * Собрать в массив информацию всех играков в списке
+ */
 
 const PF = require('./../../const_fields');
 
 module.exports = function () {
-  let arr = [], item, player;
+  let arr = [], item, playerInfoObj;
   for(item in this._activePlayers) if(this._activePlayers.hasOwnProperty(item)) {
-    player = this._activePlayers[item];
+    playerInfoObj = this._activePlayers[item];
     
     arr.push({
-      [PF.ID]         : player.id,
-      [PF.VID]        : player.vid,
-      [PF.SEX]        : player.sex,
-      [PF.INDEX]      : player.index,
-      [PF.PROTECTED]  : !!this._prisonProtection[player.id]
+      [PF.ID]         : playerInfoObj.id,
+      [PF.VID]        : playerInfoObj.vid,
+      [PF.SEX]        : playerInfoObj.sex,
+      [PF.INDEX]      : playerInfoObj.index,
+      [PF.PROTECTED]  : !!this._prisonProtection[playerInfoObj.id]
     });
   }
   return arr;

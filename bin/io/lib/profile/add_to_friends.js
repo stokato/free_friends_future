@@ -8,6 +8,7 @@
 const async =  require('async');
 
 const Config          = require('./../../../../config.json');
+const  PF             = require('./../../../const_fields');
 const oPool           = require('./../../../objects_pool');
 
 const getUserProfile  = require('./../common/get_user_profile');
@@ -15,10 +16,10 @@ const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitize');
 
-const  PF             = require('./../../../const_fields');
-const IO_ADD_FRIEND   = Config.io.emits.IO_ADD_FRIEND;
-
 module.exports = function (socket, options) {
+  
+  const IO_ADD_FRIEND   = Config.io.emits.IO_ADD_FRIEND;
+  
   if(!checkID(options[PF.ID])) {
     return emitRes(Config.errors.NO_PARAMS, socket, IO_ADD_FRIEND);
   }
@@ -41,8 +42,10 @@ module.exports = function (socket, options) {
       },//-----------------------------------------------------
       function (friendProfile, cb) { // Добавляем первому друго
         
-        selfProfile.addToFriends(friendProfile, date, function (err) {
-          if (err) { return cb(err, null); }
+        selfProfile.addToFriends(friendProfile, date, (err) => {
+          if (err) {
+            return cb(err, null);
+          }
           
           cb(null, selfProfile, friendProfile, date);
         })
@@ -50,23 +53,27 @@ module.exports = function (socket, options) {
       },//-----------------------------------------------------
       function (selfProfile, friendProfile, date, cb) { // И второму
         
-        friendProfile.addToFriends(selfProfile, date, function (err) {
-          if (err) { return cb(err, null); }
+        friendProfile.addToFriends(selfProfile, date, (err) => {
+          if (err) {
+            return cb(err, null);
+          }
           
           cb(null, friendProfile, selfProfile, date);
         })
         
       }], //-----------------------------------------------------
     function (err, friendProfile) { // Отправляем сведения о новом друге
-      if (err) { return emitRes(err, socket, IO_ADD_FRIEND); }
+      if (err) {
+        return emitRes(err, socket, IO_ADD_FRIEND);
+      }
 
-      let friendInfo = fillInfo(friendProfile, date);
+      let friendInfoObj = fillInfo(friendProfile, date);
       
       if (oPool.isProfile(friendProfile.getID())) { // Если друг онлайн, то и ему
-        let selfInfo = fillInfo(selfProfile, date);
+        let selfInfoObj = fillInfo(selfProfile, date);
         
         let friendSocket = friendProfile.getSocket();
-        friendSocket.emit(Config.io.emits.IO_NEW_FRIEND, selfInfo);
+        friendSocket.emit(Config.io.emits.IO_NEW_FRIEND, selfInfoObj);
 
         let selfRoom = oPool.roomList[socket.id];
         let friendRoom = oPool.roomList[friendSocket.id];
@@ -75,7 +82,7 @@ module.exports = function (socket, options) {
         }
       }
       
-      emitRes(null, socket, IO_ADD_FRIEND, friendInfo);
+      emitRes(null, socket, IO_ADD_FRIEND, friendInfoObj);
     }); // waterfall
   
   //--------------

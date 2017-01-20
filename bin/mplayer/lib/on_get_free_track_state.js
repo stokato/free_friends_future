@@ -6,8 +6,8 @@
 
 const Config    = require('./../../../config.json');
 const oPool     = require('./../../objects_pool');
-const emitRes   = require('./../../emit_result');
 const PF        = require('./../../const_fields');
+const emitRes   = require('./../../emit_result');
 
 module.exports = function () {
   let  self = this;
@@ -16,8 +16,9 @@ module.exports = function () {
     
     let  selfProfile = oPool.userList[socket.id];
     let  isActive = true;
-    
-    for (let  i = 0; i < self._mTrackList.length; i++) {
+    let  tlLen = self._mTrackList.length;
+      
+    for (let  i = 0; i < tlLen; i++) {
       if (self._mTrackList[i][PF.ID] == selfProfile.getID()) {
         isActive = false;
         break;

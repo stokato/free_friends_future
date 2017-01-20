@@ -1,5 +1,13 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Начало раунда Темница
+ * Отправляем настройки игры
+ * Устанавливаем таймаут на автозавершение сдедующего этапа
+ * Устанавливаем обработчик события выбора игрока
+ * Переходим к следующему этапу
  */
 
 const Config = require('./../../../../config.json');
@@ -13,17 +21,17 @@ module.exports = function (game) {
   
   game.clearActionsQueue();
   
-  let result = {
+  let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_PRISON,
     [PF.PLAYERS] : []
   };
   
-  result.players = game.getPlayersID();
+  resultObj.players = game.getPlayersID();
   
-  game.checkPrisoner(result);
+  game.checkPrisoner(resultObj);
   
-  game.sendData(result);
-  game.setGameState(result);
+  game.sendData(resultObj);
+  game.setGameState(resultObj);
   
   game.startTimer(game.getHandler(game.CONST.G_PRISON, game.CONST.GT_FIN), PRISON_TIMEOUT, game);
   

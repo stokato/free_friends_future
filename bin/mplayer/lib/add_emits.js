@@ -4,8 +4,8 @@
  * Добавляем профиль к списку
  */
 
-const Config = require('./../../../config.json');
-const ioc = require('./../../io_controller');
+const Config  = require('./../../../config.json');
+const ioc     = require('./../../io_controller');
 
 const EMITS = Config.io.emits;
 

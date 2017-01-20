@@ -1,13 +1,20 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Завершаем раунд Волчек
+ * Определяем - какой раунд следующий
+ * Переходим к следующему раунду
+ *
  */
 
 const Config    = require('./../../../../config.json');
 
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
-
 module.exports = function(game) {
+  
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
   
   game.clearTimer();
   
@@ -18,28 +25,28 @@ module.exports = function(game) {
   
   game.setCountUsers(game.getRoom().getCountInRoom());
 
-  // Определяем следующую игру, если игроков слишком мало - то без тюрьмы
-  let rand, games;
+  // Определяем следующую игр
+  let rand, gamesArr;
   
   let playerInfo = game.getActivePlayers()[0];
   
-  if(game.getPrisonerInfo() !== null ||
-      game.getPrisonProtection(playerInfo.id) ||
-      game.getRoom().getCountInRoom(GIRL) <= 2 ||
+  if(game.getPrisonerInfo() !== null ||                   // Тюрьмя занята
+      game.getPrisonProtection(playerInfo.id) ||          // Текущий игрок защищен от тюрьмы
+      game.getRoom().getCountInRoom(GIRL) <= 2 ||         // Игроков слишком мало
       game.getRoom().getCountInRoom(GUY) <= 2) {
     
-    games = game.CONST.GAMES_WITHOUT_PRISON;
+    gamesArr = game.CONST.GAMES_WITHOUT_PRISON;
   } else {
-    games = game.CONST.GAMES;
+    gamesArr = game.CONST.GAMES;
   }
   
   do {
-    rand = Math.floor(Math.random() * games.length);
+    rand = Math.floor(Math.random() * gamesArr.length);
   } while(rand == game.getStoredRand());
   
   game.removeProtection();
   
   game.setStoredRand(rand);
   
-  game.getHandler(games[rand], game.CONST.GT_ST)(game);
+  game.getHandler(gamesArr[rand], game.CONST.GT_ST)(game);
 };

@@ -1,5 +1,7 @@
 /**
  * Created by s.t.o.k.a.t.o on 16.01.2017.
+ *
+ * Уменьшить защиту на один раунд
  */
 
 module.exports = function () {

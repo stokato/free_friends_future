@@ -5,9 +5,10 @@
  */
 
 const Config = require('./../../../config.json');
-const RANKS = Config.ranks;
 
 module.exports = function (profile) {
+  
+  const RANKS = Config.ranks;
   
   let uid = profile.getID();
   

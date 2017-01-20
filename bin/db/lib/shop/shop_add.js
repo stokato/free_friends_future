@@ -1,9 +1,8 @@
-const dbCtrlr     = require('./../common/cassandra_db');
-const DB_CONST = require('./../../constants');
-const PF = require('./../../../const_fields');
-const Config = require('./../../../../config.json');
+const dbCtrlr   = require('./../common/cassandra_db');
+const Config    = require('./../../../../config.json');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
-const DBF = DB_CONST.SHOP.fields;
 /*
  Добавить товар в БД: ИД, объект с данными
  - Проверка (все поля обязательны)
@@ -12,24 +11,26 @@ const DBF = DB_CONST.SHOP.fields;
  - Возвращаем объект обратно
  */
 module.exports = function(options, callback) { options    = options || {};
-
-let type = Config.good_types.gift;
+  
+  const DBF = DB_CONST.SHOP.fields;
+  const DBN = DB_CONST.SHOP.name;
+  const GOOD_TYPE = Config.good_types.gift;
   
   if ( //!options[PF.ID] ||
-    !PF.TITLE in options ||
-    !options[PF.PRICE] ||
-    !options[PF.SRC] ||
-    !options[PF.GROUP] ||
-    !options[PF.GROUP_TITLE] ||
-    !options[PF.TYPE] ||
-    !PF.LEVEL in options ||
-    !PF.RANK in options) {
+  !PF.TITLE in options ||
+  !options[PF.PRICE] ||
+  !options[PF.SRC] ||
+  !options[PF.GROUP] ||
+  !options[PF.GROUP_TITLE] ||
+  !options[PF.TYPE] ||
+  !PF.LEVEL in options ||
+  !PF.RANK in options) {
     return callback(new Error("Не указаны необходимые поля подарка"), null);
   }
   
   let id = dbCtrlr.uuid.random();
   
-  let fields = [
+  let fieldsArr = [
     DBF.ID_uuid_p,
     DBF.TITLE_varchar,
     DBF.PRICE_COINS_int,
@@ -42,12 +43,12 @@ let type = Config.good_types.gift;
     DBF.GIFT_LEVEL_int
   ];
   
-  let params = [
+  let paramsArr = [
     id,
     options[PF.TITLE],
     options[PF.PRICE],
     options[PF.SRC],
-    type,
+    GOOD_TYPE,
     options[PF.GROUP],
     options[PF.GROUP_TITLE],
     options[PF.TYPE],
@@ -55,10 +56,12 @@ let type = Config.good_types.gift;
     options[PF.LEVEL]
   ];
   
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.SHOP.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
   
-  dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, paramsArr, { prepare: true },  (err) => {
+    if (err) {
+      return callback(err);
+    }
     
     options[PF.ID] = id;
     

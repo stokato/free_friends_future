@@ -7,7 +7,8 @@
 module.exports = function (id) {
   let  newTrackList = [];
   
-  for (let  i = 0; i < this._mTrackList.length; i++) {
+  let trackListLen = this._mTrackList.length;
+  for (let  i = 0; i < trackListLen; i++) {
     if (this._mTrackList[i].id == id) {
   
       let  tid = this._mTrackList[i].track_id;

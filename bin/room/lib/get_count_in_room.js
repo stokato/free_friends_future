@@ -4,9 +4,10 @@
 
 const Config    = require('./../../../config.json');
 
-const GUY = Config.user.constants.sex.male;
-
 module.exports = function (sex) {
+  
+  const GUY = Config.user.constants.sex.male;
+  
   if(sex) {
     return (sex == GUY)? this._guys_count : this._girls_count;
   }

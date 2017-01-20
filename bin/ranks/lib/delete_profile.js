@@ -5,10 +5,12 @@
  */
 
 const Config = require('./../../../config.json');
-const RANKS = Config.ranks;
-const ALMIGHTY = Config.almighty;
 
 module.exports = function (profile) {
+  
+  const RANKS     = Config.ranks;
+  const ALMIGHTY  = Config.almighty;
+  
   let uid = profile.getID();
   
   delete this._rProfiles[uid];

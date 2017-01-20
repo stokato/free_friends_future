@@ -10,9 +10,11 @@
 const db = require('./../../db_manager');
 
 module.exports = function(withnew, callback) {
- db.findGifts(this._pID, withnew, function(err, gifts) {
-   if (err) { callback(err, null); }
+ db.findGifts(this._pID, withnew, (err, res) => {
+   if (err) {
+     return callback(err, null);
+   }
    
-   callback(null, gifts);
+   callback(null, res);
  });
 };

@@ -1,21 +1,21 @@
 /**
+ *  @param socket
+ *  @param options
+ *
  * Обрабатываем действие игрока:
  *  - проверяем его ввод
  *  - проверяем - разрешено ли ему ходить
  *  - вызываем обработчик текущей игры
- *
- *  @param socket
  */
 
 const validator = require('validator');
 
 const Config    = require('./../../../config.json');
+const PF        = require('../../const_fields');
 const oPool     = require('./../../objects_pool');
 
 const sanitize  = require('./../../sanitize');
 const emitRes   = require('./../../emit_result');
-
-const PF        = require('../../const_fields');
 
 // Добавить ход игрока в очередь для обработки
 module.exports = function (socket, options) {

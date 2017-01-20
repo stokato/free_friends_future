@@ -5,7 +5,7 @@
  */
 
 const Config = require('../../../config.json');
-const PF         = require('./../../const_fields');
+const PF     = require('./../../const_fields');
 
 module.exports = function startTrack(socket, room, track, timerID) { timerID = timerID || null;
   let  self = this;
@@ -16,7 +16,7 @@ module.exports = function startTrack(socket, room, track, timerID) { timerID = t
   this.setTrackTime(new Date());
   let  trackList = this.getTrackList();
   
-  timerID = setTimeout(function () {
+  timerID = setTimeout(() => {
     self.deleteTrack(track[PF.TRACKID]);
     
     if (trackList.length > 0) {
@@ -28,16 +28,16 @@ module.exports = function startTrack(socket, room, track, timerID) { timerID = t
   
   this.setTimer(timerID);
   
-  let  res = { [PF.TRACKLIST] : trackList };
+  let  resObj = { [PF.TRACKLIST] : trackList };
   
-  socket.emit(Config.io.emits.IO_GET_TRACK_LIST, res );
-  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, res);
+  socket.emit(Config.io.emits.IO_GET_TRACK_LIST, resObj );
+  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, resObj);
   
-  res = {
+  resObj = {
     [PF.TRACK]       : track,
     [PF.PASSED_TIME] : 0
   };
   
-  socket.emit(Config.io.emits.IO_START_TRACK, res);
-  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_START_TRACK, res);
+  socket.emit(Config.io.emits.IO_START_TRACK, resObj);
+  socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_START_TRACK, resObj);
 };

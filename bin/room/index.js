@@ -9,29 +9,30 @@
  * Пердоставляет инструменты для доступа к ним и получения сведений
  */
 
-const Config = require('./../../config.json'),
-    MusicPlayer = require('./../mplayer/index'),
-    GameJS = require('./../game/index'),
-    RankManager = require('./../ranks/index');
+const Config = require('./../../config.json');
+const MusicPlayer = require('./../mplayer/index');
+const GameJS = require('./../game/index');
+const RankManager = require('./../ranks/index');
 
-const addProfile      = require('./lib/add_profile'),
-    deleteProfile   = require('./lib/delete_profile'),
-    getUsersInfo    = require('./lib/common/get_users_info'),
-    getInfo         = require('./lib/get_info'),
-    getAnySocket    = require('./lib/get_any_socket'),
-    getAllPlayers   = require('./lib/get_all_players'),
-    randomProfile   = require('./lib/random_profile'),
-    getPersonalInfo = require('./lib/get_personal_info'),
-    sendRoomInfo          = require('./lib/send_room_info'),
-    getCountInRoom  = require('./lib/get_count_in_room'),
-    setFriendInfo   = require('./lib/set_friend_info');
+const addProfile      = require('./lib/add_profile');
+const deleteProfile   = require('./lib/delete_profile');
+const getUsersInfo    = require('./lib/common/get_users_info');
+const getInfo         = require('./lib/get_info');
+const getAnySocket    = require('./lib/get_any_socket');
+const getAllPlayers   = require('./lib/get_all_players');
+const randomProfile   = require('./lib/random_profile');
+const getPersonalInfo = require('./lib/get_personal_info');
+const sendRoomInfo    = require('./lib/send_room_info');
+const getCountInRoom  = require('./lib/get_count_in_room');
+const setFriendInfo   = require('./lib/set_friend_info');
 
 
-const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
 /*
     Класс комнаты
  */
 function Room(name, title)  {
+  
+  const ONE_SEX_IN_ROOM  = Config.io.one_sex_in_room;
   
   this._nameOfRoom = name; // Как-нибудь генерируем новое имя (????)
   this._title = title;

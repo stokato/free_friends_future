@@ -1,13 +1,23 @@
 /**
  * Created by s.t.o.k.a.t.o on 12.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Начало раунда Симпатии - второго этапа
+ * Разрешаем всем игрокам делать выбор - количество равно числу игроков
+ * Отправляем настройки игры
+ * Устанавливаем таймаут на автозавершение сдедующего этапа
+ * Устанавливаем обработчик события выбора игрока
+ * Переходим к следующему этапу
  */
 
-const Config      = require('./../../../../config.json');
+const Config = require('./../../../../config.json');
+const PF     = require('./../../../const_fields');
 
-const PF                = require('./../../../const_fields');
-const SYMPATHY_TIMEOUT  = Number(Config.game.timeouts.sympathy_show);
 
 module.exports = function (game) {
+  
+  const SYMPATHY_TIMEOUT  = Number(Config.game.timeouts.sympathy_show);
   
   game.setNextGame(game.CONST.G_SYMPATHY_SHOW);
   
@@ -23,18 +33,18 @@ module.exports = function (game) {
   game.setActionsMain(game.getActionsCount());
   
   // Отправляем результаты
-  let result = {
+  let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_SYMPATHY_SHOW,
     [PF.PLAYERS]  : game.getPlayersID(),
     [PF.PRISON]   : null
   };
   
-  game.checkPrisoner(result);
+  game.checkPrisoner(resultObj);
   
-  game.sendData(result);
+  game.sendData(resultObj);
   
   // Сохраняем состояние игры
-  game.setGameState(result);
+  game.setGameState(resultObj);
   
   // Устанавливаем таймер
   game.startTimer(game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_FIN), SYMPATHY_TIMEOUT, game);

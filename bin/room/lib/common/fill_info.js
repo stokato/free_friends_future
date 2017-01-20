@@ -5,48 +5,49 @@
  */
 
 const Config = require('./../../../../config.json');
-
-const IOF = require('./../../../const_fields');
-const GIFT_TYPES = Config.gifts.types;
+const PF     = require('./../../../const_fields');
 
 module.exports = function (profile) {
-
-  let info = {};
-  info[IOF.ID]        = profile.getID();
-  info[IOF.VID]       = profile.getVID();
-  info[IOF.AGE]       = profile.getAge();
-  info[IOF.SEX]       = profile.getSex();
-  info[IOF.CITY]      = profile.getCity();
-  info[IOF.COUNTRY]   = profile.getCountry();
-  info[IOF.POINTS]    = profile.getPoints();
-  info[IOF.ISFRIEND]  = false;
-  info[IOF.INDEX]     = profile.getGameIndex();
-  info[IOF.LEVEL]     = profile.getLevel();
   
-  info[IOF.GIFTS]     = {};
+  const GIFT_TYPES  = Config.gifts.types;
+
+  let infoObj = {
+    [PF.ID]        : profile.getID(),
+    [PF.VID]       : profile.getVID(),
+    [PF.AGE]       : profile.getAge(),
+    [PF.SEX]       : profile.getSex(),
+    [PF.CITY]      : profile.getCity(),
+    [PF.COUNTRY]   : profile.getCountry(),
+    [PF.POINTS]    : profile.getPoints(),
+    [PF.ISFRIEND]  : false,
+    [PF.INDEX]     : profile.getGameIndex(),
+    [PF.LEVEL]     : profile.getLevel(),
+    [PF.GIFTS]     : {}
+  };
+
   
   for(let item in GIFT_TYPES) if(GIFT_TYPES.hasOwnProperty(item)) {
   
-    let gift = profile.getGiftByType(GIFT_TYPES[item]);
+    let giftObj = profile.getGiftByType(GIFT_TYPES[item]);
     
-    if(gift) {
-      info[IOF.GIFTS][GIFT_TYPES[item]] = {
-        [IOF.FID]     : profile.getID(),
-        [IOF.FVID]    : profile.getVID(),
-        [IOF.ID]      : profile.getID(),
-        [IOF.VID]     : profile.getVID(),
-        [IOF.GIFTID]  : gift[IOF.GIFTID],
-        [IOF.SRC]     : gift[IOF.SRC],
-        [IOF.TYPE]    : gift[IOF.TYPE],
-        [IOF.TITLE]   : gift[IOF.TITLE],
-        [IOF.DATE]    : gift[IOF.DATE],
-        [IOF.UGIFTID] : gift[IOF.UGIFTID],
-        [IOF.PARAMS]  : gift[IOF.PARAMS]
+    if(giftObj) {
+      infoObj[PF.GIFTS][GIFT_TYPES[item]] = {
+        [PF.FID]     : profile.getID(),
+        [PF.FVID]    : profile.getVID(),
+        [PF.ID]      : profile.getID(),
+        [PF.VID]     : profile.getVID(),
+        [PF.GIFTID]  : giftObj[PF.GIFTID],
+        [PF.SRC]     : giftObj[PF.SRC],
+        [PF.TYPE]    : giftObj[PF.TYPE],
+        [PF.TITLE]   : giftObj[PF.TITLE],
+        [PF.DATE]    : giftObj[PF.DATE],
+        [PF.UGIFTID] : giftObj[PF.UGIFTID],
+        [PF.PARAMS]  : giftObj[PF.PARAMS]
       };
     } else {
-      info[IOF.GIFTS][GIFT_TYPES[item]]  = null;
+      infoObj[PF.GIFTS][GIFT_TYPES[item]]  = null;
     }
   }
   
-  return info;
+  return infoObj;
 };

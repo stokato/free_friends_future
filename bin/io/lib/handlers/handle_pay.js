@@ -4,8 +4,8 @@
  * Обрабатываем событие начисления монет
  */
 
-const Config  = require('./../../../../config.json');
-const PF = require('./../../../const_fields');
+const Config = require('./../../../../config.json');
+const PF     = require('./../../../const_fields');
 
 module.exports = function (profile, money) {
   

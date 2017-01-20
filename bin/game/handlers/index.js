@@ -39,7 +39,7 @@ const onQuestionPick      = require('./pickers/p_questions');
 const onSympathyPick      = require('./pickers/p_sympathy');
 const onSympathyShowPick  = require('./pickers/p_sympathy_show');
 
-module.exports = {
+let handlersObj =  {
   [gConst.G_BEST]          :
     { [gConst.GT_ST]  : startBest,
       [gConst.GT_ON]  : onBestPick,
@@ -65,7 +65,7 @@ module.exports = {
       [gConst.GT_ON]  : onLotPick,
       [gConst.GT_FIN] : finishLot
     },
-  [gConst.G_START]         :
+  [gConst.G_PAUSE]         :
     { [gConst.GT_ST]  : startPause,
       [gConst.GT_ON]  : onPausePick,
       [gConst.GT_FIN] : finishPause
@@ -91,3 +91,7 @@ module.exports = {
       [gConst.GT_FIN] : finishSympathyShow
     }
 };
+
+Object.freeze(handlersObj);
+
+module.exports = handlersObj;

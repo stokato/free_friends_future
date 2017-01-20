@@ -5,21 +5,23 @@
  *
  */
 
-const  db      = require('./../../db_manager');
-const  IOF     = require('./../../const_fields');
+const  dbCtrlr = require('./../../db_manager');
+const  PF      = require('./../../const_fields');
 
 module.exports = function (text, image1, image2, image3, callback) {
   
   let  params = {
-    [IOF.TEXT]    : text,
-    [IOF.IMAGE_1] : image1,
-    [IOF.IMAGE_2] : image2,
-    [IOF.IMAGE_3] : image3,
-    [IOF.FVID]    : this._pVID
+    [PF.TEXT]    : text,
+    [PF.IMAGE_1] : image1,
+    [PF.IMAGE_2] : image2,
+    [PF.IMAGE_3] : image3,
+    [PF.FVID]    : this._pVID
   };
   
-  db.addUserQuestion(this._pID, params, function (err, res) {
-    if(err){ return callback(err); }
+  dbCtrlr.addUserQuestion(this._pID, params, (err, res) => {
+    if(err){
+      return callback(err);
+    }
     
     return callback(null, res);
   });

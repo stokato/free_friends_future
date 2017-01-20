@@ -1,5 +1,11 @@
 /**
  * Created by s.t.o.k.a.t.o on 13.01.2017.
+ *
+ * @param game - Игра
+ *
+ * Обработчик события выбора игрока в рануде Кто больше нравится
+ * После того как все игроки походят или сработает таймер - переходим к завершению раунда
+ *
  */
 
 const Config      = require('./../../../../config.json');
@@ -17,8 +23,8 @@ module.exports = function (game) {
     }
     
     // Ошибка - если выбранного пользоателя нет среди кандидатов
-    let bests = game.getStoredOptions();
-    if (!bests[options[PF.PICK]]) {
+    let bestsObj = game.getStoredOptions();
+    if (!bestsObj[options[PF.PICK]]) {
       return emitRes(Config.errors.NO_THAT_PLAYER, socket, Config.io.emits.IO_GAME_ERROR);
     }
     
@@ -28,22 +34,22 @@ module.exports = function (game) {
     game.addAction(uid, options);
     
     // Оповещаем о ходе всех в комнате
-    let playerInfo = game.getActivePlayer(uid);
+    let playerInfoObj = game.getActivePlayer(uid);
     
     game.sendData({
       [PF.PICK]: {
         [PF.ID]: uid,
-        [PF.VID]: playerInfo.vid,
+        [PF.VID]: playerInfoObj.vid,
         [PF.PICK]: options[PF.PICK]
       }
     });
     
     // Сохраняем состояние игры
-    let state = game.getGameState();
-    if (!state[PF.PICKS]) {
-      state[PF.PICKS] = [];
+    let stateObj = game.getGameState();
+    if (!stateObj[PF.PICKS]) {
+      stateObj[PF.PICKS] = [];
     }
-    state[PF.PICKS].push(options[PF.PICK]);
+    stateObj[PF.PICKS].push(options[PF.PICK]);
     
     if (game.getActionsCount() == 0) {
       game.getHandler(game.CONST.G_BEST, game.CONST.GT_FIN)(game);

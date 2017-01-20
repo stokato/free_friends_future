@@ -7,17 +7,18 @@
 const async = require('async');
 
 const Config     = require('./../../../../config.json');
+const PF         = require('./../../../const_fields');
 const oPool      = require('./../../../objects_pool');
 
 const getUserProfile  = require('./../common/get_user_profile');
 const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
 const sanitize        = require('./../../../sanitize');
-const IO_BLOCK_USER   = Config.io.emits.IO_BLOCK_USER;
-
-const PF         = require('./../../../const_fields');
 
 module.exports = function (socket, options) {
+  
+  const IO_BLOCK_USER   = Config.io.emits.IO_BLOCK_USER;
+  
   if(!checkID(options[PF.ID])) {
     return emitRes(Config.errors.NO_PARAMS, socket, IO_BLOCK_USER);
   }
@@ -40,15 +41,19 @@ module.exports = function (socket, options) {
       },//-----------------------------------------------------
       function (friendProfile, cb) { // Добавляем в черный список
         
-        selfProfile.addToBlackList(friendProfile, date, function (err) {
-          if (err) { return cb(err, null); }
+        selfProfile.addToBlackList(friendProfile, date, (err) => {
+          if (err) {
+            return cb(err, null);
+          }
           
           cb(null, null);
         })
         
       }], //-----------------------------------------------------
     function (err) { // Проверяем на ошибки
-      if (err) { return emitRes(err, socket, IO_BLOCK_USER); }
+      if (err) {
+        return emitRes(err, socket, IO_BLOCK_USER);
+      }
       
       emitRes(null, socket, IO_BLOCK_USER);
     }); // waterfall

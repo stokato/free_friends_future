@@ -2,16 +2,17 @@
  * Created by Durov on 03.01.2017.
  */
 
-const Config    = require('./../../../config.json');
-
-const GUY = Config.user.constants.sex.male;
-const GIRL = Config.user.constants.sex.female;
-const PF = require('./../../const_fields');
+const Config  = require('./../../../config.json');
+const PF      = require('./../../const_fields');
 
 module.exports = function (uid) {
+  
+  const GUY = Config.user.constants.sex.male;
+  const GIRL = Config.user.constants.sex.female;
+  
   let self = this;
 
-  let info = {
+  let infoObj = {
     name : this.getName(),
     title: this._title,
     guys : this.getUsersInfo(GUY),
@@ -19,14 +20,16 @@ module.exports = function (uid) {
     track_list : this._mplayer.getTrackList()
   };
 
-  fillFriendsInfo(info.guys);
-  fillFriendsInfo(info.girls);
+  fillFriendsInfo(infoObj.guys);
+  fillFriendsInfo(infoObj.girls);
 
-  return info;
+  return infoObj;
 
   //----------------------------------------
   function fillFriendsInfo(arr) {
-    for(let i = 0; i < arr.length; i++) {
+    let len = arr.length;
+    
+    for(let i = 0; i < len; i++) {
       let fid = arr[i][PF.ID];
 
       if(self._friends[uid] && self._friends[uid][fid]) {

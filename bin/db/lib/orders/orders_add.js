@@ -1,13 +1,14 @@
-const dbCtrlr     = require('./../common/cassandra_db');
-const DB_CONST = require('./../../constants');
-const PF = require('./../../../const_fields');
-
-const DBF = DB_CONST.ORDERS.fields;
+const dbCtrlr   = require('./../common/cassandra_db');
+const DB_CONST  = require('./../../constants');
+const PF        = require('./../../../const_fields');
 
 /*
  Добавляем заказ в БД
  */
 module.exports = function(options, callback) { options   = options || {};
+  
+  const DBF = DB_CONST.ORDERS.fields;
+  const DBN = DB_CONST.ORDERS.name;
 
   let date    = options[PF.DATE] || new Date;
 
@@ -17,7 +18,7 @@ module.exports = function(options, callback) { options   = options || {};
 
   let id = dbCtrlr.uuid.random();
 
-  let fields = [
+  let fieldsArr = [
     DBF.ID_uuid_p,
     DBF.VID_varchar,
     DBF.USERID_uuid_i,
@@ -26,7 +27,7 @@ module.exports = function(options, callback) { options   = options || {};
     DBF.DATE_timestamp
   ];
   
-  let params = [
+  let paramsArr = [
     id,
     options[PF.ORDERVID],
     options[PF.ID],
@@ -35,10 +36,12 @@ module.exports = function(options, callback) { options   = options || {};
     date
   ];
   
-  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DB_CONST.ORDERS.name);
+  let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
 
-  dbCtrlr.client.execute(query, params, {prepare: true },  function(err) {
-    if (err) {  return callback(err); }
+  dbCtrlr.client.execute(query, paramsArr, {prepare: true },  (err) => {
+    if (err) {
+      return callback(err);
+    }
 
     callback(null, id);
   });

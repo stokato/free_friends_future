@@ -1,10 +1,10 @@
 /**
+ * @param room
+ * @constructor
+ *
  * Класс Игра, стартует, когда набирается достаточное количество игроков и отанавливается, когди их меньше
  * С заданной периодичностью запускает случайную игру из списка, обрабатывает действия игроков, начисляет
  * призовые очки и монеты
- *
- * @param room
- * @constructor
  */
 
 // Методы
@@ -25,15 +25,16 @@ const checkPrisoner         = require('./lib/check_prisoner');
 const getActivePlayers      = require('./lib/get_active_players');
 const addAction             = require('./lib/add_action');
 const removeProtection      = require('./lib/remove_protection');
+const addPoints             = require('./lib/add_points');
 
 const handlers              = require('./handlers/index');
 const gameConstants         = require('./constants');
 
 // Загружаем вопросы из базы при старте
-const  logger               = require('./../../lib/log')(module);
+const logger                = require('./../../lib/log')(module);
 const loadGameQuestions     = require('./../load_game_questions');
 
-loadGameQuestions(function (err) {
+loadGameQuestions((err) => {
   if(err) {
     logger.error(400, "Ошибка при получении вопросов из базы данных");
   }
@@ -78,7 +79,7 @@ function Game(room) {
   this._prisonProtection  = {};          // Защита от попадания в тюрьму
   
   let self = this;
-  this._room.setOnDeleteProfile(function (profile) {
+  this._room.setOnDeleteProfile((profile) => {
     let uid = profile.getID();
     
     if(self._prisonProtection[uid]) {
@@ -100,7 +101,7 @@ Game.prototype.getActionsMain     = function () { return this._actionsMain; };
 Game.prototype.getCountUsers      = function () { return this._currCountInRoom; };
 Game.prototype.getStoredOptions   = function () { return this._storedOptions; };
 Game.prototype.getActivePlayer    = function (key) { return this._activePlayers[key]; };
-Game.prototype.getAction          = function (key) { return this._actionsQueue[key]; };
+Game.prototype.getActions          = function (key) { return this._actionsQueue[key]; };
 
 Game.prototype.clearPrison        = function () { this._prisoner = null; };
 Game.prototype.setOnStart         = function (func) { this._onStart = func; };
@@ -141,5 +142,6 @@ Game.prototype.selectNextPlayer       = selectNextPlayer;
 Game.prototype.checkPrisoner          = checkPrisoner;
 Game.prototype.addAction              = addAction;
 Game.prototype.removeProtection       = removeProtection;
+Game.prototype.addPoints              = addPoints;
 
 module.exports = Game;

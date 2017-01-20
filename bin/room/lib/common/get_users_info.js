@@ -7,17 +7,19 @@
 
 const Config    = require('./../../../../config.json');
 const fillInfo  = require('./fill_info');
-const GUY = Config.user.constants.sex.male;
 
 module.exports = function (sex) {
-  let item, info = [], gInfo;
   
-  let arr = (sex == GUY)? this._guys : this._girls;
+  const GUY = Config.user.constants.sex.male;
   
-  for (item in arr) if (arr.hasOwnProperty(item)){
-    gInfo = fillInfo(arr[item]);
-    info.push(gInfo);
+  let infoArr = [];
+  
+  let playersObj = (sex == GUY)? this._guys : this._girls;
+  
+  for (let item in playersObj) if (playersObj.hasOwnProperty(item)){
+    let gInfoObj = fillInfo(playersObj[item]);
+    infoArr.push(gInfoObj);
   }
   
-  return info;
+  return infoArr;
 };

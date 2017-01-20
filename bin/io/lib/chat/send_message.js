@@ -8,6 +8,7 @@
 const async           = require('async');
 
 const Config          = require('./../../../../config.json');
+const PF              = require('./../../../const_fields');
 const oPool           = require('./../../../objects_pool');
 
 const checkID         = require('./../../../check_id');
@@ -17,14 +18,13 @@ const openPrivateChat = require('./open_private_chat');
 const getUserProfile  = require('./../common/get_user_profile');
 const sendInRoom      = require('./../common/send_in_room');
 const sendOne         = require('./../common/send_one');
-const dbCtrlr             = require('./../../../db/lib/common/cassandra_db');
-
-const PF              = require('./../../../const_fields');
+const dbCtrlr         = require('./../../../db/lib/common/cassandra_db');
 
 module.exports = function (socket, options) {
   if((PF.ID in options) && !checkID(options[PF.ID])) {
     return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_MESSAGE, null, true);
   }
+  
   if(PF.ID in options) {
     options[PF.ID] = sanitize(options[PF.ID]);
   }
@@ -40,7 +40,7 @@ module.exports = function (socket, options) {
   let isPrivate = options[PF.ID] || false;
   let date = new Date();
   
-  let info = {
+  let infoObj = {
     [PF.ID]       : selfProfile.getID(),
     [PF.VID]      : selfProfile.getVID(),
     [PF.AGE]      : selfProfile.getAge(),
@@ -56,9 +56,9 @@ module.exports = function (socket, options) {
   if(!isPrivate) {
     let currRoom = oPool.roomList[socket.id];
     
-    info[PF.MESSAGEID] = dbCtrlr.timeUuid.fromDate(date);
+    infoObj[PF.MESSAGEID] = dbCtrlr.timeUuid.fromDate(date);
     
-    sendInRoom(socket, currRoom, info);
+    sendInRoom(socket, currRoom, infoObj);
     
     return emitRes(null, socket, Config.io.emits.IO_MESSAGE, null, true);
   }
@@ -72,25 +72,29 @@ module.exports = function (socket, options) {
     function (friendProfile, cb) { // Если пользователь в черном списке, сообщаяем ему
       if(friendProfile.isInBlackList(selfProfile.getID())) {
         
-        let params = {};
-        params[PF.ID] = friendProfile.getID();
-        params[PF.VID] = friendProfile.getVID();
+        let paramsObj = {
+          [PF.ID]   : friendProfile.getID(),
+          [PF.VID]  : friendProfile.getVID()
+        };
         
-        socket.emit(Config.io.emits.IO_BLOCK_USER_NOTIFY, params);
+        socket.emit(Config.io.emits.IO_BLOCK_USER_NOTIFY, paramsObj);
         
         cb(null, true, friendProfile);
       } else cb(null, false, friendProfile);
     },//--------------------------------------------------------------------------
     function(isBanned, friendProfile, cb) { // Открываем чат отправителю, если еще не открыт
-      if(isBanned) { return cb(null, isBanned, friendProfile); }
+      if(isBanned) {
+        return cb(null, isBanned, friendProfile);
+      }
       
       if(!selfProfile.isPrivateChat(friendProfile.getID())) {
         
-        let params = {};
-        params[PF.ID] = friendProfile.getID();
+        let params = { [PF.ID] : friendProfile.getID() };
         
-        openPrivateChat(socket, params, function (err) {
-          if(err) { cb(err); }
+        openPrivateChat(socket, params, (err) => {
+          if(err) {
+            cb(err, null);
+          }
           
           cb(null, isBanned, friendProfile);
         });
@@ -100,15 +104,18 @@ module.exports = function (socket, options) {
       }
     },//--------------------------------------------------------------------------
     function(isBanned, friendProfile, cb) { // Если собеседник онлайн и у него не открыт чат с нами - открываем
-      if(isBanned) { return cb(null, isBanned, friendProfile); }
+      if(isBanned) {
+        return cb(null, isBanned, friendProfile);
+      }
       
       if (oPool.profiles[options[PF.ID]] && !friendProfile.isPrivateChat(selfProfile.getID())) {
         
-        let params = {};
-        params[PF.ID] = selfProfile.getID();
+        let params = { [PF.ID] : selfProfile.getID() };
         
-        openPrivateChat(friendProfile.getSocket(), params, function (err) {
-          if(err) { cb(err); }
+        openPrivateChat(friendProfile.getSocket(), params, (err) => {
+          if(err) {
+            cb(err);
+          }
           
           cb(null, isBanned, friendProfile);
         })
@@ -118,43 +125,53 @@ module.exports = function (socket, options) {
       }
     },//--------------------------------------------------------------------------
     function (isBanned, friendProfile, cb) { // Сохраняем сообщение в историю получателя
-      if(isBanned) { return cb(null, isBanned, friendProfile); }
+      if(isBanned) {
+        return cb(null, isBanned, friendProfile);
+      }
       
-      friendProfile.addMessage(selfProfile, true, date, options[PF.TEXT], function (err, message) {
-        if (err) { return cb(err, null); }
+      friendProfile.addMessage(selfProfile, true, date, options[PF.TEXT], (err, message) => {
+        if (err) {
+          return cb(err, null);
+        }
         
         if (oPool.profiles[options[PF.ID]]) {
           let friendSocket = friendProfile.getSocket();
           
           if(friendProfile.isPrivateChat(selfProfile.getID())) {
             
-            info[PF.CHATID]     = selfProfile.getID();
-            info[PF.CHATVID]    = selfProfile.getVID();
-            info[PF.MESSAGEID]  = message[PF.MESSAGEID];
+            infoObj[PF.CHATID]     = selfProfile.getID();
+            infoObj[PF.CHATVID]    = selfProfile.getVID();
+            infoObj[PF.MESSAGEID]  = message[PF.MESSAGEID];
             
-            sendOne(friendSocket, info);
+            sendOne(friendSocket, infoObj);
           }
         }
         cb(null, isBanned, friendProfile);
       });
     }, //--------------------------------------------------------------------------
     function (isBanned, friendProfile, cb) { // Сохраняем сообщение в историю отправителя
-      if(isBanned) { return cb(null, null); }
+      if(isBanned) {
+        return cb(null, null);
+      }
       
-      selfProfile.addMessage(friendProfile, false, date, options.text, function (err, message) {
-        if (err) { cb(err, null); }
+      selfProfile.addMessage(friendProfile, false, date, options.text, (err, message) => {
+        if (err) {
+          cb(err, null);
+        }
         
-        info[PF.CHATID]         = friendProfile.getID();
-        info[PF.CHATVID]        = friendProfile.getVID();
-        info[PF.MESSAGEID]      = message[PF.MESSAGEID];
+        infoObj[PF.CHATID]         = friendProfile.getID();
+        infoObj[PF.CHATVID]        = friendProfile.getVID();
+        infoObj[PF.MESSAGEID]      = message[PF.MESSAGEID];
         
-        sendOne(socket, info);
+        sendOne(socket, infoObj);
         
         cb(null, null);
       });
     }//--------------------------------------------------------------------------
   ], function (err) { // Вызывается последней или в случае ошибки
-    if (err) { return emitRes(err, socket, Config.io.emits.IO_MESSAGE, null, true); }
+    if (err) {
+      return emitRes(err, socket, Config.io.emits.IO_MESSAGE, null, true);
+    }
     
     // emitRes(null, socket, cFields.IO_MESSAGE);
   });

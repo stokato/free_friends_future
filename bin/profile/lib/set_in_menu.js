@@ -8,8 +8,8 @@
  *  @return isImMenu
  */
 
-const  db = require('./../../db_manager');
-const  IOF = require('./../../const_fields');
+const  dbCtrlr = require('./../../db_manager');
+const  PF      = require('./../../const_fields');
 
 module.exports = function(ismenu, callback) {
 
@@ -18,13 +18,15 @@ module.exports = function(ismenu, callback) {
   let  self = this;
 
   let  options = {
-    [IOF.ID]      : self._pID,
-    [IOF.VID]     : self._pVID,
-    [IOF.ISMENU]  : ismenu
+    [PF.ID]      : self._pID,
+    [PF.VID]     : self._pVID,
+    [PF.ISMENU]  : ismenu
   };
 
-  db.updateUser(options, function(err) {
-    if (err) {return callback(err, null); }
+  dbCtrlr.updateUser(options, (err) => {
+    if (err) {
+      return callback(err, null);
+    }
 
     self._pIsInMenu = ismenu;
     

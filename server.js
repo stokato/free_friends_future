@@ -19,7 +19,7 @@ const questions     = require('./lib/questions/index');
 const stat          = require('./lib/stat/index');
 const shop          = require('./lib/shop/index');
 
-let profiles;
+//let profiles;
 
 let app = express();
 
@@ -44,7 +44,7 @@ app.use(getCert);
 app.use(crossDomain);
 app.use('/', vkHandle);
 app.use('/questions', questions);
-app.use('/stat', stat);
+app.use('/statCtrlr', stat);
 app.use('/shop', shop);
 
 let auth = require('./lib/passport/index')(passport);
@@ -68,12 +68,12 @@ let server = app.listen(config.server.port, function() {
   logger.info('Sever running at: ' + config.server.host + ':' + config.server.port );
 });
 
-io.listen(server, function(err, profs){
+io.listen(server, function(err){
   if(err) return logger.error('Socket error: %s', err.message);
 
-  profiles = profs;
+  //profiles = profs;
 
-  app.set('profiles', profs);
+  // app.set('profiles', profs);
   
   logger.info('Socket server listening on port :' + config.server.port);
 

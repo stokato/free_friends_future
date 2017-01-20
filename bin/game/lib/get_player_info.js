@@ -1,11 +1,15 @@
-// Получить информацию по игроку
-module.exports = function(player) {
+/**
+ * Получить информацию по игроку
+ *
+ */
+
+module.exports = function(playerProfile) {
   return {
-    id        : player.getID(),
-    vid       : player.getVID(),
-    sex       : player.getSex(),
-    socketId  : player.getSocket().id,
-    index     : player.getGameIndex(),
-    player    : player
+    id        : playerProfile.getID(),
+    vid       : playerProfile.getVID(),
+    sex       : playerProfile.getSex(),
+    socketId  : playerProfile.getSocket().id,
+    index     : playerProfile.getGameIndex(),
+    player    : playerProfile
   };
 };

@@ -10,8 +10,10 @@ module.exports = function (blockedID, callback) {
   
   let  self = this;
   
-  db.deleteBlocked(self._pID, blockedID, function (err) {
-    if(err) { return callback(err); }
+  db.deleteBlocked(self._pID, blockedID, (err) => {
+    if(err) {
+      return callback(err);
+    }
     
     if(self._pBlackList[blockedID]) {
       clearTimeout(self._pBlackList[blockedID].timeout);

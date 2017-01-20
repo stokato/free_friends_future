@@ -5,7 +5,7 @@
  * @return {Object} - с треком временем и количеством секунд со старта
  */
 const Config = require('./../../../config.json');
-const PF        = require('./../../const_fields');
+const PF     = require('./../../const_fields');
 
 module.exports = function (socket) {
   
@@ -15,11 +15,11 @@ module.exports = function (socket) {
     
     let  passedTime = Math.round((new Date() - this.getTrackTime()) * 0.001);
     
-    let  info = {
+    let  infoObj = {
       [PF.TRACK]        : this._mTrackList[0],
       [PF.PASSED_TIME]  : passedTime
     };
     
-    socket.emit(Config.io.emits.IO_START_TRACK, info);
+    socket.emit(Config.io.emits.IO_START_TRACK, infoObj);
   }
 };

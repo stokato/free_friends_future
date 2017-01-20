@@ -8,20 +8,22 @@
 
 module.exports = function () {
 
-    let profile = null, index;
+    let profile = null;
     
-    for(index in this._guys) if(this._guys.hasOwnProperty(index)) {
+    for(let index in this._guys) if(this._guys.hasOwnProperty(index)) {
       profile = this._guys[index];
       break;
     }
     if(!profile) {
-      for(index in this._girls) if(this._girls.hasOwnProperty(index)) {
+      for(let index in this._girls) if(this._girls.hasOwnProperty(index)) {
         profile = this._girls[index];
         break;
       }
     }
     
-    if(!profile) { return null;  }
+    if(!profile) {
+      return null;
+    }
     
     return profile.getSocket();
 };

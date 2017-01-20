@@ -2,22 +2,24 @@
  * Добавляем гостя пользователю, сохраняем в БД
  */
 
-const db  = require('./../../db_manager');
-const IOF = require('./../../const_fields');
+const dbCtrlr = require('./../../db_manager');
+const PF      = require('./../../const_fields');
 
 module.exports = function(guestProfile, date, callback) {
   let  self = this;
   
   let  options = {
-    [IOF.ID]    : guestProfile.getID(),
-    [IOF.VID]   : guestProfile.getVID(),
-    [IOF.SEX]   : guestProfile.getSex(),
-    [IOF.BDATE] : guestProfile.getBDate(),
-    [IOF.DATE]  : date
+    [PF.ID]    : guestProfile.getID(),
+    [PF.VID]   : guestProfile.getVID(),
+    [PF.SEX]   : guestProfile.getSex(),
+    [PF.BDATE] : guestProfile.getBDate(),
+    [PF.DATE]  : date
   };
   
-  db.addGuest(self._pID, options, function(err, guest) {
-    if (err) { return callback(err, null); }
+  dbCtrlr.addGuest(self._pID, options, (err, guest) => {
+    if (err) {
+      return callback(err, null);
+    }
     
     callback(null, guest);
   })

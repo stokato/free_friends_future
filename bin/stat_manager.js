@@ -5,7 +5,7 @@
  */
 
 // Модуль работы с БД
-const StatManager   = require('./stat/index.js'),
-      stat          = new StatManager();
+const StatCtrlr     = require('./stat/index.js');
+let statCtrlr       = new StatCtrlr();
 
-module.exports = stat;
+module.exports = statCtrlr;

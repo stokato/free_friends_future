@@ -5,20 +5,20 @@
  *
  */
 
-const setMainStat = require('./lib/set_main_stat'),
-      getMainStat = require('./lib/get_main_stat'),
-      setUserStat = require('./lib/set_user_stat'),
-      getUserStat = require('./lib/get_user_stat');
+const setMainStat = require('./lib/set_main_stat');
+const getMainStat = require('./lib/get_main_stat');
+const setUserStat = require('./lib/set_user_stat');
+const getUserStat = require('./lib/get_user_stat');
 
-function StatManager() {}
+let StatCtrlr = function () {};
 
-StatManager.prototype._isNumeric = function(val) { // Проверка - явлеется ли аргумент числом
+StatCtrlr.prototype._isNumeric = function(val) { // Проверка - явлеется ли аргумент числом
   return !isNaN(parseFloat(val)) && isFinite(val);
 };
 
-StatManager.prototype.setMainStat = setMainStat;
-StatManager.prototype.getMainStat = getMainStat;
-StatManager.prototype.setUserStat = setUserStat;
-StatManager.prototype.getUserStat = getUserStat;
+StatCtrlr.prototype.setMainStat = setMainStat;
+StatCtrlr.prototype.getMainStat = getMainStat;
+StatCtrlr.prototype.setUserStat = setUserStat;
+StatCtrlr.prototype.getUserStat = getUserStat;
 
-module.exports = StatManager;
+module.exports = StatCtrlr;

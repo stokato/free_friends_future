@@ -190,20 +190,20 @@ module.exports = function (socket, options) {
       }
       
       let resObj = {
-        [PF.FID]: selfProfile.getID(),
-        [PF.FVID]: selfProfile.getVID(),
-        [PF.ID]: friendProfile.getID(),
-        [PF.VID]: friendProfile.getVID(),
-        [PF.GIFTID]: giftObj[PF.ID],
-        [PF.SRC]: giftObj[PF.SRC],
-        [PF.TYPE]: giftObj[PF.TYPE],
-        [PF.GROUP]: giftObj[PF.GROUP],
-        [PF.TITLE]: giftObj[PF.TITLE],
-        [PF.DATE]: giftObj[PF.DATE],
-        [PF.UGIFTID]: giftObj[PF.UGIFTID],
-        [PF.ISPRIVATE]: options[PF.ISPRIVATE],
-        [PF.PARAMS]: giftObj[PF.PARAMS],
-        [PF.COUNT]: giftObj[PF.COUNT]
+        [PF.FID]        : selfProfile.getID(),
+        [PF.FVID]       : selfProfile.getVID(),
+        [PF.ID]         : friendProfile.getID(),
+        [PF.VID]        : friendProfile.getVID(),
+        [PF.GIFTID]     : giftObj[PF.ID],
+        [PF.SRC]        : giftObj[PF.SRC],
+        [PF.TYPE]       : giftObj[PF.TYPE],
+        [PF.GROUP]      : giftObj[PF.GROUP],
+        [PF.TITLE]      : giftObj[PF.TITLE],
+        [PF.DATE]       : giftObj[PF.DATE],
+        [PF.UGIFTID]    : giftObj[PF.UGIFTID],
+        [PF.ISPRIVATE]  : options[PF.ISPRIVATE],
+        [PF.PARAMS]     : giftObj[PF.PARAMS],
+        [PF.COUNT]      : giftObj[PF.COUNT]
       };
       
       let room = oPool.roomList[socket.id];

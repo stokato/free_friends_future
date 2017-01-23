@@ -31,7 +31,9 @@ module.exports = function(uid, callback) {
       let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFieldsArr, condValuesArr);
   
       dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
-        if (err) { return cb(err, null); }
+        if (err) {
+          return cb(err, null);
+        }
     
         cb(null, result);
       });

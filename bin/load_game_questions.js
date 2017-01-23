@@ -9,7 +9,7 @@ const  db     = require('./db_manager');
 const  oPool  = require('./objects_pool');
 
 module.exports =  function(callback) {
-    db.findQuestionsActivity(true, function(err, questions) {
+    db.findQuestionsActivity(true, (err, questions) => {
       if(err) {
         // logger.error(400, "Ошибка при получении вопросов из базы данных");
         //console.log("Ошибка при получении вопросов из базы данных");

@@ -76,7 +76,7 @@ module.exports = function () {
           let resObj = { [PF.TRACKLIST] : self._mTrackList };
         
           socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_GET_TRACK_LIST, resObj);
-          socket.emit(Config.io.emits.io.emits.IO_GET_TRACK_LIST, resObj);
+          socket.emit(Config.io.emits.IO_GET_TRACK_LIST, resObj);
         
           emitRes(null, socket, IO_ADD_TRECK);
         });

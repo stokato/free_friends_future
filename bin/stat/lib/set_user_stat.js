@@ -23,6 +23,8 @@ module.exports = function (id, vid, field, val) {
 
   
   db.updateUserStat(params, function (err) {
-    if(err) { logError(field, err.message) ; }
+    if(err) {
+      logError(field, err.message) ;
+    }
   })
 };

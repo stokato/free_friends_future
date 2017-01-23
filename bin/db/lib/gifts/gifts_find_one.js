@@ -21,7 +21,8 @@ module.exports = function(id, callback) {
     DBF.DATE_timestamp,
     DBF.TITLE_varchar,
     DBF.FROMID_uuid,
-    DBF.FROMVID_varchar
+    DBF.FROMVID_varchar,
+    DBF.COUNT_int
   ];
   
   let condFieldsArr = [DBF.ID_uuid_p];
@@ -46,7 +47,8 @@ module.exports = function(id, callback) {
         [PF.DATE]    : rowObj[DBF.DATE_timestamp],
         [PF.TITLE]   : rowObj[DBF.TITLE_varchar],
         [PF.FID]     : rowObj[DBF.FROMID_uuid].toString(),
-        [PF.FVID]    : rowObj[DBF.FROMVID_varchar]
+        [PF.FVID]    : rowObj[DBF.FROMVID_varchar],
+        [PF.COUNT]   : rowObj[DBF.COUNT_int]
       };
 
       callback(null, giftObj);

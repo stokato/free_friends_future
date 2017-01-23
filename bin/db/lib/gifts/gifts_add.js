@@ -27,7 +27,8 @@ module.exports = function(uid, options, callback) { options = options || {};
       !options[PF.SRC] ||
       !options[PF.DATE] ||
       !options[PF.ID] ||
-      !options[PF.VID]) {
+      !options[PF.VID] ||
+      !options[PF.COUNT]) {
     return callback(new Error("Не указаны параметры подарка"), null);
   }
 
@@ -47,7 +48,8 @@ module.exports = function(uid, options, callback) { options = options || {};
         DBF.FROMID_uuid,
         DBF.FROMVID_varchar,
         DBF.FROMSEX_int,
-        DBF.FROMBDATE_timestamp
+        DBF.FROMBDATE_timestamp,
+        DBF.COUNT_int
       ];
   
       let paramsArr = [
@@ -61,13 +63,16 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.ID],
         options[PF.VID],
         options[PF.SEX],
-        options[PF.BDATE]
+        options[PF.BDATE],
+        options[PF.COUNT]
       ];
       
       let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBN);
       
       dbCtrlr.client.execute(query, paramsArr, { prepare: true },  (err) => {
-        if (err) {  return cb(err); }
+        if (err) {
+          return cb(err);
+        }
     
         options[PF.UGIFTID] = id.toString();
     
@@ -86,7 +91,7 @@ module.exports = function(uid, options, callback) { options = options || {};
       
       let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBNN);
       
-      dbCtrlr.client.execute(query, paramsArr, { prepare: true },  function(err) {
+      dbCtrlr.client.execute(query, paramsArr, { prepare: true },  (err) => {
         if (err) {
           return cb(err);
         }

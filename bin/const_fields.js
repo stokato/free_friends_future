@@ -1,4 +1,5 @@
 
+
 module.exports = {
   DATE            : 'date',
   DATE_FROM       : 'first_date',
@@ -116,6 +117,7 @@ module.exports = {
   SCALE           : 'scale',
   PARAMS          : 'params',
   LOCKED          : 'is_locked',
+  DESTINATION     : 'destination',
   
   GIFTS_GIVEN         : 'gifts_given',
   GIFTS_TAKEN         : 'gifts_taken',

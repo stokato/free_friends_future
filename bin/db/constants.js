@@ -51,6 +51,9 @@ let constants = {
    Дата подарка,
    ИД подарившего,
    ИД подарившего ВКонтакте
+   Пол подарившего
+   Дата рожденя подарившего
+   Колиество подарков за раз
    */
   
   USER_GIFTS : {
@@ -66,7 +69,8 @@ let constants = {
       FROMID_uuid         : 'fromid',
       FROMVID_varchar     : 'fromvid',
       FROMSEX_int         : 'fromsex',
-      FROMBDATE_timestamp  : 'frombdate'
+      FROMBDATE_timestamp  : 'frombdate',
+      COUNT_int           : 'count'
     }
   },
   

@@ -8,7 +8,7 @@ const Config    = require('./../../../config.json');
 const dbCtrlr   = require('./../../db_manager');
 const PF        = require('./../../const_fields');
 
-module.exports = function(giftMaker, date, gift, params, callback) {
+module.exports = function(giftMaker, date, gift, count, params, callback) {
   
   const GIFT_TIMEOUTS  = Config.gifts.timeouts;
   
@@ -24,7 +24,8 @@ module.exports = function(giftMaker, date, gift, params, callback) {
     [PF.GIFTID]  : gift[PF.ID],
     [PF.TYPE]    : gift[PF.TYPE],
     [PF.TITLE]   : gift[PF.TITLE],
-    [PF.GROUP]   : gift[PF.GROUP]
+    [PF.GROUP]   : gift[PF.GROUP],
+    [PF.COUNT]   : count || 1
   };
 
   dbCtrlr.addGift(self._pID, options, (err, result) => {

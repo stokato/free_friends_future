@@ -76,7 +76,9 @@ CREATE INDEX IF NOT EXISTS users_vid ON users (vid);
 -- Дата подарка,
 -- ИД подарившего,
 -- ИД подарившего ВКонтакте
-
+-- Пол подарившегь
+-- Дата рождения подарившего
+-- Количество подарков за раз
 
 CREATE TABLE IF NOT EXISTS user_gifts (
   id uuid,
@@ -90,6 +92,7 @@ CREATE TABLE IF NOT EXISTS user_gifts (
   fromvid varchar,
   fromsex int,
   frombdate timestamp,
+  count int,
   PRIMARY KEY (id)
 );
 

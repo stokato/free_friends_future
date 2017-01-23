@@ -12,8 +12,10 @@ module.exports.setEmit = function (socket, emit, handler) {
   socket.removeAllListeners(emit);
   
   socket.on(emit, function(options) {
-    checkInput(emit, socket, options, function (err, sock, options) {
-      if(err) { return emitRes(err, socket, emit); }
+    checkInput(emit, socket, options, (err, sock, options) => {
+      if(err) {
+        return emitRes(err, socket, emit);
+      }
       
       
       if(!handler) {

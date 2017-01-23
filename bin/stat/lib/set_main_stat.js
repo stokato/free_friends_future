@@ -22,6 +22,8 @@ module.exports = function (field, val) {
 
   
   db.updateMainStat(params, function (err) {
-    if(err) { logError(field, err.message) ; }
+    if(err) {
+      logError(field, err.message) ;
+    }
   })
 };

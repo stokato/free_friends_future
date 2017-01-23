@@ -46,8 +46,8 @@ module.exports.listen = function(server, callback) {
     //////////// Боты  60575188, 38068582, 10265088        // 8006539, 2537182
     let bots1 = [];
     let bots2 = [];
-    let room1 = [14179168, 202855663, 138702971, 138288707,  369865764];
-    let room2 = [8729179, 2067815, 20393197, 269720831, 26052562];
+    let room1 = [322288551, 16107927, 132310277, 46084870,  154473610];
+    let room2 = [5949210, 16067593, 10523063, 97131075, 52617075];
     let males1 = [1, 1, 2, 2, 1];
     let males2 = [1, 1, 1, 2, 2];
     let countries = [1, 2, 3, 4, 9];
@@ -81,6 +81,17 @@ module.exports.listen = function(server, callback) {
     initB(bots2[count], true);
   
     function initB(clientS, isFirst) {
+      
+      clientS.on('get_rooms', function (message) {
+        if(message.rooms.length > 0) {
+          var options = {
+            room      : message.rooms[0].name,
+            auth_key : md5('4853914' + '_Room2' + '06G0eKuPliE1M4mHQU3S')
+          };
+  
+          clientS.emit('change_room', options);
+        }
+      });
     
       clientS.on('init', function (message) {
         let options;
@@ -90,14 +101,17 @@ module.exports.listen = function(server, callback) {
             room      : 'new_room',
             auth_key : md5('4853914' + '_new_room' + '06G0eKuPliE1M4mHQU3S')
           };
+  
+          clientS.emit('change_room', options);
         } else {
-          options = {
-            room      : 'Room2',
-            auth_key : md5('4853914' + '_Room2' + '06G0eKuPliE1M4mHQU3S')
-          };
+          clientS.emit('get_rooms', { auth_key : md5('4853914' + '' + '06G0eKuPliE1M4mHQU3S') });
+          // options = {
+          //   room      : 'Room2',
+          //   auth_key : md5('4853914' + '_Room2' + '06G0eKuPliE1M4mHQU3S')
+          // };
         }
       
-        clientS.emit('change_room', options);
+        // clientS.emit('change_room', options);
       
         // onInitB();
       });
@@ -321,7 +335,7 @@ module.exports.listen = function(server, callback) {
     
     }
     ////////////
-  });//();
+  })//();
   
   callback(null, null);
 };

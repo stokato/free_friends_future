@@ -21,7 +21,9 @@ module.exports = function (id, vid, callback) {
   ];
   
   db.findUserStat(id, vid, fList, function (err, stat) {
-    if(err) { return callback(err); }
+    if(err) {
+      return callback(err);
+    }
     
     callback(null, stat);
   })

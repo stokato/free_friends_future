@@ -71,17 +71,17 @@
       "girls" : "girls"
     },
     "groups" : {
-      "LOVES"       : { "name" : "loves",       "stat" : "gifts_loves" },
-      "BREATH"      : { "name" : "breath",      "stat" : "gifts_breath" },
-      "FLOWERS"     : { "name" : "flowers",     "stat" : "gifts_flowers" },
-      "DRINKS"      : { "name" : "drinks",      "stat" : "gifts_drinks" },
-      "COMMON"      : { "name" : "common",      "stat" : "gifts_common" },
-      "FLIRTATION"  : { "name" : "flirtation",  "stat" : "gifts_flirtation" },
-      "MERRY"       : { "name" : "merry",       "stat" : "gifts_merry" },
-      "HATS"        : { "name" : "hats",        "stat" : "gifts_hats" },
-      "RANKS"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
-      "TO_AVATAR"   : { "name" : "to_avatar",   "stat" : "gifts_avatar" },
-      "TEXT"        : { "name" : "with_text",   "stat" : "gifts_text" }
+      "loves"       : { "name" : "loves",       "stat" : "gifts_loves" },
+      "breath"      : { "name" : "breath",      "stat" : "gifts_breath" },
+      "flowers"     : { "name" : "flowers",     "stat" : "gifts_flowers" },
+      "drinks"      : { "name" : "drinks",      "stat" : "gifts_drinks" },
+      "common"      : { "name" : "common",      "stat" : "gifts_common" },
+      "flirtation"  : { "name" : "flirtation",  "stat" : "gifts_flirtation" },
+      "merry"       : { "name" : "merry",       "stat" : "gifts_merry" },
+      "hats"        : { "name" : "hats",        "stat" : "gifts_hats" },
+      "ranks"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
+      "to_avatar"   : { "name" : "to_avatar",   "stat" : "gifts_avatar" },
+      "with_text"   : { "name" : "with_text",   "stat" : "gifts_text" }
     }
   },
   "moneys" : {

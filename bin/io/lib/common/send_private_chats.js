@@ -16,6 +16,8 @@ module.exports = function (socket) { // Получаем данные по пр�
 
   oPool.userList[socket.id].getPrivateChatsWithHistory(firstDate, secondDate, (err, history = []) => {
     
+    history = history || [];
+    
     if(err) {
       return logger('sendPrivateChats' + err);
     }

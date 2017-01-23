@@ -6,7 +6,7 @@ const async = require('async');
 const md5   = require('md5');
 
 const Config        = require('./../config.json');
-const PF     = require('./const_fields');
+const PF            = require('./const_fields');
 const db            = require('./db_manager');
 const oPool         = require('./objects_pool');
 const stat          = require('./stat_manager');
@@ -14,14 +14,10 @@ const stat          = require('./stat_manager');
 const sanitize      = require('./sanitize');
 const getUserProfile = require('./io/lib/common/get_user_profile');
 
-const REFILL_POINTS = Number(Config.points.refill);
-const MONEY_TYPE = Config.good_types.money;
-const COINS = Config.moneys.money_lots;
-const IO_GIVE_MONEY = Config.io.emits.IO_GIVE_MONEY;
-
 function VK () {}
 
 VK.prototype.handle = function(req, callback) {
+  
   let request = req || {};
 
   // Сначала проверка
@@ -29,7 +25,9 @@ VK.prototype.handle = function(req, callback) {
 
   let fields= [];
   for(let key in request) /* if(request.hasOwnProperty(key)) */{
-    if(key === "sig") {  continue; }
+    if(key === "sig") {
+      continue;
+    }
 
     fields.push(key + "=" + request[key]);
   }
@@ -107,6 +105,12 @@ function getItem(request, callback) {
 }
 
 function changeOrderStatus(request, callback) {
+  
+  const REFILL_POINTS = Number(Config.points.refill);
+  const MONEY_TYPE    = Config.good_types.money;
+  const COINS         = Config.moneys.money_lots;
+  const IO_GIVE_MONEY = Config.io.emits.IO_GIVE_MONEY;
+  
   // Изменение статуса заказа
   let response = {};
 
@@ -124,8 +128,10 @@ function changeOrderStatus(request, callback) {
     
     async.waterfall([ /////////////////////////////////////////////////////
       function(cb) { // Ищем товар в базе, проверяем, сходится ли цена
-        db.findCoins(options[PF.GOODID], function (err, goodInfo) {
-          if (err) { return cb(err, null) }
+        db.findCoins(options[PF.GOODID], (err, goodInfo) => {
+          if (err) {
+            return cb(err, null);
+          }
 
           if (goodInfo) {
             if(goodInfo[PF.PRICE_VK] != options[PF.PRICE])
@@ -136,12 +142,16 @@ function changeOrderStatus(request, callback) {
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
-        db.findUser(null, options[PF.VID], [PF.MONEY, PF.POINTS], function(err, info) {
-          if(err) { return cb(err, null); }
+        db.findUser(null, options[PF.VID], [PF.MONEY, PF.POINTS], (err, info) => {
+          if(err) {
+            return cb(err, null);
+          }
 
           if (info) {
-            getUserProfile(info[PF.ID], function (err, profile) {
-              if(err) { return cb(err, null); }
+            getUserProfile(info[PF.ID], (err, profile) => {
+              if(err) {
+                return cb(err, null);
+              }
   
               cb(null, goodInfo, info, profile);
             });
@@ -164,8 +174,10 @@ function changeOrderStatus(request, callback) {
           [PF.DATE]     : new Date()
         };
 
-        db.addOrder(ordOptions, function(err, orderid) {
-          if (err) { return cb(err, null); }
+        db.addOrder(ordOptions, (err, orderid) => {
+          if (err) {
+            return cb(err, null);
+          }
 
           cb(null, goodInfo, info, orderid, profile);
         });
@@ -176,15 +188,21 @@ function changeOrderStatus(request, callback) {
         options.from_vid = selfInfo[PF.VID];
 
         if(payInfo[1]) {
-          db.findUser(null, payInfo[1], [PF.MONEY], function(err, info) {
-            if(err) { return cb(err, null); }
+          db.findUser(null, payInfo[1], [PF.MONEY], (err, info) => {
+            if(err) {
+              return cb(err, null);
+            }
 
             if (info) {
-              getUserProfile(info[PF.ID], function (err, friendProfile) {
-                if(err) { return cb(err, null); }
+              getUserProfile(info[PF.ID], (err, friendProfile) => {
+                if(err) {
+                  return cb(err, null);
+                }
                 
-                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE], function (err, money) {
-                  if(err) { return cb(err, null); }
+                friendProfile.setMoney(info[PF.MONEY] + goodInfo[PF.PRICE], (err, money) => {
+                  if(err) {
+                    return cb(err, null);
+                  }
                   
                   let friendSocket = friendProfile.getSocket();
                   if(friendSocket) {
@@ -214,8 +232,10 @@ function changeOrderStatus(request, callback) {
                   }
                   
                   let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
-                  profile.addPoints(newPoints, function (err) {
-                    if(err) { return cb(err, null); }
+                  profile.addPoints(newPoints, (err) => {
+                    if(err) {
+                      return cb(err, null);
+                    }
   
                     cb(null, { orderid : orderid });
                   });
@@ -231,8 +251,10 @@ function changeOrderStatus(request, callback) {
           // options[PF.MONEY]   = selfInfo[PF.MONEY] + goodInfo[PF.PRICE2];
           // options[PF.POINTS]  = selfInfo[PF.POINTS] + goodInfo[PF.PRICE2] * REFILL_POINTS;
 
-          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE], function (err, money) {
-            if (err) { return cb(err, null); }
+          profile.setMoney(selfInfo[PF.MONEY] + goodInfo[PF.PRICE], (err, money) => {
+            if (err) {
+              return cb(err, null);
+            }
             
             let socket = profile.getSocket();
             if(socket) {
@@ -242,7 +264,9 @@ function changeOrderStatus(request, callback) {
             let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
             
             profile.addPoints(newPoints, function (err, points) {
-              if (err) { return cb(err, null); }
+              if (err) {
+                return cb(err, null);
+              }
   
               options[PF.MONEY] = goodInfo[PF.PRICE];
   

@@ -62,7 +62,8 @@ module.exports = function(uid, isSelf, callback) {
         DBF.FROMID_uuid,
         DBF.FROMVID_varchar,
         DBF.FROMSEX_int,
-        DBF.FROMBDATE_timestamp
+        DBF.FROMBDATE_timestamp,
+        DBF.COUNT_int
       ];
       
       let condFieldsArr = [DBF.USERID_uuid_i];
@@ -94,7 +95,8 @@ module.exports = function(uid, isSelf, callback) {
             [PF.TYPE]   : rowObj[DBF.TYPE_varchar],
             [PF.SRC]    : rowObj[DBF.SRC_varhar],
             [PF.DATE]   : rowObj[DBF.DATE_timestamp],
-            [PF.TITLE]  : rowObj[DBF.TITLE_varchar]
+            [PF.TITLE]  : rowObj[DBF.TITLE_varchar],
+            [PF.COUNT]  : rowObj[DBF.COUNT_int]
           };
   
           if(isSelf) {

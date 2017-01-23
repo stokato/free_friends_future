@@ -119,7 +119,7 @@ module.exports = function(uid, options, callback) { options = options || {};
           options[PF.FID]
         ];
         
-        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DBNC);
+        let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fields, DBNCN);
   
         dbCtrlr.client.execute(query, params, { prepare: true },  (err) => {
           if (err) {
@@ -150,7 +150,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         options[PF.FVID]
       ];
       
-      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBNCN);
+      let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_INSERT, fieldsArr, DBNC);
 
       dbCtrlr.client.execute(query, paramsArr, { prepare: true },  (err) => {
         if (err) {

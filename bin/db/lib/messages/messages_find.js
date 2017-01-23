@@ -68,12 +68,12 @@ module.exports = function(uid, options, callback) { options = options || {};
       function(newIDArr, cb) { // Получаем историю сообщений за указанный период (прочитанных)
         
         let condMore, condLess;
-        let paramsArr = paramsArr.slice(0);
+        let params2Arr = paramsArr.slice(0);
         
         if (firstDate) {
           condMore = condLess = "id";
-          paramsArr.push(dbCtrlr.timeUuid.fromDate(firstDate));
-          paramsArr.push(dbCtrlr.timeUuid.fromDate(secondDate));
+          params2Arr.push(dbCtrlr.timeUuid.fromDate(firstDate));
+          params2Arr.push(dbCtrlr.timeUuid.fromDate(secondDate));
         }
         
         let fieldsArr = [dbCtrlr.qBuilder.ALL_FIELDS];
@@ -83,7 +83,7 @@ module.exports = function(uid, options, callback) { options = options || {};
         let query = dbCtrlr.qBuilder.build(dbCtrlr.qBuilder.Q_SELECT, fieldsArr, DBN, condFeildsArr,
                                                                       condValuesArr, condMore, condLess);
         
-        dbCtrlr.client.execute(query, paramsArr, {prepare: true }, (err, result) => {
+        dbCtrlr.client.execute(query, params2Arr, { prepare: true }, (err, result) => {
           if (err) {
             return cb(err, null);
           }

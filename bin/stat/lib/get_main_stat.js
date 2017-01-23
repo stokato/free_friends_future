@@ -4,7 +4,7 @@
  * Получаем общую статистику
  */
 
-const db        = require('./../../db_manager');
+const db = require('./../../db_manager');
 const PF = require('./../../const_fields');
 
 
@@ -41,7 +41,9 @@ module.exports = function (callback) {
   ];
   
   db.findMainStat(id, fList, function (err, stat) {
-    if(err) { return callback(err); }
+    if(err) {
+      return callback(err);
+    }
     
     delete stat[PF.ID];
     

@@ -14,7 +14,7 @@ module.exports = function (socket, options) {
   
   const GUY         = Config.user.constants.sex.male;
   const GIRL        = Config.user.constants.sex.female;
-  const IO_GET_TOP  = Config.io.emits;
+  const IO_GET_TOP  = Config.io.emits.IO_GET_TOP;
   
   let res = {};
   dbCtrlr.findPoints(null, (err, users) => {

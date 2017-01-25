@@ -6,7 +6,7 @@
  * @return money - количество монет у пользоателя
  */
 
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 const PF = require('./../../const_fields');
 
 /*

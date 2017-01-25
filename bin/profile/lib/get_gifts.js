@@ -7,7 +7,7 @@
  * (у каждого - список подарков, которые он дарил) и количеством новых
  */
 
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 
 module.exports = function(withnew, callback) {
  db.findGifts(this._pID, withnew, (err, res) => {

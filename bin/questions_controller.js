@@ -5,10 +5,12 @@
  */
 
 
-const  db     = require('./db_manager');
-const  oPool  = require('./objects_pool');
+const  db     = require('./db_controller');
+const  PF     = require('./const_fields');
 
-module.exports =  function(callback) {
+let gameQuestions = [];
+
+module.exports.loadQuestions =  function(callback) {
     db.findQuestionsActivity(true, (err, questions) => {
       if(err) {
         // logger.error(400, "Ошибка при получении вопросов из базы данных");
@@ -16,8 +18,14 @@ module.exports =  function(callback) {
         return callback(err, null);
       }
       
-      oPool.gameQuestions = questions;
+      gameQuestions = questions;
       
       callback(null, null);
     });
   };
+
+module.exports.getRandomQuestion = function() {
+  let rand = Math.floor(Math.random() * gameQuestions.length);
+  
+  return gameQuestions[rand][PF.TEXT];
+};

@@ -7,7 +7,7 @@
  * @return id
  */
 
-const dbCtrlr = require('./../../db_manager');
+const dbCtrlr = require('./../../db_controller');
 const PF      = require('../../const_fields');
 
 module.exports = function(id, callback) {

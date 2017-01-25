@@ -10,7 +10,7 @@
  */
 
 const logger    = require('./../../../../lib/log')(module);
-const statCtrlr = require('./../../../stat_manager');
+const statCtrlr = require('./../../../stat_controller');
 const Config    = require('./../../../../config.json');
 const PF        = require('./../../../const_fields');
 

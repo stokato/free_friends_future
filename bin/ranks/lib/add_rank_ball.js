@@ -7,7 +7,7 @@
 
 const Config = require('./../../../config.json');
 
-module.exports = function (rank, uid) {
+module.exports = function (rank, uid, count = 1) {
   
   const ALMIGHTY_RANK = Config.almighty;
   const rankStart = Number(Config.ranks[rank].start);
@@ -17,7 +17,7 @@ module.exports = function (rank, uid) {
     return this.onNewRank(new Error("No profile with such id"), null);
   }
   
-  this._rProfiles[uid][rank]++;
+  this._rProfiles[uid][rank] += Number(count);
   
   if(!this._rRankOwners[rank]) {
     if (this._rProfiles[uid][rank] >= rankStart) {

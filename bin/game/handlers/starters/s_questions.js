@@ -13,6 +13,7 @@
 
 const Config  = require('./../../../../config.json');
 const PF      = require('./../../../const_fields');
+const questionCtrlr = require('./../../../questions_controller');
 
 module.exports = function (game) {
   
@@ -34,7 +35,7 @@ module.exports = function (game) {
   
   let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_QUESTIONS,
-    [PF.QUESTION] : game.getRandomQuestion(),
+    [PF.QUESTION] : questionCtrlr.getRandomQuestion(),
     [PF.PLAYERS]  : game.getPlayersID()
   };
   

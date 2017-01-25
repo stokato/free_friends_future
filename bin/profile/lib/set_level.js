@@ -4,7 +4,7 @@
  * Увеличиваем уровень игрока
  */
 
-const  db        = require('./../../db_manager');
+const  db        = require('./../../db_controller');
 const  IOF       = require('./../../const_fields');
 
 module.exports = function(num, callback) {

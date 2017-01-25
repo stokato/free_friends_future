@@ -5,7 +5,7 @@
  */
 
 const Config    = require('./../../../config.json');
-const dbCtrlr   = require('./../../db_manager');
+const dbCtrlr   = require('./../../db_controller');
 const PF        = require('./../../const_fields');
 
 module.exports = function(giftMaker, date, gift, count, params, callback) {

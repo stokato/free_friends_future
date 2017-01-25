@@ -5,7 +5,7 @@
  * @return chats - список чатов
  */
 
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 
 module.exports = function(callback) {
  db.findChats(this._pID, (err, chats) => {

@@ -8,7 +8,7 @@
  */
 
 const PF        = require('./../../../const_fields');
-const statCtrlr = require('./../../../stat_manager');
+const statCtrlr = require('./../../../stat_controller');
 
 module.exports = function (game) {
   

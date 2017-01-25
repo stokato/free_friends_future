@@ -4,7 +4,7 @@
  * Устанавливаем количество бесплатных треков
  */
 
-const  dbCtrlr = require('./../../db_manager');
+const  dbCtrlr = require('./../../db_controller');
 const  PF      = require('./../../const_fields');
 
 module.exports = function(num, callback) {

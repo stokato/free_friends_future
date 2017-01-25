@@ -7,7 +7,7 @@
 
 const Config      = require('./../../../../config.json');
 const PF          = require('./../../../const_fields');
-const db          = require('./../../../db_manager');
+const db          = require('./../../../db_controller');
 const emitRes     = require('./../../../emit_result');
 
 module.exports = function (socket, options) {

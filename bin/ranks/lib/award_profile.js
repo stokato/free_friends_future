@@ -26,7 +26,13 @@ module.exports = function (rank, uid) {
   
   //------------------------------------------------
   function startTimer(rm, rank, uid, limit, delay) {
-    setTimeout(() => {
+    if(rm._rankTimers[uid]) {
+      clearTimeout(rm._rankTimers[uid][rank]);
+    } else {
+      rm._rankTimers[uid] = {};
+    }
+    
+    rm._rankTimers[uid][rank] = setTimeout(() => {
       // Если владелец сменился - ничего не делаем
       if(rm._rRankOwners[rank] != uid) {
         return;
@@ -35,11 +41,11 @@ module.exports = function (rank, uid) {
       // Начисляем бонус, если не превышен лимит
       if(rm._rBonuses[rank] < limit) {
         rm._rBonuses[rank] ++;
-      }
-      
-      // Выполняем обработчик - если есть
-      if(rm._onRankBonus[rank]) {
-        rm._onRankBonus[rank](null, uid);
+  
+        // Выполняем обработчик - если есть
+        if(rm._onRankBonus[rank]) {
+          rm._onRankBonus[rank](null, uid);
+        }
       }
       
       startTimer(rm, rank, uid, limit, delay);

@@ -9,7 +9,7 @@
 
 const Config    = require('./../../../config.json');
 const PF = require('../../const_fields'),
-    stat      = require('./../../stat_manager');
+    stat      = require('./../../stat_controller');
 
 module.exports = function (price, callback) {
   

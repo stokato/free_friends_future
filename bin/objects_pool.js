@@ -10,20 +10,19 @@
  * Синглет
  *
  */
-function ObjectsPool () {
-  this.userList = {};                                  // Профили пользователей по сокетам
-  this.roomList = {};                                  // Комнаты по сокетам
-  this.rooms    = {};                                  // Комнаты по их именам
-  this.profiles = {};                                  // Профили пользователей по id (надо бы убрать)
-  this.likeLocks = {};                                 // Запреты на лайки id : [id, ...] - кто кого
-  this.roomChangeLocks = {};
-  this.isProfile = function (prifleID) {
-    return !!this.profiles[prifleID];
-  };
+let oPool = {
+  userList : {},                                  // Профили пользователей по сокетам
+  roomList : {},                                  // Комнаты по сокетам
+  rooms    : {},                                  // Комнаты по их именам
+  profiles : {},                                  // Профили пользователей по id (надо бы убрать)
+  likeLocks : {},                                 // Запреты на лайки id : [id, ...] - кто кого
+  roomChangeLocks : {},                           // Запреты на переход между комнатами
   
-  this.gameQuestions = [];
-}
+  isProfile : function (profileID) {
+    return !!this.profiles[profileID];
+  }
+};
 
-let oPool = new ObjectsPool();
+Object.seal(oPool);
 
 module.exports = oPool;

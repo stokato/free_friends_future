@@ -9,7 +9,7 @@ const async       = require('async');
 const Config      = require('./../../../../config.json');
 const PF          = require('./../../../const_fields');
 const oPool       = require('./../../../objects_pool');
-const stat        = require('./../../../stat_manager');
+const stat        = require('./../../../stat_controller');
 
 const emitRes     = require('./../../../emit_result');
 

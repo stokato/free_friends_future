@@ -21,6 +21,9 @@ const session     = require('./../../lib/session');
 // const statCtrlr = require('./../stat_manager');
 const ioc = require('./../io_controller');
 
+const questionsCtrlr = require('./../questions_controller');
+const logger         = require('./../../lib/log')(module);
+
 // let io = null;                                      // Сокет
 
 module.exports.listen = function(server, callback) {
@@ -337,7 +340,14 @@ module.exports.listen = function(server, callback) {
     ////////////
   })//();
   
-  callback(null, null);
+  questionsCtrlr.loadQuestions(function (err) {
+    if(err) {
+      logger.error('io - load questions');
+      logger.error(err);
+    }
+  
+    callback(null, null);
+  });
 };
 
 

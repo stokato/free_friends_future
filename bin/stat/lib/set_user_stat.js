@@ -6,7 +6,7 @@
  */
 
 const logError  = require('./stat_error');
-const db        = require('./../../db_manager');
+const db        = require('./../../db_controller');
 const PF        = require('./../../const_fields');
 
 module.exports = function (id, vid, field, val) {

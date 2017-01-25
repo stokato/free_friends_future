@@ -2,7 +2,7 @@
  * Сохраняем профиль в БД
  */
 
-const db  = require('./../../db_manager');
+const db  = require('./../../db_controller');
 const IOF = require('./../../const_fields');
 
 module.exports = function(callback) {

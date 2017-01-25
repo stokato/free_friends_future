@@ -4,7 +4,7 @@
  * Удаляем пользователя из черного списка
  */
 
-const  db  = require('./../../db_manager');
+const  db  = require('./../../db_controller');
 
 module.exports = function (blockedID, callback) {
   

@@ -7,7 +7,7 @@
  * @result results - список пользователей с признаком is_friend
  */
 
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 const IOF = require('./../../const_fields');
 
 module.exports = function(usersID, callback) {

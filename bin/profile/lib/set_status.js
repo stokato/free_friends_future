@@ -5,7 +5,7 @@
  * @return status
  */
 
-const  dbCtrlr  = require('./../../db_manager');
+const  dbCtrlr  = require('./../../db_controller');
 const  PF       = require('./../../const_fields');
 
 module.exports = function(status, callback) {

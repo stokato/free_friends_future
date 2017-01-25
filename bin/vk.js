@@ -7,9 +7,9 @@ const md5   = require('md5');
 
 const Config        = require('./../config.json');
 const PF            = require('./const_fields');
-const db            = require('./db_manager');
+const db            = require('./db_controller');
 const oPool         = require('./objects_pool');
-const stat          = require('./stat_manager');
+const stat          = require('./stat_controller');
 
 const sanitize      = require('./sanitize');
 const getUserProfile = require('./io/lib/common/get_user_profile');
@@ -87,7 +87,7 @@ function getItem(request, callback) {
     } else if(!goodInfo) {
       response["error"] = {
         "error_code" : 20,
-        "error_msg"  : "Нет такого товара",
+        "error_msg"  : "the good does not exist",
         "critical"   : true
       };
     } else {
@@ -135,10 +135,10 @@ function changeOrderStatus(request, callback) {
 
           if (goodInfo) {
             if(goodInfo[PF.PRICE_VK] != options[PF.PRICE])
-              cb(new Error("Неверно указана цена товара"), null);
+              cb(new Error("the price of goods is set incorrectly"), null);
             else
               cb(null, goodInfo);
-          } else cb(new Error("Нет такого подарка"), null);
+          } else cb(new Error("the good does not exist"), null);
         });
       },/////////////////////////////////////////////////////////////////
       function(goodInfo, cb) { // Ищем пользователя в базе
@@ -155,15 +155,15 @@ function changeOrderStatus(request, callback) {
   
               cb(null, goodInfo, info, profile);
             });
-          } else cb(new Error("Нет такого пользователя"), null);
+          } else cb(new Error("the user does not exist"), null);
         });
       },/////////////////////////////////////////////////////////////////////
       function(goodInfo, info, profile, cb) { // Сохраняем заказ и возвращаем внутренний ид заказа
 
-        let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
-        if(newMoney < 0 && goodInfo[PF.GOODTYPE] != MONEY_TYPE) {
-          return cb(new Error("Недостаточно средств на счете"), null);
-        }
+        // let newMoney = info[PF.MONEY] - goodInfo[PF.PRICE];
+        // if(goodInfo[PF.GOODTYPE] != MONEY_TYPE && newMoney < 0) {
+        //   return cb(new Error("Too little money"), null);
+        // }
 
         let ordOptions = {
           [PF.ORDERVID] : options[PF.ORDERVID],

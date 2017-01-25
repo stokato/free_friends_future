@@ -49,9 +49,11 @@ function RanksManager() {
   
   // Обработчики для начисления бонусов по каждому званию
   this._onRankBonus = {
-    [POPULAR_RANK]  : onPopularBonus(this),
+    // [POPULAR_RANK]  : onPopularBonus(this),
     [RELEASER_RANK] : onReleaserBonus(this)
   };
+  
+  this._rankTimers = {}; // Таймеры званий { uid : { rank : } }
 
 }
 

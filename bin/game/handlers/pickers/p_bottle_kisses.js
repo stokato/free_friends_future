@@ -14,7 +14,7 @@ const validator = require('validator');
 const Config      = require('./../../../../config.json');
 const PF          = require('./../../../const_fields');
 const oPool       = require('./../../../objects_pool');
-const statCtrlr   = require('./../../../stat_manager');
+const statCtrlr   = require('./../../../stat_controller');
 
 const emitRes     = require('./../../../emit_result');
 

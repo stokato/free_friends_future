@@ -107,7 +107,7 @@
     "popular"   : { "name" : "popular",  "start" : 20, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 300000 },
     "dj"        : { "name" : "dj",  "start" : 10, "step" : 5, "bonus_limit" : 30, "bonus_timeout" : 600000 },
     "lucky"     : { "name" : "lucky",  "start" : 2,  "step" : 1, "bonus_limit" : 30, "bonus_timeout" : 30000 },
-    "releaser"  : { "name" : "releaser",  "start" : 3,  "step" : 1, "bonus_limit" : 30, "bouns_timeout" : 600000 }
+    "releaser"  : { "name" : "releaser",  "start" : 3,  "step" : 1, "bonus_limit" : 30, "bonus_timeout" : 600000 }
   },
   "almighty" : "almighty",
   "points" : {

@@ -27,7 +27,7 @@ module.exports.G_SYMPATHY_SHOW    = G_SYMPATHY_SHOW;
 module.exports.G_PRISON           = G_PRISON;
 
 // Игры с тюрьмой и без
- module.exports.GAMES                  = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY, G_PRISON ];
+ module.exports.GAMES                  = [ G_QUESTIONS, G_CARDS, G_BEST, G_PRISON, G_SYMPATHY, G_BOTTLE ];
  module.exports.GAMES_WITHOUT_PRISON   = [ G_BOTTLE, G_QUESTIONS, G_CARDS, G_BEST, G_SYMPATHY ];
 
 // module.exports.GAMES = [ G_PRISON, G_PRISON ];

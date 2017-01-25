@@ -16,7 +16,7 @@ const logger = require('./../../../../lib/log')(module);
 const Config     = require('./../../../../config.json');
 const PF         = require('./../../../const_fields');
 const oPool      = require('./../../../objects_pool');
-const statCtrlr  = require('./../../../stat_manager');
+const statCtrlr  = require('./../../../stat_controller');
 const ProfileJS  = require('./../../../profile/index');
 
 module.exports = function (game) {

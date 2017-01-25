@@ -8,7 +8,7 @@
  */
 
 const Config  = require('./../../../config.json');
-const dbCtrlr = require('./../../db_manager');
+const dbCtrlr = require('./../../db_controller');
 
 module.exports = function (target, callback) {
   

@@ -13,16 +13,18 @@ const logger  = require('./../../../../lib/log')(module);
 const calcNeedPoints = require('./../common/calc_need_points');
 const emitPoints     = require('./../common/emit_points');
 
-module.exports = function (profile, points) {
+module.exports = handle;
   
-  const levelStart = Number(Config.levels.start);
-  const levelStep  = Number(Config.levels.step);
-  const levelBonusesObj = Config.levels.bonuses;
+  function handle(profile, points) {
+  
+  const LEVEL_START   = Number(Config.levels.start);
+  const LEVEL_STEP    = Number(Config.levels.step);
+  const LEVEL_BONUSES = Config.levels.bonuses;
   
   let currLevel  = profile.getLevel();
   let currPoints = profile.getPoints();
 
-  let needPoints = calcNeedPoints(currLevel+1, levelStart, levelStep);
+  let needPoints = calcNeedPoints(currLevel+1, LEVEL_START, LEVEL_STEP);
   
   let dPoints = needPoints - currPoints;
   
@@ -37,7 +39,7 @@ module.exports = function (profile, points) {
           }
         
           let key = level.toString();
-          let bonusesObj = levelBonusesObj[key];
+          let bonusesObj = LEVEL_BONUSES[key];
         
           cb(null, bonusesObj);
         });
@@ -126,8 +128,19 @@ module.exports = function (profile, points) {
           resObj = { [PF.MONEY] : money };
         
           socket.emit(Config.io.emits.IO_GET_MONEY, resObj);
+          
+          let currLevel  = profile.getLevel();
+          let currPoints = profile.getPoints();
   
-          emitPoints(profile, points);
+          let needPoints = calcNeedPoints(currLevel+1, LEVEL_START, LEVEL_STEP);
+  
+          let dPoints = needPoints - currPoints;
+  
+          if(dPoints <= 0) {
+            handle(profile, points);
+          } else  {
+            emitPoints(profile, points);
+          }
         });
       }
     });

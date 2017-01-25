@@ -4,7 +4,7 @@
  * Меняем статус VIP
  */
 
-const  dbCtrlr = require('./../../db_manager');
+const  dbCtrlr = require('./../../db_controller');
 const  PF      = require('./../../const_fields');
 
 module.exports = function(vip, callback) {

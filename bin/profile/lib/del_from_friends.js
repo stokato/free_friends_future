@@ -6,7 +6,7 @@
  * @return fid
  */
 
-const dbCtrlr = require('./../../db_manager');
+const dbCtrlr = require('./../../db_controller');
 
 module.exports = function(fid, callback) {
   dbCtrlr.deleteFriends(this._pID, fid, (err) => {

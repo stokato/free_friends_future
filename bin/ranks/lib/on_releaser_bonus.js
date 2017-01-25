@@ -28,7 +28,7 @@ module.exports = function(ranks) {
     
     if(socket) {
       let bonusCount = ranks._rBonuses[RELEASER_RANK];
-      socket.emit(Config.io.emits.IO_NEW_RELEASER_BONUS, { [PF.COUNT] : bonusCount });
+      socket.emit(Config.io.emits.IO_NEW_RELEASER_BONUS, { [PF.COUNT] : bonusCount } );
     }
     
   }

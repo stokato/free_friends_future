@@ -3,7 +3,7 @@
  *
  *  Получение статистики пользователя
  */
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 const PF = require('./../../const_fields');
 
 module.exports = function (id, vid, callback) {

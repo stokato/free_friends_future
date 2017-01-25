@@ -6,7 +6,7 @@
  * @return guests - объект с коллекцией гостей и количеством новых
  */
 
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 
 module.exports = function(isSelf, callback) {
  db.findGuests(this._pID, isSelf, (err, guests) => {

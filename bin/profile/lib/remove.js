@@ -1,4 +1,4 @@
-const db = require('./../../db_manager');
+const db = require('./../../db_controller');
 
 /*
  Удаляем польлзователя из БД

@@ -5,7 +5,7 @@
  * @return messages - осписок сообщений пользователя
  */
 
-const dbCtrlr  = require('./../../db_manager');
+const dbCtrlr  = require('./../../db_controller');
 const PF       = require('./../../const_fields');
 
 module.exports = function(fdate, sdate, callback) {

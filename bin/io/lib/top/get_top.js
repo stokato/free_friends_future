@@ -5,7 +5,7 @@
  * @return {Object} - объект с общим топом, топом парней и девушек
  */
 
-const dbCtrlr   = require('./../../../db_manager');
+const dbCtrlr   = require('./../../../db_controller');
 const PF        = require('./../../../const_fields');
 const emitRes   = require('./../../../emit_result');
 const Config    = require('./../../../../config.json');

@@ -15,7 +15,6 @@ const setActionLimit        = require('./lib/set_action_limits');
 const activateAllPlayers    = require('./lib/activate_all_players');
 const getPlayersId          = require('./lib/get_players_id');
 const startTimer            = require('./lib/start_timer');
-const getRandomQuestion     = require('./lib/get_random_question');
 const getPlayerInfo         = require('./lib/get_player_info');
 const selectNextPlayer      = require('./lib/get_next_player');
 const checkCountPlayers     = require('./lib/check_count_players');
@@ -29,16 +28,6 @@ const addPoints             = require('./lib/add_points');
 
 const handlers              = require('./handlers/index');
 const gameConstants         = require('./constants');
-
-// Загружаем вопросы из базы при старте
-const logger                = require('./../../lib/log')(module);
-const loadGameQuestions     = require('./../load_game_questions');
-
-loadGameQuestions((err) => {
-  if(err) {
-    logger.error(400, "Ошибка при получении вопросов из базы данных");
-  }
-});
 
 function Game(room) {
   
@@ -129,7 +118,6 @@ Game.prototype.sendData               = sendData;
 Game.prototype.addEmits               = addEmits;
 
 Game.prototype.getPlayersID           = getPlayersId;
-Game.prototype.getRandomQuestion      = getRandomQuestion;
 Game.prototype.getPlayerInfo          = getPlayerInfo;
 Game.prototype.getActivePlayers       = getActivePlayers;
 Game.prototype.getActivityRating      = getActivityRating;

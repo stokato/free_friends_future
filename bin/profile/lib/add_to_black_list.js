@@ -6,7 +6,7 @@
 
 const  logger   = require('./../../../lib/log')(module);
 const  Config   = require('./../../../config.json');
-const  dbCtrlr  = require('./../../db_manager');
+const  dbCtrlr  = require('./../../db_controller');
 const  PF       = require('./../../const_fields');
 
 module.exports = function (blockedProfile, date, callback) {

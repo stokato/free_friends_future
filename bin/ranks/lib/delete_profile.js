@@ -25,4 +25,11 @@ module.exports = function (profile) {
   if(this._rRankOwners[ALMIGHTY] == uid) {
     this._rRankOwners[ALMIGHTY] = null;
   }
+  
+  // Удаляем таймауты начисления бонусов
+  if( this._rankTimers[uid] ) {
+    for(let item in this._rankTimers[uid]) if (this._rankTimers[uid].hasOwnProperty(item)) {
+      clearTimeout(this._rankTimers[uid][item]);
+    }
+  }
 };

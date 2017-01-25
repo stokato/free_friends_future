@@ -8,9 +8,9 @@ const async      =  require('async');
 
 const Config          = require('./../../../../config.json');
 const PF              = require('./../../../const_fields');
-const dbCtrlr         = require('./../../../db_manager');
+const dbCtrlr         = require('./../../../db_controller');
 const oPool           = require('./../../../objects_pool');
-const statCtrlr       = require('./../../../stat_manager');
+const statCtrlr       = require('./../../../stat_controller');
 
 const checkID         = require('./../../../check_id');
 const emitRes         = require('./../../../emit_result');
@@ -18,6 +18,8 @@ const sanitize        = require('./../../../sanitize');
 const getUserProfile  = require('./../common/get_user_profile');
 
 module.exports = function (socket, options) {
+  
+  //TODO: установить ограничение на options[PF.PARAMS] - длина массива
   
   const WASTE_POINTS = Number(Config.points.waste);
   const GIFT_POINTS = Number(Config.points.taken_gift);
@@ -118,7 +120,11 @@ module.exports = function (socket, options) {
         // }
       }, //---------------------------------------------------------------
       function (friendProfile, giftObj, cb) { // Снимаем деньги с пользователя и уведомляем его об этом
-        selfProfile.pay(giftObj[PF.PRICE], (err, money) => {
+        
+        let count = Number(options[PF.COUNT] || 1);
+        let price = giftObj[PF.PRICE] * count;
+        
+        selfProfile.pay(price, (err, money) => {
           if (err) {
             return cb(err, null);
           }
@@ -138,7 +144,7 @@ module.exports = function (socket, options) {
           }
           
           let ranksCtrlr = oPool.roomList[socket.id].getRanks();
-          ranksCtrlr.addRankBall(GENEROUS_RANK, selfProfile.getID());
+          ranksCtrlr.addRankBall(GENEROUS_RANK, selfProfile.getID(), options[PF.COUNT] || 1);
           
           cb(null, friendProfile, giftObj);
         });

@@ -58,6 +58,7 @@ const setFreeMusic                    = require('./lib/set_free_music');
 const setVIP                          = require('./lib/set_vip');
 const close                           = require('./lib/close');
 const getAge                          = require('./lib/get_age');
+const hideGifts                       = require('./lib/hide_gifts');
 
 function Profile() {
   
@@ -174,5 +175,6 @@ Profile.prototype.setFreeMusic      = setFreeMusic;
 Profile.prototype.setVIP            = setVIP;
 Profile.prototype.close             = close;
 Profile.prototype.getAge            = getAge;
+Profile.prototype.hideGifts         = hideGifts;
 
 module.exports = Profile;

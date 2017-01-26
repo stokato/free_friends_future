@@ -80,7 +80,7 @@
       "merry"       : { "name" : "merry",       "stat" : "gifts_merry" },
       "hats"        : { "name" : "hats",        "stat" : "gifts_hats" },
       "ranks"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
-      "to_avatar"   : { "name" : "to_avatar",   "stat" : "gifts_avatar" },
+      "to_avatar"   : { "name" : "to_avatar",   "stat" : "gifts_to_avatar" },
       "with_text"   : { "name" : "with_text",   "stat" : "gifts_text" }
     }
   },

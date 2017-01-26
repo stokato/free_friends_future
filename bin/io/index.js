@@ -24,6 +24,10 @@ const ioc = require('./../io_controller');
 const questionsCtrlr = require('./../questions_controller');
 const logger         = require('./../../lib/log')(module);
 
+// -- services --
+// const randomGiftPrices = require('./../services/random_gift_prices');
+// -- /services --
+
 // let io = null;                                      // Сокет
 
 module.exports.listen = function(server, callback) {
@@ -345,6 +349,12 @@ module.exports.listen = function(server, callback) {
       logger.error('io - load questions');
       logger.error(err);
     }
+  
+    // -- services --
+    // randomGiftPrices((err) => {
+    //   callback(null, null);
+    // });
+    // -- /services --
   
     callback(null, null);
   });

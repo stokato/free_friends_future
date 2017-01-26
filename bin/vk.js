@@ -231,7 +231,7 @@ function changeOrderStatus(request, callback) {
                     }
                   }
                   
-                  let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
+                  let newPoints = Math.round(goodInfo[PF.PRICE] * REFILL_POINTS);
                   profile.addPoints(newPoints, (err) => {
                     if(err) {
                       return cb(err, null);
@@ -261,7 +261,7 @@ function changeOrderStatus(request, callback) {
               socket.emit(Config.io.emits.IO_GET_MONEY, { [PF.MONEY] : money });
             }
             
-            let newPoints = goodInfo[PF.PRICE] * REFILL_POINTS;
+            let newPoints = Math.round(goodInfo[PF.PRICE] * REFILL_POINTS);
             
             profile.addPoints(newPoints, function (err, points) {
               if (err) {

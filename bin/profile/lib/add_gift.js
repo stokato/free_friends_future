@@ -51,10 +51,11 @@ module.exports = function(giftMaker, date, gift, count, params, callback) {
       
       self._pGifts[type].timeout = setTimeout(((gtype) => {
         return () => {
+          let gift = self._pGifts[gtype].gift;
           self._pGifts[gtype].gift = null;
       
           if(self._onGiftTimeout) {
-            self._onGiftTimeout(self, gtype);
+            self._onGiftTimeout(self, gift);
           }
         };
     

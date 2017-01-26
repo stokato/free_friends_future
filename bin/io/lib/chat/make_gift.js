@@ -97,7 +97,9 @@ module.exports = function (socket, options) {
               
               //Статистика
               let group = giftObj[PF.GROUP];
-              statCtrlr.setMainStat(GIFT_GROUPS[group].stat, 1);
+              if(GIFT_GROUPS[group]) {
+                statCtrlr.setMainStat(GIFT_GROUPS[group].stat, 1);
+              }
               
               cb(null, giftObj);
             }
@@ -136,9 +138,9 @@ module.exports = function (socket, options) {
         });
       },//---------------------------------------------------------------
       function (friendProfile, giftObj, cb) {
-        let bonus = WASTE_POINTS * giftObj[PF.PRICE];
+        let points = Math.round(WASTE_POINTS * giftObj[PF.PRICE] * ( options[PF.COUNT] || 1));
         
-        selfProfile.addPoints(bonus, (err, points) => {
+        selfProfile.addPoints(points, (err, points) => {
           if (err) {
             return cb(err, null);
           }
@@ -163,7 +165,9 @@ module.exports = function (socket, options) {
         });
       }, //---------------------------------------------------------------
       function (friendProfile, giftObj, cb) {
-        friendProfile.addPoints(GIFT_POINTS * giftObj[PF.PRICE], (err, points) => {
+        let points = Math.round(GIFT_POINTS * giftObj[PF.PRICE] * (options[PF.COUNT] || 1));
+    
+        friendProfile.addPoints(points, (err, points) => {
           if (err) {
             return cb(err, null);
           }

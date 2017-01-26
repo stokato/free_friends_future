@@ -42,7 +42,8 @@ module.exports = function (profile) {
         [PF.TITLE]   : giftObj[PF.TITLE],
         [PF.DATE]    : giftObj[PF.DATE],
         [PF.UGIFTID] : giftObj[PF.UGIFTID],
-        [PF.PARAMS]  : giftObj[PF.PARAMS]
+        [PF.PARAMS]  : giftObj[PF.PARAMS],
+        [PF.COUNT]   : giftObj[PF.COUNT]
       };
     } else {
       infoObj[PF.GIFTS][GIFT_TYPES[item]]  = null;

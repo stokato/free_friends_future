@@ -47,6 +47,8 @@ module.exports = function (profile) {
     this.sendRoomInfo();
   }
   
+  profile.hideGifts();
+  
   if(this._onDeleteProfile) {
     this._onDeleteProfile(profile);
   }

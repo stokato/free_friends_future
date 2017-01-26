@@ -14,16 +14,19 @@ const oPool  = require('./../../../objects_pool');
 const PF = require('./../../../const_fields');
 
 // Устанавливем таймаут, через который подарки должны исчезать с аватара игрока
-module.exports = function (profile, type) {
+module.exports = function (profile, gift) {
   
   let socket = profile.getSocket();
   if(socket) {
     let room = oPool.roomList[socket.id];
     if(room) {
+      
       let resObj = {
-        [PF.ID]   : profile.getID(),
-        [PF.VID]  : profile.getVID(),
-        [PF.TYPE] : type
+        [PF.ID]     : profile.getID(),
+        [PF.VID]    : profile.getVID(),
+        [PF.TYPE]   : gift[PF.TYPE],
+        [PF.GIFTID] : gift[PF.GIFTID],
+        [PF.COUNT]  : gift[PF.COUNT]
       };
   
       socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_HIDE_GIFT, resObj);

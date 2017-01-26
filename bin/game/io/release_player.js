@@ -52,7 +52,8 @@ module.exports = function (socket, options) {
     }, //--------------------------------------------
     // Добавляем освободившему очки и очищаем темницу
     function (res, cb) {
-      selfProfile.addPoints(WASTE_POINTS * RANSOM_PRICE, (err, points) => {
+      let points = Math.round(WASTE_POINTS * RANSOM_PRICE);
+      selfProfile.addPoints(points, (err, points) => {
         if(err) {
           return cb(err);
         }

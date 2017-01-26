@@ -67,7 +67,8 @@ module.exports = function (game) {
         });
       }, //-------------------------------------------------------------
       function (res, cb) {
-        selfProfile.addPoints(WASTE_POINTS * SYMPATHY_PRICE,(err, points) => {
+        let points = Math.round(WASTE_POINTS * SYMPATHY_PRICE);
+        selfProfile.addPoints(points,(err, points) => {
           if(err) {
             return cb(err);
           }

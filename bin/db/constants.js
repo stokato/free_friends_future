@@ -429,6 +429,7 @@ let constants = {
       C_GIFTS_RANKS_counter         : 'count_gifts_ranks',
       C_GIFTS_TO_AVATAR_counter     : 'count_gifts_to_avatar',
       C_GIFTS_TEXT_counter          : 'count_gifts_text',
+      C_GIFTS_MASKS_counter         : 'count_gifts_masks',
       C_MONEY_1_GIVEN_counter       : 'count_money_1_given',
       C_MONEY_3_GIVEN_counter       : 'count_money_3_given',
       C_MONEY_10_GIVEN_counter      : 'count_money_10_given',

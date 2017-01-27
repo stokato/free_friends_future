@@ -488,6 +488,7 @@ CREATE TABLE IF NOT EXISTS main_stat (
   count_gifts_ranks counter,
   count_gifts_to_avatar counter,
   count_gifts_text counter,
+  count_gifts_masks counter,
   count_money_1_given counter,
   count_money_3_given counter,
   count_money_10_given counter,

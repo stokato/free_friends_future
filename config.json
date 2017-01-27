@@ -71,17 +71,13 @@
       "girls" : "girls"
     },
     "groups" : {
-      "loves"       : { "name" : "loves",       "stat" : "gifts_loves" },
-      "breath"      : { "name" : "breath",      "stat" : "gifts_breath" },
-      "flowers"     : { "name" : "flowers",     "stat" : "gifts_flowers" },
       "drinks"      : { "name" : "drinks",      "stat" : "gifts_drinks" },
       "common"      : { "name" : "common",      "stat" : "gifts_common" },
-      "flirtation"  : { "name" : "flirtation",  "stat" : "gifts_flirtation" },
-      "merry"       : { "name" : "merry",       "stat" : "gifts_merry" },
       "hats"        : { "name" : "hats",        "stat" : "gifts_hats" },
       "ranks"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
       "to_avatar"   : { "name" : "to_avatar",   "stat" : "gifts_to_avatar" },
-      "with_text"   : { "name" : "with_text",   "stat" : "gifts_text" }
+      "with_text"   : { "name" : "with_text",   "stat" : "gifts_text" },
+      "masks"        : { "name" : "masks",       "stat" : "masks" }
     }
   },
   "moneys" : {

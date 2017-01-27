@@ -33,7 +33,8 @@ module.exports = function(options, callback) { options = options || {};
   if (PF.GIFTS_HATS in options)         { fieldsArr.push(DBF.C_GIFTS_HATS_counter);        paramsArr.push(options[PF.GIFTS_HATS]); }
   if (PF.GIFTS_RANKS in options)        { fieldsArr.push(DBF.C_GIFTS_RANKS_counter);       paramsArr.push(options[PF.GIFTS_RANKS]); }
   if (PF.GIFTS_TO_AVATAR in options)    { fieldsArr.push(DBF.C_GIFTS_TO_AVATAR_counter);   paramsArr.push(options[PF.GIFTS_TO_AVATAR]); }
-  if (PF.GIFTS_TEXT in options)         { fieldsArr.push(DBF.GIFTS_TEXT);                  paramsArr.push(options[PF.GIFTS_TEXT]); }
+  if (PF.GIFTS_TEXT in options)         { fieldsArr.push(DBF.C_GIFTS_TEXT_counter);        paramsArr.push(options[PF.GIFTS_TEXT]); }
+  if (PF.GIFTS_MASKS in options)        { fieldsArr.push(DBF.C_GIFTS_MASKS_counter);       paramsArr.push(options[PF.GIFTS_MASKS]); }
   if (PF.MONEY_1_GIVEN in options)      { fieldsArr.push(DBF.C_MONEY_1_GIVEN_counter);     paramsArr.push(options[PF.MONEY_1_GIVEN]); }
   if (PF.MONEY_3_GIVEN in options)      { fieldsArr.push(DBF.C_MONEY_3_GIVEN_counter);     paramsArr.push(options[PF.MONEY_3_GIVEN]); }
   if (PF.MONEY_10_GIVEN in options)     { fieldsArr.push(DBF.C_MONEY_10_GIVEN_counter);    paramsArr.push(options[PF.MONEY_10_GIVEN]); }

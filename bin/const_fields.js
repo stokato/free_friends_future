@@ -139,6 +139,7 @@ module.exports = {
   GIFTS_RANKS         : 'gifts_ranks',
   GIFTS_TO_AVATAR     : 'gifts_to_avatar',
   GIFTS_TEXT          : 'gifts_text',
+  GIFTS_MASKS         : 'gifts_masks',
   MONEY_1_GIVEN       : 'money_1_given',
   MONEY_3_GIVEN       : 'money_3_given',
   MONEY_10_GIVEN      : 'money_10_given',

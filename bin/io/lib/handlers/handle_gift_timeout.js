@@ -22,11 +22,11 @@ module.exports = function (profile, gift) {
     if(room) {
       
       let resObj = {
-        [PF.ID]     : profile.getID(),
-        [PF.VID]    : profile.getVID(),
-        [PF.TYPE]   : gift[PF.TYPE],
-        [PF.GIFTID] : gift[PF.GIFTID],
-        [PF.COUNT]  : gift[PF.COUNT]
+        [PF.ID]       : profile.getID(),
+        [PF.VID]      : profile.getVID(),
+        [PF.TYPE]     : gift[PF.TYPE],
+        [PF.UGIFTID]  : gift[PF.GIFTID],
+        [PF.COUNT]    : gift[PF.COUNT]
       };
   
       socket.broadcast.in(room.getName()).emit(Config.io.emits.IO_HIDE_GIFT, resObj);

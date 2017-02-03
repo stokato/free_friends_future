@@ -51,7 +51,7 @@
       "simple" : "simple",
       "hat" : "hat",
       "small" : "small",
-      "masks" : "masks"
+      "mask" : "mask"
     },
     "timeouts" : {
       "simple" : "0",
@@ -77,7 +77,7 @@
       "ranks"       : { "name" : "ranks",       "stat" : "gifts_ranks" },
       "to_avatar"   : { "name" : "to_avatar",   "stat" : "gifts_to_avatar" },
       "with_text"   : { "name" : "with_text",   "stat" : "gifts_text" },
-      "masks"        : { "name" : "masks",       "stat" : "masks" }
+      "masks"       : { "name" : "masks",       "stat" : "masks" }
     }
   },
   "moneys" : {

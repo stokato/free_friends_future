@@ -159,4 +159,3 @@ module.exports = {
   QUESTION_ACITVITY   : 'question_activity',
   SYMPATHY_ACITVITY   : 'sympathy_activity'
 };
-

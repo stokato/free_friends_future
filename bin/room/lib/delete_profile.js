@@ -43,7 +43,7 @@ module.exports = function (profile) {
     }
   }
   
-  if(! this._game.isActive()) {
+  if(!this._game.isActive()) {
     this.sendRoomInfo();
   }
   

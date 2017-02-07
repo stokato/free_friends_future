@@ -260,6 +260,7 @@
     "NO_AUTH"             : { "code" : 490, "message" : "Ошибка авторизации" },
     "NO_SUCH_RUNK"        : { "code" : 411, "message" : "Пользователь не обладает таким званием" },
     "NO_SUCH_BONUS"       : { "code" : 412, "message" : "Этот бонус недоступен" },
+    "TOO_LITTLE_LEVEL"    : { "code" : 413, "message" : "Недостаточный уровень"},
     "OTHER"               : { "code" : 400, "message" : "Неизвестная ошибка" }
   }
 }

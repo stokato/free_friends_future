@@ -27,5 +27,5 @@ module.exports.loadQuestions =  function(callback) {
 module.exports.getRandomQuestion = function() {
   let rand = Math.floor(Math.random() * gameQuestions.length);
   
-  return gameQuestions[rand][PF.TEXT];
+  return gameQuestions[rand];
 };

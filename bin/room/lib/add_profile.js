@@ -86,7 +86,7 @@ module.exports = function (profile, callback) {
       }
     }
     
-    if(! self._game.isActive()) {
+    if(!self._game.isActive()) {
       self.sendRoomInfo(profile.getID());
     }
 

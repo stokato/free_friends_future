@@ -52,6 +52,7 @@ module.exports = function (game) {
     stateObj[PF.PICKS].push(options[PF.PICK]);
     
     if (game.getActionsCount() == 0) {
+      game.clearTimer();
       game.getHandler(game.CONST.G_BEST, game.CONST.GT_FIN)(game);
     }
   }

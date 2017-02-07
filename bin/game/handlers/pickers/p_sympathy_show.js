@@ -123,6 +123,7 @@ module.exports = function (game) {
       }
   
       if(game.getActionsCount() == 0) {
+        game.clearTimer();
         game.getHandler(game.CONST.G_SYMPATHY_SHOW, game.CONST.GT_FIN)(game);
       }
     });

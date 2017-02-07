@@ -55,8 +55,8 @@ module.exports = function(goodid, callback) {
       [PF.GROUP]        : rowObj[DBF.GROUP_varchar],
       [PF.GROUP_TITLE]  : rowObj[DBF.GROUP_TITLE_varchar],
       [PF.TYPE]         : rowObj[DBF.GIFT_TYPE_varchar],
-      [PF.RANK]         : rowObj[DBF.RANK],
-      [PF.LEVEL]        : rowObj[DBF.LEVEL]
+      [PF.RANK]         : rowObj[DBF.GIFT_RANK_varchar],
+      [PF.LEVEL]        : rowObj[DBF.LEVEL_int]
     };
     
     callback(null, goodObj);

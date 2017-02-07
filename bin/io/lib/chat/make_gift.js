@@ -89,19 +89,25 @@ module.exports = function (socket, options) {
           if (err) {
             return cb(err, null)
           }
+  
+          if(giftObj[PF.LEVEL] && giftObj[PF.LEVEL] > selfProfile.getLevel()) {
+            cb(Config.errors.TOO_LITTLE_LEVEL);
+          }
           
           if (giftObj) {
             if (giftObj[PF.GOODTYPE] != GIFT_TYPE) {
               cb(Config.errors.NO_SUCH_GOOD, null);
             } else {
-              
-              //Статистика
-              let group = giftObj[PF.GROUP];
-              if(GIFT_GROUPS[group]) {
-                statCtrlr.setMainStat(GIFT_GROUPS[group].stat, 1);
+              if(giftObj[PF.RANK]) {
+                let ranksCtrlr = oPool.roomList[socket.id].getRanks();
+                if(ranksCtrlr.getRankOwner(giftObj[PF.RANK]) == selfProfile.getID()) {
+                  cb(null, giftObj);
+                } else {
+                  cb(Config.errors.NO_SUCH_RUNK, null);
+                }
+              } else {
+                cb(null, giftObj);
               }
-              
-              cb(null, giftObj);
             }
           } else {
             cb(Config.errors.NO_SUCH_GOOD, null);
@@ -110,6 +116,12 @@ module.exports = function (socket, options) {
       }, //---------------------------------------------------------------
       function (giftObj, cb) { // Получаем профиль адресата
         // if(profile) {
+        //Статистика
+        let group = giftObj[PF.GROUP];
+        if(GIFT_GROUPS[group]) {
+          statCtrlr.setMainStat(GIFT_GROUPS[group].stat, 1);
+        }
+        
           cb(null, profile, giftObj);
         // } else {
         //   getUserProfile(options[PF.ID], (err, friendProfile) => {

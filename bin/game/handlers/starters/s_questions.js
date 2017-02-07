@@ -33,9 +33,16 @@ module.exports = function (game) {
   game.setActionsCount(game.getCountUsers() - countPrisoners);
   game.setActionsMain(game.getActionsCount());
   
+  let randQuestion = questionCtrlr.getRandomQuestion();
+  
   let resultObj = {
     [PF.NEXTGAME] : game.CONST.G_QUESTIONS,
-    [PF.QUESTION] : questionCtrlr.getRandomQuestion(),
+    [PF.QUESTION] : {
+      [PF.TEXT] : randQuestion[PF.TEXT],
+      [PF.IMAGE_1] : randQuestion[PF.IMAGE_1],
+      [PF.IMAGE_2] : randQuestion[PF.IMAGE_2],
+      [PF.IMAGE_3] : randQuestion[PF.IMAGE_3]
+    },
     [PF.PLAYERS]  : game.getPlayersID()
   };
   

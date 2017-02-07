@@ -18,6 +18,7 @@ module.exports = function (game) {
     game.addAction(uid, options);
   
     if(game.getActionsCount() == 0) {
+      game.clearTimer();
       game.getHandler(game.CONST.G_LOT, game.CONST.GT_FIN)(game);
     }
   }

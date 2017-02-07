@@ -26,6 +26,7 @@ const logger         = require('./../../lib/log')(module);
 
 // -- services --
 // const randomGiftPrices = require('./../services/random_gift_prices');
+// const randomRankGifts = require('./../services/random_rank_gifts');
 // -- /services --
 
 // let io = null;                                      // Сокет
@@ -352,6 +353,9 @@ module.exports.listen = function(server, callback) {
   
     // -- services --
     // randomGiftPrices((err) => {
+    //   callback(null, null);
+    // });
+    // randomRankGifts((err) => {
     //   callback(null, null);
     // });
     // -- /services --

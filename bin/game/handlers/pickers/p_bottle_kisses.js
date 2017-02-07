@@ -60,6 +60,7 @@ module.exports = function (game) {
     stateObj[PF.PICKS].push(result);
   
     if(game.getActionsCount() == 0) {
+      game.clearTimer();
       game.getHandler(game.CONST.G_BOTTLE_KISSES, game.CONST.GT_FIN)(game);
     }
   }

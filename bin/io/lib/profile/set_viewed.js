@@ -23,7 +23,11 @@ module.exports = function (socket, options) {
   
   options[PF.TARGET] = sanitize(options[PF.TARGET]);
   
-  oPool.userList[socket.id].view(options[PF.TARGET], (err) => {
+  let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
+  
+  selfProfile.view(options[PF.TARGET], (err) => {
     if (err) {
       return emitRes(err, socket, IO_SET_VIEWED);
     }

@@ -36,85 +36,158 @@ module.exports = function (socket, options) {
     return emitRes(Config.errors.NO_PARAMS, socket, IO_MAKE_GIFT);
   }
   
-  options[PF.GIFTID] = sanitize(options[PF.GIFTID]);
-  
   let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
   
   if(!options[PF.DESTINATION]) {
     if (!checkID(options[PF.ID])) {
       return emitRes(Config.errors.NO_PARAMS, socket, IO_MAKE_GIFT);
     }
-  
+    
     options[PF.ID] = sanitize(options[PF.ID]);
     
     if (selfProfile.getID() == options[PF.ID]) {
       return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_MAKE_GIFT);
     }
-  
-    getUserProfile(options[PF.ID], (err, profile) => {
-      if (err) {
-        emitRes(err, socket, IO_MAKE_GIFT);
-      }
-    
-      if(!profile) {
-        return emitRes(Config.errors.NO_THAT_PLAYER, socket, IO_MAKE_GIFT);
-      }
-      
-      makeGift(profile);
-    });
-    
   } else {
     if(options[PF.DESTINATION] != GIRL && options[PF.DESTINATION] != GUY) {
       return emitRes(Config.errors.NO_PARAMS, socket, IO_MAKE_GIFT);
     }
-    
-    let room = oPool.roomList[socket.id];
-    let profiles = room.getAllPlayers(options[PF.DESTINATION]);
-    
-    profiles.forEach((profile, index, arr) => {
-      if(profile.getID() != selfProfile.getID()) {
-        makeGift(profile);
-      }
-    })
   }
   
+  options[PF.GIFTID] = sanitize(options[PF.GIFTID]);
   
-  function makeGift (profile) {
+  async.waterfall([//---------------------------------------------------------------
+    function (cb) { // Ищем подарок в магазине // 1
+      dbCtrlr.findGood(options[PF.GIFTID], (err, giftObj) => {
+        if (err) {
+          return cb(err, null)
+        }
+        
+        if(giftObj[PF.LEVEL] && giftObj[PF.LEVEL] > selfProfile.getLevel()) {
+          cb(Config.errors.TOO_LITTLE_LEVEL);
+        }
+        
+        if (giftObj) {
+          if (giftObj[PF.GOODTYPE] != GIFT_TYPE) {
+            cb(Config.errors.NO_SUCH_GOOD, null);
+          } else {
+            if(giftObj[PF.RANK]) {
+              let ranksCtrlr = oPool.roomList[socket.id].getRanks();
+              if(ranksCtrlr.getRankOwner(giftObj[PF.RANK]) == selfProfile.getID()) {
+                cb(null, giftObj);
+              } else {
+                cb(Config.errors.NO_SUCH_RUNK, null);
+              }
+            } else {
+              cb(null, giftObj);
+            }
+          }
+        } else {
+          cb(Config.errors.NO_SUCH_GOOD, null);
+        }
+      });
+    }, //---------------------------------------------------------------
+    function (giftObj, cb) {
+      if(!options[PF.DESTINATION]) {
+        
+        getUserProfile(options[PF.ID], (err, profile) => {
+          if (err) {
+            return cb(err, null);
+          }
+          
+          if(!profile) {
+            return cb(Config.errors.NO_THAT_PLAYER, null);
+          }
+          
+          cb(null, giftObj, [profile]);
+        });
+        
+      } else {
+        let room = oPool.roomList[socket.id];
+        let profiles = room.getAllPlayers(options[PF.DESTINATION]);
+        let players = [];
+        
+        for(let i = 0; i < profiles.length; i++) {
+          if(profiles[i].getID() != selfProfile.getID()) {
+            players.push(profiles[i]);
+          }
+        }
+        
+        cb(null, giftObj, players);
+      }
+    },//---------------------------------------------------------------
+    function (giftObj, profiles, cb) { // Снимаем деньги с пользователя и уведомляем его об этом // 1
+    
+      let countGifts = Number(options[PF.COUNT] || 1);
+      let countPlayers = profiles.length;
+      let price = giftObj[PF.PRICE] * countGifts * countPlayers;
+    
+      selfProfile.pay(price, (err, money) => {
+        if (err) {
+          return cb(err, null);
+        }
+      
+        // Статистика
+        statCtrlr.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.GIFTS_GIVEN, 1);
+      
+        cb(null, giftObj, profiles, price);
+      });
+    },//---------------------------------------------------------------
+    function (giftObj, profiles, price, cb) { // 1
+      let points = Math.round(WASTE_POINTS * price);
+    
+      selfProfile.addPoints(points, (err, points) => {
+        if (err) {
+          return cb(err, null);
+        }
+      
+        let ranksCtrlr = oPool.roomList[socket.id].getRanks();
+        let balls = (options[PF.COUNT] || 1) * profiles.length;
+        ranksCtrlr.addRankBall(GENEROUS_RANK, selfProfile.getID(), balls);
+      
+        cb(null, giftObj, profiles);
+      });
+    },//---------------------------------------------------------------
+    function (giftObj, profiles, cb) {
+      
+      let counter = 0;
+      
+      makeGift (profiles[counter], giftObj, onComplete);
+      
+      function onComplete(err) {
+        if(err) {
+          return cb(err);
+        }
+        
+        counter++;
+        
+        if(counter < profiles.length) {
+          makeGift(profiles[counter], giftObj, onComplete);
+        } else {
+          cb(null, null);
+        }
+      }
+      
+    }
+  ], function (err) { // Вызывается последней. Рассылаем уведомления о подарке // 1
+    if (err) {
+      return emitRes(err, socket, IO_MAKE_GIFT);
+    }
+    
+    emitRes(null, socket, IO_MAKE_GIFT);
+    
+  }); // waterfall
+  
+  
+  // --------------------------------------------------------
+  function makeGift (friendProfile, giftObj, onComplete) {
     
     let date = new Date();
     
     async.waterfall([//---------------------------------------------------------------
-      function (cb) { // Ищем подарок в магазине
-        dbCtrlr.findGood(options[PF.GIFTID], (err, giftObj) => {
-          if (err) {
-            return cb(err, null)
-          }
-  
-          if(giftObj[PF.LEVEL] && giftObj[PF.LEVEL] > selfProfile.getLevel()) {
-            cb(Config.errors.TOO_LITTLE_LEVEL);
-          }
-          
-          if (giftObj) {
-            if (giftObj[PF.GOODTYPE] != GIFT_TYPE) {
-              cb(Config.errors.NO_SUCH_GOOD, null);
-            } else {
-              if(giftObj[PF.RANK]) {
-                let ranksCtrlr = oPool.roomList[socket.id].getRanks();
-                if(ranksCtrlr.getRankOwner(giftObj[PF.RANK]) == selfProfile.getID()) {
-                  cb(null, giftObj);
-                } else {
-                  cb(Config.errors.NO_SUCH_RUNK, null);
-                }
-              } else {
-                cb(null, giftObj);
-              }
-            }
-          } else {
-            cb(Config.errors.NO_SUCH_GOOD, null);
-          }
-        });
-      }, //---------------------------------------------------------------
-      function (giftObj, cb) { // Получаем профиль адресата
+      function (cb) { // Получаем профиль адресата // 8
         // if(profile) {
         //Статистика
         let group = giftObj[PF.GROUP];
@@ -122,48 +195,9 @@ module.exports = function (socket, options) {
           statCtrlr.setMainStat(GIFT_GROUPS[group].stat, 1);
         }
         
-          cb(null, profile, giftObj);
-        // } else {
-        //   getUserProfile(options[PF.ID], (err, friendProfile) => {
-        //     if (err) {
-        //       return cb(err);
-        //     }
-        //
-        //     cb(null, friendProfile, giftObj);
-        //   });
-        // }
+        cb(null, null);
       }, //---------------------------------------------------------------
-      function (friendProfile, giftObj, cb) { // Снимаем деньги с пользователя и уведомляем его об этом
-        
-        let count = Number(options[PF.COUNT] || 1);
-        let price = giftObj[PF.PRICE] * count;
-        
-        selfProfile.pay(price, (err, money) => {
-          if (err) {
-            return cb(err, null);
-          }
-          
-          // Статистика
-          statCtrlr.setUserStat(selfProfile.getID(), selfProfile.getVID(), PF.GIFTS_GIVEN, 1);
-          
-          cb(null, friendProfile, giftObj);
-        });
-      },//---------------------------------------------------------------
-      function (friendProfile, giftObj, cb) {
-        let points = Math.round(WASTE_POINTS * giftObj[PF.PRICE] * ( options[PF.COUNT] || 1));
-        
-        selfProfile.addPoints(points, (err, points) => {
-          if (err) {
-            return cb(err, null);
-          }
-          
-          let ranksCtrlr = oPool.roomList[socket.id].getRanks();
-          ranksCtrlr.addRankBall(GENEROUS_RANK, selfProfile.getID(), options[PF.COUNT] || 1);
-          
-          cb(null, friendProfile, giftObj);
-        });
-      },//---------------------------------------------------------------
-      function (friendProfile, giftObj, cb) { // Добавляем подарок адресату
+      function (res, cb) { // Добавляем подарок адресату // 8
         
         friendProfile.addGift(selfProfile, date, giftObj, options[PF.COUNT], options[PF.PARAMS], (err, result) => {
           if (err) {
@@ -173,12 +207,12 @@ module.exports = function (socket, options) {
           // Статистика
           statCtrlr.setUserStat(friendProfile.getID(), friendProfile.getVID(), PF.GIFTS_TAKEN, 1);
           
-          cb(null, friendProfile, giftObj);
+          cb(null, null);
         });
       }, //---------------------------------------------------------------
-      function (friendProfile, giftObj, cb) {
+      function (res, cb) { // 8
         let points = Math.round(GIFT_POINTS * giftObj[PF.PRICE] * (options[PF.COUNT] || 1));
-    
+        
         friendProfile.addPoints(points, (err, points) => {
           if (err) {
             return cb(err, null);
@@ -196,19 +230,19 @@ module.exports = function (socket, options) {
             }
           }
           
-          cb(null, friendProfile, giftObj[PF.TYPE]);
+          cb(null, giftObj[PF.TYPE]);
         });
         
       } //---------------------------------------------------------------
-    ], function (err, friendProfile, gtype) { // Вызывается последней. Рассылаем уведомления о подарке
+    ], function (err, gtype) { // Вызывается последней. Рассылаем уведомления о подарке // 1
       if (err) {
-        return emitRes(err, socket, IO_MAKE_GIFT);
+        return onComplete(err);
       }
       
       let giftObj = friendProfile.getGiftByType(gtype);
       
       if (!giftObj) {
-        return emitRes(Config.errors.OTHER, socket, IO_MAKE_GIFT);
+        return onComplete(Config.errors.OTHER);
       }
       
       let resObj = {
@@ -242,10 +276,10 @@ module.exports = function (socket, options) {
         friendSocket.emit(IO_NEW_GIFT, resObj);
       }
       
-      emitRes(null, socket, IO_MAKE_GIFT);
+      onComplete();
       
     }); // waterfall
-  }
+  } // makeGift
 };
 
 

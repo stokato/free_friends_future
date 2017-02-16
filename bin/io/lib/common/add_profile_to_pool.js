@@ -14,6 +14,7 @@ module.exports = function (profile, socket) {
   
   if (oldProfile)  {
     oldProfile.clearExitTimeout();
+    oldProfile.clearInactionTimer();
     
     let  oldSocket = oldProfile.getSocket();
     oldProfile.setSocket(socket);

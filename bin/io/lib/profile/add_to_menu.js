@@ -20,6 +20,8 @@ module.exports = function(socket, options) {
   
   let selfProfile = oPool.userList[socket.id];
   
+  selfProfile.setActivity();
+  
   if(selfProfile.isInMenu()) {
     return emitRes(Config.errors.ALREADY_IS_MENU, socket, IO_ADD_TO_MENU);
   }

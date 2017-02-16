@@ -101,6 +101,9 @@ function Profile() {
   
   this._pOnAddPoints  = null;
   this._pOnPay        = null;
+  
+  this._pLastActivity  = 1;
+  this._pInactionTimer = null;
 }
 
 Profile.prototype.getSocket         = function () { return this._pSocket; };
@@ -133,6 +136,11 @@ Profile.prototype.onGetActiveRank   = function () { return this._pActiveRank; };
 Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = handler; };
 Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };
 Profile.prototype.setOnGiftTimeout  = function (handler) { this._onGiftTimeout = handler; };
+
+Profile.prototype.setActivity       = function () { this._pLastActivity = new Date(); };
+Profile.prototype.getActivity       = function () { return this._pLastActivity; };
+Profile.prototype.setInactionTimer  = function (timer) { this._pInactionTimer = timer; };
+Profile.prototype.clearInactionTimer = function () { clearTimeout(this._pInactionTimer); };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;

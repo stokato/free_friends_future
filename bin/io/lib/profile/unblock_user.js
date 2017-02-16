@@ -24,6 +24,8 @@ module.exports = function (socket, options) {
   
   let selfProfile = oPool.userList[socket.id];
   
+  selfProfile.setActivity();
+  
   if (selfProfile.getID() == options[PF.ID]) {
     return emitRes(Config.errors.SELF_ILLEGAL, socket, IO_UNBLOCK_USER);
   }

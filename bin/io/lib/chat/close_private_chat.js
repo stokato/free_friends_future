@@ -25,6 +25,8 @@ module.exports = function (socket, options) {
   
   let selfProfile = oPool.userList[socket.id];
   
+  selfProfile.setActivity();
+  
   if(!selfProfile.isPrivateChat(options[PF.ID])) {
     return emitRes(Config.errors.NO_SUCH_CHAT, socket, IO_CLOSE_PRIVATE_CHAT);
   }

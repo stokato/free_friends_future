@@ -17,6 +17,8 @@ module.exports = function (socket, options) {
   
   let selfProfile = oPool.userList[socket.id];
   
+  selfProfile.setActivity();
+  
   selfProfile.setStatus(options[PF.STATUS], (err, status) => {
     if (err) {
       return emitRes(err, socket, Config.io.emits.IO_CHANGE_STATUS);

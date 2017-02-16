@@ -21,6 +21,7 @@ const sendPrivateChats    = require('../common/send_private_chats');
 const addProfileHandlers  = require('./../handlers/add_pofile_hanlers');
 const emitRes             = require('./../../../emit_result');
 const calcNeedPoints      = require('./../common/calc_need_points');
+const checkInaction       = require('./../common/check_inaction');
 
 module.exports = function (socket, options) {
   
@@ -152,9 +153,9 @@ module.exports = function (socket, options) {
         [PF.VIP]               : newVIP || false
       };
       
-      cb(null, infoObj, room);
+      cb(null, infoObj, room, selfProfile);
     },//------------------------------------------------------------
-    function(infoObj, room, cb) {
+    function(infoObj, room, selfProfile, cb) {
   
       emitRes(null, socket, Config.io.emits.IO_INIT, infoObj);
   
@@ -164,6 +165,9 @@ module.exports = function (socket, options) {
       game.start(socket);
       
       addEmits(socket);
+      
+      selfProfile.setActivity();
+      checkInaction(selfProfile);
             
       cb(null, infoObj);
     } //------------------------------------------------------------

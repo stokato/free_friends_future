@@ -27,6 +27,9 @@ module.exports = function (socket, options) {
   options[PF.ID] = sanitize(options[PF.ID]);
   
   let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
+  
   let ranksCtrlr  = oPool.roomList[socket.id].getRanks();
   
   let game = selfProfile.getGame();

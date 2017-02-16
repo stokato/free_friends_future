@@ -40,6 +40,8 @@ module.exports = function (socket, options) {
   
   let  selfProfile = oPool.userList[socket.id];
   
+  selfProfile.setActivity();
+  
   // Ошибка - если таймаут на смену комнаты еще не истек
   if(oPool.roomChangeLocks[selfProfile.getID()]) {
     return emitRes(Config.errors.ACTON_TIMEOUT, socket, IO_CHANGE_ROOM);

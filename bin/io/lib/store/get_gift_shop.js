@@ -22,11 +22,13 @@ module.exports = function (socket, options) {
       return emitRes(err, socket, Config.io.emits.IO_GET_GIFT_SHOP);
     }
   
-    let setfProfile = oPool.userList[socket.id];
+    let selfProfile = oPool.userList[socket.id];
+    selfProfile.setActivity();
+    
     let room = oPool.roomList[socket.id];
     let ranksCtrlr = room.getRanks();
   
-    let uid = setfProfile.getID();
+    let uid = selfProfile.getID();
   
     // Сортируем по типу
     goods.sort((gift1, gift2) => {
@@ -53,7 +55,7 @@ module.exports = function (socket, options) {
     
       let isLocked = false;
       
-      if(setfProfile.getLevel() < goods[i][PF.LEVEL]) {
+      if(selfProfile.getLevel() < goods[i][PF.LEVEL]) {
         isLocked = true;
       }
   

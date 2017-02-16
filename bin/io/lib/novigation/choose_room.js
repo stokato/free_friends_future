@@ -20,6 +20,8 @@ module.exports = function (socket, options) {
   let  selfProfile = oPool.userList[socket.id];
   let  sex         = selfProfile.getSex();
   
+  selfProfile.setActivity();
+  
   async.waterfall([//--------------------------------------------------
     function (cb) { // Отбираем комнаты, в которых не хватает игроков нашего пола
       

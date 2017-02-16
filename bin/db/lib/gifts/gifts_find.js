@@ -125,7 +125,7 @@ module.exports = function(uid, isSelf, callback) {
             usersObj[userObj[PF.ID]] = userObj;
           }
   
-          usersObj[userObj[PF.ID]][PF.GIFTS].push(giftObj);
+          usersObj[giftObj[PF.FID]][PF.GIFTS].push(giftObj);
         }
         
         for(let item in usersObj) if(usersObj.hasOwnProperty(item)) {

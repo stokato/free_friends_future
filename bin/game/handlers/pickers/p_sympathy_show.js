@@ -111,9 +111,21 @@ module.exports = function (game) {
             });
           }
         }
-  
-        let socket = game.getActivePlayer(uid).player.getSocket();
-        game.sendData(resultObj, socket);
+        
+        game.sendData(resultObj, selfProfile.getSocket());
+        
+        // let playerInfo = game.getActivePlayer(uid);
+        
+        // let player = oPool.profiles[uid];
+        //
+        // if(player) {
+        //   let socket = player.getSocket();
+        //   game.sendData(resultObj, socket);
+        // } else {
+        //   console.log('Не найден игрок по UID');
+        //   console.log(uid);
+        //   console.log(player);
+        // }
         
         cb(null, null);
       } //-------------------------------------------------------------

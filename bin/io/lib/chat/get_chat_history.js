@@ -30,6 +30,9 @@ module.exports = function(socket, options) {
   
   options[PF.ID] = sanitize(options[PF.ID]);
   
+  let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
   
   async.waterfall([ //-----------------------------------------------------
     function(cb) { // Получаем профиль
@@ -38,7 +41,7 @@ module.exports = function(socket, options) {
       
     }, //------------------------------------------------------------------
     function(friendProfile, cb) { // Получаем историю и отправляем отдельными сообщениями
-      let selfProfile = oPool.userList[socket.id];
+      
       
       if(selfProfile.getID() == options[PF.ID]) {
         return cb(Config.errors.SELF_ILLEGAL);

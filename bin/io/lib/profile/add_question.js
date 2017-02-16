@@ -14,6 +14,8 @@ const sanitize  = require('./../../../sanitize');
 
 module.exports = function (socket, options) {
   
+  oPool.userList[socket.id].setActivity();
+  
   const IO_ADD_QUESTION = Config.io.emits.IO_ADD_QUESTION;
   
   if(!PF.TEXT in options) {

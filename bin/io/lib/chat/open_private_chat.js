@@ -28,6 +28,10 @@ module.exports = function(socket, options, callback) {
     return emitRes(Config.errors.NO_PARAMS, socket, Config.io.emits.IO_OPEN_PRIVATE_CHAT);
   }
   
+  let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
+  
   options[PF.ID] = sanitize(options[PF.ID]);
   
   async.waterfall([ //--------------------------------------------------
@@ -37,7 +41,7 @@ module.exports = function(socket, options, callback) {
       
     }, //---------------------------------------------------------------
     function(friendProfile, cb) { // Отрываем чат и отправляем историю
-      let selfProfile = oPool.userList[socket.id];
+      
       
       if(selfProfile.getID() == options[PF.ID]) {
         return cb(Config.errors.SELF_ILLEGAL);

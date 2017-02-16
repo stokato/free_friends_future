@@ -28,6 +28,9 @@ module.exports = function (socket, options) {
     }
         
     let selfProfile = oPool.userList[socket.id];
+  
+    selfProfile.setActivity();
+  
     let uid = selfProfile.getID();
     let game = selfProfile.getGame();
   

@@ -25,7 +25,7 @@ module.exports = function (profile, gift) {
         [PF.ID]       : profile.getID(),
         [PF.VID]      : profile.getVID(),
         [PF.TYPE]     : gift[PF.TYPE],
-        [PF.UGIFTID]  : gift[PF.GIFTID],
+        [PF.UGIFTID]  : gift[PF.UGIFTID],
         [PF.COUNT]    : gift[PF.COUNT]
       };
   

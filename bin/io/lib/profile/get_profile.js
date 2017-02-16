@@ -33,6 +33,8 @@ module.exports = function (socket, options) {
   options[PF.ID] = sanitize(options[PF.ID]);
   
   let selfProfile = oPool.userList[socket.id];
+  
+  selfProfile.setActivity();
 
   let selfInfoObj = {
     [PF.ID]       : selfProfile.getID(),

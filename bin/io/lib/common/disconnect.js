@@ -19,6 +19,14 @@ module.exports = function(socket) {
   
   let selfProfile = oPool.userList[socket.id];
   
+  if(!selfProfile) {
+    return logger.error('Не обранужен профиль');
+  }
+  
+  if(!selfProfile.getSocket()) {
+    return  logger.error('Не обранужен сокет у профиля');
+  }
+  
   async.waterfall([//----------------------------------------------------------------
     function (cb) { // получаем данные пользователя и сообщаем всем, что он ушел
       

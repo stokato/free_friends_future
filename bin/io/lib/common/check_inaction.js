@@ -21,6 +21,8 @@ module.exports = function (profile) {
   function checkInaction() {
     // profile.clearInactionTimer();
     
+    console.log('start inaction ' + profile.getID());
+    
     let lastActivity = profile.getActivity();
     let date = new Date();
     
@@ -36,8 +38,6 @@ module.exports = function (profile) {
         disconnect(socket);
       }
     }
-    
-    console.log(delta);
   }
   
 };

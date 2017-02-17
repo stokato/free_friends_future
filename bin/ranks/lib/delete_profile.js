@@ -13,6 +13,8 @@ module.exports = function (profile) {
   
   let uid = profile.getID();
   
+  profile.onSetActiveRank(null);
+  
   delete this._rProfiles[uid];
   
   for(let item in RANKS) if(RANKS.hasOwnProperty(item)) {

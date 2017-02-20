@@ -80,6 +80,14 @@ module.exports = function (socket, options) {
     let gifts = [];
     for (let i in types) if (types.hasOwnProperty(i)) {
       gifts.push(types[i]);
+      
+      if(types[i].gifts[0] && types[i].gifts[0][PF.RANK]) {
+        types[i].gifts.sort((gift1, gift2) => {
+          if (gift1[PF.RANK] < gift2[PF.RANK]) return -1;
+          if (gift2[PF.RANK] < gift1[PF.RANK]) return 1;
+          return 0;
+        });
+      }
     }
     
     emitRes(null, socket, Config.io.emits.IO_GET_GIFT_SHOP, { [PF.GIFTS]: gifts });

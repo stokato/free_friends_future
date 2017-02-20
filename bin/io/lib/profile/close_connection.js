@@ -18,9 +18,12 @@ module.exports = function (socket) {
       return socket.disconnect();
     }
     
-    selfProfile.clearInactionTimer();
+    // selfProfile.clearInactionTimer();
     
-    selfProfile.setExitTimeout( setTimeout(() => { disconnect(socket); }, EXIT_TIMEOUT));
+    // selfProfile.setExitTimeout( setTimeout(() => { disconnect(socket); }, EXIT_TIMEOUT));
+    
+    selfProfile.setConnectionLost(true);
+    selfProfile.setActivity();
     
   });
 };

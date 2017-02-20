@@ -104,6 +104,7 @@ function Profile() {
   
   this._pLastActivity  = 1;
   this._pInactionTimer = null;
+  this._pConnectionLost = false;
 }
 
 Profile.prototype.getSocket         = function () { return this._pSocket; };
@@ -137,10 +138,12 @@ Profile.prototype.setOnAddPoints    = function (handler) { this._pOnAddPoints = 
 Profile.prototype.setOnPay          = function (handler) { this._pOnPay = handler; };
 Profile.prototype.setOnGiftTimeout  = function (handler) { this._onGiftTimeout = handler; };
 
-Profile.prototype.setActivity       = function () { this._pLastActivity = new Date(); };
+Profile.prototype.setActivity       = function (date = new Date()) { this._pLastActivity = date; };
 Profile.prototype.getActivity       = function () { return this._pLastActivity; };
 Profile.prototype.setInactionTimer  = function (timer) { this._pInactionTimer = timer; };
 Profile.prototype.clearInactionTimer = function () { clearTimeout(this._pInactionTimer); };
+Profile.prototype.setConnectionLost  = function (val) { this._pConnectionLost = !!val; };
+Profile.prototype.isConnectionLost  = function () { return this._pConnectionLost; };
 
 Profile.prototype.init              = init;
 Profile.prototype.build             = build;

@@ -17,7 +17,7 @@ module.exports = function (profile, tid) {
   for(let  i = 0; i < tlLen; i++) {
     
     if(tlArr[i].track_id == tid) {
-      if(!this._mDislikers[tid][uid]) {
+      if((uid in this._mDislikers[tid]) == false) {
         tlArr[i].dislikes++;
         this._mDislikers[tid][uid] = { id : uid, vid : profile.getVID() };
       }

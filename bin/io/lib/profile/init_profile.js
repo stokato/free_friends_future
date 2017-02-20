@@ -167,7 +167,7 @@ module.exports = function (socket, options) {
       addEmits(socket);
       
       selfProfile.setActivity();
-      checkInaction(selfProfile);
+      checkInaction(socket);
             
       cb(null, infoObj);
     } //------------------------------------------------------------

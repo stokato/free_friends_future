@@ -14,10 +14,10 @@ module.exports = function (profile, tid) {
   let uid   = profile.getID();
   let tlLen = tlArr.length;
   
-  for(var i = 0; i < tlLen; i++) {
+  for(let i = 0; i < tlLen; i++) {
     
     if(tlArr[i].track_id == tid) {
-      if(!this._mLikers[tid][uid]) {
+      if((uid in this._mLikers[tid]) == false) {
         tlArr[i].likes++;
         this._mLikers[tid][uid] = { id : uid, vid : profile.getVID() };
       }

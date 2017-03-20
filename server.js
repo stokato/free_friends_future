@@ -44,7 +44,7 @@ app.use(getCert);
 app.use(crossDomain);
 app.use('/', vkHandle);
 app.use('/questions', questions);
-app.use('/statCtrlr', stat);
+app.use('/stat', stat);
 app.use('/shop', shop);
 
 let auth = require('./lib/passport/index')(passport);

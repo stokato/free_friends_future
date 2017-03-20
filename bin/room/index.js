@@ -25,6 +25,8 @@ const getPersonalInfo = require('./lib/get_personal_info');
 const sendRoomInfo    = require('./lib/send_room_info');
 const getCountInRoom  = require('./lib/get_count_in_room');
 const setFriendInfo   = require('./lib/set_friend_info');
+const likeMessage     = require('./lib/like_message');
+const saveMessage     = require('./lib/save_message');
 
 
 /*
@@ -47,6 +49,8 @@ function Room(name, title)  {
   
   // Сообщения в общем чате
   this._messages = [];
+  
+  this._likes = {}; // messageId : [uid, uid, uid ...] - лайки сообщений в чате
   
   this._girls_indexes = [];
   this._guys_indexes  = [];
@@ -93,5 +97,7 @@ Room.prototype.randomProfile    = randomProfile;
 Room.prototype.getPersonalInfo  = getPersonalInfo;
 Room.prototype.sendRoomInfo     = sendRoomInfo;
 Room.prototype.getCountInRoom   = getCountInRoom;
+Room.prototype.likeMessage      = likeMessage;
+Room.prototype.saveMessage      = saveMessage;
 
 module.exports = Room;

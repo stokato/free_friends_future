@@ -477,13 +477,8 @@ CREATE TABLE IF NOT EXISTS users_stat (
 
 CREATE TABLE IF NOT EXISTS main_stat (
   id VARCHAR,
-  count_gifts_loves counter,
-  count_gifts_breath counter,
-  count_gifts_flowers counter,
   count_gifts_drinks counter,
   count_gifts_common counter,
-  count_gifts_flirtation counter,
-  count_gifts_merry counter,
   count_gifts_hats counter,
   count_gifts_ranks counter,
   count_gifts_to_avatar counter,
@@ -510,6 +505,48 @@ CREATE TABLE IF NOT EXISTS main_stat (
   count_coins_earned counter,
   count_coins_spent counter,
   PRIMARY KEY (id)
+);
+
+-- Таблица с общей статистикой в разрезе дат
+-- количество подарков по каждому типу ( видимо отдельной вкладкой) для анализа какие подарки норм какие нет
+-- кол-во подаренных паков монет ( глянуть какие популярнее)
+-- кол-во купленных паков монет ( для себя)
+-- кол-во людей которые добавили в меню
+-- активность по играм
+-- заработано монет
+-- потрачено монет
+
+CREATE TABLE IF NOT EXISTS main_stat_everyday (
+  id VARCHAR,
+  date timestamp,
+  count_gifts_drinks counter,
+  count_gifts_common counter,
+  count_gifts_hats counter,
+  count_gifts_ranks counter,
+  count_gifts_to_avatar counter,
+  count_gifts_text counter,
+  count_gifts_masks counter,
+  count_money_1_given counter,
+  count_money_3_given counter,
+  count_money_10_given counter,
+  count_money_20_given counter,
+  count_money_60_given counter,
+  count_money_200_given counter,
+  count_money_1_taken counter,
+  count_money_3_taken counter,
+  count_money_10_taken counter,
+  count_money_20_taken counter,
+  count_money_60_taken counter,
+  count_money_200_taken counter,
+  count_menu_append counter,
+  count_best_activity counter,
+  count_bottle_activity counter,
+  count_cards_activity counter,
+  count_question_activity counter,
+  count_sympathy_activity counter,
+  count_coins_earned counter,
+  count_coins_spent counter,
+  PRIMARY KEY (id, date)
 );
 
 -- Таблица для накопления поступающих от пользователей вопросов

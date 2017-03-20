@@ -418,13 +418,8 @@ let constants = {
     name   : 'main_stat',
     fields : {
       ID_varchar_p                  : 'id',
-      C_GIFTS_LOVES_counter         : 'count_gifts_loves',
-      C_GIFTS_BREATH_counter        : 'count_gifts_breath',
-      C_GIFTS_FLOWERS_counter       : 'count_gifts_flowers',
       C_GIFTS_DRINKS_counter        : 'count_gifts_drinks',
       C_GIFTS_COMMON_counter        : 'count_gifts_common',
-      C_GIFTS_FLIRTATION_counter    : 'count_gifts_flirtation',
-      C_GIFTS_MERRY_counter         : 'count_gifts_merry',
       C_GIFTS_HATS_counter          : 'count_gifts_hats',
       C_GIFTS_RANKS_counter         : 'count_gifts_ranks',
       C_GIFTS_TO_AVATAR_counter     : 'count_gifts_to_avatar',
@@ -452,7 +447,42 @@ let constants = {
       C_COUNS_SPENT_counter         : 'count_coins_spent'
     }
   },
-  
+    
+    MAIN_STAT_EVERYDAY : {
+        name   : 'main_stat_everyday',
+        fields : {
+            ID_varchar_p                  : 'id',
+            DATE_timestamp_c              : 'date',
+            C_GIFTS_DRINKS_counter        : 'count_gifts_drinks',
+            C_GIFTS_COMMON_counter        : 'count_gifts_common',
+            C_GIFTS_HATS_counter          : 'count_gifts_hats',
+            C_GIFTS_RANKS_counter         : 'count_gifts_ranks',
+            C_GIFTS_TO_AVATAR_counter     : 'count_gifts_to_avatar',
+            C_GIFTS_TEXT_counter          : 'count_gifts_text',
+            C_GIFTS_MASKS_counter         : 'count_gifts_masks',
+            C_MONEY_1_GIVEN_counter       : 'count_money_1_given',
+            C_MONEY_3_GIVEN_counter       : 'count_money_3_given',
+            C_MONEY_10_GIVEN_counter      : 'count_money_10_given',
+            C_MONEY_20_GIVEN_counter      : 'count_money_20_given',
+            C_MONEY_60_GIVEN_counter      : 'count_money_60_given',
+            C_MONEY_200_GIVEN_counter     : 'count_money_200_given',
+            C_MONEY_1_TAKEN_counter       : 'count_money_1_taken',
+            C_MONEY_3_TAKEN_counter       : 'count_money_3_taken',
+            C_MONEY_10_TAKEN_counter      : 'count_money_10_taken',
+            C_MONEY_20_TAKEN_counter      : 'count_money_20_taken',
+            C_MONEY_60_TAKEN_counter      : 'count_money_60_taken',
+            C_MONEY_200_TAKEN_counter     : 'count_money_200_taken',
+            C_MENU_APPEND_counter         : 'count_menu_append',
+            C_BEST_ACTIVITY_counter       : 'count_best_activity',
+            C_BOTTLE_ACTIVITY_counter     : 'count_bottle_activity',
+            C_CARDS_ACTIVITY_counter      : 'count_cards_activity',
+            C_QUESTION_ACITVITY_counter   : 'count_question_activity',
+            C_SYMPATHY_ACITVITY_counter   : 'count_sympathy_activity',
+            C_COINS_EARNED_counter        : 'count_coins_earned',
+            C_COUNS_SPENT_counter         : 'count_coins_spent'
+        }
+    },
+    
   USER_QUESTIONS : {
     name    : 'user_questions',
     fields    : {

@@ -3,11 +3,9 @@
  */
 
 const Config = require('./../../../../config.json');
-const  oPool = require('./../../../objects_pool');
+const oPool  = require('./../../../objects_pool');
 
 module.exports = function (socket, room, message) {
-  
-  const LEN_ROOM_HISTORY = Config.io.len_room_history;
   //socket.broadcast.in(room.getName()).emit(cFields.IO_MESSAGE, message);
   
   socket.emit(Config.io.emits.IO_MESSAGE, message);
@@ -27,12 +25,7 @@ module.exports = function (socket, room, message) {
   });
   
   // Сохраняем сообщение в истории
-  let  messagesArr = room.getMessages();
-  messagesArr.push(message);
-
-  if (messagesArr.length >= LEN_ROOM_HISTORY) {
-    messagesArr.shift();
-  }
+  room.saveMessage(message);
 };
 
 

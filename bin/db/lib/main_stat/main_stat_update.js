@@ -23,13 +23,8 @@ module.exports = function(options, callback) { options = options || {};
   let condValuesArr = [1];
   let paramsArr     = [];
   
-  if (PF.GIFTS_LOVES in options)        { fieldsArr.push(DBF.C_GIFTS_LOVES_counter);       paramsArr.push(options[PF.GIFTS_LOVES]); }
-  if (PF.GIFTS_BREATH in options)       { fieldsArr.push(DBF.C_GIFTS_BREATH_counter);      paramsArr.push(options[PF.GIFTS_BREATH]); }
-  if (PF.GIFTS_FLOWERS in options)      { fieldsArr.push(DBF.C_GIFTS_FLOWERS_counter);     paramsArr.push(options[PF.GIFTS_FLOWERS]); }
-  if (PF.GIFTS_DRINKS in options)       { fieldsArr.push(DBF.C_GIFTS_DRINKS_counter);      paramsArr.push(options[PF.GIFTS_DRINKS]); }
+  if (PF.GIFTS_DRINKS in options)        { fieldsArr.push(DBF.C_GIFTS_DRINKS_counter);      paramsArr.push(options[PF.GIFTS_DRINKS]); }
   if (PF.GIFTS_COMMON in options)       { fieldsArr.push(DBF.C_GIFTS_COMMON_counter);      paramsArr.push(options[PF.GIFTS_COMMON]); }
-  if (PF.GIFTS_FLIRTATION in options)   { fieldsArr.push(DBF.C_GIFTS_FLIRTATION_counter);  paramsArr.push(options[PF.GIFTS_FLIRTATION]); }
-  if (PF.GIFTS_MERRY in options)        { fieldsArr.push(DBF.C_GIFTS_MERRY_counter);       paramsArr.push(options[PF.GIFTS_MERRY]); }
   if (PF.GIFTS_HATS in options)         { fieldsArr.push(DBF.C_GIFTS_HATS_counter);        paramsArr.push(options[PF.GIFTS_HATS]); }
   if (PF.GIFTS_RANKS in options)        { fieldsArr.push(DBF.C_GIFTS_RANKS_counter);       paramsArr.push(options[PF.GIFTS_RANKS]); }
   if (PF.GIFTS_TO_AVATAR in options)    { fieldsArr.push(DBF.C_GIFTS_TO_AVATAR_counter);   paramsArr.push(options[PF.GIFTS_TO_AVATAR]); }

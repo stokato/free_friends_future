@@ -31,6 +31,7 @@ const  likeProfile      = require('../profile/like_profile');
 const  setViewed        = require('../profile/set_viewed');
 const  blockUser        = require('../profile/block_user');
 const  unblockUser      = require('../profile/unblock_user');
+const  likeMessage      = require('../chat/like_message');
 
 const EMITS = Config.io.emits;
 
@@ -59,6 +60,7 @@ module.exports = function(socket) {
   ioc.setEmit(socket, EMITS.IO_SET_VIEWED, setViewed);
   ioc.setEmit(socket, EMITS.IO_BLOCK_USER, blockUser);
   ioc.setEmit(socket, EMITS.IO_UNBLOCK_USER, unblockUser);
+  ioc.setEmit(socket, EMITS.IO_LIKE_MESSAGE, likeMessage);
   
   closeConnection(socket);
 };

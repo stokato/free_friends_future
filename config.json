@@ -236,7 +236,8 @@
       "IO_NEW_LEVEL"              : "new_level",
 
       "IO_NEW_RELEASER_BONUS"     : "new_releaser_bonus",
-      "IO_PRISON_PROTECT"         : "prison_protect"
+      "IO_PRISON_PROTECT"         : "prison_protect",
+      "IO_LIKE_MESSAGE"           : "like_message"
     }
   },
   "errors" : {
@@ -251,6 +252,7 @@
     "ROOM_IS_FULL"        : { "code" : 422, "message" : "Попытка перейти в комнату, в которой нет свободных мест" },
     "NO_SUCH_CHAT"        : { "code" : 430, "message" : "Чат с этим пользователем не существует" },
     "IN_BLACK_LIST"       : { "code" : 431, "message" : "Этот пользователь в черном списке" },
+    "NO_SUCH_MESSAGE"     : { "code" : 432, "message" : "Нет такого сообщения" },
     "NO_THAT_PLAYER"      : { "code" : 440, "message" : "Нельзя выбрать этого игрока" },
     "NOT_IN_PRISON"       : { "code" : 441, "message" : "Этот игрок не находится в тюрьме" },
     "IS_ALREADY_SELECTED" : { "code" : 442, "message" : "В игре Симпатии нельзя выбрать несколько раз одного и того же игрока" },

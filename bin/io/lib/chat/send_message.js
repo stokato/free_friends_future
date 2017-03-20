@@ -50,7 +50,8 @@ module.exports = function (socket, options) {
     [PF.CITY]     : selfProfile.getCity(),
     [PF.COUNTRY]  : selfProfile.getCountry(),
     [PF.TEXT]     : options[PF.TEXT],
-    [PF.DATE]     : date
+    [PF.DATE]     : date,
+    [PF.LIKES]    : 0
   };
 
   
@@ -58,7 +59,7 @@ module.exports = function (socket, options) {
   if(!isPrivate) {
     let currRoom = oPool.roomList[socket.id];
     
-    infoObj[PF.MESSAGEID] = dbCtrlr.timeUuid.fromDate(date);
+    infoObj[PF.MESSAGEID] = dbCtrlr.timeUuid.fromDate(date).toString();
     
     sendInRoom(socket, currRoom, infoObj);
     

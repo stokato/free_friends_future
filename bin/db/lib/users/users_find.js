@@ -76,7 +76,7 @@ module.exports = function(id, vid, f_list, callback) {
         [PF.STATUS]       : rowObj[DBF.STATUS_varchar],
         [PF.POINTS]       : rowObj[DBF.POINTS_int],
         [PF.GIFT1]        : (rowObj[DBF.GIFT1_uuid])? rowObj[DBF.GIFT1_uuid].toString() : null,
-        [PF.ISMENU]       : rowObj[DBF.ISMENU] || null,
+        [PF.ISMENU]       : rowObj[DBF.ISMENU_boolean] || null,
         [PF.MONEY]        : Number(rowObj[DBF.MONEY_int]),
         [PF.LEVEL]        : Number(rowObj[DBF.LEVEL_int]),
         [PF.FREE_GIFTS]   : Number(rowObj[DBF.FREE_GIFTS_int]),

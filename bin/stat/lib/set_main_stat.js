@@ -28,6 +28,7 @@ module.exports = function (field, val) {
         
         let date = new Date();
         date.setHours(0, 0, 0, 0);
+        date.setHours(date.getTimezoneOffset()/60 * -1);
         
         params[PF.DATE] = date;
         

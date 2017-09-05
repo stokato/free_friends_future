@@ -41,7 +41,7 @@ module.exports = function(callback) {
       rowObj = result.rows[i];
       
       goodObj = {
-        [PF.ID]           : rowObj[DBF.ID_uuid_p],
+        [PF.ID]           : rowObj[DBF.ID_varchar_p],
         [PF.TITLE]        : rowObj[DBF.TITLE_varchar],
         [PF.PRICE]        : rowObj[DBF.PRICE_COINS_int],
         [PF.PRICE_VK]     : rowObj[DBF.PRICE_VK_int],
